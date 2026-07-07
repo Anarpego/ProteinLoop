@@ -1,0 +1,105 @@
+"""Validate hackathon submission artifacts."""
+
+from __future__ import annotations
+
+import sys
+import zipfile
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SUBMISSION = ROOT / "submission"
+PPTX = SUBMISSION / "proteinloop-hackathon-deck.pptx"
+
+
+REQUIRED_FILES = [
+    ROOT / "LICENSE",
+    SUBMISSION / "lablab-submission.md",
+    SUBMISSION / "video-script.md",
+    SUBMISSION / "slides.md",
+    SUBMISSION / "cover.svg",
+    SUBMISSION / "cover.png",
+    SUBMISSION / "demo-evidence.json",
+    SUBMISSION / "demo-evidence.md",
+    PPTX,
+]
+
+
+def main() -> int:
+    missing = [path for path in REQUIRED_FILES if not path.exists()]
+    if missing:
+        for path in missing:
+            print(f"missing: {path.relative_to(ROOT)}", file=sys.stderr)
+        return 1
+
+    license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
+    if not license_text.startswith("MIT License"):
+        print("LICENSE is not MIT", file=sys.stderr)
+        return 1
+
+    slide_count = pptx_slide_count(PPTX)
+    if slide_count != 10:
+        print(f"expected 10 PPTX slides, found {slide_count}", file=sys.stderr)
+        return 1
+
+    submission_text = (SUBMISSION / "lablab-submission.md").read_text(encoding="utf-8")
+    required_sections = [
+        "## Project Title",
+        "## Short Description",
+        "## Long Description",
+        "## Technology Tags",
+        "## Key Demo Path",
+    ]
+    for section in required_sections:
+        if section not in submission_text:
+            print(f"missing submission section: {section}", file=sys.stderr)
+            return 1
+
+    cover_text = (SUBMISSION / "cover.svg").read_text(encoding="utf-8")
+    if "<svg" not in cover_text or "ProteinLoop cover image" not in cover_text:
+        print("cover.svg does not look like the ProteinLoop cover", file=sys.stderr)
+        return 1
+
+    cover_png = SUBMISSION / "cover.png"
+    if cover_png.stat().st_size < 10_000:
+        print("cover.png is unexpectedly small", file=sys.stderr)
+        return 1
+
+    evidence = json_load(SUBMISSION / "demo-evidence.json")
+    if evidence["collapse_vs_recovery"]["naive"]["collapsed"] is not True:
+        print("demo evidence does not show naive collapse", file=sys.stderr)
+        return 1
+    if evidence["collapse_vs_recovery"]["safety"]["collapsed"] is not False:
+        print("demo evidence does not show safety recovery", file=sys.stderr)
+        return 1
+    if evidence["rlvr"]["average_reward_delta"] <= 0:
+        print("demo evidence RLVR reward delta must be positive", file=sys.stderr)
+        return 1
+    if evidence["anomaly_forecast_after_spike"]["risk_level"] != "critical":
+        print("demo evidence forecast should be critical after spike", file=sys.stderr)
+        return 1
+
+    print("submission artifacts OK")
+    print(f"pptx slides: {slide_count}")
+    return 0
+
+
+def json_load(path: Path) -> dict:
+    import json
+
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def pptx_slide_count(path: Path) -> int:
+    with zipfile.ZipFile(path) as archive:
+        return len(
+            [
+                name
+                for name in archive.namelist()
+                if name.startswith("ppt/slides/slide") and name.endswith(".xml")
+            ]
+        )
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

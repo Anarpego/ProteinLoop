@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proteinloop-sim"
+version = "0.1.0"
+description = "Deterministic simulator and verifier for ProteinLoop."
+requires-python = ">=3.11"
+readme = "../README.md"
+license = { text = "MIT" }
+authors = [{ name = "ProteinLoop" }]
+dependencies = []
+
+[project.scripts]
+proteinloop-sim = "proteinloop_sim.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["proteinloop_sim*"]
+

@@ -1,0 +1,42 @@
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.validate_live_demo import (
+    OPERATOR_NEEDLES,
+    PRODUCER_NEEDLES,
+    join_url,
+    marker_check,
+    normalize_base_url,
+)
+
+
+class LiveDemoValidatorTests(unittest.TestCase):
+    def test_normalize_base_url_requires_http_url(self):
+        self.assertEqual(normalize_base_url(" https://demo.example.com/ "), "https://demo.example.com")
+
+        with self.assertRaises(ValueError):
+            normalize_base_url("demo.example.com")
+
+    def test_join_url_handles_leading_slash(self):
+        self.assertEqual(join_url("https://demo.example.com", "/producer"), "https://demo.example.com/producer")
+
+    def test_marker_check_passes_for_required_operator_markers(self):
+        html = "\n".join(OPERATOR_NEEDLES)
+        result = marker_check("operator", html, OPERATOR_NEEDLES)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.detail, "")
+
+    def test_marker_check_reports_missing_producer_markers(self):
+        html = "\n".join(PRODUCER_NEEDLES[:-1])
+        result = marker_check("producer", html, PRODUCER_NEEDLES)
+
+        self.assertFalse(result.ok)
+        self.assertIn("Respaldo offline", result.detail)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,7 @@
+_build/
+deps/
+.elixir_ls/
+.git/
+priv/traces/*.jsonl
+*.ez
+

@@ -1,0 +1,76 @@
+name: ProteinLoop CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Simulator, Phoenix, and submission checks
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.3.0
+        with:
+          python-version: "3.11"
+
+      - name: Set up BEAM
+        uses: erlef/setup-beam@v1.24.1
+        with:
+          elixir-version: "1.20.1"
+          otp-version: "28"
+
+      - name: Run simulator tests
+        run: make test
+
+      - name: Install Phoenix dependencies
+        working-directory: app
+        run: mix deps.get
+
+      - name: Check Phoenix formatting
+        working-directory: app
+        run: mix format --check-formatted
+
+      - name: Run Phoenix tests
+        working-directory: app
+        run: mix test
+
+      - name: Validate submission packet
+        run: make submission-check
+
+  docker:
+    name: Docker Compose smoke test
+    runs-on: ubuntu-24.04
+    needs: test
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7.0.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.2.0
+
+      - name: Build Docker Compose services
+        run: docker compose build
+
+      - name: Start Docker Compose services
+        run: docker compose up -d
+
+      - name: Run Docker smoke test
+        run: python3 scripts/docker_smoke_test.py
+
+      - name: Show Docker logs
+        if: always()
+        run: docker compose logs --no-color
+
+      - name: Stop Docker Compose services
+        if: always()
+        run: docker compose down -v

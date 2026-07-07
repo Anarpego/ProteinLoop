@@ -1,0 +1,428 @@
+# ProteinLoop
+
+ProteinLoop is a hackathon prototype for an agentic aquaponic protein loop: fish, prawns, duckweed, hydroponic plants, and chickens coordinated by a deterministic safety harness and, later, Gemma-powered agents.
+
+The first vertical slice is a Python simulator and verifier. It proves the core demo behavior: a naive routine collapses after an ammonia spike, while a safety-aware harness policy stabilizes the ecosystem.
+
+The second slice is a Phoenix LiveView app. It consumes the simulator API, broadcasts state through PubSub, renders a judge/operator dashboard, and includes a Spanish producer approval route.
+
+The third slice is an agent harness. It proposes structured actions, routes every proposal through the simulator verifier before execution, and shows accepted/rejected proposals in the operator dashboard.
+
+The fourth slice adds provider control and RLVR traces. Every harness run appends a JSONL record with state, action, verifier result, reward, and provider metadata.
+
+The fifth slice makes those traces inspectable: the operator dashboard renders a recent trace timeline, and the Python CLI can summarize the JSONL artifact.
+
+The sixth slice adds a one-click judge demo cascade. The operator dashboard can reset the simulator, inject an ammonia spike, show an unsafe agent proposal rejected by the verifier, run a safe recovery proposal, and append both outcomes to the RLVR trace artifact.
+
+The seventh slice makes the model boundary visible. The dashboard shows the configured OpenAI-compatible `GEMMA_ENDPOINT`, selected `GEMMA_MODEL`, and a `Check model` control that probes `/v1/models` without blocking the core simulator demo.
+
+The eighth slice adds a lightweight RLVR reward panel. The simulator scores naive and safety policies across repeatable scenarios, exposes the reward verifier payload through the API, and renders reward improvement on the operator dashboard.
+
+The ninth slice makes the multi-agent topology visible. The operator dashboard derives advisory subsystem cards for fish tank, hydroponia, duckweed/chickens, and supervisor agents from simulator state while keeping mutation behind the verified harness.
+
+The tenth slice adds a local self-healing mesh demo. The operator dashboard can simulate an edge node loss, migrate subsystem agents to healthy nodes, recover the failed node, and show migration events.
+
+The eleventh slice connects Spanish HITL approval to the operator flow. Risky water exchange and duckweed harvest actions now pause in an OTP queue until the producer approves, edits, or rejects them.
+
+The twelfth slice adds a Sagents-compatible loop contract. The operator dashboard can run an explicit `call_llm -> verify_ecosystem_safety -> execute_tools -> until_tool` loop that returns structured completion data without requiring live model credentials.
+
+The thirteenth slice adds the AMD Gemma deployment profile. It includes `.env.example`, a ROCm/vLLM Compose profile using `vllm/vllm-openai-rocm:gemma4`, and a runbook for connecting AMD-hosted Gemma to `GEMMA_ENDPOINT`.
+
+The fourteenth slice adds submission materials: MIT license, lablab submission draft, video script, slide source, and a cover SVG.
+
+The fifteenth slice adds deterministic anomaly forecasting. The simulator forecasts routine-operation ammonia/oxygen risk without mutating live state, exposes `GET /forecast/anomaly`, and renders the near-term risk on the operator dashboard.
+
+The sixteenth slice adds offline producer fallback. The producer route now includes deterministic Spanish emergency guidance that works without model access or cloud connectivity.
+
+The seventeenth slice renders the submission deck. The repo now includes an editable PowerPoint deck at `submission/proteinloop-hackathon-deck.pptx` plus a validation script for the submission packet.
+
+The eighteenth slice adds Docker smoke verification. After `docker compose up`, `make docker-smoke` checks simulator health, forecast, RLVR, reset/spike/recovery, the operator dashboard, and the Spanish producer route.
+
+The CI readiness slice adds public repository CI. GitHub Actions now runs simulator tests, Phoenix formatting/tests, submission artifact validation, Docker Compose build, and the Docker smoke test without requiring AMD ROCm hardware or live Gemma credentials.
+
+The live demo verification slice adds an executable check for the submitted demo URL. `make live-demo-check DEMO_URL=https://...` verifies the operator dashboard and Spanish producer route, with optional simulator API checks when `SIMULATOR_PUBLIC_URL` is set.
+
+## Workflow
+
+This repo is set up for a Spec Kit-style flow:
+
+- `.specify/memory/constitution.md` defines project principles.
+- `specs/001-simulator-verifier/spec.md` defines the first feature.
+- `specs/001-simulator-verifier/plan.md` defines the implementation plan.
+- `specs/001-simulator-verifier/tasks.md` tracks executable tasks.
+- `specs/003-agent-harness/spec.md` defines the current agent harness slice.
+- `specs/004-provider-traces/spec.md` defines provider selection and trace recording.
+- `specs/007-demo-cascade/spec.md` defines the repeatable one-click judge demo.
+- `specs/008-model-endpoint-status/spec.md` defines model endpoint visibility.
+- `specs/009-rlvr-reward-panel/spec.md` defines the lightweight RLVR reward verifier view.
+- `specs/010-subsystem-agent-topology/spec.md` defines deterministic subsystem agent topology.
+- `specs/011-self-healing-mesh/spec.md` defines the local self-healing mesh demo.
+- `specs/012-spanish-hitl-queue/spec.md` defines the connected Spanish HITL approval queue.
+- `specs/013-sagents-loop-contract/spec.md` defines the deterministic Sagents-compatible loop contract.
+- `specs/014-amd-gemma-deployment/spec.md` defines the AMD Gemma vLLM deployment profile.
+- `specs/015-submission-packet/spec.md` defines the hackathon submission packet.
+- `specs/016-anomaly-forecast/spec.md` defines near-term ammonia/oxygen risk prediction.
+- `specs/017-offline-emergency-fallback/spec.md` defines the Spanish offline emergency rule path.
+- `specs/018-rendered-slide-deck/spec.md` defines the rendered PowerPoint deck artifact.
+- `specs/019-docker-smoke-verification/spec.md` defines the runnable Docker smoke check.
+- `specs/020-demo-evidence-packet/spec.md` defines generated demo evidence artifacts.
+- `specs/021-public-repo-ci/spec.md` defines the public GitHub Actions CI path.
+- `specs/022-live-demo-verification/spec.md` defines the public demo URL verification path.
+
+`AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
+
+## Run Tests
+
+From the repo root:
+
+```sh
+python3 -m unittest discover -s tests
+```
+
+Expected result:
+
+```text
+Ran 22 tests
+
+OK
+```
+
+Run the Phoenix tests:
+
+```sh
+cd app
+mix deps.get
+mix test
+```
+
+Current expected result: `44 tests, 0 failures`.
+
+Validate the GitHub Actions workflow contract before pushing:
+
+```sh
+make ci-check
+```
+
+The workflow uses the current release tags checked on GitHub Releases:
+
+- `actions/checkout@v7.0.0`
+- `actions/setup-python@v6.3.0`
+- `erlef/setup-beam@v1.24.1`
+- `docker/setup-buildx-action@v4.2.0`
+
+Run the final submission readiness gate:
+
+```sh
+make submission-ready-check
+```
+
+This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, and until `origin` points at that public repository.
+
+Validate a public or local demo URL:
+
+```sh
+make live-demo-check DEMO_URL=http://127.0.0.1:4001
+```
+
+When the simulator API is public too:
+
+```sh
+make live-demo-check \
+  DEMO_URL=https://your-demo-url \
+  SIMULATOR_PUBLIC_URL=https://your-simulator-url
+```
+
+Summarize harness traces:
+
+```sh
+PYTHONPATH=sim python3 -m proteinloop_sim traces --path app/priv/traces/harness.jsonl
+```
+
+Run the lightweight RLVR policy evaluation:
+
+```sh
+PYTHONPATH=sim python3 -m proteinloop_sim rlvr
+```
+
+## Run the Demo
+
+```sh
+PYTHONPATH=sim python3 -m proteinloop_sim demo --days 8 --spike-day 1
+```
+
+The output compares two policies:
+
+- `naive`: fixed feeding and low aeration, no chemistry response.
+- `safety`: deterministic recovery policy that cuts feed, increases aeration, and exchanges water within verifier limits.
+
+The current demo shows the naive system collapsing and the safety policy recovering.
+
+## Run the Simulator API
+
+```sh
+PYTHONPATH=sim python3 -m proteinloop_sim serve --host 127.0.0.1 --port 8000
+```
+
+Endpoints:
+
+- `GET /health`
+- `GET /state`
+- `POST /reset`
+- `POST /scenario/ammonia_spike`
+- `POST /step`
+- `POST /policy/safety_step`
+- `GET /rlvr/evaluation`
+- `GET /forecast/anomaly`
+
+Example:
+
+```sh
+curl -X POST http://127.0.0.1:8000/scenario/ammonia_spike
+curl -X POST http://127.0.0.1:8000/policy/safety_step
+curl http://127.0.0.1:8000/state
+```
+
+## Run the LiveView App
+
+Start the simulator first:
+
+```sh
+make serve
+```
+
+In another terminal:
+
+```sh
+cd app
+mix deps.get
+mix assets.setup
+mix assets.build
+SIMULATOR_URL=http://127.0.0.1:8000 PORT=4001 mix phx.server
+```
+
+Routes:
+
+- Operator dashboard: `http://localhost:4001/`
+- Producer HITL: `http://localhost:4001/producer`
+
+If port `4000` is free, omit `PORT=4001`.
+
+## Agent Harness
+
+The harness lives in `app/lib/proteinloop/agent/`.
+
+Local demo providers:
+
+- `:stub_safe`: emits a context-aware action that should pass the simulator verifier.
+- `:stub_unsafe`: emits an overfeeding action that should be rejected before mutation.
+
+The operator dashboard has buttons for both paths. Rejected proposals keep the prior simulator state and show verifier violations.
+
+The operator dashboard also includes `Run demo cascade`, which executes the core pitch flow in one action: reset, ammonia spike, unsafe verifier rejection, safe recovery, and trace recording.
+
+The dashboard also includes a provider selector:
+
+- safe stub;
+- unsafe stub;
+- OpenAI-compatible.
+
+The dashboard also includes model endpoint status. `Check model` probes `GEMMA_ENDPOINT/v1/models` and reports reachable, auth-required, unreachable, or not-configured status. This is the quick AMD-hosted Gemma or Fireworks fallback sanity check.
+
+The dashboard includes an `RLVR reward verifier` panel. It compares the naive baseline against the safety candidate across repeatable simulator scenarios and shows average reward delta, recovered collapse scenarios, and collapse avoidance rate.
+
+The dashboard includes `Subsystem agent topology` cards for the fish tank, hydroponia, duckweed/chickens, and supervisor agents. These are advisory only; state mutation still goes through the harness and simulator verifier.
+
+The dashboard includes a `Self-healing mesh` panel. `Simulate node loss` marks an edge node offline and migrates its agents to healthy nodes while preserving agent identity/state tokens. `Recover node` brings the failed node back online.
+
+The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` creates a pending risky water/harvest action. The producer route shows the request in Spanish and lets the producer approve, edit to half, or reject it before simulator mutation.
+
+The dashboard includes a `Sagents loop contract` panel. `Run verified loop` executes explicit agent steps and stops only when the configured `until_tool` returns structured cycle completion data. The custom `verify_ecosystem_safety` step is the simulator verifier boundary.
+
+The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
+
+The producer route includes a `Respaldo offline` panel. It applies deterministic Spanish emergency rules to the current readings, so a producer still gets clear local guidance when model/cloud services are unavailable.
+
+Harness runs append trace data to:
+
+```text
+app/priv/traces/harness.jsonl
+```
+
+Each JSONL row contains the original state, proposed action, verifier result, resulting state, reward, provider, and timestamp. This is the first RLVR training artifact.
+
+The dashboard renders the latest trace rows under `Trace timeline`. The Python trace summary reports accepted/rejected counts, provider counts, average accepted reward, and the latest verifier violations.
+
+Optional OpenAI-compatible model boundary:
+
+```sh
+GEMMA_ENDPOINT=http://your-vllm-host:8000 \
+GEMMA_API_KEY=optional \
+GEMMA_MODEL=gemma \
+SIMULATOR_URL=http://127.0.0.1:8000 \
+PORT=4001 \
+mix phx.server
+```
+
+The model endpoint is expected to expose `/v1/chat/completions` and return a JSON action with:
+
+- `feed_kg`
+- `aeration_hours`
+- `water_exchange_fraction`
+- `duckweed_harvest_kg`
+- `note`
+
+## Docker
+
+Build and run the full demo:
+
+```sh
+docker compose up --build
+```
+
+Routes:
+
+- Simulator API: `http://127.0.0.1:8000`
+- Operator dashboard: `http://localhost:4001/`
+- Producer HITL: `http://localhost:4001/producer`
+
+Use `Run demo cascade` on the operator dashboard for the fastest end-to-end judge path.
+
+The web container talks to the simulator at `http://simulator:8000` inside the Compose network. RLVR trace output is persisted in the `proteinloop_traces` Docker volume.
+
+Smoke-test the running Docker demo:
+
+```sh
+make docker-smoke
+```
+
+## Public Repo CI
+
+The GitHub Actions workflow lives at `.github/workflows/ci.yml`.
+
+It runs on push, pull request, and manual dispatch. The first job runs `make test`, Phoenix dependency install, `mix format --check-formatted`, `mix test`, and `make submission-check`. The second job builds Docker Compose, starts the stack, runs `python3 scripts/docker_smoke_test.py`, prints logs on failure, and shuts the stack down.
+
+CI intentionally skips `docker-compose.gemma-rocm.yml` because AMD-hosted Gemma requires ROCm hardware and credentials. Validate that profile separately on an AMD host with the runbook below.
+
+## Live Demo Deployment
+
+The public demo deployment checklist is documented in `deploy/live-demo.md`.
+
+Before adding the demo URL to lablab, run:
+
+```sh
+DEMO_URL=https://your-demo-url make live-demo-check
+```
+
+That check verifies the two judge-facing routes:
+
+- Operator dashboard: `/`
+- Spanish producer path: `/producer`
+
+## AMD Gemma Deployment
+
+The AMD-hosted Gemma path is documented in `deploy/amd-gemma-vllm.md`.
+
+Validate the profile syntax locally:
+
+```sh
+docker compose -f docker-compose.gemma-rocm.yml --profile amd-gemma config
+```
+
+Run it only on an AMD ROCm host:
+
+```sh
+cp .env.example .env
+docker compose --env-file .env -f docker-compose.gemma-rocm.yml --profile amd-gemma up -d
+```
+
+Then set `GEMMA_ENDPOINT` for the Phoenix app, use `Check model`, select `OpenAI-compatible`, and run the harness. The simulator verifier still gates every model proposal.
+
+## Submission Packet
+
+Submission source artifacts live in `submission/`:
+
+- `lablab-submission.md`: title, descriptions, tags, and demo notes.
+- `video-script.md`: 2-3 minute demo recording script.
+- `slides.md`: pitch deck source.
+- `proteinloop-hackathon-deck.pptx`: editable PowerPoint deck.
+- `cover.svg`: cover image source.
+- `cover.png`: rendered upload-ready cover image.
+- `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
+
+The repo includes a root `LICENSE` with MIT terms.
+
+Validate the submission packet:
+
+```sh
+python3 scripts/validate_submission_artifacts.py
+```
+
+Validate final readiness after the public repo and demo URL exist:
+
+```sh
+make submission-ready-check
+```
+
+Regenerate and validate with Make:
+
+```sh
+make submission-render
+make submission-check
+```
+
+## Project Layout
+
+```text
+.
+├── .specify/                       # Spec Kit-style project memory
+├── specs/001-simulator-verifier/   # First feature spec/plan/tasks
+├── specs/002-liveview-dashboard/    # Phoenix LiveView spec/plan/tasks
+├── specs/003-agent-harness/         # Agent harness spec/plan/tasks
+├── specs/004-provider-traces/       # Provider controls + RLVR traces
+├── specs/005-full-docker/           # Full Docker Compose submission path
+├── specs/006-trace-timeline/        # Trace timeline + Python summary
+├── specs/007-demo-cascade/          # One-click judge demo cascade
+├── specs/008-model-endpoint-status/ # Model endpoint visibility
+├── specs/009-rlvr-reward-panel/     # Lightweight RLVR reward verifier
+├── specs/010-subsystem-agent-topology/ # Deterministic subsystem agents
+├── specs/011-self-healing-mesh/     # Local self-healing mesh demo
+├── specs/012-spanish-hitl-queue/    # Connected Spanish HITL approval queue
+├── specs/013-sagents-loop-contract/ # Explicit verifier step + until_tool
+├── specs/014-amd-gemma-deployment/  # AMD Gemma/vLLM deployment profile
+├── specs/015-submission-packet/     # Hackathon submission packet
+├── specs/016-anomaly-forecast/      # Near-term ammonia/oxygen forecast
+├── specs/017-offline-emergency-fallback/ # Spanish offline emergency guidance
+├── specs/018-rendered-slide-deck/   # Rendered PowerPoint deck artifact
+├── specs/019-docker-smoke-verification/ # Runnable Docker smoke check
+├── specs/020-demo-evidence-packet/  # Generated demo evidence packet
+├── specs/021-public-repo-ci/       # GitHub Actions CI for public repo
+├── specs/022-live-demo-verification/ # Public demo URL verification
+├── .github/workflows/ci.yml        # Public repository CI workflow
+├── deploy/                          # Deployment runbooks
+├── submission/                      # lablab copy, video script, slides, cover
+├── app/                             # Phoenix LiveView application
+├── sim/proteinloop_sim/            # Python simulator package
+├── tests/                          # stdlib unittest suite
+├── AGENTS.md                       # Agent workflow rules
+├── Dockerfile
+├── app/Dockerfile
+├── docker-compose.yml
+├── docker-compose.gemma-rocm.yml
+├── LICENSE
+├── scripts/generate_submission_deck.mjs
+├── scripts/docker_smoke_test.py
+├── scripts/validate_ci_workflow.py
+├── scripts/validate_live_demo.py
+├── scripts/validate_submission_readiness.py
+├── scripts/validate_submission_artifacts.py
+└── goal.md                         # Original master plan
+```
+
+## Next Slice
+
+The next useful slice is external model/live deployment:
+
+1. Connect Fireworks or AMD-hosted vLLM through `GEMMA_ENDPOINT` when credentials are ready.
+2. Run `Check model`, select `OpenAI-compatible`, and verify model proposals still pass through the harness.
+3. Add submission-focused deployment notes for the chosen hosted endpoint.
+4. Keep self-healing and vision as stretch goals until the model-backed harness story is demonstrable.

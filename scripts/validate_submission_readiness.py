@@ -1,0 +1,160 @@
+"""Validate final lablab submission readiness."""
+
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+import urllib.parse
+from dataclasses import dataclass
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SUBMISSION = ROOT / "submission"
+LABLAB = SUBMISSION / "lablab-submission.md"
+
+REQUIRED_ARTIFACTS = [
+    ROOT / "README.md",
+    ROOT / "LICENSE",
+    ROOT / "docker-compose.yml",
+    ROOT / ".github" / "workflows" / "ci.yml",
+    SUBMISSION / "lablab-submission.md",
+    SUBMISSION / "video-script.md",
+    SUBMISSION / "slides.md",
+    SUBMISSION / "cover.svg",
+    SUBMISSION / "cover.png",
+    SUBMISSION / "proteinloop-hackathon-deck.pptx",
+    SUBMISSION / "demo-evidence.json",
+    SUBMISSION / "demo-evidence.md",
+]
+
+
+@dataclass(frozen=True)
+class Check:
+    name: str
+    ok: bool
+    detail: str = ""
+
+
+def main() -> int:
+    checks = run_checks(ROOT, LABLAB)
+
+    for check in checks:
+        mark = "ok" if check.ok else "FAIL"
+        suffix = f" - {check.detail}" if check.detail else ""
+        print(f"[{mark}] {check.name}{suffix}")
+
+    failed = [check for check in checks if not check.ok]
+    if failed:
+        print(f"{len(failed)} submission readiness check(s) failed", file=sys.stderr)
+        return 1
+
+    print("submission readiness OK")
+    return 0
+
+
+def run_checks(root: Path, lablab_path: Path) -> list[Check]:
+    checks: list[Check] = []
+
+    missing = [path.relative_to(root).as_posix() for path in REQUIRED_ARTIFACTS if not path.exists()]
+    checks.append(Check("required local artifacts", not missing, ", ".join(missing)))
+
+    lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
+    repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
+    app_url = extract_labeled_url(lablab_text, "Application URL")
+
+    checks.append(url_check("public GitHub repository URL", repo_url, required_host="github.com"))
+    checks.append(url_check("application URL", app_url))
+
+    checks.extend(git_checks(root, repo_url))
+
+    return checks
+
+
+def extract_labeled_url(text: str, label: str) -> str | None:
+    pattern = re.compile(rf"^{re.escape(label)}\s*:\s*(?P<value>\S+)\s*$", re.MULTILINE)
+    match = pattern.search(text)
+    if not match:
+        return None
+    value = match.group("value").strip()
+    if value.upper() == "TODO":
+        return None
+    return value
+
+
+def url_check(name: str, url: str | None, required_host: str | None = None) -> Check:
+    if not url:
+        return Check(name, False, "missing or TODO")
+
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return Check(name, False, f"expected http(s) URL, got {url}")
+
+    if required_host and parsed.netloc.lower() != required_host:
+        return Check(name, False, f"expected host {required_host}, got {parsed.netloc}")
+
+    return Check(name, True, url)
+
+
+def git_checks(root: Path, repo_url: str | None) -> list[Check]:
+    git_dir = root / ".git"
+    checks = [Check("local git repository", git_dir.exists() and git_dir.is_dir())]
+
+    commit = git_output(root, ["rev-parse", "--verify", "HEAD"])
+    checks.append(Check("local git commit", commit.ok, commit.detail))
+
+    origin = git_output(root, ["config", "--get", "remote.origin.url"])
+    checks.append(Check("origin remote configured", origin.ok, origin.detail))
+
+    if repo_url and origin.ok:
+        checks.append(
+            Check(
+                "origin matches lablab repository URL",
+                normalize_git_remote(origin.detail) == normalize_git_remote(repo_url),
+                f"origin={origin.detail} lablab={repo_url}",
+            )
+        )
+    else:
+        checks.append(Check("origin matches lablab repository URL", False, "missing repo URL or origin"))
+
+    return checks
+
+
+def git_output(root: Path, args: list[str]) -> Check:
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        return Check("git command", False, str(exc))
+
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or f"git {' '.join(args)} failed"
+        return Check("git command", False, detail)
+
+    return Check("git command", True, result.stdout.strip())
+
+
+def normalize_git_remote(url: str) -> str:
+    cleaned = url.strip()
+    if cleaned.endswith(".git"):
+        cleaned = cleaned[:-4]
+
+    ssh_match = re.match(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>.+)$", cleaned)
+    if ssh_match:
+        return f"github.com/{ssh_match.group('owner')}/{ssh_match.group('repo')}".lower()
+
+    parsed = urllib.parse.urlparse(cleaned)
+    if parsed.netloc:
+        return f"{parsed.netloc}{parsed.path}".strip("/").lower()
+
+    return cleaned.lower()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

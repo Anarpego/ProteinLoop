@@ -1,0 +1,60 @@
+{
+  "anomaly_forecast_after_spike": {
+    "collapsed": true,
+    "first_critical_day": 1,
+    "horizon_days": 5,
+    "max_ammonia_mg_l": 4.6,
+    "min_oxygen_mg_l": 4.363,
+    "recommendation": "Pause feeding, maximize aeration, and request verified water exchange.",
+    "risk_level": "critical",
+    "timeline": [
+      {
+        "ammonia_mg_l": 4.499,
+        "collapsed": false,
+        "critical": true,
+        "day": 1,
+        "dissolved_oxygen_mg_l": 4.399
+      },
+      {
+        "ammonia_mg_l": 4.372,
+        "collapsed": false,
+        "critical": true,
+        "day": 2,
+        "dissolved_oxygen_mg_l": 4.386
+      },
+      {
+        "ammonia_mg_l": 4.217,
+        "collapsed": true,
+        "critical": true,
+        "day": 3,
+        "dissolved_oxygen_mg_l": 4.363
+      }
+    ]
+  },
+  "collapse_vs_recovery": {
+    "days": 8,
+    "naive": {
+      "ammonia_mg_l": 4.1104,
+      "collapsed": true,
+      "day": 8,
+      "oxygen_mg_l": 4.3179,
+      "reward": -475.1554
+    },
+    "safety": {
+      "ammonia_mg_l": 0.02,
+      "collapsed": false,
+      "day": 8,
+      "oxygen_mg_l": 9.2,
+      "reward": 228.8492
+    },
+    "spike_day": 1
+  },
+  "rlvr": {
+    "average_reward_delta": 463.2444,
+    "baseline_policy": "naive",
+    "candidate_policy": "safety",
+    "collapse_avoidance_rate": 1.0,
+    "recovered_scenarios": 2,
+    "scenario_count": 3
+  }
+}
