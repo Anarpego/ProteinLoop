@@ -24,6 +24,7 @@ web-serve:
 submission-render:
 	python3 scripts/generate_demo_evidence.py
 	python3 scripts/render_cover_png.py
+	python3 scripts/generate_demo_video.py
 	node scripts/generate_submission_deck.mjs
 	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
 

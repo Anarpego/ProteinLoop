@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 PPTX = SUBMISSION / "proteinloop-hackathon-deck.pptx"
+VIDEO = SUBMISSION / "proteinloop-demo-video.avi"
 
 
 REQUIRED_FILES = [
@@ -21,6 +22,7 @@ REQUIRED_FILES = [
     SUBMISSION / "cover.png",
     SUBMISSION / "demo-evidence.json",
     SUBMISSION / "demo-evidence.md",
+    VIDEO,
     PPTX,
 ]
 
@@ -65,6 +67,10 @@ def main() -> int:
         print("cover.png is unexpectedly small", file=sys.stderr)
         return 1
 
+    if not looks_like_avi(VIDEO) or VIDEO.stat().st_size < 1_000_000:
+        print("proteinloop-demo-video.avi is missing or unexpectedly small", file=sys.stderr)
+        return 1
+
     evidence = json_load(SUBMISSION / "demo-evidence.json")
     if evidence["collapse_vs_recovery"]["naive"]["collapsed"] is not True:
         print("demo evidence does not show naive collapse", file=sys.stderr)
@@ -99,6 +105,12 @@ def pptx_slide_count(path: Path) -> int:
                 if name.startswith("ppt/slides/slide") and name.endswith(".xml")
             ]
         )
+
+
+def looks_like_avi(path: Path) -> bool:
+    with path.open("rb") as handle:
+        header = handle.read(12)
+    return header.startswith(b"RIFF") and header[8:12] == b"AVI "
 
 
 if __name__ == "__main__":

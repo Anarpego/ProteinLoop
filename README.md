@@ -44,6 +44,8 @@ The live demo verification slice adds an executable check for the submitted demo
 
 The Gemma endpoint verification slice adds `make gemma-check`, which verifies `/v1/models`, verifies `/v1/chat/completions` returns a valid ProteinLoop action, and writes `submission/gemma-evidence.json` on success.
 
+The generated demo video slice adds a deterministic video artifact at `submission/proteinloop-demo-video.avi`, built from the existing script and evidence without requiring `ffmpeg`.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -85,7 +87,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 31 tests
+Ran 33 tests
 
 OK
 ```
@@ -370,6 +372,7 @@ Submission source artifacts live in `submission/`:
 - `video-script.md`: 2-3 minute demo recording script.
 - `slides.md`: pitch deck source.
 - `proteinloop-hackathon-deck.pptx`: editable PowerPoint deck.
+- `proteinloop-demo-video.avi`: generated storyboard video artifact.
 - `cover.svg`: cover image source.
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
@@ -438,6 +441,7 @@ make submission-check
 ├── docker-compose.gemma-rocm.yml
 ├── LICENSE
 ├── scripts/generate_submission_deck.mjs
+├── scripts/generate_demo_video.py
 ├── scripts/docker_smoke_test.py
 ├── scripts/validate_ci_workflow.py
 ├── scripts/validate_live_demo.py
