@@ -68,6 +68,8 @@ The demo rehearsal packet adds `submission/demo-rehearsal.json` and `.md`, gener
 
 The mesh evidence packet adds `submission/mesh-evidence.json` and `.md`, generated from the Elixir mesh model to prove agent migration and state-token preservation.
 
+The nRF9151 field plan records the two available DECT NR+ boards as a non-blocking hardware extension: one tank edge node and one community gateway/controller.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -102,6 +104,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/034-demo-video-rlvr-search/spec.md` defines the generated video update for the policy search scene.
 - `specs/035-demo-rehearsal-packet/spec.md` defines the executable judge demo rehearsal packet.
 - `specs/036-mesh-evidence-packet/spec.md` defines the generated self-healing mesh evidence packet.
+- `specs/037-nrf9151-field-plan/spec.md` defines the two-board DECT NR+ field extension plan.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -293,6 +296,8 @@ The dashboard includes `Subsystem agent topology` cards for the fish tank, hydro
 
 The dashboard includes a `Self-healing mesh` panel. `Simulate node loss` marks an edge node offline and migrates its agents to healthy nodes while preserving agent identity/state tokens. `Recover node` brings the failed node back online.
 
+The physical hardware extension uses two available Nordic nRF9151 DECT NR+ boards as an optional bench path: board A maps to the tank sensor edge node, and board B maps to the community gateway/controller. The Docker demo and submission checks do not require firmware or a live RF link.
+
 The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` creates a pending risky water/harvest action. The producer route shows the request in Spanish and lets the producer approve, edit to half, or reject it before simulator mutation.
 
 The dashboard includes a `Sagents loop contract` panel. `Run verified loop` executes explicit agent steps and stops only when the configured `until_tool` returns structured cycle completion data. The custom `verify_ecosystem_safety` step is the simulator verifier boundary.
@@ -438,6 +443,7 @@ Submission source artifacts live in `submission/`:
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
+- `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: two-board DECT NR+ hardware extension plan.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
@@ -489,6 +495,12 @@ Generate the self-healing mesh evidence packet:
 make mesh-evidence
 ```
 
+Generate the nRF9151 two-board DECT NR+ field plan:
+
+```sh
+make nrf9151-plan
+```
+
 Generate the final readiness handoff report:
 
 ```sh
@@ -535,6 +547,7 @@ make readiness-report
 ├── specs/034-demo-video-rlvr-search/ # Demo video policy-search scene
 ├── specs/035-demo-rehearsal-packet/ # Executable demo rehearsal packet
 ├── specs/036-mesh-evidence-packet/ # Self-healing mesh evidence packet
+├── specs/037-nrf9151-field-plan/ # Two-board nRF9151 field plan
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

@@ -19,6 +19,8 @@ REHEARSAL_JSON = SUBMISSION / "demo-rehearsal.json"
 REHEARSAL_MD = SUBMISSION / "demo-rehearsal.md"
 MESH_JSON = SUBMISSION / "mesh-evidence.json"
 MESH_MD = SUBMISSION / "mesh-evidence.md"
+NRF9151_JSON = SUBMISSION / "nrf9151-field-plan.json"
+NRF9151_MD = SUBMISSION / "nrf9151-field-plan.md"
 
 
 REQUIRED_FILES = [
@@ -34,6 +36,8 @@ REQUIRED_FILES = [
     REHEARSAL_MD,
     MESH_JSON,
     MESH_MD,
+    NRF9151_JSON,
+    NRF9151_MD,
     VIDEO,
     PPTX,
     BUNDLE,
@@ -124,6 +128,10 @@ def main() -> int:
         print("mesh evidence packet is missing required migration proof", file=sys.stderr)
         return 1
 
+    if not nrf9151_plan_ok(NRF9151_JSON, NRF9151_MD):
+        print("nRF9151 field plan is missing required two-board DECT NR+ details", file=sys.stderr)
+        return 1
+
     print("submission artifacts OK")
     print(f"pptx slides: {slide_count}")
     return 0
@@ -170,6 +178,8 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
         "submission/demo-rehearsal.md",
         "submission/mesh-evidence.json",
         "submission/mesh-evidence.md",
+        "submission/nrf9151-field-plan.json",
+        "submission/nrf9151-field-plan.md",
         "submission/bundle-manifest.json",
     }
 
@@ -257,6 +267,28 @@ def mesh_evidence_ok(json_path: Path, md_path: Path) -> bool:
         and checks.get("agents_stay_on_migrated_nodes_after_recovery") is True
         and len(migrated_agents) == 2
         and "ProteinLoop Mesh Evidence" in markdown
+    )
+
+
+def nrf9151_plan_ok(json_path: Path, md_path: Path) -> bool:
+    plan = json_load(json_path)
+    markdown = md_path.read_text(encoding="utf-8")
+    mapping = plan.get("telemetry_mapping", {})
+    boards = plan.get("boards", [])
+    required_mapping = {
+        "ammonia_mg_l",
+        "dissolved_oxygen_mg_l",
+        "temperature_c",
+        "node_online",
+    }
+    return (
+        plan.get("hardware_inventory", {}).get("available_boards") == 2
+        and len(boards) == 2
+        and {board.get("role") for board in boards}
+        == {"tank sensor edge node", "community gateway/controller"}
+        and required_mapping.issubset(mapping)
+        and "DECT NR+" in markdown
+        and "nRF9151" in markdown
     )
 
 

@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal mesh-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal mesh-evidence nrf9151-plan readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -24,6 +24,7 @@ web-serve:
 submission-render:
 	python3 scripts/generate_demo_evidence.py
 	python3 scripts/generate_demo_rehearsal.py
+	python3 scripts/generate_nrf9151_field_plan.py
 	cd app && mix run scripts/export_mesh_evidence.exs
 	python3 scripts/render_cover_png.py
 	python3 scripts/generate_demo_video.py
@@ -47,6 +48,9 @@ demo-rehearsal:
 
 mesh-evidence:
 	cd app && mix run scripts/export_mesh_evidence.exs
+
+nrf9151-plan:
+	python3 scripts/generate_nrf9151_field_plan.py
 
 readiness-report:
 	python3 scripts/generate_readiness_report.py
