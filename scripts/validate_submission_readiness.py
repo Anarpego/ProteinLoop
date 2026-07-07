@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import ipaddress
 import re
 import subprocess
 import sys
@@ -27,9 +28,22 @@ REQUIRED_ARTIFACTS = [
     SUBMISSION / "cover.svg",
     SUBMISSION / "cover.png",
     SUBMISSION / "proteinloop-hackathon-deck.pptx",
+    SUBMISSION / "proteinloop-demo-video.avi",
     SUBMISSION / "demo-evidence.json",
     SUBMISSION / "demo-evidence.md",
+    SUBMISSION / "demo-rehearsal.json",
+    SUBMISSION / "demo-rehearsal.md",
+    SUBMISSION / "mesh-evidence.json",
+    SUBMISSION / "mesh-evidence.md",
+    SUBMISSION / "nrf9151-field-plan.json",
+    SUBMISSION / "nrf9151-field-plan.md",
+    SUBMISSION / "nrf9151-telemetry-bridge.json",
+    SUBMISSION / "nrf9151-telemetry-bridge.md",
     SUBMISSION / "gemma-evidence.json",
+    SUBMISSION / "proteinloop-lablab-upload.zip",
+    SUBMISSION / "bundle-manifest.json",
+    SUBMISSION / "lablab-form.json",
+    SUBMISSION / "final-readiness-report.md",
 ]
 
 
@@ -69,7 +83,7 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
     app_url = extract_labeled_url(lablab_text, "Application URL")
 
     checks.append(url_check("public GitHub repository URL", repo_url, required_host="github.com"))
-    checks.append(url_check("application URL", app_url))
+    checks.append(url_check("application URL", app_url, require_public=True))
     checks.extend(public_url_checks(repo_url, app_url))
 
     checks.extend(git_checks(root, repo_url))
@@ -88,7 +102,12 @@ def extract_labeled_url(text: str, label: str) -> str | None:
     return value
 
 
-def url_check(name: str, url: str | None, required_host: str | None = None) -> Check:
+def url_check(
+    name: str,
+    url: str | None,
+    required_host: str | None = None,
+    require_public: bool = False,
+) -> Check:
     if not url:
         return Check(name, False, "missing or TODO")
 
@@ -99,7 +118,34 @@ def url_check(name: str, url: str | None, required_host: str | None = None) -> C
     if required_host and parsed.netloc.lower() != required_host:
         return Check(name, False, f"expected host {required_host}, got {parsed.netloc}")
 
+    if require_public and not is_public_http_url(url):
+        return Check(name, False, f"expected public http(s) URL, got {url}")
+
     return Check(name, True, url)
+
+
+def is_public_http_url(url: str) -> bool:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        return False
+
+    host = parsed.hostname.strip("[]").lower()
+    if host in {"localhost"} or host.endswith(".localhost"):
+        return False
+
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        return True
+
+    return not (
+        address.is_loopback
+        or address.is_private
+        or address.is_link_local
+        or address.is_multicast
+        or address.is_reserved
+        or address.is_unspecified
+    )
 
 
 def gemma_evidence_check(path: Path) -> Check:

@@ -165,6 +165,8 @@ make submission-ready-check
 
 This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, those URLs are reachable, `origin` points at that public repository, and `make gemma-check` has produced non-localhost Gemma 4 evidence in `submission/gemma-evidence.json`.
 
+The final Application URL must be public. Localhost, loopback, and private-network URLs are intentionally rejected by `make submission-ready-check`.
+
 Validate a public or local demo URL:
 
 ```sh

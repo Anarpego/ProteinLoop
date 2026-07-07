@@ -1,13 +1,13 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-07T14:13:44+00:00
-Commit: `381f239`
+Generated: 2026-07-07T14:17:02+00:00
+Commit: `14a7362`
 Working tree: `M README.md
- M app/mix.exs
- M app/mix.lock
+ M scripts/validate_submission_readiness.py
  M submission/bundle-manifest.json
  M submission/proteinloop-lablab-upload.zip
-?? specs/039-phoenix-patch-refresh/`
+ M tests/test_submission_readiness.py
+?? specs/040-submission-readiness-hardening/`
 
 ## Command Evidence
 
@@ -47,9 +47,9 @@ make submission-ready-check
 
 ```text
 python3 -m unittest discover -s tests
-.....................................................................
+........................................................................
 ----------------------------------------------------------------------
-Ran 69 tests in 0.114s
+Ran 72 tests in 0.113s
 
 OK
 ```
@@ -89,7 +89,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 381f239963069853b6cfa2011232f5a5aa5a5085
+[ok] local git commit - 14a73622c042f84b361153f4f01642be13a32599
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed

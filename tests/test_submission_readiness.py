@@ -6,8 +6,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_submission_readiness import (
+    REQUIRED_ARTIFACTS,
+    ROOT,
     extract_labeled_url,
     gemma_evidence_check,
+    is_public_http_url,
     normalize_git_remote,
     reachable_check,
     url_check,
@@ -24,6 +27,46 @@ class SubmissionReadinessTests(unittest.TestCase):
     def test_url_check_requires_github_host_for_repo(self):
         self.assertFalse(url_check("repo", "https://example.com/team/repo", required_host="github.com").ok)
         self.assertTrue(url_check("repo", "https://github.com/team/repo", required_host="github.com").ok)
+
+    def test_url_check_rejects_local_application_urls_for_final_submission(self):
+        for url in [
+            "http://localhost:4001",
+            "http://127.0.0.1:4001",
+            "http://10.0.0.12",
+            "http://172.16.0.12",
+            "http://192.168.1.12",
+        ]:
+            with self.subTest(url=url):
+                result = url_check("application URL", url, require_public=True)
+                self.assertFalse(result.ok)
+                self.assertIn("public", result.detail)
+
+        self.assertTrue(
+            url_check("application URL", "https://proteinloop.example.com", require_public=True).ok
+        )
+
+    def test_public_url_classifier_rejects_private_hosts(self):
+        self.assertFalse(is_public_http_url("http://localhost:4001"))
+        self.assertFalse(is_public_http_url("http://127.0.0.1:4001"))
+        self.assertFalse(is_public_http_url("http://192.168.1.22"))
+        self.assertTrue(is_public_http_url("https://demo.example.com"))
+
+    def test_readiness_requires_generated_upload_artifacts(self):
+        required = {path.relative_to(ROOT).as_posix() for path in REQUIRED_ARTIFACTS}
+
+        for artifact in [
+            "submission/proteinloop-demo-video.avi",
+            "submission/proteinloop-lablab-upload.zip",
+            "submission/bundle-manifest.json",
+            "submission/demo-rehearsal.json",
+            "submission/mesh-evidence.json",
+            "submission/nrf9151-field-plan.json",
+            "submission/nrf9151-telemetry-bridge.json",
+            "submission/lablab-form.json",
+            "submission/final-readiness-report.md",
+        ]:
+            with self.subTest(artifact=artifact):
+                self.assertIn(artifact, required)
 
     def test_normalize_git_remote_supports_https_and_ssh(self):
         self.assertEqual(
