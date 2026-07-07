@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -61,6 +62,7 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
 
     missing = [path.relative_to(root).as_posix() for path in REQUIRED_ARTIFACTS if not path.exists()]
     checks.append(Check("required local artifacts", not missing, ", ".join(missing)))
+    checks.append(gemma_evidence_check(SUBMISSION / "gemma-evidence.json"))
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
     repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
@@ -98,6 +100,49 @@ def url_check(name: str, url: str | None, required_host: str | None = None) -> C
         return Check(name, False, f"expected host {required_host}, got {parsed.netloc}")
 
     return Check(name, True, url)
+
+
+def gemma_evidence_check(path: Path) -> Check:
+    if not path.exists():
+        return Check("Gemma endpoint evidence", False, "missing submission/gemma-evidence.json")
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return Check("Gemma endpoint evidence", False, f"invalid JSON: {exc}")
+
+    model = str(evidence.get("model", ""))
+    if "gemma-4" not in model.lower():
+        return Check("Gemma endpoint evidence", False, f"expected Gemma 4 model, got {model!r}")
+
+    endpoint = str(evidence.get("endpoint", ""))
+    parsed = urllib.parse.urlparse(endpoint)
+    if parsed.hostname in {"127.0.0.1", "localhost", "::1"}:
+        return Check("Gemma endpoint evidence", False, "endpoint must not be localhost for final submission")
+
+    action = evidence.get("action")
+    if not isinstance(action, dict):
+        return Check("Gemma endpoint evidence", False, "missing action object")
+
+    required_action_keys = {
+        "feed_kg",
+        "aeration_hours",
+        "water_exchange_fraction",
+        "duckweed_harvest_kg",
+    }
+    missing_action = sorted(required_action_keys - set(action))
+    if missing_action:
+        return Check("Gemma endpoint evidence", False, f"action missing: {', '.join(missing_action)}")
+
+    checks = evidence.get("checks")
+    if not isinstance(checks, list) or not checks:
+        return Check("Gemma endpoint evidence", False, "missing endpoint checks")
+
+    failed = [str(check.get("name", "unnamed")) for check in checks if not check.get("ok")]
+    if failed:
+        return Check("Gemma endpoint evidence", False, f"failed checks: {', '.join(failed)}")
+
+    return Check("Gemma endpoint evidence", True, model)
 
 
 def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:

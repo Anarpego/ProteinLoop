@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -6,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_submission_readiness import (
     extract_labeled_url,
+    gemma_evidence_check,
     normalize_git_remote,
     reachable_check,
     url_check,
@@ -53,6 +55,56 @@ class SubmissionReadinessTests(unittest.TestCase):
 
         self.assertFalse(result.ok)
         self.assertIn("Productor", result.detail)
+
+    def test_gemma_evidence_requires_gemma4_and_passing_checks(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "endpoint": "https://gemma.example.com",
+                  "model": "google/gemma-4-E4B-it",
+                  "action": {
+                    "feed_kg": 0.1,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.1,
+                    "duckweed_harvest_kg": 1.0
+                  },
+                  "checks": [
+                    {"name": "models endpoint", "ok": true},
+                    {"name": "chat action contract", "ok": true}
+                  ]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            self.assertTrue(gemma_evidence_check(path).ok)
+
+    def test_gemma_evidence_rejects_localhost_endpoint(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "endpoint": "http://127.0.0.1:8001",
+                  "model": "google/gemma-4-E4B-it",
+                  "action": {
+                    "feed_kg": 0.1,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.1,
+                    "duckweed_harvest_kg": 1.0
+                  },
+                  "checks": [{"name": "models endpoint", "ok": true}]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = gemma_evidence_check(path)
+
+        self.assertFalse(result.ok)
+        self.assertIn("localhost", result.detail)
 
 
 if __name__ == "__main__":

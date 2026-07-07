@@ -18,6 +18,8 @@ The team can verify the model boundary from the command line: `/v1/models` is re
 6. The validator shall write a small evidence JSON artifact on success.
 7. The repo shall expose the validator through a Make target.
 8. Documentation shall show how to run the validator after starting the AMD ROCm vLLM profile.
+9. Final readiness shall reject Gemma evidence that is not for a Gemma 4 model.
+10. Final readiness shall reject localhost Gemma evidence for the final submission gate.
 
 ## Acceptance Criteria
 

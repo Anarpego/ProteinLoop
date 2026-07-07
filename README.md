@@ -89,7 +89,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 38 tests
+Ran 40 tests
 
 OK
 ```
@@ -123,7 +123,7 @@ Run the final submission readiness gate:
 make submission-ready-check
 ```
 
-This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, those URLs are reachable, `origin` points at that public repository, and `make gemma-check` has produced `submission/gemma-evidence.json`.
+This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, those URLs are reachable, `origin` points at that public repository, and `make gemma-check` has produced non-localhost Gemma 4 evidence in `submission/gemma-evidence.json`.
 
 Validate a public or local demo URL:
 
