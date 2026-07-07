@@ -50,6 +50,8 @@ The submission bundle slice adds `submission/proteinloop-lablab-upload.zip` and 
 
 The public demo Compose slice adds `docker-compose.public.yml`, a production-oriented profile that exposes only Phoenix and keeps the simulator private on the Compose network.
 
+The public repository publish helper adds `make publish-repo GITHUB_REPOSITORY=owner/name`, which creates or uses a public GitHub repo, pushes `main`, and updates the lablab repository URL.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -91,7 +93,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 42 tests
+Ran 46 tests
 
 OK
 ```
@@ -334,6 +336,12 @@ The GitHub publication checklist is documented in `deploy/public-repo.md`.
 
 The local repository already has an initial commit. Publishing still requires a valid GitHub session, an `origin` remote, and replacing `Public GitHub Repository: TODO` in `submission/lablab-submission.md` with the final public URL.
 
+Preview the publish steps:
+
+```sh
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop DRY_RUN=1
+```
+
 ## Live Demo Deployment
 
 The public demo deployment checklist is documented in `deploy/live-demo.md`.
@@ -456,6 +464,7 @@ make submission-bundle
 ├── specs/024-gemma-endpoint-verification/ # Gemma endpoint evidence gate
 ├── specs/026-submission-bundle/    # Zip bundle for upload artifacts
 ├── specs/027-public-demo-compose/  # Public deployment Compose profile
+├── specs/028-public-repo-publish-helper/ # Public GitHub publish helper
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -477,6 +486,7 @@ make submission-bundle
 ├── scripts/validate_live_demo.py
 ├── scripts/validate_gemma_endpoint.py
 ├── scripts/validate_public_deploy.py
+├── scripts/publish_public_repo.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan

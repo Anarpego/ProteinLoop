@@ -16,10 +16,11 @@ gh auth login -h github.com
 
 ## Create and Push
 
-Use the final owner/repo name you want to submit to lablab:
+Use the helper with the final owner/repo name you want to submit to lablab:
 
 ```sh
-gh repo create Anarpego/proteinloop --public --source . --remote origin --push
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop DRY_RUN=1
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop
 ```
 
 If the repo already exists:
@@ -37,7 +38,7 @@ After the push succeeds, replace the repository placeholder in `submission/labla
 Public GitHub Repository: https://github.com/Anarpego/proteinloop
 ```
 
-Then run:
+The helper updates this field automatically. Then run:
 
 ```sh
 make submission-ready-check
