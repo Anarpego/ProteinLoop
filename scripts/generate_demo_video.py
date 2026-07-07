@@ -56,7 +56,9 @@ def main() -> int:
 def build_scenes(evidence: dict) -> list[Scene]:
     collapse = evidence["collapse_vs_recovery"]
     rlvr = evidence["rlvr"]
+    training = evidence.get("rlvr_training", {})
     forecast = evidence["anomaly_forecast_after_spike"]
+    best_policy = training.get("best_policy", {}).get("name", "best_policy")
 
     return [
         Scene(
@@ -91,6 +93,19 @@ def build_scenes(evidence: dict) -> list[Scene]:
             ],
             f"average reward delta +{rlvr['average_reward_delta']}",
             AMBER,
+        ),
+        Scene(
+            "RLVR policy search",
+            "The verifier selects a better policy",
+            [
+                "Candidate policies are scored by the same simulator reward function.",
+                "The dashboard shows best-so-far reward across the search.",
+                "This is lightweight RLVR evidence without a separate training framework.",
+            ],
+            "best "
+            f"{best_policy} | +{training.get('improvement', 'pending')} over "
+            f"{training.get('iteration_count', 'n/a')} iterations",
+            GREEN,
         ),
         Scene(
             "Self-healing mesh",

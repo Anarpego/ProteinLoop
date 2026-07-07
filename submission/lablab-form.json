@@ -16,7 +16,7 @@
   ],
   "key_demo_path": [
     "Open the operator dashboard.",
-    "Press `Run demo cascade` to show ammonia spike, unsafe rejection, and safe recovery.",
+    "Press `Run demo cascade` to show ammonia spike, unsafe rejection, safe recovery, and RLVR policy-search improvement.",
     "Press `Simulate node loss` to show agent migration.",
     "Press `Request producer approval`, then use `/producer` to approve/edit/reject in Spanish and inspect the WhatsApp/SMS handoff message.",
     "Press `Run verified loop` to show explicit `verify_ecosystem_safety` and `until_tool`.",

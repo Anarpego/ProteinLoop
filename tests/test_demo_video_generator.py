@@ -15,14 +15,20 @@ class DemoVideoGeneratorTests(unittest.TestCase):
                 "safety": {"reward": 20.0},
             },
             "rlvr": {"average_reward_delta": 30.0},
+            "rlvr_training": {
+                "best_policy": {"name": "growth_biased"},
+                "improvement": 2.7556,
+                "iteration_count": 5,
+            },
             "anomaly_forecast_after_spike": {"risk_level": "critical"},
         }
 
         scenes = build_scenes(evidence)
         titles = " ".join(scene.title for scene in scenes)
 
-        self.assertEqual(len(scenes), 7)
+        self.assertEqual(len(scenes), 8)
         self.assertIn("simulator", titles.lower())
+        self.assertIn("policy", titles.lower())
         self.assertIn("Gemma 4", titles)
 
     def test_wrap_text_keeps_long_words_intact(self):

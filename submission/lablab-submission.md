@@ -46,7 +46,7 @@ TODO
 ## Key Demo Path
 
 1. Open the operator dashboard.
-2. Press `Run demo cascade` to show ammonia spike, unsafe rejection, and safe recovery.
+2. Press `Run demo cascade` to show ammonia spike, unsafe rejection, safe recovery, and RLVR policy-search improvement.
 3. Press `Simulate node loss` to show agent migration.
 4. Press `Request producer approval`, then use `/producer` to approve/edit/reject in Spanish and inspect the WhatsApp/SMS handoff message.
 5. Press `Run verified loop` to show explicit `verify_ecosystem_safety` and `until_tool`.

@@ -62,6 +62,8 @@ The producer message packet slice adds a provider-free Spanish SMS/WhatsApp hand
 
 The RLVR policy improvement slice adds a dependency-free verifier-guided policy search loop with CLI, API, dashboard, and generated evidence output.
 
+The generated demo video now includes an RLVR policy search scene so the submitted AVI matches the current dashboard and evidence packet.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -93,6 +95,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/031-final-readiness-report/spec.md` defines the generated final readiness handoff report.
 - `specs/032-producer-message-packet/spec.md` defines the Spanish SMS/WhatsApp handoff packet.
 - `specs/033-rlvr-policy-improvement/spec.md` defines the verifier-guided policy search curve.
+- `specs/034-demo-video-rlvr-search/spec.md` defines the generated video update for the policy search scene.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
