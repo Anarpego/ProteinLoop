@@ -3,6 +3,7 @@ defmodule ProteinLoopWeb.ProducerLive do
 
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Offline.EmergencyRules
+  alias ProteinLoop.ProducerMessage
   alias ProteinLoop.SimulatorClient
   alias ProteinLoop.SimulatorPoller
 
@@ -25,6 +26,7 @@ defmodule ProteinLoopWeb.ProducerLive do
       |> assign(:approval_queue, approval_queue)
       |> assign(:action, action)
       |> assign(:offline_guidance, EmergencyRules.evaluate(snapshot.state))
+      |> assign(:producer_message, ProducerMessage.build(snapshot.state, action, approval_queue))
       |> assign(:decision, nil)
 
     {:ok, socket}
@@ -176,6 +178,14 @@ defmodule ProteinLoopWeb.ProducerLive do
     |> assign(:state, snapshot.state)
     |> assign(:action, producer_action(approval_queue, snapshot.state))
     |> assign(:offline_guidance, EmergencyRules.evaluate(snapshot.state))
+    |> assign(
+      :producer_message,
+      ProducerMessage.build(
+        snapshot.state,
+        producer_action(approval_queue, snapshot.state),
+        approval_queue
+      )
+    )
   end
 
   defp producer_action(%{pending: %{action: action}}, _state), do: action
@@ -280,6 +290,24 @@ defmodule ProteinLoopWeb.ProducerLive do
             <p class="mt-2 text-sm text-base-content/60">
               Accion local: {@offline_guidance.action}
             </p>
+          </div>
+
+          <div class="mt-5 rounded-box border border-base-300 bg-base-200 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold">Mensaje WhatsApp/SMS</p>
+                <p class="mt-1 text-sm text-base-content/60">
+                  Texto corto para enviar cuando el productor no usa el panel.
+                </p>
+              </div>
+              <span class={[
+                "badge",
+                if(@producer_message.approval_required, do: "badge-warning", else: "badge-success")
+              ]}>
+                {if @producer_message.approval_required, do: "requiere aprobacion", else: "listo"}
+              </span>
+            </div>
+            <pre class="mt-3 whitespace-pre-wrap rounded-box bg-base-100 p-3 text-sm leading-relaxed"><%= @producer_message.text %></pre>
           </div>
 
           <div class="mt-5 grid gap-2 sm:grid-cols-3">

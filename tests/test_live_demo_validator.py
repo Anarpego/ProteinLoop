@@ -35,7 +35,7 @@ class LiveDemoValidatorTests(unittest.TestCase):
         result = marker_check("producer", html, PRODUCER_NEEDLES)
 
         self.assertFalse(result.ok)
-        self.assertIn("Respaldo offline", result.detail)
+        self.assertIn("Mensaje WhatsApp/SMS", result.detail)
 
 
 if __name__ == "__main__":

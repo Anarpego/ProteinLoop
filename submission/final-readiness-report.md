@@ -1,13 +1,18 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-07T03:43:49+00:00
-Commit: `bc50f04`
-Working tree: `M Makefile
- M README.md
- M scripts/validate_submission_artifacts.py
-?? scripts/generate_readiness_report.py
-?? specs/031-final-readiness-report/
-?? tests/test_readiness_report.py`
+Generated: 2026-07-07T04:02:17+00:00
+Commit: `e8650ed`
+Working tree: `M README.md
+ M app/lib/proteinloop_web/live/producer_live.ex
+ M app/test/proteinloop_web/controllers/page_controller_test.exs
+ M scripts/docker_smoke_test.py
+ M scripts/validate_live_demo.py
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M tests/test_live_demo_validator.py
+?? app/lib/proteinloop/producer_message.ex
+?? app/test/proteinloop/producer_message_test.exs
+?? specs/032-producer-message-packet/`
 
 ## Command Evidence
 
@@ -49,7 +54,7 @@ make submission-ready-check
 python3 -m unittest discover -s tests
 .......................................................
 ----------------------------------------------------------------------
-Ran 55 tests in 0.049s
+Ran 55 tests in 0.056s
 
 OK
 ```
@@ -89,7 +94,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - bc50f0433697fea73f700a0f4abe22068e04d752
+[ok] local git commit - e8650ed96f12f55925a03e5cbd3b0cc71cf33f62
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed

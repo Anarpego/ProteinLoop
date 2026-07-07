@@ -33,6 +33,7 @@ PRODUCER_NEEDLES = [
     "Solo mitad",
     "Rechazar",
     "Respaldo offline",
+    "Mensaje WhatsApp/SMS",
 ]
 
 

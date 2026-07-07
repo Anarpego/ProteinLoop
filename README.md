@@ -58,6 +58,8 @@ The lablab form export slice adds `submission/lablab-form.json`, a structured co
 
 The final readiness report slice adds `submission/final-readiness-report.md`, a generated handoff report that records passing local gates, failing external gates, and the exact commands needed before lablab upload.
 
+The producer message packet slice adds a provider-free Spanish SMS/WhatsApp handoff message to the producer view, reusing the same HITL approval and offline emergency rules.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -87,6 +89,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/024-gemma-endpoint-verification/spec.md` defines the OpenAI-compatible Gemma endpoint verification path.
 - `specs/030-lablab-form-export/spec.md` defines the structured lablab form export.
 - `specs/031-final-readiness-report/spec.md` defines the generated final readiness handoff report.
+- `specs/032-producer-message-packet/spec.md` defines the Spanish SMS/WhatsApp handoff packet.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -244,7 +247,7 @@ SIMULATOR_URL=http://127.0.0.1:8000 PORT=4001 mix phx.server
 Routes:
 
 - Operator dashboard: `http://localhost:4001/`
-- Producer HITL: `http://localhost:4001/producer`
+- Producer HITL and phone handoff: `http://localhost:4001/producer`
 
 If port `4000` is free, omit `PORT=4001`.
 
@@ -282,6 +285,8 @@ The dashboard includes a `Sagents loop contract` panel. `Run verified loop` exec
 The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 
 The producer route includes a `Respaldo offline` panel. It applies deterministic Spanish emergency rules to the current readings, so a producer still gets clear local guidance when model/cloud services are unavailable.
+
+The producer route also includes `Mensaje WhatsApp/SMS`: a short provider-free Spanish text packet with tank status, proposed action, offline guidance, and `APROBAR` / `MITAD` / `RECHAZAR` reply options for low-bandwidth handoff.
 
 Harness runs append trace data to:
 
@@ -496,6 +501,7 @@ make readiness-report
 ├── specs/029-verified-demo-url-setter/ # Verified lablab demo URL setter
 ├── specs/030-lablab-form-export/ # Structured lablab form export
 ├── specs/031-final-readiness-report/ # Final readiness handoff report
+├── specs/032-producer-message-packet/ # Spanish SMS/WhatsApp handoff packet
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

@@ -38,6 +38,8 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Aprobar"
     assert html_response(conn, 200) =~ "Respaldo offline"
     assert html_response(conn, 200) =~ "Accion local"
+    assert html_response(conn, 200) =~ "Mensaje WhatsApp/SMS"
+    assert html_response(conn, 200) =~ "Responda: APROBAR, MITAD o RECHAZAR."
   end
 
   test "GET /producer renders pending Spanish HITL request", %{conn: conn} do

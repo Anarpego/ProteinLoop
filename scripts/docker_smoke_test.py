@@ -89,7 +89,14 @@ def check_web() -> list[Check]:
         "Spanish HITL approval",
         "Self-healing mesh",
     ]
-    producer_needles = ["Productor", "Aprobar", "Solo mitad", "Rechazar", "Respaldo offline"]
+    producer_needles = [
+        "Productor",
+        "Aprobar",
+        "Solo mitad",
+        "Rechazar",
+        "Respaldo offline",
+        "Mensaje WhatsApp/SMS",
+    ]
 
     checks = [
         Check("operator dashboard route", all(needle in operator for needle in operator_needles)),
