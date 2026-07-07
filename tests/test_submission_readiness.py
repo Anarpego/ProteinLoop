@@ -4,7 +4,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.validate_submission_readiness import extract_labeled_url, normalize_git_remote, url_check
+from scripts.validate_submission_readiness import (
+    extract_labeled_url,
+    normalize_git_remote,
+    reachable_check,
+    url_check,
+)
 
 
 class SubmissionReadinessTests(unittest.TestCase):
@@ -27,6 +32,27 @@ class SubmissionReadinessTests(unittest.TestCase):
             normalize_git_remote("git@github.com:Team/ProteinLoop.git"),
             "github.com/team/proteinloop",
         )
+
+    def test_reachable_check_accepts_expected_marker(self):
+        result = reachable_check(
+            "demo",
+            "https://demo.example.com",
+            required_text="Operator dashboard",
+            request_fun=lambda _url: "<h1>Operator dashboard</h1>",
+        )
+
+        self.assertTrue(result.ok)
+
+    def test_reachable_check_reports_missing_marker(self):
+        result = reachable_check(
+            "producer",
+            "https://demo.example.com/producer",
+            required_text="Productor",
+            request_fun=lambda _url: "<h1>Producer</h1>",
+        )
+
+        self.assertFalse(result.ok)
+        self.assertIn("Productor", result.detail)
 
 
 if __name__ == "__main__":

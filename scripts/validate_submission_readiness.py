@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import urllib.parse
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -67,6 +68,7 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
 
     checks.append(url_check("public GitHub repository URL", repo_url, required_host="github.com"))
     checks.append(url_check("application URL", app_url))
+    checks.extend(public_url_checks(repo_url, app_url))
 
     checks.extend(git_checks(root, repo_url))
 
@@ -96,6 +98,57 @@ def url_check(name: str, url: str | None, required_host: str | None = None) -> C
         return Check(name, False, f"expected host {required_host}, got {parsed.netloc}")
 
     return Check(name, True, url)
+
+
+def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:
+    checks: list[Check] = []
+
+    if repo_url and url_check("repo", repo_url, required_host="github.com").ok:
+        checks.append(reachable_check("public GitHub repository reachable", repo_url))
+
+    if app_url and url_check("app", app_url).ok:
+        app_base = app_url.rstrip("/")
+        checks.append(
+            reachable_check(
+                "application dashboard reachable",
+                app_base,
+                required_text="Operator dashboard",
+            )
+        )
+        checks.append(
+            reachable_check(
+                "application producer route reachable",
+                f"{app_base}/producer",
+                required_text="Productor",
+            )
+        )
+
+    return checks
+
+
+def reachable_check(
+    name: str,
+    url: str,
+    required_text: str | None = None,
+    request_fun=None,
+) -> Check:
+    request_fun = request_fun or http_get_text
+
+    try:
+        text = request_fun(url)
+    except Exception as exc:  # noqa: BLE001 - final readiness should report any URL failure plainly.
+        return Check(name, False, f"{url}: {exc}")
+
+    if required_text and required_text not in text:
+        return Check(name, False, f"{url}: missing marker {required_text!r}")
+
+    return Check(name, True, url)
+
+
+def http_get_text(url: str, timeout: float = 10.0) -> str:
+    request = urllib.request.Request(url, method="GET")
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return response.read().decode("utf-8", errors="replace")
 
 
 def git_checks(root: Path, repo_url: str | None) -> list[Check]:
