@@ -29,6 +29,15 @@ defmodule ProteinLoop.SimulatorClientTest do
     assert evaluation["scenarios"] == []
   end
 
+  test "fallback rlvr training has dashboard fields" do
+    training = SimulatorClient.fallback_rlvr_training(:offline)
+
+    refute training["available"]
+    assert training["method"] == "deterministic_candidate_search"
+    assert training["best_policy"]["name"] == "pending"
+    assert training["iterations"] == []
+  end
+
   test "fallback anomaly forecast has dashboard fields" do
     forecast = SimulatorClient.fallback_anomaly_forecast(:offline)
 

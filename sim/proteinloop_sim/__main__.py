@@ -7,7 +7,7 @@ import json
 
 from .api import run_server
 from .policies import naive_policy, run_policy, safety_policy
-from .rlvr import evaluate_policies
+from .rlvr import evaluate_policies, train_policy
 from .trace_summary import summarize_trace_file
 
 
@@ -27,6 +27,7 @@ def main() -> None:
     traces.add_argument("--path", default="app/priv/traces/harness.jsonl")
 
     subparsers.add_parser("rlvr", help="score baseline and candidate policies")
+    subparsers.add_parser("rlvr-train", help="run verifier-guided policy search")
 
     args = parser.parse_args()
     command = args.command or "demo"
@@ -43,6 +44,11 @@ def main() -> None:
     if command == "rlvr":
         evaluation = evaluate_policies()
         print(json.dumps(evaluation.to_dict(), indent=2, sort_keys=True))
+        return
+
+    if command == "rlvr-train":
+        training = train_policy()
+        print(json.dumps(training.to_dict(), indent=2, sort_keys=True))
         return
 
     if command == "demo":

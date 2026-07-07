@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sim"))
 
-from proteinloop_sim.rlvr import evaluate_policies
+from proteinloop_sim.rlvr import evaluate_policies, train_policy
 
 
 class RLVREvaluationTests(unittest.TestCase):
@@ -45,6 +45,33 @@ class RLVREvaluationTests(unittest.TestCase):
         self.assertEqual(payload["baseline_policy"], "naive")
         self.assertEqual(payload["candidate_policy"], "safety")
         self.assertGreater(payload["average_reward_delta"], 0)
+
+    def test_training_run_improves_best_reward_over_seed(self):
+        training = train_policy()
+
+        self.assertEqual(training.method, "deterministic_candidate_search")
+        self.assertGreater(training.iteration_count, 1)
+        self.assertGreater(training.improvement, 0)
+        self.assertGreater(training.best_reward, training.initial_reward)
+        self.assertEqual(training.best_policy.name, "growth_biased")
+
+    def test_rlvr_training_cli_outputs_json_payload(self):
+        root = Path(__file__).resolve().parents[1]
+
+        completed = subprocess.run(
+            [sys.executable, "-m", "proteinloop_sim", "rlvr-train"],
+            cwd=root,
+            env={"PYTHONPATH": str(root / "sim")},
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        payload = json.loads(completed.stdout)
+
+        self.assertEqual(payload["method"], "deterministic_candidate_search")
+        self.assertGreater(payload["improvement"], 0)
+        self.assertEqual(payload["best_policy"]["name"], "growth_biased")
 
 
 if __name__ == "__main__":

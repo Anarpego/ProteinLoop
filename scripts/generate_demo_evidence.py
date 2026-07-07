@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "sim"))
 
 from proteinloop_sim.forecast import forecast_anomaly  # noqa: E402
 from proteinloop_sim.policies import naive_policy, run_policy, safety_policy  # noqa: E402
-from proteinloop_sim.rlvr import evaluate_policies  # noqa: E402
+from proteinloop_sim.rlvr import evaluate_policies, train_policy  # noqa: E402
 from proteinloop_sim.simulator import EcosystemSimulator  # noqa: E402
 
 
@@ -24,6 +24,7 @@ def main() -> int:
     naive = run_policy(naive_policy, days=8, spike_day=1, validate=False)
     safety = run_policy(safety_policy, days=8, spike_day=1, validate=True)
     rlvr = evaluate_policies()
+    training = train_policy()
 
     spike_sim = EcosystemSimulator()
     spike_sim.apply_ammonia_spike()
@@ -56,6 +57,16 @@ def main() -> int:
             "recovered_scenarios": rlvr.recovered_scenarios,
             "collapse_avoidance_rate": rlvr.collapse_avoidance_rate,
         },
+        "rlvr_training": {
+            "method": training.method,
+            "baseline_policy": training.baseline_policy,
+            "best_policy": training.best_policy.to_dict(),
+            "iteration_count": training.iteration_count,
+            "initial_reward": training.initial_reward,
+            "best_reward": training.best_reward,
+            "improvement": training.improvement,
+            "iterations": [iteration.to_dict() for iteration in training.iterations],
+        },
         "anomaly_forecast_after_spike": forecast.to_dict(),
     }
 
@@ -71,6 +82,7 @@ def markdown(evidence: dict[str, object]) -> str:
     naive = cvr["naive"]
     safety = cvr["safety"]
     rlvr = evidence["rlvr"]
+    training = evidence["rlvr_training"]
     forecast = evidence["anomaly_forecast_after_spike"]
 
     return "\n".join(
@@ -93,6 +105,15 @@ def markdown(evidence: dict[str, object]) -> str:
             f"- Average reward delta: {rlvr['average_reward_delta']}.",
             f"- Recovered scenarios: {rlvr['recovered_scenarios']}.",
             f"- Collapse avoidance rate: {rlvr['collapse_avoidance_rate']}.",
+            "",
+            "## RLVR Policy Search",
+            "",
+            f"- Method: {training['method']}.",
+            f"- Best policy: {training['best_policy']['name']}.",
+            f"- Iterations: {training['iteration_count']}.",
+            f"- Initial reward: {training['initial_reward']}.",
+            f"- Best reward: {training['best_reward']}.",
+            f"- Improvement: {training['improvement']}.",
             "",
             "## Forecast After Ammonia Spike",
             "",

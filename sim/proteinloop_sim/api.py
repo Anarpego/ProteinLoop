@@ -10,7 +10,7 @@ from typing import Any
 from .actions import EcosystemAction
 from .forecast import forecast_anomaly
 from .policies import safety_policy
-from .rlvr import evaluate_policies
+from .rlvr import evaluate_policies, train_policy
 from .simulator import EcosystemSimulator, UnsafeActionError
 
 
@@ -30,6 +30,9 @@ def handle_request(
 
     if method == "GET" and path == "/rlvr/evaluation":
         return HTTPStatus.OK, {"rlvr": evaluate_policies().to_dict()}
+
+    if method == "GET" and path == "/rlvr/training":
+        return HTTPStatus.OK, {"training": train_policy().to_dict()}
 
     if method == "GET" and path == "/forecast/anomaly":
         return HTTPStatus.OK, {"forecast": forecast_anomaly(simulator.state).to_dict()}

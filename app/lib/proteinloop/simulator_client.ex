@@ -31,6 +31,10 @@ defmodule ProteinLoop.SimulatorClient do
     request(:get, "/rlvr/evaluation")
   end
 
+  def rlvr_training do
+    request(:get, "/rlvr/training")
+  end
+
   def anomaly_forecast do
     request(:get, "/forecast/anomaly")
   end
@@ -117,6 +121,21 @@ defmodule ProteinLoop.SimulatorClient do
       "recovered_scenarios" => 0,
       "collapse_avoidance_rate" => nil,
       "scenarios" => []
+    }
+  end
+
+  def fallback_rlvr_training(reason \\ :simulator_unavailable) do
+    %{
+      "available" => false,
+      "error" => inspect(reason),
+      "method" => "deterministic_candidate_search",
+      "baseline_policy" => "seed_low_input",
+      "iteration_count" => 0,
+      "initial_reward" => nil,
+      "best_reward" => nil,
+      "improvement" => nil,
+      "best_policy" => %{"name" => "pending"},
+      "iterations" => []
     }
   end
 

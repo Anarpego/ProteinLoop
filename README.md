@@ -60,6 +60,8 @@ The final readiness report slice adds `submission/final-readiness-report.md`, a 
 
 The producer message packet slice adds a provider-free Spanish SMS/WhatsApp handoff message to the producer view, reusing the same HITL approval and offline emergency rules.
 
+The RLVR policy improvement slice adds a dependency-free verifier-guided policy search loop with CLI, API, dashboard, and generated evidence output.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -90,6 +92,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/030-lablab-form-export/spec.md` defines the structured lablab form export.
 - `specs/031-final-readiness-report/spec.md` defines the generated final readiness handoff report.
 - `specs/032-producer-message-packet/spec.md` defines the Spanish SMS/WhatsApp handoff packet.
+- `specs/033-rlvr-policy-improvement/spec.md` defines the verifier-guided policy search curve.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -216,6 +219,7 @@ Endpoints:
 - `POST /step`
 - `POST /policy/safety_step`
 - `GET /rlvr/evaluation`
+- `GET /rlvr/training`
 - `GET /forecast/anomaly`
 
 Example:
@@ -273,6 +277,8 @@ The dashboard also includes a provider selector:
 The dashboard also includes model endpoint status. `Check model` probes `GEMMA_ENDPOINT/v1/models` and reports reachable, auth-required, unreachable, or not-configured status. This is the quick AMD-hosted Gemma or Fireworks fallback sanity check.
 
 The dashboard includes an `RLVR reward verifier` panel. It compares the naive baseline against the safety candidate across repeatable simulator scenarios and shows average reward delta, recovered collapse scenarios, and collapse avoidance rate.
+
+The same panel includes a deterministic policy search curve from `GET /rlvr/training`. Candidate policies are scored by `SafetyVerifier.reward`, and the dashboard shows best-so-far improvement without requiring any training framework.
 
 The dashboard includes `Subsystem agent topology` cards for the fish tank, hydroponia, duckweed/chickens, and supervisor agents. These are advisory only; state mutation still goes through the harness and simulator verifier.
 
@@ -502,6 +508,7 @@ make readiness-report
 ├── specs/030-lablab-form-export/ # Structured lablab form export
 ├── specs/031-final-readiness-report/ # Final readiness handoff report
 ├── specs/032-producer-message-packet/ # Spanish SMS/WhatsApp handoff packet
+├── specs/033-rlvr-policy-improvement/ # RLVR policy search improvement
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

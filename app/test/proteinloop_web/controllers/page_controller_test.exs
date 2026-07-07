@@ -20,6 +20,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Check model"
     assert html_response(conn, 200) =~ "RLVR reward verifier"
     assert html_response(conn, 200) =~ "Policy comparison"
+    assert html_response(conn, 200) =~ "Policy search improvement"
     assert html_response(conn, 200) =~ "Subsystem agent topology"
     assert html_response(conn, 200) =~ "Fish tank agent"
     assert html_response(conn, 200) =~ "Self-healing mesh"

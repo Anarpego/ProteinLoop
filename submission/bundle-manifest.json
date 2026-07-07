@@ -7,14 +7,14 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 20922,
+      "bytes": 24619,
       "path": "README.md",
-      "sha256": "0b90a2a83c6eb0d8f54977f1cd8de8fd1354c7ede2336a374675f0ea24ade434"
+      "sha256": "a81c302627798be00b82dbac29e02bbb46a91a517d02d76bd7b41310a3d61b89"
     },
     {
-      "bytes": 2628,
+      "bytes": 2762,
       "path": "submission/lablab-submission.md",
-      "sha256": "71e3433d5152cf4f98b955fded4d3f6361c15db0a6f2488f6e41797b8fa5fd5f"
+      "sha256": "c51f7b7ce4caad4abdff568350e00f4be8eb6af7c2b5773bd10aa72045636b5a"
     },
     {
       "bytes": 2458,
@@ -47,15 +47,15 @@
       "sha256": "0b79a3c1dcd76edbaa4795c0fd01ad19abb8c84bfe67394c25add82ae26b2a73"
     },
     {
-      "bytes": 1373,
+      "bytes": 5044,
       "path": "submission/demo-evidence.json",
-      "sha256": "5ed0814d7d2304db0d9e53c816cfa237cdf3f67f5566df651c2ad1f8638bda82"
+      "sha256": "466193232ab0a8265119931b71770080e92ec825351dfb836e5934485814e630"
     },
     {
-      "bytes": 637,
+      "bytes": 826,
       "path": "submission/demo-evidence.md",
-      "sha256": "826bf5c58ade73108aef9b7872362db0fca111c3a6ada0ed895c38489455955a"
+      "sha256": "52276b5ae0178b24a131e8e5b0fdb261bf228b40b4787490cfb88281ad941c75"
     }
   ],
-  "generated_at": "2026-07-07T03:25:33.288045+00:00"
+  "generated_at": "2026-07-07T05:23:08.645428+00:00"
 }

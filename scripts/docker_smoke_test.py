@@ -58,6 +58,9 @@ def check_simulator() -> list[Check]:
     rlvr = get_json(f"{SIMULATOR}/rlvr/evaluation")["rlvr"]
     checks.append(Check("rlvr endpoint", rlvr.get("average_reward_delta", 0) > 0))
 
+    training = get_json(f"{SIMULATOR}/rlvr/training")["training"]
+    checks.append(Check("rlvr training endpoint", training.get("improvement", 0) > 0))
+
     reset = post_json(f"{SIMULATOR}/reset", {})
     checks.append(Check("reset endpoint", reset["state"]["day"] == 0))
 
@@ -84,6 +87,7 @@ def check_web() -> list[Check]:
         "Operator dashboard",
         "Run demo cascade",
         "RLVR reward verifier",
+        "Policy search improvement",
         "Anomaly forecast",
         "Sagents loop contract",
         "Spanish HITL approval",

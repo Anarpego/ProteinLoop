@@ -56,5 +56,115 @@
     "collapse_avoidance_rate": 1.0,
     "recovered_scenarios": 2,
     "scenario_count": 3
+  },
+  "rlvr_training": {
+    "baseline_policy": "seed_low_input",
+    "best_policy": {
+      "critical_water_exchange_fraction": 0.25,
+      "name": "growth_biased",
+      "routine_aeration_hours": 9.0,
+      "routine_duckweed_harvest_kg": 0.18,
+      "routine_feed_fraction": 0.03,
+      "warning_aeration_hours": 18.0,
+      "warning_feed_kg": 0.1,
+      "warning_water_exchange_fraction": 0.12
+    },
+    "best_reward": 232.8822,
+    "improvement": 2.7556,
+    "initial_reward": 230.1266,
+    "iteration_count": 5,
+    "iterations": [
+      {
+        "average_reward": 230.1266,
+        "best_so_far_policy": "seed_low_input",
+        "best_so_far_reward": 230.1266,
+        "collapse_avoidance_rate": 1.0,
+        "iteration": 1,
+        "policy": {
+          "critical_water_exchange_fraction": 0.2,
+          "name": "seed_low_input",
+          "routine_aeration_hours": 7.0,
+          "routine_duckweed_harvest_kg": 0.08,
+          "routine_feed_fraction": 0.018,
+          "warning_aeration_hours": 14.0,
+          "warning_feed_kg": 0.12,
+          "warning_water_exchange_fraction": 0.08
+        },
+        "recovered_scenarios": 2
+      },
+      {
+        "average_reward": 230.5286,
+        "best_so_far_policy": "more_air_less_feed",
+        "best_so_far_reward": 230.5286,
+        "collapse_avoidance_rate": 1.0,
+        "iteration": 2,
+        "policy": {
+          "critical_water_exchange_fraction": 0.25,
+          "name": "more_air_less_feed",
+          "routine_aeration_hours": 10.0,
+          "routine_duckweed_harvest_kg": 0.1,
+          "routine_feed_fraction": 0.02,
+          "warning_aeration_hours": 18.0,
+          "warning_feed_kg": 0.1,
+          "warning_water_exchange_fraction": 0.12
+        },
+        "recovered_scenarios": 2
+      },
+      {
+        "average_reward": 231.7065,
+        "best_so_far_policy": "balanced_recovery",
+        "best_so_far_reward": 231.7065,
+        "collapse_avoidance_rate": 1.0,
+        "iteration": 3,
+        "policy": {
+          "critical_water_exchange_fraction": 0.3,
+          "name": "balanced_recovery",
+          "routine_aeration_hours": 9.0,
+          "routine_duckweed_harvest_kg": 0.16,
+          "routine_feed_fraction": 0.024,
+          "warning_aeration_hours": 18.0,
+          "warning_feed_kg": 0.08,
+          "warning_water_exchange_fraction": 0.15
+        },
+        "recovered_scenarios": 2
+      },
+      {
+        "average_reward": 232.8822,
+        "best_so_far_policy": "growth_biased",
+        "best_so_far_reward": 232.8822,
+        "collapse_avoidance_rate": 1.0,
+        "iteration": 4,
+        "policy": {
+          "critical_water_exchange_fraction": 0.25,
+          "name": "growth_biased",
+          "routine_aeration_hours": 9.0,
+          "routine_duckweed_harvest_kg": 0.18,
+          "routine_feed_fraction": 0.03,
+          "warning_aeration_hours": 18.0,
+          "warning_feed_kg": 0.1,
+          "warning_water_exchange_fraction": 0.12
+        },
+        "recovered_scenarios": 2
+      },
+      {
+        "average_reward": 231.5208,
+        "best_so_far_policy": "growth_biased",
+        "best_so_far_reward": 232.8822,
+        "collapse_avoidance_rate": 1.0,
+        "iteration": 5,
+        "policy": {
+          "critical_water_exchange_fraction": 0.3,
+          "name": "aggressive_exchange",
+          "routine_aeration_hours": 11.0,
+          "routine_duckweed_harvest_kg": 0.16,
+          "routine_feed_fraction": 0.024,
+          "warning_aeration_hours": 20.0,
+          "warning_feed_kg": 0.06,
+          "warning_water_exchange_fraction": 0.2
+        },
+        "recovered_scenarios": 2
+      }
+    ],
+    "method": "deterministic_candidate_search"
   }
 }

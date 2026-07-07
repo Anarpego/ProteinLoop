@@ -21,6 +21,7 @@ defmodule ProteinLoopWeb.OperatorLive do
 
     snapshot = SimulatorPoller.snapshot_now("mount")
     rlvr_evaluation = rlvr_evaluation()
+    rlvr_training = rlvr_training()
     anomaly_forecast = anomaly_forecast()
 
     socket =
@@ -37,6 +38,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:approval_queue, ApprovalQueue.snapshot())
       |> assign(:model_status, ModelStatus.snapshot())
       |> assign(:rlvr_evaluation, rlvr_evaluation)
+      |> assign(:rlvr_training, rlvr_training)
       |> assign(:anomaly_forecast, anomaly_forecast)
       |> assign(:trace_status, TraceStore.status())
       |> assign(:trace_entries, trace_entries())
@@ -61,6 +63,7 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply,
      socket
      |> assign(:rlvr_evaluation, rlvr_evaluation())
+     |> assign(:rlvr_training, rlvr_training())
      |> assign(:anomaly_forecast, anomaly_forecast())
      |> assign_snapshot(snapshot, "manual refresh")}
   end
@@ -288,6 +291,13 @@ defmodule ProteinLoopWeb.OperatorLive do
     case SimulatorClient.rlvr_evaluation() do
       {:ok, %{"rlvr" => evaluation}} -> Map.put(evaluation, "available", true)
       {:error, reason} -> SimulatorClient.fallback_rlvr_evaluation(reason)
+    end
+  end
+
+  defp rlvr_training do
+    case SimulatorClient.rlvr_training() do
+      {:ok, %{"training" => training}} -> Map.put(training, "available", true)
+      {:error, reason} -> SimulatorClient.fallback_rlvr_training(reason)
     end
   end
 
@@ -538,7 +548,7 @@ defmodule ProteinLoopWeb.OperatorLive do
               {if @rlvr_evaluation["available"], do: "online", else: "offline"}
             </span>
           </div>
-          <.rlvr_panel evaluation={@rlvr_evaluation} />
+          <.rlvr_panel evaluation={@rlvr_evaluation} training={@rlvr_training} />
         </section>
 
         <section class="rounded-box border border-base-300 bg-base-100 p-4">
@@ -902,6 +912,7 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp forecast_value(value), do: value
 
   attr :evaluation, :map, required: true
+  attr :training, :map, required: true
 
   def rlvr_panel(assigns) do
     ~H"""
@@ -928,6 +939,27 @@ defmodule ProteinLoopWeb.OperatorLive do
         <p class="text-sm text-base-content/60">Policy comparison</p>
         <p class="mt-1 font-mono text-sm">
           {@evaluation["baseline_policy"]} -> {@evaluation["candidate_policy"]}
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-3 md:grid-cols-3">
+      <div class="rounded-box bg-base-200 p-3">
+        <p class="text-sm text-base-content/60">Policy search improvement</p>
+        <p class="text-2xl font-semibold text-success">
+          {rlvr_value(@training["improvement"])}
+        </p>
+      </div>
+      <div class="rounded-box bg-base-200 p-3">
+        <p class="text-sm text-base-content/60">Best policy</p>
+        <p class="mt-1 font-mono text-sm">
+          {get_in(@training, ["best_policy", "name"]) || "pending"}
+        </p>
+      </div>
+      <div class="rounded-box bg-base-200 p-3">
+        <p class="text-sm text-base-content/60">Search method</p>
+        <p class="mt-1 font-mono text-sm">
+          {@training["method"] || "pending"}
         </p>
       </div>
     </div>
@@ -959,6 +991,30 @@ defmodule ProteinLoopWeb.OperatorLive do
       </table>
       <p :if={!@evaluation["available"]} class="mt-2 text-sm text-error">
         RLVR evaluation unavailable: {@evaluation["error"]}
+      </p>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Iteration</th>
+            <th>Policy</th>
+            <th>Reward</th>
+            <th>Best so far</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :for={iteration <- @training["iterations"] || []}>
+            <td>{iteration["iteration"]}</td>
+            <td>{get_in(iteration, ["policy", "name"])}</td>
+            <td>{iteration["average_reward"]}</td>
+            <td class="font-semibold text-success">{iteration["best_so_far_reward"]}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p :if={!@training["available"]} class="mt-2 text-sm text-error">
+        RLVR policy search unavailable: {@training["error"]}
       </p>
     </div>
     """

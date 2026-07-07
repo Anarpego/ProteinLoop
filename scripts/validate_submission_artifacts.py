@@ -101,6 +101,9 @@ def main() -> int:
     if evidence["rlvr"]["average_reward_delta"] <= 0:
         print("demo evidence RLVR reward delta must be positive", file=sys.stderr)
         return 1
+    if evidence["rlvr_training"]["improvement"] <= 0:
+        print("demo evidence RLVR training improvement must be positive", file=sys.stderr)
+        return 1
     if evidence["anomaly_forecast_after_spike"]["risk_level"] != "critical":
         print("demo evidence forecast should be critical after spike", file=sys.stderr)
         return 1

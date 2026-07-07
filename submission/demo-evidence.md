@@ -17,6 +17,15 @@ Generated from executable simulator code.
 - Recovered scenarios: 2.
 - Collapse avoidance rate: 1.0.
 
+## RLVR Policy Search
+
+- Method: deterministic_candidate_search.
+- Best policy: growth_biased.
+- Iterations: 5.
+- Initial reward: 230.1266.
+- Best reward: 232.8822.
+- Improvement: 2.7556.
+
 ## Forecast After Ammonia Spike
 
 - Risk level: critical.

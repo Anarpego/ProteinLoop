@@ -45,6 +45,14 @@ class ApiContractTests(unittest.TestCase):
         self.assertEqual(payload["rlvr"]["candidate_policy"], "safety")
         self.assertGreater(payload["rlvr"]["average_reward_delta"], 0)
 
+    def test_rlvr_training_endpoint_returns_improvement_payload(self):
+        status, payload = handle_request("GET", "/rlvr/training", None, self.sim)
+
+        self.assertEqual(status, HTTPStatus.OK)
+        self.assertEqual(payload["training"]["method"], "deterministic_candidate_search")
+        self.assertGreater(payload["training"]["improvement"], 0)
+        self.assertGreater(payload["training"]["iteration_count"], 1)
+
     def test_anomaly_forecast_endpoint_returns_prediction_payload(self):
         status, payload = handle_request("GET", "/forecast/anomaly", None, self.sim)
 

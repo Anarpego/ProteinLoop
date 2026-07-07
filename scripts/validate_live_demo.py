@@ -21,6 +21,7 @@ OPERATOR_NEEDLES = [
     "Operator dashboard",
     "Run demo cascade",
     "RLVR reward verifier",
+    "Policy search improvement",
     "Anomaly forecast",
     "Sagents loop contract",
     "Spanish HITL approval",
@@ -116,6 +117,7 @@ def check_simulator(simulator_url: str, timeout: float) -> list[Check]:
     health = get_json(join_url(simulator_url, "/health"), timeout)
     forecast = get_json(join_url(simulator_url, "/forecast/anomaly"), timeout).get("forecast", {})
     rlvr = get_json(join_url(simulator_url, "/rlvr/evaluation"), timeout).get("rlvr", {})
+    training = get_json(join_url(simulator_url, "/rlvr/training"), timeout).get("training", {})
 
     return [
         Check("public simulator health", health.get("ok") is True),
@@ -127,6 +129,11 @@ def check_simulator(simulator_url: str, timeout: float) -> list[Check]:
             "public simulator rlvr",
             rlvr.get("average_reward_delta", 0) > 0,
             f"delta={rlvr.get('average_reward_delta')}",
+        ),
+        Check(
+            "public simulator rlvr training",
+            training.get("improvement", 0) > 0,
+            f"improvement={training.get('improvement')}",
         ),
     ]
 

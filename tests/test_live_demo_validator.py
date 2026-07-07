@@ -37,6 +37,9 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertIn("Mensaje WhatsApp/SMS", result.detail)
 
+    def test_operator_markers_include_policy_search(self):
+        self.assertIn("Policy search improvement", OPERATOR_NEEDLES)
+
 
 if __name__ == "__main__":
     unittest.main()
