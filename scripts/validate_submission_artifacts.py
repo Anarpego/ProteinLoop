@@ -13,6 +13,7 @@ PPTX = SUBMISSION / "proteinloop-hackathon-deck.pptx"
 VIDEO = SUBMISSION / "proteinloop-demo-video.avi"
 BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
 MANIFEST = SUBMISSION / "bundle-manifest.json"
+FORM = SUBMISSION / "lablab-form.json"
 
 
 REQUIRED_FILES = [
@@ -28,6 +29,7 @@ REQUIRED_FILES = [
     PPTX,
     BUNDLE,
     MANIFEST,
+    FORM,
 ]
 
 
@@ -64,6 +66,10 @@ def main() -> int:
         if section not in submission_text:
             print(f"missing submission section: {section}", file=sys.stderr)
             return 1
+
+    if not form_ok(FORM):
+        print("lablab-form.json is missing required fields or artifacts", file=sys.stderr)
+        return 1
 
     cover_text = (SUBMISSION / "cover.svg").read_text(encoding="utf-8")
     if "<svg" not in cover_text or "ProteinLoop cover image" not in cover_text:
@@ -144,6 +150,32 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
     manifest_entries = manifest.get("files", [])
     checksums_present = all(entry.get("sha256") and entry.get("bytes", 0) > 0 for entry in manifest_entries)
     return required_entries.issubset(names) and checksums_present
+
+
+def form_ok(path: Path) -> bool:
+    form = json_load(path)
+    required_keys = {
+        "project_title",
+        "short_description",
+        "long_description",
+        "technology_tags",
+        "repository_url",
+        "demo_application_platform",
+        "application_url",
+        "key_demo_path",
+        "judging_notes",
+        "artifacts",
+        "unresolved_fields",
+    }
+    artifacts = form.get("artifacts", {})
+    required_artifacts = {
+        "cover_image",
+        "video_presentation",
+        "slide_presentation",
+        "upload_bundle",
+        "readme",
+    }
+    return required_keys.issubset(form) and required_artifacts.issubset(artifacts)
 
 
 if __name__ == "__main__":

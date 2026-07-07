@@ -54,6 +54,8 @@ The public repository publish helper adds `make publish-repo GITHUB_REPOSITORY=o
 
 The verified demo URL setter adds `make set-demo-url DEMO_URL=https://...`, which checks the public dashboard and Spanish producer route before updating the lablab Application URL.
 
+The lablab form export slice adds `submission/lablab-form.json`, a structured copy/paste packet with artifact paths and unresolved URL fields.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -81,6 +83,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/021-public-repo-ci/spec.md` defines the public GitHub Actions CI path.
 - `specs/022-live-demo-verification/spec.md` defines the public demo URL verification path.
 - `specs/024-gemma-endpoint-verification/spec.md` defines the OpenAI-compatible Gemma endpoint verification path.
+- `specs/030-lablab-form-export/spec.md` defines the structured lablab form export.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -95,7 +98,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 48 tests
+Ran 51 tests
 
 OK
 ```
@@ -413,6 +416,7 @@ Submission source artifacts live in `submission/`:
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
+- `lablab-form.json`: structured lablab form fields and artifact paths.
 
 The repo includes a root `LICENSE` with MIT terms.
 
@@ -439,6 +443,12 @@ Build only the upload bundle:
 
 ```sh
 make submission-bundle
+```
+
+Export structured lablab form fields:
+
+```sh
+make submission-form
 ```
 
 ## Project Layout
@@ -474,6 +484,7 @@ make submission-bundle
 ├── specs/027-public-demo-compose/  # Public deployment Compose profile
 ├── specs/028-public-repo-publish-helper/ # Public GitHub publish helper
 ├── specs/029-verified-demo-url-setter/ # Verified lablab demo URL setter
+├── specs/030-lablab-form-export/ # Structured lablab form export
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -497,6 +508,7 @@ make submission-bundle
 ├── scripts/validate_public_deploy.py
 ├── scripts/publish_public_repo.py
 ├── scripts/set_demo_url.py
+├── scripts/export_lablab_form.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan
