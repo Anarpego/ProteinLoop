@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 PPTX = SUBMISSION / "proteinloop-hackathon-deck.pptx"
 VIDEO = SUBMISSION / "proteinloop-demo-video.avi"
+BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
+MANIFEST = SUBMISSION / "bundle-manifest.json"
 
 
 REQUIRED_FILES = [
@@ -24,6 +26,8 @@ REQUIRED_FILES = [
     SUBMISSION / "demo-evidence.md",
     VIDEO,
     PPTX,
+    BUNDLE,
+    MANIFEST,
 ]
 
 
@@ -42,6 +46,10 @@ def main() -> int:
     slide_count = pptx_slide_count(PPTX)
     if slide_count != 10:
         print(f"expected 10 PPTX slides, found {slide_count}", file=sys.stderr)
+        return 1
+
+    if not bundle_ok(BUNDLE, MANIFEST):
+        print("submission bundle is missing required entries or manifest checksums", file=sys.stderr)
         return 1
 
     submission_text = (SUBMISSION / "lablab-submission.md").read_text(encoding="utf-8")
@@ -111,6 +119,31 @@ def looks_like_avi(path: Path) -> bool:
     with path.open("rb") as handle:
         header = handle.read(12)
     return header.startswith(b"RIFF") and header[8:12] == b"AVI "
+
+
+def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
+    manifest = json_load(manifest_path)
+    required_entries = {
+        "LICENSE",
+        "README.md",
+        "submission/lablab-submission.md",
+        "submission/video-script.md",
+        "submission/slides.md",
+        "submission/proteinloop-hackathon-deck.pptx",
+        "submission/proteinloop-demo-video.avi",
+        "submission/cover.svg",
+        "submission/cover.png",
+        "submission/demo-evidence.json",
+        "submission/demo-evidence.md",
+        "submission/bundle-manifest.json",
+    }
+
+    with zipfile.ZipFile(bundle_path) as archive:
+        names = set(archive.namelist())
+
+    manifest_entries = manifest.get("files", [])
+    checksums_present = all(entry.get("sha256") and entry.get("bytes", 0) > 0 for entry in manifest_entries)
+    return required_entries.issubset(names) and checksums_present
 
 
 if __name__ == "__main__":

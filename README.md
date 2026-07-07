@@ -46,6 +46,8 @@ The Gemma endpoint verification slice adds `make gemma-check`, which verifies `/
 
 The generated demo video slice adds a deterministic video artifact at `submission/proteinloop-demo-video.avi`, built from the existing script and evidence without requiring `ffmpeg`.
 
+The submission bundle slice adds `submission/proteinloop-lablab-upload.zip` and `submission/bundle-manifest.json` so the upload packet can be archived and checksum-verified as one artifact set.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -87,7 +89,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 33 tests
+Ran 36 tests
 
 OK
 ```
@@ -377,6 +379,8 @@ Submission source artifacts live in `submission/`:
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
+- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
+- `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 
 The repo includes a root `LICENSE` with MIT terms.
 
@@ -397,6 +401,12 @@ Regenerate and validate with Make:
 ```sh
 make submission-render
 make submission-check
+```
+
+Build only the upload bundle:
+
+```sh
+make submission-bundle
 ```
 
 ## Project Layout
@@ -428,6 +438,7 @@ make submission-check
 ├── specs/022-live-demo-verification/ # Public demo URL verification
 ├── specs/023-submission-readiness-gate/ # Final submission readiness gate
 ├── specs/024-gemma-endpoint-verification/ # Gemma endpoint evidence gate
+├── specs/026-submission-bundle/    # Zip bundle for upload artifacts
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -442,6 +453,7 @@ make submission-check
 ├── LICENSE
 ├── scripts/generate_submission_deck.mjs
 ├── scripts/generate_demo_video.py
+├── scripts/build_submission_bundle.py
 ├── scripts/docker_smoke_test.py
 ├── scripts/validate_ci_workflow.py
 ├── scripts/validate_live_demo.py
