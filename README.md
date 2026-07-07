@@ -48,6 +48,8 @@ The generated demo video slice adds a deterministic video artifact at `submissio
 
 The submission bundle slice adds `submission/proteinloop-lablab-upload.zip` and `submission/bundle-manifest.json` so the upload packet can be archived and checksum-verified as one artifact set.
 
+The public demo Compose slice adds `docker-compose.public.yml`, a production-oriented profile that exposes only Phoenix and keeps the simulator private on the Compose network.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -89,7 +91,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 40 tests
+Ran 42 tests
 
 OK
 ```
@@ -137,6 +139,12 @@ When the simulator API is public too:
 make live-demo-check \
   DEMO_URL=https://your-demo-url \
   SIMULATOR_PUBLIC_URL=https://your-simulator-url
+```
+
+Validate the public deployment Compose profile:
+
+```sh
+make public-deploy-check
 ```
 
 Validate an AMD-hosted or fallback OpenAI-compatible Gemma endpoint:
@@ -341,6 +349,14 @@ That check verifies the two judge-facing routes:
 - Operator dashboard: `/`
 - Spanish producer path: `/producer`
 
+For a public host, use:
+
+```sh
+PHX_HOST=your-demo-host \
+SECRET_KEY_BASE=replace-with-secret \
+docker compose -f docker-compose.public.yml up -d --build
+```
+
 ## AMD Gemma Deployment
 
 The AMD-hosted Gemma path is documented in `deploy/amd-gemma-vllm.md`.
@@ -439,6 +455,7 @@ make submission-bundle
 ├── specs/023-submission-readiness-gate/ # Final submission readiness gate
 ├── specs/024-gemma-endpoint-verification/ # Gemma endpoint evidence gate
 ├── specs/026-submission-bundle/    # Zip bundle for upload artifacts
+├── specs/027-public-demo-compose/  # Public deployment Compose profile
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -449,6 +466,7 @@ make submission-bundle
 ├── Dockerfile
 ├── app/Dockerfile
 ├── docker-compose.yml
+├── docker-compose.public.yml
 ├── docker-compose.gemma-rocm.yml
 ├── LICENSE
 ├── scripts/generate_submission_deck.mjs
@@ -458,6 +476,7 @@ make submission-bundle
 ├── scripts/validate_ci_workflow.py
 ├── scripts/validate_live_demo.py
 ├── scripts/validate_gemma_endpoint.py
+├── scripts/validate_public_deploy.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan

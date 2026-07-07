@@ -1,0 +1,29 @@
+services:
+  simulator:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  web:
+    build:
+      context: ./app
+    depends_on:
+      - simulator
+    restart: unless-stopped
+    environment:
+      PHX_SERVER: "true"
+      PHX_HOST: ${PHX_HOST:?set PHX_HOST to the public hostname}
+      PORT: "4000"
+      SIMULATOR_URL: "http://simulator:8000"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE}
+      GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-}
+      GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E4B-it}
+      GEMMA_API_KEY: ${GEMMA_API_KEY:-}
+    ports:
+      - "${PUBLIC_PORT:-80}:4000"
+    volumes:
+      - proteinloop_traces:/app/priv/traces
+
+volumes:
+  proteinloop_traces:

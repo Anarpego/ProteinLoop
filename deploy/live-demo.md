@@ -1,6 +1,6 @@
 # ProteinLoop Live Demo Deployment
 
-This runbook prepares the public `DEMO_URL` required for lablab submission. It uses the same Docker Compose stack that the local smoke test verifies.
+This runbook prepares the public `DEMO_URL` required for lablab submission. It uses the same images as the local smoke-tested stack, with `docker-compose.public.yml` for public deployment.
 
 ## Prerequisites
 
@@ -27,12 +27,13 @@ For the submitted demo, expose the Phoenix web service publicly. The simulator c
 ## Deploy
 
 ```sh
-docker compose build
-docker compose up -d
-docker compose ps
+make public-deploy-check
+docker compose -f docker-compose.public.yml build
+docker compose -f docker-compose.public.yml up -d
+docker compose -f docker-compose.public.yml ps
 ```
 
-Put a reverse proxy or platform routing layer in front of the web container and terminate TLS there. The public URL should load:
+The public profile publishes only Phoenix on `${PUBLIC_PORT:-80}` and keeps the simulator private on the Compose network. Put a reverse proxy or platform routing layer in front of the web container and terminate TLS there. The public URL should load:
 
 - `https://your-demo-url/`
 - `https://your-demo-url/producer`
