@@ -46,6 +46,12 @@ Run the public URL check before pasting the URL into lablab:
 DEMO_URL=https://your-demo-url make live-demo-check
 ```
 
+After it passes, update the lablab draft safely:
+
+```sh
+make set-demo-url DEMO_URL=https://your-demo-url
+```
+
 If the simulator is also public, verify it too:
 
 ```sh

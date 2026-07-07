@@ -52,6 +52,8 @@ The public demo Compose slice adds `docker-compose.public.yml`, a production-ori
 
 The public repository publish helper adds `make publish-repo GITHUB_REPOSITORY=owner/name`, which creates or uses a public GitHub repo, pushes `main`, and updates the lablab repository URL.
 
+The verified demo URL setter adds `make set-demo-url DEMO_URL=https://...`, which checks the public dashboard and Spanish producer route before updating the lablab Application URL.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -93,7 +95,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 46 tests
+Ran 48 tests
 
 OK
 ```
@@ -141,6 +143,12 @@ When the simulator API is public too:
 make live-demo-check \
   DEMO_URL=https://your-demo-url \
   SIMULATOR_PUBLIC_URL=https://your-simulator-url
+```
+
+Preview updating the lablab Application URL:
+
+```sh
+make set-demo-url DEMO_URL=https://your-demo-url DRY_RUN=1
 ```
 
 Validate the public deployment Compose profile:
@@ -465,6 +473,7 @@ make submission-bundle
 ├── specs/026-submission-bundle/    # Zip bundle for upload artifacts
 ├── specs/027-public-demo-compose/  # Public deployment Compose profile
 ├── specs/028-public-repo-publish-helper/ # Public GitHub publish helper
+├── specs/029-verified-demo-url-setter/ # Verified lablab demo URL setter
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -487,6 +496,7 @@ make submission-bundle
 ├── scripts/validate_gemma_endpoint.py
 ├── scripts/validate_public_deploy.py
 ├── scripts/publish_public_repo.py
+├── scripts/set_demo_url.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan

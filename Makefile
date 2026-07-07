@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -55,3 +55,6 @@ public-deploy-check:
 
 publish-repo:
 	python3 scripts/publish_public_repo.py "$(GITHUB_REPOSITORY)" $(if $(DRY_RUN),--dry-run,)
+
+set-demo-url:
+	python3 scripts/set_demo_url.py "$(DEMO_URL)" $(if $(DRY_RUN),--dry-run,)
