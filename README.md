@@ -303,6 +303,12 @@ It runs on push, pull request, and manual dispatch. The first job runs `make tes
 
 CI intentionally skips `docker-compose.gemma-rocm.yml` because AMD-hosted Gemma requires ROCm hardware and credentials. Validate that profile separately on an AMD host with the runbook below.
 
+## Public Repository
+
+The GitHub publication checklist is documented in `deploy/public-repo.md`.
+
+The local repository already has an initial commit. Publishing still requires a valid GitHub session, an `origin` remote, and replacing `Public GitHub Repository: TODO` in `submission/lablab-submission.md` with the final public URL.
+
 ## Live Demo Deployment
 
 The public demo deployment checklist is documented in `deploy/live-demo.md`.

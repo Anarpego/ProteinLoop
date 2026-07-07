@@ -5,4 +5,4 @@
 - [x] Add validator unit tests.
 - [x] Add Make target.
 - [x] Update README.
-- [ ] Run validator and regression checks.
+- [x] Run validator and regression checks.
