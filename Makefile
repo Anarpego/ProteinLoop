@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -23,6 +23,7 @@ web-serve:
 
 submission-render:
 	python3 scripts/generate_demo_evidence.py
+	python3 scripts/generate_demo_rehearsal.py
 	python3 scripts/render_cover_png.py
 	python3 scripts/generate_demo_video.py
 	python3 scripts/export_lablab_form.py
@@ -39,6 +40,9 @@ submission-bundle:
 
 submission-form:
 	python3 scripts/export_lablab_form.py
+
+demo-rehearsal:
+	python3 scripts/generate_demo_rehearsal.py
 
 readiness-report:
 	python3 scripts/generate_readiness_report.py

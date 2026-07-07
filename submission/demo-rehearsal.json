@@ -1,0 +1,80 @@
+{
+  "steps": [
+    {
+      "detail": "Stable starting state loaded.",
+      "name": "reset",
+      "ok": true,
+      "state": {
+        "ammonia_mg_l": 0.35,
+        "collapsed": false,
+        "day": 0,
+        "dissolved_oxygen_mg_l": 6.8
+      }
+    },
+    {
+      "detail": "Critical ammonia scenario injected.",
+      "forecast": {
+        "recommendation": "Pause feeding, maximize aeration, and request verified water exchange.",
+        "risk_level": "critical"
+      },
+      "name": "ammonia_spike",
+      "ok": true,
+      "state": {
+        "ammonia_mg_l": 4.6,
+        "collapsed": false,
+        "day": 0,
+        "dissolved_oxygen_mg_l": 4.4
+      }
+    },
+    {
+      "action": {
+        "aeration_hours": 4.0,
+        "duckweed_harvest_kg": 0.0,
+        "feed_kg": 4.0,
+        "note": "rehearsal_unsafe_overfeed",
+        "water_exchange_fraction": 0.0
+      },
+      "detail": "Overfeeding proposal rejected before simulator mutation.",
+      "name": "unsafe_rejection",
+      "ok": true,
+      "state_preserved": true,
+      "violations": [
+        "feed_kg 4.000 exceeds safe daily limit 0.508",
+        "feed must stay at or below 0.10 kg/day during critical ammonia"
+      ]
+    },
+    {
+      "detail": "Safety policy mutates state only after verifier acceptance.",
+      "name": "safe_recovery",
+      "ok": true,
+      "reward": 135.2741,
+      "state": {
+        "ammonia_mg_l": 2.7538,
+        "collapsed": false,
+        "day": 1,
+        "dissolved_oxygen_mg_l": 9.2
+      }
+    },
+    {
+      "best_policy": "growth_biased",
+      "detail": "Verifier-guided candidate search improves best reward.",
+      "improvement": 2.7556,
+      "iterations": 5,
+      "name": "rlvr_policy_search",
+      "ok": true
+    },
+    {
+      "copy": "Aprobar | Solo mitad | Rechazar",
+      "detail": "Producer path asks for approval before irreversible water or harvest action.",
+      "name": "spanish_hitl",
+      "ok": true
+    },
+    {
+      "copy": "No alimente. Active aireacion fuerte, cambie agua verificada y llame al tecnico comunitario.",
+      "detail": "Fallback producer guidance remains deterministic when model/cloud access is absent.",
+      "name": "offline_guidance",
+      "ok": true
+    }
+  ],
+  "title": "ProteinLoop judge demo rehearsal"
+}

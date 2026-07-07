@@ -64,6 +64,8 @@ The RLVR policy improvement slice adds a dependency-free verifier-guided policy 
 
 The generated demo video now includes an RLVR policy search scene so the submitted AVI matches the current dashboard and evidence packet.
 
+The demo rehearsal packet adds `submission/demo-rehearsal.json` and `.md`, generated from simulator behavior to prove the judge path before the public deployment is available.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -96,6 +98,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/032-producer-message-packet/spec.md` defines the Spanish SMS/WhatsApp handoff packet.
 - `specs/033-rlvr-policy-improvement/spec.md` defines the verifier-guided policy search curve.
 - `specs/034-demo-video-rlvr-search/spec.md` defines the generated video update for the policy search scene.
+- `specs/035-demo-rehearsal-packet/spec.md` defines the executable judge demo rehearsal packet.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -430,6 +433,7 @@ Submission source artifacts live in `submission/`:
 - `cover.svg`: cover image source.
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
+- `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
@@ -467,6 +471,12 @@ Export structured lablab form fields:
 
 ```sh
 make submission-form
+```
+
+Generate the executable judge-path rehearsal packet:
+
+```sh
+make demo-rehearsal
 ```
 
 Generate the final readiness handoff report:
@@ -512,6 +522,8 @@ make readiness-report
 ├── specs/031-final-readiness-report/ # Final readiness handoff report
 ├── specs/032-producer-message-packet/ # Spanish SMS/WhatsApp handoff packet
 ├── specs/033-rlvr-policy-improvement/ # RLVR policy search improvement
+├── specs/034-demo-video-rlvr-search/ # Demo video policy-search scene
+├── specs/035-demo-rehearsal-packet/ # Executable demo rehearsal packet
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

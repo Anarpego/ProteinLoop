@@ -15,6 +15,8 @@ BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
 MANIFEST = SUBMISSION / "bundle-manifest.json"
 FORM = SUBMISSION / "lablab-form.json"
 REPORT = SUBMISSION / "final-readiness-report.md"
+REHEARSAL_JSON = SUBMISSION / "demo-rehearsal.json"
+REHEARSAL_MD = SUBMISSION / "demo-rehearsal.md"
 
 
 REQUIRED_FILES = [
@@ -26,6 +28,8 @@ REQUIRED_FILES = [
     SUBMISSION / "cover.png",
     SUBMISSION / "demo-evidence.json",
     SUBMISSION / "demo-evidence.md",
+    REHEARSAL_JSON,
+    REHEARSAL_MD,
     VIDEO,
     PPTX,
     BUNDLE,
@@ -108,6 +112,10 @@ def main() -> int:
         print("demo evidence forecast should be critical after spike", file=sys.stderr)
         return 1
 
+    if not rehearsal_ok(REHEARSAL_JSON, REHEARSAL_MD):
+        print("demo rehearsal packet is missing required passing steps", file=sys.stderr)
+        return 1
+
     print("submission artifacts OK")
     print(f"pptx slides: {slide_count}")
     return 0
@@ -150,6 +158,8 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
         "submission/cover.png",
         "submission/demo-evidence.json",
         "submission/demo-evidence.md",
+        "submission/demo-rehearsal.json",
+        "submission/demo-rehearsal.md",
         "submission/bundle-manifest.json",
     }
 
@@ -198,6 +208,28 @@ def report_ok(path: Path) -> bool:
         "GEMMA_MODEL=google/gemma-4-E4B-it",
     ]
     return all(fragment in text for fragment in required_fragments)
+
+
+def rehearsal_ok(json_path: Path, md_path: Path) -> bool:
+    packet = json_load(json_path)
+    steps = {step.get("name"): step for step in packet.get("steps", [])}
+    required_steps = {
+        "reset",
+        "ammonia_spike",
+        "unsafe_rejection",
+        "safe_recovery",
+        "rlvr_policy_search",
+        "spanish_hitl",
+        "offline_guidance",
+    }
+    markdown = md_path.read_text(encoding="utf-8")
+    return (
+        required_steps.issubset(steps)
+        and all(steps[name].get("ok") is True for name in required_steps)
+        and steps["unsafe_rejection"].get("state_preserved") is True
+        and steps["rlvr_policy_search"].get("improvement", 0) > 0
+        and "ProteinLoop Demo Rehearsal" in markdown
+    )
 
 
 if __name__ == "__main__":

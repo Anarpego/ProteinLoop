@@ -26,6 +26,8 @@ BUNDLE_FILES = [
     SUBMISSION / "cover.png",
     SUBMISSION / "demo-evidence.json",
     SUBMISSION / "demo-evidence.md",
+    SUBMISSION / "demo-rehearsal.json",
+    SUBMISSION / "demo-rehearsal.md",
 ]
 
 
