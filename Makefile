@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-ready-check docker-smoke ci-check live-demo-check
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-ready-check docker-smoke ci-check live-demo-check gemma-check
 
 test:
 	python3 -m unittest discover -s tests
@@ -41,3 +41,6 @@ ci-check:
 
 live-demo-check:
 	DEMO_URL="$(DEMO_URL)" SIMULATOR_PUBLIC_URL="$(SIMULATOR_PUBLIC_URL)" python3 scripts/validate_live_demo.py
+
+gemma-check:
+	GEMMA_ENDPOINT="$(GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" python3 scripts/validate_gemma_endpoint.py

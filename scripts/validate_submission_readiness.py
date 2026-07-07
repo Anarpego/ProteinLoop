@@ -27,6 +27,7 @@ REQUIRED_ARTIFACTS = [
     SUBMISSION / "proteinloop-hackathon-deck.pptx",
     SUBMISSION / "demo-evidence.json",
     SUBMISSION / "demo-evidence.md",
+    SUBMISSION / "gemma-evidence.json",
 ]
 
 

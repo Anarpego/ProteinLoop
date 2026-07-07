@@ -42,6 +42,8 @@ The CI readiness slice adds public repository CI. GitHub Actions now runs simula
 
 The live demo verification slice adds an executable check for the submitted demo URL. `make live-demo-check DEMO_URL=https://...` verifies the operator dashboard and Spanish producer route, with optional simulator API checks when `SIMULATOR_PUBLIC_URL` is set.
 
+The Gemma endpoint verification slice adds `make gemma-check`, which verifies `/v1/models`, verifies `/v1/chat/completions` returns a valid ProteinLoop action, and writes `submission/gemma-evidence.json` on success.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -68,6 +70,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/020-demo-evidence-packet/spec.md` defines generated demo evidence artifacts.
 - `specs/021-public-repo-ci/spec.md` defines the public GitHub Actions CI path.
 - `specs/022-live-demo-verification/spec.md` defines the public demo URL verification path.
+- `specs/024-gemma-endpoint-verification/spec.md` defines the OpenAI-compatible Gemma endpoint verification path.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -82,7 +85,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 25 tests
+Ran 31 tests
 
 OK
 ```
@@ -116,7 +119,7 @@ Run the final submission readiness gate:
 make submission-ready-check
 ```
 
-This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, and until `origin` points at that public repository.
+This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, `origin` points at that public repository, and `make gemma-check` has produced `submission/gemma-evidence.json`.
 
 Validate a public or local demo URL:
 
@@ -131,6 +134,16 @@ make live-demo-check \
   DEMO_URL=https://your-demo-url \
   SIMULATOR_PUBLIC_URL=https://your-simulator-url
 ```
+
+Validate an AMD-hosted or fallback OpenAI-compatible Gemma endpoint:
+
+```sh
+GEMMA_ENDPOINT=https://your-vllm-host \
+GEMMA_MODEL=google/gemma-4-E4B-it \
+make gemma-check
+```
+
+On success, the check writes `submission/gemma-evidence.json`.
 
 Summarize harness traces:
 
@@ -343,6 +356,12 @@ docker compose --env-file .env -f docker-compose.gemma-rocm.yml --profile amd-ge
 
 Then set `GEMMA_ENDPOINT` for the Phoenix app, use `Check model`, select `OpenAI-compatible`, and run the harness. The simulator verifier still gates every model proposal.
 
+Verify the endpoint from the repo root:
+
+```sh
+make gemma-check
+```
+
 ## Submission Packet
 
 Submission source artifacts live in `submission/`:
@@ -354,6 +373,7 @@ Submission source artifacts live in `submission/`:
 - `cover.svg`: cover image source.
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
+- `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
 
 The repo includes a root `LICENSE` with MIT terms.
 
@@ -403,6 +423,8 @@ make submission-check
 ├── specs/020-demo-evidence-packet/  # Generated demo evidence packet
 ├── specs/021-public-repo-ci/       # GitHub Actions CI for public repo
 ├── specs/022-live-demo-verification/ # Public demo URL verification
+├── specs/023-submission-readiness-gate/ # Final submission readiness gate
+├── specs/024-gemma-endpoint-verification/ # Gemma endpoint evidence gate
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -419,16 +441,18 @@ make submission-check
 ├── scripts/docker_smoke_test.py
 ├── scripts/validate_ci_workflow.py
 ├── scripts/validate_live_demo.py
+├── scripts/validate_gemma_endpoint.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan
 ```
 
-## Next Slice
+## Remaining External Gates
 
-The next useful slice is external model/live deployment:
+The local repo is prepared, but final submission readiness still needs:
 
-1. Connect Fireworks or AMD-hosted vLLM through `GEMMA_ENDPOINT` when credentials are ready.
-2. Run `Check model`, select `OpenAI-compatible`, and verify model proposals still pass through the harness.
-3. Add submission-focused deployment notes for the chosen hosted endpoint.
-4. Keep self-healing and vision as stretch goals until the model-backed harness story is demonstrable.
+1. Publish the committed repo to public GitHub and set `origin`.
+2. Deploy the Docker app to a public URL and run `make live-demo-check`.
+3. Validate a live AMD-hosted or fallback Gemma endpoint with `make gemma-check`.
+4. Replace the TODO URLs in `submission/lablab-submission.md`.
+5. Run `make submission-ready-check`.

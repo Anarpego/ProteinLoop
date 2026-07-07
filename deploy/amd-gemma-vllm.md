@@ -47,6 +47,7 @@ Validate the OpenAI-compatible server:
 
 ```sh
 curl -fsS "$GEMMA_ENDPOINT/v1/models"
+make gemma-check
 ```
 
 Then start the regular ProteinLoop stack:
@@ -56,6 +57,8 @@ docker compose up --build
 ```
 
 Open `http://localhost:4001/`, press `Check model`, select `OpenAI-compatible`, then press `Run selected`. The resulting proposal still passes through the simulator verifier before mutation.
+
+`make gemma-check` also calls `/v1/chat/completions` and writes `submission/gemma-evidence.json` when the endpoint returns a valid ProteinLoop action. Keep that evidence artifact for the final submission audit.
 
 ## Local Validation Without AMD Hardware
 
