@@ -21,6 +21,8 @@ MESH_JSON = SUBMISSION / "mesh-evidence.json"
 MESH_MD = SUBMISSION / "mesh-evidence.md"
 NRF9151_JSON = SUBMISSION / "nrf9151-field-plan.json"
 NRF9151_MD = SUBMISSION / "nrf9151-field-plan.md"
+NRF9151_BRIDGE_JSON = SUBMISSION / "nrf9151-telemetry-bridge.json"
+NRF9151_BRIDGE_MD = SUBMISSION / "nrf9151-telemetry-bridge.md"
 
 
 REQUIRED_FILES = [
@@ -38,6 +40,8 @@ REQUIRED_FILES = [
     MESH_MD,
     NRF9151_JSON,
     NRF9151_MD,
+    NRF9151_BRIDGE_JSON,
+    NRF9151_BRIDGE_MD,
     VIDEO,
     PPTX,
     BUNDLE,
@@ -132,6 +136,10 @@ def main() -> int:
         print("nRF9151 field plan is missing required two-board DECT NR+ details", file=sys.stderr)
         return 1
 
+    if not nrf9151_bridge_ok(NRF9151_BRIDGE_JSON, NRF9151_BRIDGE_MD):
+        print("nRF9151 telemetry bridge is missing required simulator/dashboard mappings", file=sys.stderr)
+        return 1
+
     print("submission artifacts OK")
     print(f"pptx slides: {slide_count}")
     return 0
@@ -180,6 +188,8 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
         "submission/mesh-evidence.md",
         "submission/nrf9151-field-plan.json",
         "submission/nrf9151-field-plan.md",
+        "submission/nrf9151-telemetry-bridge.json",
+        "submission/nrf9151-telemetry-bridge.md",
         "submission/bundle-manifest.json",
     }
 
@@ -289,6 +299,35 @@ def nrf9151_plan_ok(json_path: Path, md_path: Path) -> bool:
         and required_mapping.issubset(mapping)
         and "DECT NR+" in markdown
         and "nRF9151" in markdown
+    )
+
+
+def nrf9151_bridge_ok(json_path: Path, md_path: Path) -> bool:
+    packet = json_load(json_path)
+    markdown = md_path.read_text(encoding="utf-8")
+    results = packet.get("results", [])
+    event_types = {result.get("event_type") for result in results}
+    spike_results = [
+        result
+        for result in results
+        if result.get("event_type") == "critical_water_quality"
+        and result.get("simulator_request", {}).get("path") == "/scenario/ammonia_spike"
+    ]
+    mesh_results = [
+        result
+        for result in results
+        if result.get("event_type") == "edge_node_offline"
+        and result.get("dashboard_event", {}).get("action") == "mesh-fail-node"
+    ]
+    return (
+        packet.get("title") == "ProteinLoop nRF9151 telemetry bridge evidence"
+        and packet.get("record_count") == 2
+        and packet.get("accepted_count") == 2
+        and {"critical_water_quality", "edge_node_offline"}.issubset(event_types)
+        and len(spike_results) == 1
+        and len(mesh_results) == 1
+        and "ProteinLoop nRF9151 Telemetry Bridge" in markdown
+        and "DECT NR+" in markdown
     )
 
 

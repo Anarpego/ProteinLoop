@@ -32,6 +32,8 @@ BUNDLE_FILES = [
     SUBMISSION / "mesh-evidence.md",
     SUBMISSION / "nrf9151-field-plan.json",
     SUBMISSION / "nrf9151-field-plan.md",
+    SUBMISSION / "nrf9151-telemetry-bridge.json",
+    SUBMISSION / "nrf9151-telemetry-bridge.md",
 ]
 
 

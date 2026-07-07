@@ -1,0 +1,32 @@
+{
+  "accepted_count": 2,
+  "record_count": 2,
+  "results": [
+    {
+      "accepted": true,
+      "board_id": "nr9151-tank-edge-a",
+      "detail": "critical tank reading at 27.1 C",
+      "event_type": "critical_water_quality",
+      "simulator_request": {
+        "method": "POST",
+        "path": "/scenario/ammonia_spike",
+        "payload": {
+          "ammonia_mg_l": 4.4,
+          "oxygen_mg_l": 4.2
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "board_id": "nr9151-community-gateway-b",
+      "dashboard_event": {
+        "action": "mesh-fail-node",
+        "panel": "self_healing_mesh",
+        "target_node": "edge-tank-a"
+      },
+      "detail": "nr9151-tank-edge-a offline; battery 3840 mV; link 71",
+      "event_type": "edge_node_offline"
+    }
+  ],
+  "title": "ProteinLoop nRF9151 telemetry bridge evidence"
+}

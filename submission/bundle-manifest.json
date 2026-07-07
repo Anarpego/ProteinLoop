@@ -7,14 +7,14 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 26854,
+      "bytes": 27741,
       "path": "README.md",
-      "sha256": "d023abf4b502ffb058dda8ca16e6715eecc48fbbe107a0a29020826ece162797"
+      "sha256": "80a9ff9019fd43e687f29d19a246543dd7e8cf063dca04b94f9497077728bcc0"
     },
     {
-      "bytes": 3227,
+      "bytes": 3400,
       "path": "submission/lablab-submission.md",
-      "sha256": "b1fb622a52d42e5dd595a5354bb4dbab159e4ad07608db9b1178bb78f63ca644"
+      "sha256": "81fe6a52a6c4813930066f25fde1dc67a698480b04930afd6a8b082da33191b0"
     },
     {
       "bytes": 2458,
@@ -85,7 +85,17 @@
       "bytes": 2577,
       "path": "submission/nrf9151-field-plan.md",
       "sha256": "b44e5517a2ddb56f9e777af59622ab2fe704924add677e1d588ae87d1f80bb34"
+    },
+    {
+      "bytes": 841,
+      "path": "submission/nrf9151-telemetry-bridge.json",
+      "sha256": "d6f7a085d5e1a6500d28e9456cb13776296909ec102ab4d21b0e7abe4c287315"
+    },
+    {
+      "bytes": 636,
+      "path": "submission/nrf9151-telemetry-bridge.md",
+      "sha256": "00a80e52b1ec506c446f3d6931564d52a7064d3c12464a3a2bb8b728a227f26d"
     }
   ],
-  "generated_at": "2026-07-07T13:53:18.778652+00:00"
+  "generated_at": "2026-07-07T13:59:18.564478+00:00"
 }
