@@ -56,6 +56,8 @@ The verified demo URL setter adds `make set-demo-url DEMO_URL=https://...`, whic
 
 The lablab form export slice adds `submission/lablab-form.json`, a structured copy/paste packet with artifact paths and unresolved URL fields.
 
+The final readiness report slice adds `submission/final-readiness-report.md`, a generated handoff report that records passing local gates, failing external gates, and the exact commands needed before lablab upload.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -84,6 +86,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/022-live-demo-verification/spec.md` defines the public demo URL verification path.
 - `specs/024-gemma-endpoint-verification/spec.md` defines the OpenAI-compatible Gemma endpoint verification path.
 - `specs/030-lablab-form-export/spec.md` defines the structured lablab form export.
+- `specs/031-final-readiness-report/spec.md` defines the generated final readiness handoff report.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -417,6 +420,7 @@ Submission source artifacts live in `submission/`:
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
+- `final-readiness-report.md`: generated pass/fail handoff report for final external gates.
 
 The repo includes a root `LICENSE` with MIT terms.
 
@@ -449,6 +453,12 @@ Export structured lablab form fields:
 
 ```sh
 make submission-form
+```
+
+Generate the final readiness handoff report:
+
+```sh
+make readiness-report
 ```
 
 ## Project Layout
@@ -485,6 +495,7 @@ make submission-form
 ├── specs/028-public-repo-publish-helper/ # Public GitHub publish helper
 ├── specs/029-verified-demo-url-setter/ # Verified lablab demo URL setter
 ├── specs/030-lablab-form-export/ # Structured lablab form export
+├── specs/031-final-readiness-report/ # Final readiness handoff report
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

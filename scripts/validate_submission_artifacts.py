@@ -14,6 +14,7 @@ VIDEO = SUBMISSION / "proteinloop-demo-video.avi"
 BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
 MANIFEST = SUBMISSION / "bundle-manifest.json"
 FORM = SUBMISSION / "lablab-form.json"
+REPORT = SUBMISSION / "final-readiness-report.md"
 
 
 REQUIRED_FILES = [
@@ -30,6 +31,7 @@ REQUIRED_FILES = [
     BUNDLE,
     MANIFEST,
     FORM,
+    REPORT,
 ]
 
 
@@ -69,6 +71,10 @@ def main() -> int:
 
     if not form_ok(FORM):
         print("lablab-form.json is missing required fields or artifacts", file=sys.stderr)
+        return 1
+
+    if not report_ok(REPORT):
+        print("final-readiness-report.md is missing required readiness content", file=sys.stderr)
         return 1
 
     cover_text = (SUBMISSION / "cover.svg").read_text(encoding="utf-8")
@@ -176,6 +182,19 @@ def form_ok(path: Path) -> bool:
         "readme",
     }
     return required_keys.issubset(form) and required_artifacts.issubset(artifacts)
+
+
+def report_ok(path: Path) -> bool:
+    text = path.read_text(encoding="utf-8")
+    required_fragments = [
+        "# ProteinLoop Final Readiness Report",
+        "## Command Evidence",
+        "## Remaining Blockers",
+        "## Next Commands",
+        "make submission-ready-check",
+        "GEMMA_MODEL=google/gemma-4-E4B-it",
+    ]
+    return all(fragment in text for fragment in required_fragments)
 
 
 if __name__ == "__main__":

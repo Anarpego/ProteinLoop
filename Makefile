@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -29,6 +29,7 @@ submission-render:
 	node scripts/generate_submission_deck.mjs
 	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
 	python3 scripts/build_submission_bundle.py
+	python3 scripts/generate_readiness_report.py
 
 submission-check:
 	python3 scripts/validate_submission_artifacts.py
@@ -38,6 +39,9 @@ submission-bundle:
 
 submission-form:
 	python3 scripts/export_lablab_form.py
+
+readiness-report:
+	python3 scripts/generate_readiness_report.py
 
 submission-ready-check:
 	python3 scripts/validate_submission_readiness.py
