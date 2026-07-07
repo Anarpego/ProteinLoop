@@ -1,20 +1,13 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-07T13:59:18+00:00
-Commit: `eb4689d`
-Working tree: `M Makefile
- M README.md
- M scripts/build_submission_bundle.py
- M scripts/validate_submission_artifacts.py
+Generated: 2026-07-07T14:13:44+00:00
+Commit: `381f239`
+Working tree: `M README.md
+ M app/mix.exs
+ M app/mix.lock
  M submission/bundle-manifest.json
- M submission/lablab-form.json
- M submission/lablab-submission.md
  M submission/proteinloop-lablab-upload.zip
-?? scripts/nrf9151_telemetry_bridge.py
-?? specs/038-nrf9151-telemetry-bridge/
-?? submission/nrf9151-telemetry-bridge.json
-?? submission/nrf9151-telemetry-bridge.md
-?? tests/test_nrf9151_telemetry_bridge.py`
+?? specs/039-phoenix-patch-refresh/`
 
 ## Command Evidence
 
@@ -56,7 +49,7 @@ make submission-ready-check
 python3 -m unittest discover -s tests
 .....................................................................
 ----------------------------------------------------------------------
-Ran 69 tests in 0.128s
+Ran 69 tests in 0.114s
 
 OK
 ```
@@ -96,7 +89,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - eb4689d2eaab928d488f1dd83ec6fc71bec501f2
+[ok] local git commit - 381f239963069853b6cfa2011232f5a5aa5a5085
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed

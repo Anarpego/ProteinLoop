@@ -150,6 +150,13 @@ The workflow uses the current release tags checked on GitHub Releases:
 - `erlef/setup-beam@v1.24.1`
 - `docker/setup-buildx-action@v4.2.0`
 
+Phoenix dependency pins were refreshed against Hex on July 7, 2026:
+
+- `phoenix` latest stable: `1.8.9`.
+- `phoenix_live_view` latest stable: `1.2.6`.
+- `websock_adapter` latest stable: `0.6.0` through dependency resolution.
+- Existing pins for `phoenix_html`, `phoenix_live_reload`, `lazy_html`, `esbuild`, `tailwind`, `bandit`, `req`, `gettext`, `jason`, `dns_cluster`, `telemetry_metrics`, and `telemetry_poller` already matched the latest stable Hex releases checked during the refresh.
+
 Run the final submission readiness gate:
 
 ```sh
