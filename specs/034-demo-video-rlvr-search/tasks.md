@@ -4,4 +4,4 @@
 - [x] Add RLVR policy search scene.
 - [x] Update unit tests.
 - [x] Regenerate video and submission artifacts.
-- [ ] Run verification.
+- [x] Run verification.
