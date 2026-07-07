@@ -1,0 +1,223 @@
+{
+  "after_failure": {
+    "agents": [
+      {
+        "id": "fish-tank",
+        "label": "Fish tank agent",
+        "migrations": 1,
+        "node_id": "edge-tank-b",
+        "state_token": "fish-tank:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "hydroponia",
+        "label": "Hydroponia agent",
+        "migrations": 1,
+        "node_id": "cloud-loop",
+        "state_token": "hydroponia:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "duckweed-chickens",
+        "label": "Duckweed/chickens agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "duckweed-chickens:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "supervisor",
+        "label": "Supervisor agent",
+        "migrations": 0,
+        "node_id": "cloud-loop",
+        "state_token": "supervisor:state:v1",
+        "status": "running"
+      }
+    ],
+    "events": [
+      "2 agents migrated from edge-tank-a",
+      "mesh initialized"
+    ],
+    "failed_node": "edge-tank-a",
+    "migration_count": 2,
+    "nodes": [
+      {
+        "id": "edge-tank-a",
+        "label": "Edge tank A",
+        "online": false,
+        "role": "sensor/actuator"
+      },
+      {
+        "id": "edge-tank-b",
+        "label": "Edge tank B",
+        "online": true,
+        "role": "backup controller"
+      },
+      {
+        "id": "cloud-loop",
+        "label": "Cloud loop",
+        "online": true,
+        "role": "supervisor"
+      }
+    ]
+  },
+  "after_recovery": {
+    "agents": [
+      {
+        "id": "fish-tank",
+        "label": "Fish tank agent",
+        "migrations": 1,
+        "node_id": "edge-tank-b",
+        "state_token": "fish-tank:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "hydroponia",
+        "label": "Hydroponia agent",
+        "migrations": 1,
+        "node_id": "cloud-loop",
+        "state_token": "hydroponia:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "duckweed-chickens",
+        "label": "Duckweed/chickens agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "duckweed-chickens:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "supervisor",
+        "label": "Supervisor agent",
+        "migrations": 0,
+        "node_id": "cloud-loop",
+        "state_token": "supervisor:state:v1",
+        "status": "running"
+      }
+    ],
+    "events": [
+      "edge-tank-a recovered and ready",
+      "2 agents migrated from edge-tank-a",
+      "mesh initialized"
+    ],
+    "failed_node": null,
+    "migration_count": 2,
+    "nodes": [
+      {
+        "id": "edge-tank-a",
+        "label": "Edge tank A",
+        "online": true,
+        "role": "sensor/actuator"
+      },
+      {
+        "id": "edge-tank-b",
+        "label": "Edge tank B",
+        "online": true,
+        "role": "backup controller"
+      },
+      {
+        "id": "cloud-loop",
+        "label": "Cloud loop",
+        "online": true,
+        "role": "supervisor"
+      }
+    ]
+  },
+  "checks": {
+    "agents_stay_on_migrated_nodes_after_recovery": true,
+    "all_agents_left_failed_node": true,
+    "failed_node_offline": true,
+    "identities_preserved": true,
+    "migration_count": 2,
+    "recovered_node_online": true,
+    "state_tokens_preserved": true
+  },
+  "failed_node": "edge-tank-a",
+  "initial": {
+    "agents": [
+      {
+        "id": "fish-tank",
+        "label": "Fish tank agent",
+        "migrations": 0,
+        "node_id": "edge-tank-a",
+        "state_token": "fish-tank:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "hydroponia",
+        "label": "Hydroponia agent",
+        "migrations": 0,
+        "node_id": "edge-tank-a",
+        "state_token": "hydroponia:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "duckweed-chickens",
+        "label": "Duckweed/chickens agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "duckweed-chickens:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "supervisor",
+        "label": "Supervisor agent",
+        "migrations": 0,
+        "node_id": "cloud-loop",
+        "state_token": "supervisor:state:v1",
+        "status": "running"
+      }
+    ],
+    "events": [
+      "mesh initialized"
+    ],
+    "failed_node": null,
+    "migration_count": 0,
+    "nodes": [
+      {
+        "id": "edge-tank-a",
+        "label": "Edge tank A",
+        "online": true,
+        "role": "sensor/actuator"
+      },
+      {
+        "id": "edge-tank-b",
+        "label": "Edge tank B",
+        "online": true,
+        "role": "backup controller"
+      },
+      {
+        "id": "cloud-loop",
+        "label": "Cloud loop",
+        "online": true,
+        "role": "supervisor"
+      }
+    ]
+  },
+  "migrated_agents": [
+    {
+      "from_node": "edge-tank-a",
+      "id": "fish-tank",
+      "identity_preserved": true,
+      "label": "Fish tank agent",
+      "migrated_to": "edge-tank-b",
+      "migrations": 1,
+      "node_after_recovery": "edge-tank-b",
+      "state_token": "fish-tank:state:v1",
+      "state_token_preserved": true
+    },
+    {
+      "from_node": "edge-tank-a",
+      "id": "hydroponia",
+      "identity_preserved": true,
+      "label": "Hydroponia agent",
+      "migrated_to": "cloud-loop",
+      "migrations": 1,
+      "node_after_recovery": "cloud-loop",
+      "state_token": "hydroponia:state:v1",
+      "state_token_preserved": true
+    }
+  ],
+  "title": "ProteinLoop self-healing mesh evidence"
+}

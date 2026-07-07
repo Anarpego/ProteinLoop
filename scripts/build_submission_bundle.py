@@ -28,6 +28,8 @@ BUNDLE_FILES = [
     SUBMISSION / "demo-evidence.md",
     SUBMISSION / "demo-rehearsal.json",
     SUBMISSION / "demo-rehearsal.md",
+    SUBMISSION / "mesh-evidence.json",
+    SUBMISSION / "mesh-evidence.md",
 ]
 
 

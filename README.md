@@ -66,6 +66,8 @@ The generated demo video now includes an RLVR policy search scene so the submitt
 
 The demo rehearsal packet adds `submission/demo-rehearsal.json` and `.md`, generated from simulator behavior to prove the judge path before the public deployment is available.
 
+The mesh evidence packet adds `submission/mesh-evidence.json` and `.md`, generated from the Elixir mesh model to prove agent migration and state-token preservation.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -99,6 +101,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/033-rlvr-policy-improvement/spec.md` defines the verifier-guided policy search curve.
 - `specs/034-demo-video-rlvr-search/spec.md` defines the generated video update for the policy search scene.
 - `specs/035-demo-rehearsal-packet/spec.md` defines the executable judge demo rehearsal packet.
+- `specs/036-mesh-evidence-packet/spec.md` defines the generated self-healing mesh evidence packet.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -434,6 +437,7 @@ Submission source artifacts live in `submission/`:
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
+- `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
@@ -477,6 +481,12 @@ Generate the executable judge-path rehearsal packet:
 
 ```sh
 make demo-rehearsal
+```
+
+Generate the self-healing mesh evidence packet:
+
+```sh
+make mesh-evidence
 ```
 
 Generate the final readiness handoff report:
@@ -524,6 +534,7 @@ make readiness-report
 ├── specs/033-rlvr-policy-improvement/ # RLVR policy search improvement
 ├── specs/034-demo-video-rlvr-search/ # Demo video policy-search scene
 ├── specs/035-demo-rehearsal-packet/ # Executable demo rehearsal packet
+├── specs/036-mesh-evidence-packet/ # Self-healing mesh evidence packet
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover

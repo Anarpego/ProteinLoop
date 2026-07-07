@@ -17,6 +17,8 @@ FORM = SUBMISSION / "lablab-form.json"
 REPORT = SUBMISSION / "final-readiness-report.md"
 REHEARSAL_JSON = SUBMISSION / "demo-rehearsal.json"
 REHEARSAL_MD = SUBMISSION / "demo-rehearsal.md"
+MESH_JSON = SUBMISSION / "mesh-evidence.json"
+MESH_MD = SUBMISSION / "mesh-evidence.md"
 
 
 REQUIRED_FILES = [
@@ -30,6 +32,8 @@ REQUIRED_FILES = [
     SUBMISSION / "demo-evidence.md",
     REHEARSAL_JSON,
     REHEARSAL_MD,
+    MESH_JSON,
+    MESH_MD,
     VIDEO,
     PPTX,
     BUNDLE,
@@ -116,6 +120,10 @@ def main() -> int:
         print("demo rehearsal packet is missing required passing steps", file=sys.stderr)
         return 1
 
+    if not mesh_evidence_ok(MESH_JSON, MESH_MD):
+        print("mesh evidence packet is missing required migration proof", file=sys.stderr)
+        return 1
+
     print("submission artifacts OK")
     print(f"pptx slides: {slide_count}")
     return 0
@@ -160,6 +168,8 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
         "submission/demo-evidence.md",
         "submission/demo-rehearsal.json",
         "submission/demo-rehearsal.md",
+        "submission/mesh-evidence.json",
+        "submission/mesh-evidence.md",
         "submission/bundle-manifest.json",
     }
 
@@ -229,6 +239,24 @@ def rehearsal_ok(json_path: Path, md_path: Path) -> bool:
         and steps["unsafe_rejection"].get("state_preserved") is True
         and steps["rlvr_policy_search"].get("improvement", 0) > 0
         and "ProteinLoop Demo Rehearsal" in markdown
+    )
+
+
+def mesh_evidence_ok(json_path: Path, md_path: Path) -> bool:
+    packet = json_load(json_path)
+    checks = packet.get("checks", {})
+    markdown = md_path.read_text(encoding="utf-8")
+    migrated_agents = packet.get("migrated_agents", [])
+    return (
+        checks.get("failed_node_offline") is True
+        and checks.get("all_agents_left_failed_node") is True
+        and checks.get("migration_count") == 2
+        and checks.get("state_tokens_preserved") is True
+        and checks.get("identities_preserved") is True
+        and checks.get("recovered_node_online") is True
+        and checks.get("agents_stay_on_migrated_nodes_after_recovery") is True
+        and len(migrated_agents) == 2
+        and "ProteinLoop Mesh Evidence" in markdown
     )
 
 
