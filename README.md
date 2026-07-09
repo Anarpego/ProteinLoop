@@ -193,6 +193,16 @@ Validate the public deployment Compose profile:
 make public-deploy-check
 ```
 
+Verify hackathon credit access before deploying Gemma:
+
+```sh
+FIREWORKS_API_KEY=your-fireworks-key \
+AMD_CLOUD_STATUS=active \
+make credit-check
+```
+
+Set `AMD_CLOUD_STATUS=active` only after the AMD Cloud console shows active credits and GPU quota. The Fireworks check calls the OpenAI-compatible `/models` endpoint and fails clearly when the API key or credits are not usable.
+
 Validate an AMD-hosted or fallback OpenAI-compatible Gemma endpoint:
 
 ```sh

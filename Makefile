@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check gemma-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -70,6 +70,9 @@ ci-check:
 
 live-demo-check:
 	DEMO_URL="$(DEMO_URL)" SIMULATOR_PUBLIC_URL="$(SIMULATOR_PUBLIC_URL)" python3 scripts/validate_live_demo.py
+
+credit-check:
+	FIREWORKS_API_KEY="$(FIREWORKS_API_KEY)" FIREWORKS_BASE_URL="$(FIREWORKS_BASE_URL)" AMD_CLOUD_STATUS="$(AMD_CLOUD_STATUS)" python3 scripts/validate_credit_access.py
 
 gemma-check:
 	GEMMA_ENDPOINT="$(GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" python3 scripts/validate_gemma_endpoint.py

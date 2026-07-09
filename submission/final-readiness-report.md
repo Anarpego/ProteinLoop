@@ -1,15 +1,14 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-09T04:05:51+00:00
-Commit: `0a7f2af`
-Working tree: `M README.md
- M scripts/validate_gemma_endpoint.py
- M scripts/validate_submission_readiness.py
+Generated: 2026-07-09T04:10:12+00:00
+Commit: `17cee9e`
+Working tree: `M Makefile
+ M README.md
  M submission/bundle-manifest.json
  M submission/proteinloop-lablab-upload.zip
- M tests/test_gemma_endpoint_validator.py
- M tests/test_submission_readiness.py
-?? specs/041-gemma-model-evidence-hardening/`
+?? scripts/validate_credit_access.py
+?? specs/042-credit-access-verification/
+?? tests/test_credit_access_validator.py`
 
 ## Command Evidence
 
@@ -49,9 +48,9 @@ make submission-ready-check
 
 ```text
 python3 -m unittest discover -s tests
-..........................................................................
+................................................................................
 ----------------------------------------------------------------------
-Ran 74 tests in 0.106s
+Ran 80 tests in 0.181s
 
 OK
 ```
@@ -91,7 +90,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 0a7f2af04c6fdb8809998c7c1f5df87e90d21d38
+[ok] local git commit - 17cee9e7f75c12b1852f7a19fef6a3edecfc6124
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
