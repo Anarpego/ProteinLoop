@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.validate_submission_readiness import (
     REQUIRED_ARTIFACTS,
     ROOT,
+    extract_application_url,
     extract_labeled_url,
     gemma_evidence_check,
     is_public_http_url,
@@ -23,6 +24,14 @@ class SubmissionReadinessTests(unittest.TestCase):
 
         self.assertIsNone(extract_labeled_url(text, "Public GitHub Repository"))
         self.assertEqual(extract_labeled_url(text, "Application URL"), "https://demo.example.com")
+
+    def test_extract_application_url_reads_section_written_by_setter(self):
+        text = "## Application URL\n\nhttps://proteinloop.example.com\n\n## Key Demo Path\n\n1. Open dashboard\n"
+
+        self.assertEqual(extract_application_url(text), "https://proteinloop.example.com")
+
+    def test_extract_application_url_rejects_section_todo(self):
+        self.assertIsNone(extract_application_url("## Application URL\n\nTODO\n"))
 
     def test_url_check_requires_github_host_for_repo(self):
         self.assertFalse(url_check("repo", "https://example.com/team/repo", required_host="github.com").ok)

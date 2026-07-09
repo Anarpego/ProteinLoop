@@ -12,7 +12,7 @@ Before final upload, the team can run one command that distinguishes local artif
 
 1. The repo shall include a stdlib-only submission readiness validator.
 2. The validator shall require the lablab submission draft to contain a real public GitHub URL.
-3. The validator shall require the lablab submission draft to contain a real application URL.
+3. The validator shall require the lablab submission draft to contain a real application URL, including the `## Application URL` section format written by `make set-demo-url`.
 4. The validator shall fail if either URL is still `TODO` or missing.
 5. The validator shall require the project root to be a git repository with at least one commit.
 6. The validator shall require an `origin` remote that matches the public GitHub URL in the lablab draft.

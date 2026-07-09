@@ -80,7 +80,7 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
     repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
-    app_url = extract_labeled_url(lablab_text, "Application URL")
+    app_url = extract_application_url(lablab_text)
 
     checks.append(url_check("public GitHub repository URL", repo_url, required_host="github.com"))
     checks.append(url_check("application URL", app_url, require_public=True))
@@ -100,6 +100,33 @@ def extract_labeled_url(text: str, label: str) -> str | None:
     if value.upper() == "TODO":
         return None
     return value
+
+
+def extract_application_url(text: str) -> str | None:
+    labeled = extract_labeled_url(text, "Application URL")
+    if labeled:
+        return labeled
+
+    section = extract_markdown_section_value(text, "Application URL")
+    if not section or section.upper() == "TODO":
+        return None
+    return section
+
+
+def extract_markdown_section_value(text: str, heading: str) -> str | None:
+    pattern = re.compile(
+        rf"^##\s+{re.escape(heading)}\s*$\n(?P<body>.*?)(?=^##\s+|\Z)",
+        re.MULTILINE | re.DOTALL,
+    )
+    match = pattern.search(text)
+    if not match:
+        return None
+
+    for line in match.group("body").splitlines():
+        value = line.strip()
+        if value:
+            return value
+    return None
 
 
 def url_check(
