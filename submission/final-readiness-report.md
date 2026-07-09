@@ -1,7 +1,7 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-09T04:39:06+00:00
-Commit: `2ac176d`
+Generated: 2026-07-09T04:41:51+00:00
+Commit: `0d22087`
 Working tree (source): `clean`
 
 ## Command Evidence
@@ -52,9 +52,9 @@ make submission-ready-check
 
 ```text
 python3 -m unittest discover -s tests
-...........................................................................................................
+..............................................................................................................
 ----------------------------------------------------------------------
-Ran 107 tests in 0.116s
+Ran 110 tests in 0.126s
 
 OK
 ```
@@ -137,11 +137,13 @@ make[1]: *** [gemma-check] Error 2
 ```text
 python3 scripts/validate_submission_readiness.py
 [FAIL] required local artifacts - submission/gemma-evidence.json
+[ok] lablab form matches draft - submission/lablab-form.json
+[ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
 [FAIL] Gemma endpoint evidence - missing submission/gemma-evidence.json
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 2ac176d891a933c5d9499356e3cc9834579b77be
+[ok] local git commit - 0d220879b75a9efb93bc7b9b12ac9a7f59206135
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
