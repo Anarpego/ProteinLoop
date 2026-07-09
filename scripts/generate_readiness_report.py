@@ -253,7 +253,7 @@ def render_report(
             "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
             "make set-demo-url DEMO_URL=https://your-public-demo-url",
             "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E4B-it",
-            "make submission-ready-check",
+            "make submission-finalize",
             "```",
             "",
             "## Output Snippets",

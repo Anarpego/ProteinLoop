@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check public-env-check public-deploy-check publish-repo set-demo-url
 
 test:
 	python3 -m unittest discover -s tests
@@ -43,6 +43,9 @@ submission-bundle:
 
 submission-form:
 	python3 scripts/export_lablab_form.py
+
+submission-finalize:
+	python3 scripts/finalize_submission.py $(if $(DRY_RUN),--dry-run,)
 
 demo-rehearsal:
 	python3 scripts/generate_demo_rehearsal.py

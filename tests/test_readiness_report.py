@@ -106,6 +106,7 @@ class ReadinessReportTests(unittest.TestCase):
         self.assertIn("GEMMA_MODEL=google/gemma-4-E4B-it", report)
         self.assertIn("make credit-check", report)
         self.assertIn("make public-env-check", report)
+        self.assertIn("make submission-finalize", report)
 
     def test_truncate_output_keeps_short_output_unchanged(self):
         self.assertEqual(truncate_output("short", limit=10), "short")

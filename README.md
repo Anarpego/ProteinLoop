@@ -167,6 +167,18 @@ This gate is expected to fail until `submission/lablab-submission.md` contains t
 
 The final Application URL must be public. Localhost, loopback, and private-network URLs are intentionally rejected by `make submission-ready-check`.
 
+After the external repo, demo URL, and Gemma evidence are available, run the finalizer so generated artifacts are rebuilt in the correct order:
+
+```sh
+make submission-finalize
+```
+
+Preview the sequence without running it:
+
+```sh
+make submission-finalize DRY_RUN=1
+```
+
 Validate a public or local demo URL:
 
 ```sh
@@ -523,7 +535,7 @@ python3 scripts/validate_submission_artifacts.py
 Validate final readiness after the public repo and demo URL exist:
 
 ```sh
-make submission-ready-check
+make submission-finalize
 ```
 
 Regenerate and validate with Make:
@@ -617,6 +629,7 @@ make readiness-report
 ├── specs/036-mesh-evidence-packet/ # Self-healing mesh evidence packet
 ├── specs/037-nrf9151-field-plan/ # Two-board nRF9151 field plan
 ├── specs/038-nrf9151-telemetry-bridge/ # Two-board nRF9151 bridge contract
+├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
 ├── submission/                      # lablab copy, video script, slides, cover
@@ -641,6 +654,7 @@ make readiness-report
 ├── scripts/publish_public_repo.py
 ├── scripts/set_demo_url.py
 ├── scripts/export_lablab_form.py
+├── scripts/finalize_submission.py
 ├── scripts/validate_submission_readiness.py
 ├── scripts/validate_submission_artifacts.py
 └── goal.md                         # Original master plan
@@ -654,4 +668,4 @@ The local repo is prepared, but final submission readiness still needs:
 2. Deploy the Docker app to a public URL and run `make live-demo-check`.
 3. Validate a live AMD-hosted or fallback Gemma endpoint with `make gemma-check`.
 4. Replace the TODO URLs in `submission/lablab-submission.md`.
-5. Run `make submission-ready-check`.
+5. Run `make submission-finalize`.
