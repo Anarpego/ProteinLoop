@@ -1,0 +1,53 @@
+{
+  "checked_at": "2026-07-09T04:34:23.167962+00:00",
+  "checks": [
+    {
+      "detail": "",
+      "name": "simulator health",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "anomaly forecast endpoint",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "rlvr endpoint",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "rlvr training endpoint",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "reset endpoint",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "ammonia spike endpoint",
+      "ok": true
+    },
+    {
+      "detail": "reward=135.2741",
+      "name": "safety recovery endpoint",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "operator dashboard route",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "producer Spanish route",
+      "ok": true
+    }
+  ],
+  "ok": true,
+  "simulator_url": "http://127.0.0.1:8000",
+  "web_url": "http://127.0.0.1:4001"
+}
