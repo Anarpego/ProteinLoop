@@ -18,6 +18,7 @@ The team can publish the committed repository, configure `origin`, push `main`, 
 6. The helper shall update `submission/lablab-submission.md` with the public GitHub URL.
 7. The helper shall support `--dry-run` for command preview.
 8. README and deploy docs shall document the helper.
+9. After a successful publish, the helper shall regenerate `submission/lablab-form.json` from the updated lablab draft.
 
 ## Acceptance Criteria
 

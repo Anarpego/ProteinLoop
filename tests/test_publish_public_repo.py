@@ -107,6 +107,31 @@ class PublishPublicRepoTests(unittest.TestCase):
                 "Public GitHub Repository: https://github.com/Anarpego/proteinloop\n",
             )
 
+    def test_update_submission_repo_url_refreshes_form_export(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "lablab-submission.md"
+            form = Path(temp_dir) / "lablab-form.json"
+            path.write_text(
+                """
+## Project Title
+
+ProteinLoop
+
+## Repository
+
+Public GitHub Repository: TODO
+
+## Application URL
+
+https://demo.example.com
+                """,
+                encoding="utf-8",
+            )
+
+            update_submission_repo_url(path, "https://github.com/Anarpego/proteinloop", form_path=form)
+
+            self.assertIn('"repository_url": "https://github.com/Anarpego/proteinloop"', form.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

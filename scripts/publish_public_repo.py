@@ -13,6 +13,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LABLAB = ROOT / "submission" / "lablab-submission.md"
 
+sys.path.insert(0, str(ROOT))
+
+from scripts.export_lablab_form import OUTPUT as LABLAB_FORM, write_form  # noqa: E402
+
 
 @dataclass(frozen=True)
 class RepoRef:
@@ -59,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
         for command in commands:
             print("+ " + " ".join(command))
         print(f"+ update {LABLAB.relative_to(ROOT)}")
+        print(f"+ update {LABLAB_FORM.relative_to(ROOT)}")
         return 0
 
     if gh_auth_required(commands):
@@ -73,9 +78,10 @@ def main(argv: list[str] | None = None) -> int:
             print(result.stderr or result.stdout, file=sys.stderr)
             return result.returncode
 
-    update_submission_repo_url(LABLAB, repo.url)
+    update_submission_repo_url(LABLAB, repo.url, form_path=LABLAB_FORM)
     print(f"published {repo.url}")
     print(f"updated {LABLAB.relative_to(ROOT)}")
+    print(f"updated {LABLAB_FORM.relative_to(ROOT)}")
     return 0
 
 
@@ -161,7 +167,7 @@ def normalize_git_remote(url: str) -> str:
     return cleaned.strip("/").lower()
 
 
-def update_submission_repo_url(path: Path, repo_url: str) -> None:
+def update_submission_repo_url(path: Path, repo_url: str, form_path: Path | None = None) -> None:
     text = path.read_text(encoding="utf-8")
     pattern = re.compile(r"^Public GitHub Repository:\s*\S+\s*$", re.MULTILINE)
     replacement = f"Public GitHub Repository: {repo_url}"
@@ -172,6 +178,8 @@ def update_submission_repo_url(path: Path, repo_url: str) -> None:
     if not updated.endswith("\n"):
         updated += "\n"
     path.write_text(updated, encoding="utf-8")
+    if form_path is not None:
+        write_form(path, form_path)
 
 
 def run(command: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:

@@ -16,6 +16,7 @@ The team can transfer submission fields into lablab without manually hunting thr
 4. The exporter shall mark repository and application URLs as unresolved when they are `TODO`.
 5. The submission artifact validator shall require the generated JSON export.
 6. The Make render target shall generate the JSON export.
+7. Final URL helper scripts shall reuse the exporter after mutating `submission/lablab-submission.md`.
 
 ## Acceptance Criteria
 

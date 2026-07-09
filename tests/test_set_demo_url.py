@@ -31,6 +31,31 @@ class SetDemoUrlTests(unittest.TestCase):
             self.assertIn("## Application URL", path.read_text(encoding="utf-8"))
             self.assertIn("https://proteinloop.example.com", path.read_text(encoding="utf-8"))
 
+    def test_update_application_url_refreshes_form_export(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "lablab-submission.md"
+            form = Path(temp_dir) / "lablab-form.json"
+            path.write_text(
+                """
+## Project Title
+
+ProteinLoop
+
+## Repository
+
+Public GitHub Repository: https://github.com/Anarpego/proteinloop
+
+## Application URL
+
+TODO
+                """,
+                encoding="utf-8",
+            )
+
+            update_application_url(path, "https://proteinloop.example.com", form_path=form)
+
+            self.assertIn('"application_url": "https://proteinloop.example.com"', form.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

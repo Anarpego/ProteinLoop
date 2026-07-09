@@ -54,6 +54,8 @@ After it passes, update the lablab draft safely:
 make set-demo-url DEMO_URL=https://your-demo-url
 ```
 
+The helper also regenerates `submission/lablab-form.json` so the structured upload packet matches the markdown draft.
+
 If the simulator is also public, verify it too:
 
 ```sh

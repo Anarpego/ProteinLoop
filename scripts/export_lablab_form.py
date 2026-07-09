@@ -23,10 +23,16 @@ ARTIFACTS = {
 
 
 def main() -> int:
-    form = export_form(SOURCE.read_text(encoding="utf-8"))
-    OUTPUT.write_text(json.dumps(form, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"wrote {OUTPUT.relative_to(ROOT)}")
+    output = write_form()
+    print(f"wrote {output.relative_to(ROOT)}")
     return 0
+
+
+def write_form(source_path: Path = SOURCE, output_path: Path = OUTPUT) -> Path:
+    form = export_form(source_path.read_text(encoding="utf-8"))
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(form, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return output_path
 
 
 def export_form(markdown: str) -> dict[str, Any]:

@@ -187,6 +187,8 @@ Preview updating the lablab Application URL:
 make set-demo-url DEMO_URL=https://your-demo-url DRY_RUN=1
 ```
 
+After the public route checks pass, `make set-demo-url` updates both `submission/lablab-submission.md` and `submission/lablab-form.json`.
+
 Validate the public deployment Compose profile:
 
 ```sh
@@ -410,7 +412,7 @@ CI intentionally skips `docker-compose.gemma-rocm.yml` because AMD-hosted Gemma 
 
 The GitHub publication checklist is documented in `deploy/public-repo.md`.
 
-The local repository already has commits. Publishing requires either a valid GitHub CLI session or an already-created public GitHub repository that Git can push to. The helper sets `origin`, pushes `main`, and replaces `Public GitHub Repository: TODO` in `submission/lablab-submission.md` after a successful push. If `origin` already exists, it must match `GITHUB_REPOSITORY`; the helper refuses mismatched remotes so the submission draft cannot point at a different repo than the one pushed.
+The local repository already has commits. Publishing requires either a valid GitHub CLI session or an already-created public GitHub repository that Git can push to. The helper sets `origin`, pushes `main`, replaces `Public GitHub Repository: TODO` in `submission/lablab-submission.md`, and regenerates `submission/lablab-form.json` after a successful push. If `origin` already exists, it must match `GITHUB_REPOSITORY`; the helper refuses mismatched remotes so the submission draft cannot point at a different repo than the one pushed.
 
 Preview the publish steps:
 

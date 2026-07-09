@@ -14,6 +14,7 @@ LABLAB = ROOT / "submission" / "lablab-submission.md"
 sys.path.insert(0, str(ROOT))
 
 from scripts.validate_live_demo import check_live_demo, normalize_base_url  # noqa: E402
+from scripts.export_lablab_form import OUTPUT as LABLAB_FORM, write_form  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -28,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(f"would verify demo URL: {demo_url}")
         print(f"would update {LABLAB.relative_to(ROOT)}")
+        print(f"would update {LABLAB_FORM.relative_to(ROOT)}")
         return 0
 
     checks = check_live_demo(demo_url, None, args.timeout)
@@ -41,8 +43,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(failed)} live demo check(s) failed; Application URL not updated", file=sys.stderr)
         return 1
 
-    update_application_url(LABLAB, demo_url)
+    update_application_url(LABLAB, demo_url, form_path=LABLAB_FORM)
     print(f"updated Application URL: {demo_url}")
+    print(f"updated {LABLAB_FORM.relative_to(ROOT)}")
     return 0
 
 
@@ -54,7 +57,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def update_application_url(path: Path, demo_url: str) -> None:
+def update_application_url(path: Path, demo_url: str, form_path: Path | None = None) -> None:
     text = path.read_text(encoding="utf-8")
     pattern = re.compile(r"^(?P<header>## Application URL\s*\n\s*)(?P<value>\S+)\s*$", re.MULTILINE)
 
@@ -67,6 +70,8 @@ def update_application_url(path: Path, demo_url: str) -> None:
         updated += "\n"
 
     path.write_text(updated, encoding="utf-8")
+    if form_path is not None:
+        write_form(path, form_path)
 
 
 if __name__ == "__main__":

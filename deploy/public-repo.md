@@ -47,7 +47,7 @@ After the push succeeds, replace the repository placeholder in `submission/labla
 Public GitHub Repository: https://github.com/Anarpego/proteinloop
 ```
 
-The helper updates this field automatically. Then run:
+The helper updates this field automatically and regenerates `submission/lablab-form.json`. Then run:
 
 ```sh
 make submission-ready-check

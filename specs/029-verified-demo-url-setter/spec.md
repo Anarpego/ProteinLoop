@@ -17,6 +17,7 @@ The team can avoid accidentally submitting an unreachable or wrong demo URL. The
 5. The helper shall not mutate the lablab draft when verification fails.
 6. The repo shall expose the helper through a Make target.
 7. README and live demo docs shall document the helper.
+8. After a successful update, the helper shall regenerate `submission/lablab-form.json` from the updated lablab draft.
 
 ## Acceptance Criteria
 

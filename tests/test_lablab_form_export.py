@@ -1,10 +1,11 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.export_lablab_form import export_form, parse_sections, unresolved_fields
+from scripts.export_lablab_form import export_form, parse_sections, unresolved_fields, write_form
 
 
 class LablabFormExportTests(unittest.TestCase):
@@ -67,6 +68,31 @@ TODO
             unresolved_fields("https://github.com/Anarpego/proteinloop", "https://demo.example.com"),
             [],
         )
+
+    def test_write_form_writes_structured_json(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "lablab-submission.md"
+            output = Path(temp_dir) / "lablab-form.json"
+            source.write_text(
+                """
+## Project Title
+
+ProteinLoop
+
+## Repository
+
+Public GitHub Repository: https://github.com/Anarpego/proteinloop
+
+## Application URL
+
+https://demo.example.com
+                """,
+                encoding="utf-8",
+            )
+
+            write_form(source, output)
+
+            self.assertIn('"repository_url": "https://github.com/Anarpego/proteinloop"', output.read_text())
 
 
 if __name__ == "__main__":
