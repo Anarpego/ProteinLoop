@@ -12,7 +12,7 @@ The team can hand off or resume the final submission process without guessing wh
 
 1. The repo shall include a stdlib-only readiness report generator.
 2. The generator shall write `submission/final-readiness-report.md`.
-3. The report shall include the current git commit, working tree status, generated timestamp, command evidence, remaining blockers, and next commands.
+3. The report shall include the current git commit, source working tree status excluding generated report/bundle artifacts, generated timestamp, command evidence, remaining blockers, and next commands.
 4. The command evidence shall capture exit codes for local tests, submission artifact validation, Docker smoke validation, CI workflow contract validation, public deploy profile validation, credit access validation, public demo environment validation, Gemma endpoint validation, final submission readiness, and GitHub CLI authentication.
 5. The generator shall not fail just because external gates fail; external failures must be visible in the report.
 6. The report shall keep the Gemma command aligned to Gemma 4 through `GEMMA_ENDPOINT` and `GEMMA_MODEL`.

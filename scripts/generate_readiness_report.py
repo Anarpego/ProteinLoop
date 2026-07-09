@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 OUTPUT = SUBMISSION / "final-readiness-report.md"
 DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
+GENERATED_ARTIFACT_PATHS = [
+    "submission/bundle-manifest.json",
+    "submission/docker-smoke-evidence.json",
+    "submission/final-readiness-report.md",
+    "submission/proteinloop-lablab-upload.zip",
+]
 
 EVIDENCE_COMMANDS = [
     ("Unit tests", ["make", "test"]),
@@ -44,7 +50,7 @@ class CommandEvidence:
 def main() -> int:
     generated_at = dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
     commit = git_text(["rev-parse", "--short", "HEAD"]) or "unknown"
-    working_tree = git_text(["status", "--short"]) or "clean"
+    working_tree = source_working_tree_status() or "clean"
 
     evidence = collect_evidence()
 
@@ -156,6 +162,18 @@ def git_text(args: list[str]) -> str:
     return result.stdout.strip()
 
 
+def source_working_tree_status() -> str:
+    return git_text(
+        [
+            "status",
+            "--short",
+            "--",
+            ".",
+            *[f":(exclude){path}" for path in GENERATED_ARTIFACT_PATHS],
+        ]
+    )
+
+
 def status_label(evidence: CommandEvidence) -> str:
     return "PASS" if evidence.ok else "FAIL"
 
@@ -199,7 +217,7 @@ def render_report(
         "",
         f"Generated: {generated_at}",
         f"Commit: `{commit}`",
-        f"Working tree: `{working_tree}`",
+        f"Working tree (source): `{working_tree}`",
         "",
         "## Command Evidence",
         "",

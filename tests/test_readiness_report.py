@@ -100,6 +100,7 @@ class ReadinessReportTests(unittest.TestCase):
         )
 
         self.assertIn("Commit: `abc1234`", report)
+        self.assertIn("Working tree (source): `clean`", report)
         self.assertIn("| Unit tests | `make test` | 0 | PASS |", report)
         self.assertIn("Gemma endpoint evidence: exited 2", report)
         self.assertIn("GEMMA_MODEL=google/gemma-4-E4B-it", report)
