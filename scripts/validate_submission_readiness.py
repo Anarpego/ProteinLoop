@@ -17,6 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 LABLAB = SUBMISSION / "lablab-submission.md"
 
+sys.path.insert(0, str(ROOT))
+
+from scripts.export_lablab_form import export_form  # noqa: E402
+from scripts.validate_submission_artifacts import BUNDLE, MANIFEST, bundle_ok  # noqa: E402
+
 REQUIRED_ARTIFACTS = [
     ROOT / "README.md",
     ROOT / "LICENSE",
@@ -76,6 +81,8 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
 
     missing = [path.relative_to(root).as_posix() for path in REQUIRED_ARTIFACTS if not path.exists()]
     checks.append(Check("required local artifacts", not missing, ", ".join(missing)))
+    checks.append(lablab_form_check(lablab_path, SUBMISSION / "lablab-form.json"))
+    checks.append(submission_bundle_check(BUNDLE, MANIFEST))
     checks.append(gemma_evidence_check(SUBMISSION / "gemma-evidence.json"))
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
@@ -100,6 +107,46 @@ def extract_labeled_url(text: str, label: str) -> str | None:
     if value.upper() == "TODO":
         return None
     return value
+
+
+def lablab_form_check(lablab_path: Path, form_path: Path) -> Check:
+    if not lablab_path.exists():
+        return Check("lablab form matches draft", False, f"missing {display_path(lablab_path)}")
+    if not form_path.exists():
+        return Check("lablab form matches draft", False, f"missing {display_path(form_path)}")
+
+    try:
+        expected = export_form(lablab_path.read_text(encoding="utf-8"))
+        actual = json.loads(form_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return Check("lablab form matches draft", False, f"invalid JSON: {exc}")
+
+    if actual != expected:
+        return Check("lablab form matches draft", False, "stale; run make submission-form")
+    return Check("lablab form matches draft", True, display_path(form_path))
+
+
+def submission_bundle_check(bundle_path: Path, manifest_path: Path) -> Check:
+    if not bundle_path.exists():
+        return Check("submission bundle contents", False, f"missing {display_path(bundle_path)}")
+    if not manifest_path.exists():
+        return Check("submission bundle contents", False, f"missing {display_path(manifest_path)}")
+
+    try:
+        ok = bundle_ok(bundle_path, manifest_path)
+    except Exception as exc:  # noqa: BLE001 - final readiness should report malformed bundle state plainly.
+        return Check("submission bundle contents", False, str(exc))
+
+    if not ok:
+        return Check("submission bundle contents", False, "stale or incomplete; run make submission-bundle")
+    return Check("submission bundle contents", True, display_path(bundle_path))
+
+
+def display_path(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
 
 
 def extract_application_url(text: str) -> str | None:

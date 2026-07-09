@@ -20,6 +20,8 @@ Before final upload, the team can run one command that distinguishes local artif
 8. The validator shall expose clear failure messages for external blockers.
 9. When final URLs are present, the validator shall verify the public GitHub URL is reachable without private credentials.
 10. When final URLs are present, the validator shall verify the application dashboard and Spanish producer route are reachable.
+11. The validator shall fail if `submission/lablab-form.json` is stale relative to `submission/lablab-submission.md`.
+12. The validator shall fail if the upload bundle or manifest is stale or incomplete for the current generated evidence files.
 
 ## Acceptance Criteria
 

@@ -12,8 +12,10 @@ from scripts.validate_submission_readiness import (
     extract_labeled_url,
     gemma_evidence_check,
     is_public_http_url,
+    lablab_form_check,
     normalize_git_remote,
     reachable_check,
+    submission_bundle_check,
     url_check,
 )
 
@@ -76,6 +78,75 @@ class SubmissionReadinessTests(unittest.TestCase):
         ]:
             with self.subTest(artifact=artifact):
                 self.assertIn(artifact, required)
+
+    def test_lablab_form_check_accepts_current_export(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            lablab = Path(temp_dir) / "lablab-submission.md"
+            form = Path(temp_dir) / "lablab-form.json"
+            lablab.write_text(
+                """
+## Project Title
+
+ProteinLoop
+
+## Repository
+
+Public GitHub Repository: https://github.com/Anarpego/proteinloop
+
+## Application URL
+
+https://demo.example.com
+                """,
+                encoding="utf-8",
+            )
+            form.write_text(
+                """
+{
+  "application_url": "https://demo.example.com",
+  "artifacts": {
+    "cover_image": "submission/cover.png",
+    "readme": "README.md",
+    "slide_presentation": "submission/proteinloop-hackathon-deck.pptx",
+    "upload_bundle": "submission/proteinloop-lablab-upload.zip",
+    "video_presentation": "submission/proteinloop-demo-video.avi"
+  },
+  "demo_application_platform": "",
+  "judging_notes": [],
+  "key_demo_path": [],
+  "long_description": "",
+  "project_title": "ProteinLoop",
+  "repository_url": "https://github.com/Anarpego/proteinloop",
+  "short_description": "",
+  "technology_tags": [],
+  "unresolved_fields": []
+}
+                """,
+                encoding="utf-8",
+            )
+
+            self.assertTrue(lablab_form_check(lablab, form).ok)
+
+    def test_lablab_form_check_rejects_stale_export(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            lablab = Path(temp_dir) / "lablab-submission.md"
+            form = Path(temp_dir) / "lablab-form.json"
+            lablab.write_text("## Project Title\n\nProteinLoop\n\n## Application URL\n\nhttps://demo.example.com\n", encoding="utf-8")
+            form.write_text('{"project_title": "Old"}\n', encoding="utf-8")
+
+            result = lablab_form_check(lablab, form)
+
+        self.assertFalse(result.ok)
+        self.assertIn("stale", result.detail)
+
+    def test_submission_bundle_check_reports_missing_bundle(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = submission_bundle_check(
+                Path(temp_dir) / "proteinloop-lablab-upload.zip",
+                Path(temp_dir) / "bundle-manifest.json",
+            )
+
+        self.assertFalse(result.ok)
+        self.assertIn("missing", result.detail)
 
     def test_normalize_git_remote_supports_https_and_ssh(self):
         self.assertEqual(
