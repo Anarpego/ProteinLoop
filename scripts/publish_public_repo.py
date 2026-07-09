@@ -41,7 +41,12 @@ def main(argv: list[str] | None = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
 
-    commands = plan_commands(repo, origin_exists(ROOT))
+    commands = plan_commands(
+        repo,
+        origin_exists(ROOT),
+        existing=args.existing,
+        remote_url=args.remote_url,
+    )
 
     if args.dry_run:
         print(f"public repo URL: {repo.url}")
@@ -50,10 +55,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"+ update {LABLAB.relative_to(ROOT)}")
         return 0
 
-    auth = run(["gh", "auth", "status"], ROOT)
-    if auth.returncode != 0:
-        print(auth.stderr or auth.stdout, file=sys.stderr)
-        return auth.returncode
+    if gh_auth_required(commands):
+        auth = run(["gh", "auth", "status"], ROOT)
+        if auth.returncode != 0:
+            print(auth.stderr or auth.stdout, file=sys.stderr)
+            return auth.returncode
 
     for command in commands:
         result = run(command, ROOT)
@@ -70,6 +76,15 @@ def main(argv: list[str] | None = None) -> int:
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("repository", help="GitHub repository in owner/name form.")
+    parser.add_argument(
+        "--existing",
+        action="store_true",
+        help="Use an already-created GitHub repository instead of gh repo create.",
+    )
+    parser.add_argument(
+        "--remote-url",
+        help="Remote URL for --existing mode. Defaults to the HTTPS clone URL.",
+    )
     parser.add_argument("--dry-run", action="store_true", help="Print commands without running them.")
     return parser.parse_args(argv)
 
@@ -81,14 +96,29 @@ def parse_repo(value: str) -> RepoRef:
     return RepoRef(owner=owner, name=name)
 
 
-def plan_commands(repo: RepoRef, has_origin: bool) -> list[list[str]]:
+def plan_commands(
+    repo: RepoRef,
+    has_origin: bool,
+    existing: bool = False,
+    remote_url: str | None = None,
+) -> list[list[str]]:
     if has_origin:
         return [["git", "push", "-u", "origin", "main"]]
+
+    if existing:
+        return [
+            ["git", "remote", "add", "origin", remote_url or repo.clone_url],
+            ["git", "push", "-u", "origin", "main"],
+        ]
 
     return [
         ["gh", "repo", "create", repo.slug, "--public", "--source", ".", "--remote", "origin"],
         ["git", "push", "-u", "origin", "main"],
     ]
+
+
+def gh_auth_required(commands: list[list[str]]) -> bool:
+    return any(command[:2] == ["gh", "repo"] for command in commands)
 
 
 def origin_exists(root: Path) -> bool:

@@ -81,7 +81,7 @@ public-deploy-check:
 	python3 scripts/validate_public_deploy.py
 
 publish-repo:
-	python3 scripts/publish_public_repo.py "$(GITHUB_REPOSITORY)" $(if $(DRY_RUN),--dry-run,)
+	python3 scripts/publish_public_repo.py "$(GITHUB_REPOSITORY)" $(if $(EXISTING_REPO),--existing,) $(if $(PUBLISH_REMOTE_URL),--remote-url "$(PUBLISH_REMOTE_URL)",) $(if $(DRY_RUN),--dry-run,)
 
 set-demo-url:
 	python3 scripts/set_demo_url.py "$(DEMO_URL)" $(if $(DRY_RUN),--dry-run,)

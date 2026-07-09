@@ -23,11 +23,20 @@ make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop DRY_RUN=1
 make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop
 ```
 
-If the repo already exists:
+If the repo already exists, use the helper without GitHub CLI repo creation:
 
 ```sh
-git remote add origin https://github.com/Anarpego/proteinloop.git
-git push -u origin main
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop EXISTING_REPO=1 DRY_RUN=1
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop EXISTING_REPO=1
+```
+
+For SSH remotes:
+
+```sh
+make publish-repo \
+  GITHUB_REPOSITORY=Anarpego/proteinloop \
+  EXISTING_REPO=1 \
+  PUBLISH_REMOTE_URL=git@github.com:Anarpego/proteinloop.git
 ```
 
 ## Update Submission Draft

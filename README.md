@@ -399,12 +399,28 @@ CI intentionally skips `docker-compose.gemma-rocm.yml` because AMD-hosted Gemma 
 
 The GitHub publication checklist is documented in `deploy/public-repo.md`.
 
-The local repository already has an initial commit. Publishing still requires a valid GitHub session, an `origin` remote, and replacing `Public GitHub Repository: TODO` in `submission/lablab-submission.md` with the final public URL.
+The local repository already has commits. Publishing requires either a valid GitHub CLI session or an already-created public GitHub repository that Git can push to. The helper sets `origin`, pushes `main`, and replaces `Public GitHub Repository: TODO` in `submission/lablab-submission.md` after a successful push.
 
 Preview the publish steps:
 
 ```sh
 make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop DRY_RUN=1
+```
+
+If GitHub CLI auth is invalid, create the public repo in the browser first, then use the existing-repo path:
+
+```sh
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop EXISTING_REPO=1 DRY_RUN=1
+make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop EXISTING_REPO=1
+```
+
+For SSH remotes:
+
+```sh
+make publish-repo \
+  GITHUB_REPOSITORY=Anarpego/proteinloop \
+  EXISTING_REPO=1 \
+  PUBLISH_REMOTE_URL=git@github.com:Anarpego/proteinloop.git
 ```
 
 ## Live Demo Deployment
