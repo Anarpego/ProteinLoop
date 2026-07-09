@@ -107,6 +107,7 @@ class SubmissionReadinessTests(unittest.TestCase):
                 {
                   "endpoint": "https://gemma.example.com",
                   "model": "google/gemma-4-E4B-it",
+                  "models": ["google/gemma-4-E4B-it"],
                   "action": {
                     "feed_kg": 0.1,
                     "aeration_hours": 12,
@@ -124,6 +125,32 @@ class SubmissionReadinessTests(unittest.TestCase):
 
             self.assertTrue(gemma_evidence_check(path).ok)
 
+    def test_gemma_evidence_requires_claimed_model_in_models_list(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "endpoint": "https://gemma.example.com",
+                  "model": "google/gemma-4-E4B-it",
+                  "models": ["other-model"],
+                  "action": {
+                    "feed_kg": 0.1,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.1,
+                    "duckweed_harvest_kg": 1.0
+                  },
+                  "checks": [{"name": "models endpoint", "ok": true}]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = gemma_evidence_check(path)
+
+        self.assertFalse(result.ok)
+        self.assertIn("not advertised", result.detail)
+
     def test_gemma_evidence_rejects_localhost_endpoint(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "gemma-evidence.json"
@@ -132,6 +159,7 @@ class SubmissionReadinessTests(unittest.TestCase):
                 {
                   "endpoint": "http://127.0.0.1:8001",
                   "model": "google/gemma-4-E4B-it",
+                  "models": ["google/gemma-4-E4B-it"],
                   "action": {
                     "feed_kg": 0.1,
                     "aeration_hours": 12,

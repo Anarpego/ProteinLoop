@@ -106,6 +106,13 @@ def validate_endpoint(endpoint: str, model: str, api_key: str | None, timeout: f
     models_payload = get_json(join_url(endpoint, "/v1/models"), api_key, timeout)
     model_ids = extract_model_ids(models_payload)
     checks.append(Check("models endpoint", bool(model_ids), f"{len(model_ids)} model(s)"))
+    checks.append(
+        Check(
+            "requested model advertised",
+            model_is_advertised(model, model_ids),
+            model if model_ids else "no models returned",
+        )
+    )
 
     chat_payload = post_json(join_url(endpoint, "/v1/chat/completions"), chat_request(model), api_key, timeout)
     action = parse_chat_action(chat_payload)
@@ -149,6 +156,19 @@ def extract_model_ids(payload: dict[str, Any]) -> list[str]:
     if not isinstance(data, list):
         return []
     return [item["id"] for item in data if isinstance(item, dict) and isinstance(item.get("id"), str)]
+
+
+def model_is_advertised(model: str, model_ids: list[str]) -> bool:
+    normalized = model.strip().lower().strip("/")
+    if not normalized:
+        return False
+
+    for model_id in model_ids:
+        candidate = model_id.strip().lower().strip("/")
+        if candidate == normalized or candidate.endswith(f"/{normalized}"):
+            return True
+
+    return False
 
 
 def parse_chat_action(payload: dict[str, Any]) -> dict[str, Any]:

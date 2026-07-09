@@ -8,6 +8,7 @@ from scripts.validate_gemma_endpoint import (
     chat_request,
     extract_model_ids,
     join_url,
+    model_is_advertised,
     normalize_endpoint,
     parse_chat_action,
     validate_action,
@@ -32,6 +33,13 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
         payload = {"data": [{"id": "google/gemma-4-E4B-it"}, {"ignored": True}]}
 
         self.assertEqual(extract_model_ids(payload), ["google/gemma-4-E4B-it"])
+
+    def test_model_advertised_accepts_exact_or_suffix_match(self):
+        model_ids = ["accounts/team/models/google/gemma-4-E4B-it", "other-model"]
+
+        self.assertTrue(model_is_advertised("google/gemma-4-E4B-it", model_ids))
+        self.assertTrue(model_is_advertised("accounts/team/models/google/gemma-4-E4B-it", model_ids))
+        self.assertFalse(model_is_advertised("google/gemma-4-27B-it", model_ids))
 
     def test_parse_chat_action_strips_json_code_fence(self):
         payload = {

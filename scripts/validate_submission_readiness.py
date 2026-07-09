@@ -161,6 +161,12 @@ def gemma_evidence_check(path: Path) -> Check:
     if "gemma-4" not in model.lower():
         return Check("Gemma endpoint evidence", False, f"expected Gemma 4 model, got {model!r}")
 
+    models = evidence.get("models")
+    if not isinstance(models, list) or not all(isinstance(item, str) for item in models):
+        return Check("Gemma endpoint evidence", False, "missing advertised models list")
+    if not model_is_advertised(model, models):
+        return Check("Gemma endpoint evidence", False, f"model {model!r} not advertised by /v1/models")
+
     endpoint = str(evidence.get("endpoint", ""))
     parsed = urllib.parse.urlparse(endpoint)
     if parsed.hostname in {"127.0.0.1", "localhost", "::1"}:
@@ -189,6 +195,19 @@ def gemma_evidence_check(path: Path) -> Check:
         return Check("Gemma endpoint evidence", False, f"failed checks: {', '.join(failed)}")
 
     return Check("Gemma endpoint evidence", True, model)
+
+
+def model_is_advertised(model: str, model_ids: list[str]) -> bool:
+    normalized = model.strip().lower().strip("/")
+    if not normalized:
+        return False
+
+    for model_id in model_ids:
+        candidate = model_id.strip().lower().strip("/")
+        if candidate == normalized or candidate.endswith(f"/{normalized}"):
+            return True
+
+    return False
 
 
 def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:

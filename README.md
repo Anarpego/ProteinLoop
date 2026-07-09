@@ -203,6 +203,8 @@ make gemma-check
 
 On success, the check writes `submission/gemma-evidence.json`.
 
+The evidence must show that `/v1/models` advertises the requested Gemma 4 model and that `/v1/chat/completions` returns a valid ProteinLoop action.
+
 Summarize harness traces:
 
 ```sh
