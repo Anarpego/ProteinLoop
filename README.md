@@ -502,7 +502,7 @@ Submission source artifacts live in `submission/`:
 - `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: two-board DECT NR+ hardware extension plan.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
-- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet.
+- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, lablab form JSON, final readiness report, and `gemma-evidence.json` when live endpoint evidence exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
 - `final-readiness-report.md`: generated pass/fail handoff report for final external gates.

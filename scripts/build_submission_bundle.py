@@ -14,10 +14,12 @@ SUBMISSION = ROOT / "submission"
 BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
 MANIFEST = SUBMISSION / "bundle-manifest.json"
 
-BUNDLE_FILES = [
+BASE_BUNDLE_FILES = [
     ROOT / "LICENSE",
     ROOT / "README.md",
     SUBMISSION / "lablab-submission.md",
+    SUBMISSION / "lablab-form.json",
+    SUBMISSION / "final-readiness-report.md",
     SUBMISSION / "video-script.md",
     SUBMISSION / "slides.md",
     SUBMISSION / "proteinloop-hackathon-deck.pptx",
@@ -36,21 +38,35 @@ BUNDLE_FILES = [
     SUBMISSION / "nrf9151-telemetry-bridge.md",
 ]
 
+OPTIONAL_BUNDLE_FILES = [
+    SUBMISSION / "gemma-evidence.json",
+]
+
 
 def main() -> int:
-    missing = [path for path in BUNDLE_FILES if not path.exists()]
+    paths = bundle_files()
+    missing = [path for path in BASE_BUNDLE_FILES if not path.exists()]
     if missing:
         for path in missing:
             print(f"missing: {path.relative_to(ROOT)}")
         return 1
 
-    manifest = build_manifest(BUNDLE_FILES)
+    manifest = build_manifest(paths)
     MANIFEST.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    write_bundle(BUNDLE, BUNDLE_FILES, MANIFEST)
+    write_bundle(BUNDLE, paths, MANIFEST)
 
     print(f"wrote {BUNDLE.relative_to(ROOT)}")
     print(f"wrote {MANIFEST.relative_to(ROOT)}")
     return 0
+
+
+def bundle_files(
+    base_paths: list[Path] | None = None,
+    optional_paths: list[Path] | None = None,
+) -> list[Path]:
+    base_paths = base_paths if base_paths is not None else BASE_BUNDLE_FILES
+    optional_paths = optional_paths if optional_paths is not None else OPTIONAL_BUNDLE_FILES
+    return [*base_paths, *[path for path in optional_paths if path.exists()]]
 
 
 def build_manifest(paths: list[Path]) -> dict:

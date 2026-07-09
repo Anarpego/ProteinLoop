@@ -2,11 +2,13 @@ import json
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.build_submission_bundle import build_manifest, sha256
+from scripts.build_submission_bundle import bundle_files, build_manifest, sha256
+from scripts.validate_submission_artifacts import bundle_ok
 
 
 class SubmissionBundleTests(unittest.TestCase):
@@ -37,6 +39,136 @@ class SubmissionBundleTests(unittest.TestCase):
             path.write_text("proteinloop", encoding="utf-8")
 
             json.dumps(build_manifest([path]))
+
+    def test_bundle_files_includes_existing_optional_evidence(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            base = Path(temp_dir) / "required.txt"
+            optional = Path(temp_dir) / "gemma-evidence.json"
+            base.write_text("required", encoding="utf-8")
+            optional.write_text("{}", encoding="utf-8")
+
+            paths = bundle_files(base_paths=[base], optional_paths=[optional])
+
+        self.assertEqual(paths, [base, optional])
+
+    def test_bundle_files_skips_missing_optional_evidence(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            base = Path(temp_dir) / "required.txt"
+            optional = Path(temp_dir) / "gemma-evidence.json"
+            base.write_text("required", encoding="utf-8")
+
+            paths = bundle_files(base_paths=[base], optional_paths=[optional])
+
+        self.assertEqual(paths, [base])
+
+    def test_bundle_validator_requires_form_and_readiness_report_manifest_entries(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle = root / "bundle.zip"
+            manifest = root / "bundle-manifest.json"
+            entries = [
+                "LICENSE",
+                "README.md",
+                "submission/lablab-submission.md",
+                "submission/lablab-form.json",
+                "submission/final-readiness-report.md",
+                "submission/video-script.md",
+                "submission/slides.md",
+                "submission/proteinloop-hackathon-deck.pptx",
+                "submission/proteinloop-demo-video.avi",
+                "submission/cover.svg",
+                "submission/cover.png",
+                "submission/demo-evidence.json",
+                "submission/demo-evidence.md",
+                "submission/demo-rehearsal.json",
+                "submission/demo-rehearsal.md",
+                "submission/mesh-evidence.json",
+                "submission/mesh-evidence.md",
+                "submission/nrf9151-field-plan.json",
+                "submission/nrf9151-field-plan.md",
+                "submission/nrf9151-telemetry-bridge.json",
+                "submission/nrf9151-telemetry-bridge.md",
+                "submission/bundle-manifest.json",
+            ]
+            with zipfile.ZipFile(bundle, "w") as archive:
+                for entry in entries:
+                    archive.writestr(entry, "x")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "files": [
+                            {"path": entry, "bytes": 1, "sha256": "a" * 64}
+                            for entry in entries
+                            if entry != "submission/bundle-manifest.json"
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertTrue(bundle_ok(bundle, manifest, include_gemma_evidence=False))
+
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "files": [
+                            {"path": entry, "bytes": 1, "sha256": "a" * 64}
+                            for entry in entries
+                            if entry != "submission/final-readiness-report.md"
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertFalse(bundle_ok(bundle, manifest, include_gemma_evidence=False))
+
+    def test_bundle_validator_requires_gemma_when_requested(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            bundle = root / "bundle.zip"
+            manifest = root / "bundle-manifest.json"
+            entries = [
+                "LICENSE",
+                "README.md",
+                "submission/lablab-submission.md",
+                "submission/lablab-form.json",
+                "submission/final-readiness-report.md",
+                "submission/video-script.md",
+                "submission/slides.md",
+                "submission/proteinloop-hackathon-deck.pptx",
+                "submission/proteinloop-demo-video.avi",
+                "submission/cover.svg",
+                "submission/cover.png",
+                "submission/demo-evidence.json",
+                "submission/demo-evidence.md",
+                "submission/demo-rehearsal.json",
+                "submission/demo-rehearsal.md",
+                "submission/mesh-evidence.json",
+                "submission/mesh-evidence.md",
+                "submission/nrf9151-field-plan.json",
+                "submission/nrf9151-field-plan.md",
+                "submission/nrf9151-telemetry-bridge.json",
+                "submission/nrf9151-telemetry-bridge.md",
+                "submission/bundle-manifest.json",
+            ]
+            with zipfile.ZipFile(bundle, "w") as archive:
+                for entry in entries:
+                    archive.writestr(entry, "x")
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "files": [
+                            {"path": entry, "bytes": 1, "sha256": "a" * 64}
+                            for entry in entries
+                            if entry != "submission/bundle-manifest.json"
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertFalse(bundle_ok(bundle, manifest, include_gemma_evidence=True))
 
 
 if __name__ == "__main__":

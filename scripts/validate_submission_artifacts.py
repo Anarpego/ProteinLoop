@@ -168,12 +168,18 @@ def looks_like_avi(path: Path) -> bool:
     return header.startswith(b"RIFF") and header[8:12] == b"AVI "
 
 
-def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
+def bundle_ok(
+    bundle_path: Path,
+    manifest_path: Path,
+    include_gemma_evidence: bool | None = None,
+) -> bool:
     manifest = json_load(manifest_path)
     required_entries = {
         "LICENSE",
         "README.md",
         "submission/lablab-submission.md",
+        "submission/lablab-form.json",
+        "submission/final-readiness-report.md",
         "submission/video-script.md",
         "submission/slides.md",
         "submission/proteinloop-hackathon-deck.pptx",
@@ -192,13 +198,19 @@ def bundle_ok(bundle_path: Path, manifest_path: Path) -> bool:
         "submission/nrf9151-telemetry-bridge.md",
         "submission/bundle-manifest.json",
     }
+    if include_gemma_evidence is None:
+        include_gemma_evidence = (SUBMISSION / "gemma-evidence.json").exists()
+    if include_gemma_evidence:
+        required_entries.add("submission/gemma-evidence.json")
 
     with zipfile.ZipFile(bundle_path) as archive:
         names = set(archive.namelist())
 
     manifest_entries = manifest.get("files", [])
+    manifest_paths = {entry.get("path") for entry in manifest_entries}
     checksums_present = all(entry.get("sha256") and entry.get("bytes", 0) > 0 for entry in manifest_entries)
-    return required_entries.issubset(names) and checksums_present
+    checksummed_entries = required_entries - {"submission/bundle-manifest.json"}
+    return required_entries.issubset(names) and checksummed_entries.issubset(manifest_paths) and checksums_present
 
 
 def form_ok(path: Path) -> bool:
