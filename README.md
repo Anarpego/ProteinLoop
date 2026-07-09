@@ -193,6 +193,15 @@ Validate the public deployment Compose profile:
 make public-deploy-check
 ```
 
+Validate public deployment environment values:
+
+```sh
+SECRET_KEY_BASE="$(cd app && mix phx.gen.secret)"
+PHX_HOST=your-demo-host \
+SECRET_KEY_BASE="$SECRET_KEY_BASE" \
+make public-env-check
+```
+
 Verify hackathon credit access before deploying Gemma:
 
 ```sh
@@ -441,8 +450,13 @@ That check verifies the two judge-facing routes:
 For a public host, use:
 
 ```sh
+SECRET_KEY_BASE="$(cd app && mix phx.gen.secret)"
 PHX_HOST=your-demo-host \
-SECRET_KEY_BASE=replace-with-secret \
+SECRET_KEY_BASE="$SECRET_KEY_BASE" \
+make public-env-check
+
+PHX_HOST=your-demo-host \
+SECRET_KEY_BASE="$SECRET_KEY_BASE" \
 docker compose -f docker-compose.public.yml up -d --build
 ```
 

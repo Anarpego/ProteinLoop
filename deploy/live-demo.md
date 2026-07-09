@@ -28,6 +28,8 @@ For the submitted demo, expose the Phoenix web service publicly. The simulator c
 
 ```sh
 make public-deploy-check
+SECRET_KEY_BASE="$(cd app && mix phx.gen.secret)"
+PHX_HOST=your-demo-host SECRET_KEY_BASE="$SECRET_KEY_BASE" make public-env-check
 docker compose -f docker-compose.public.yml build
 docker compose -f docker-compose.public.yml up -d
 docker compose -f docker-compose.public.yml ps
