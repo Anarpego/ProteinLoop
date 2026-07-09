@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 
+ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_EVIDENCE_PATH = ROOT / "submission" / "docker-smoke-evidence.json"
 SIMULATOR = "http://127.0.0.1:8000"
 WEB = "http://127.0.0.1:4001"
 TIMEOUT_SECONDS = 2.0
@@ -23,7 +28,8 @@ class Check:
     detail: str = ""
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     checks: list[Check] = []
 
     try:
@@ -38,12 +44,39 @@ def main() -> int:
         print(f"[{mark}] {check.name}{suffix}")
 
     failed = [check for check in checks if not check.ok]
+    evidence = build_evidence(checks)
+    if args.write_evidence:
+        write_evidence(Path(args.evidence_file), evidence)
+        print(f"wrote {Path(args.evidence_file).relative_to(ROOT)}")
+
     if failed:
         print(f"{len(failed)} smoke check(s) failed", file=sys.stderr)
         return 1
 
     print("docker smoke OK")
     return 0
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--write-evidence", action="store_true", help="Write submission/docker-smoke-evidence.json.")
+    parser.add_argument("--evidence-file", default=str(DEFAULT_EVIDENCE_PATH))
+    return parser.parse_args(argv)
+
+
+def build_evidence(checks: list[Check]) -> dict[str, Any]:
+    return {
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "ok": all(check.ok for check in checks),
+        "simulator_url": SIMULATOR,
+        "web_url": WEB,
+        "checks": [asdict(check) for check in checks],
+    }
+
+
+def write_evidence(path: Path, evidence: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def check_simulator() -> list[Check]:

@@ -15,9 +15,11 @@ Judges and collaborators can run one command after `docker compose up` to verify
 3. The script shall verify the operator dashboard renders the core demo panels.
 4. The script shall verify the Spanish producer route renders approval and offline fallback controls.
 5. The repo shall expose the smoke test through a Make target.
+6. The Make target shall write `submission/docker-smoke-evidence.json` with check names, pass/fail state, and service URLs for the final readiness report.
 
 ## Acceptance Criteria
 
 1. `make docker-smoke` passes when Docker Compose services are running.
 2. README documents the smoke test command.
-3. Existing local regression checks still pass.
+3. `submission/docker-smoke-evidence.json` exists after `make docker-smoke`.
+4. Existing local regression checks still pass.

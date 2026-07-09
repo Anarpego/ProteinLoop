@@ -396,6 +396,8 @@ Smoke-test the running Docker demo:
 make docker-smoke
 ```
 
+On success this writes `submission/docker-smoke-evidence.json`, which the final readiness report consumes without rerunning local HTTP checks from inside the report generator.
+
 ## Public Repo CI
 
 The GitHub Actions workflow lives at `.github/workflows/ci.yml`.
@@ -501,8 +503,9 @@ Submission source artifacts live in `submission/`:
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: two-board DECT NR+ hardware extension plan.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
+- `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
-- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, lablab form JSON, final readiness report, and `gemma-evidence.json` when live endpoint evidence exists.
+- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, lablab form JSON, final readiness report, Docker smoke evidence when generated, and `gemma-evidence.json` when live endpoint evidence exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
 - `final-readiness-report.md`: generated pass/fail handoff report for final external gates.

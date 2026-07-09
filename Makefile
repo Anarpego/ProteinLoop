@@ -63,7 +63,7 @@ submission-ready-check:
 	python3 scripts/validate_submission_readiness.py
 
 docker-smoke:
-	python3 scripts/docker_smoke_test.py
+	python3 scripts/docker_smoke_test.py --write-evidence
 
 ci-check:
 	python3 scripts/validate_ci_workflow.py

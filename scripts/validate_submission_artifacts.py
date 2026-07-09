@@ -171,6 +171,7 @@ def looks_like_avi(path: Path) -> bool:
 def bundle_ok(
     bundle_path: Path,
     manifest_path: Path,
+    include_docker_smoke_evidence: bool | None = None,
     include_gemma_evidence: bool | None = None,
 ) -> bool:
     manifest = json_load(manifest_path)
@@ -198,6 +199,10 @@ def bundle_ok(
         "submission/nrf9151-telemetry-bridge.md",
         "submission/bundle-manifest.json",
     }
+    if include_docker_smoke_evidence is None:
+        include_docker_smoke_evidence = (SUBMISSION / "docker-smoke-evidence.json").exists()
+    if include_docker_smoke_evidence:
+        required_entries.add("submission/docker-smoke-evidence.json")
     if include_gemma_evidence is None:
         include_gemma_evidence = (SUBMISSION / "gemma-evidence.json").exists()
     if include_gemma_evidence:

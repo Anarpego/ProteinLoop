@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -11,6 +12,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 OUTPUT = SUBMISSION / "final-readiness-report.md"
+DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
+
+EVIDENCE_COMMANDS = [
+    ("Unit tests", ["make", "test"]),
+    ("Submission artifacts", ["make", "submission-check"]),
+    ("Docker smoke", ["make", "docker-smoke"]),
+    ("CI workflow contract", ["make", "ci-check"]),
+    ("Public deploy profile", ["make", "public-deploy-check"]),
+    ("Credit access", ["make", "credit-check"]),
+    ("Public demo environment", ["make", "public-env-check"]),
+    ("Gemma endpoint evidence", ["make", "gemma-check"]),
+    ("Final submission readiness", ["make", "submission-ready-check"]),
+    ("GitHub CLI authentication", ["gh", "auth", "status"]),
+]
 
 
 @dataclass(frozen=True)
@@ -31,14 +46,7 @@ def main() -> int:
     commit = git_text(["rev-parse", "--short", "HEAD"]) or "unknown"
     working_tree = git_text(["status", "--short"]) or "clean"
 
-    evidence = [
-        run_command("Unit tests", ["make", "test"]),
-        run_command("CI workflow contract", ["make", "ci-check"]),
-        run_command("Public deploy profile", ["make", "public-deploy-check"]),
-        run_command("Gemma endpoint evidence", ["make", "gemma-check"]),
-        run_command("Final submission readiness", ["make", "submission-ready-check"]),
-        run_command("GitHub CLI authentication", ["gh", "auth", "status"]),
-    ]
+    evidence = collect_evidence()
 
     OUTPUT.write_text(
         render_report(
@@ -51,6 +59,16 @@ def main() -> int:
     )
     print(f"wrote {OUTPUT.relative_to(ROOT)}")
     return 0
+
+
+def collect_evidence() -> list[CommandEvidence]:
+    evidence: list[CommandEvidence] = []
+    for name, command in EVIDENCE_COMMANDS:
+        if name == "Docker smoke":
+            evidence.append(docker_smoke_evidence(DOCKER_SMOKE_EVIDENCE))
+        else:
+            evidence.append(run_command(name, command))
+    return evidence
 
 
 def run_command(name: str, command: list[str]) -> CommandEvidence:
@@ -73,6 +91,52 @@ def run_command(name: str, command: list[str]) -> CommandEvidence:
         stdout=result.stdout.strip(),
         stderr=result.stderr.strip(),
     )
+
+
+def docker_smoke_evidence(path: Path) -> CommandEvidence:
+    command = ["make", "docker-smoke"]
+    path_label = display_path(path)
+    if not path.exists():
+        return CommandEvidence(
+            "Docker smoke",
+            command,
+            1,
+            "",
+            f"missing {path_label}; run make docker-smoke",
+        )
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CommandEvidence("Docker smoke", command, 1, "", f"invalid {path_label}: {exc}")
+
+    checks = evidence.get("checks")
+    if not isinstance(checks, list):
+        return CommandEvidence("Docker smoke", command, 1, "", f"{path_label} missing checks")
+
+    lines = [
+        f"evidence: {path_label}",
+        f"checked_at: {evidence.get('checked_at', 'unknown')}",
+    ]
+    for check in checks:
+        if not isinstance(check, dict):
+            continue
+        mark = "ok" if check.get("ok") else "FAIL"
+        detail = f" - {check.get('detail')}" if check.get("detail") else ""
+        lines.append(f"[{mark}] {check.get('name', 'unnamed')}{detail}")
+
+    ok = evidence.get("ok") is True and checks and all(isinstance(check, dict) and check.get("ok") for check in checks)
+    if ok:
+        lines.append("docker smoke OK")
+
+    return CommandEvidence("Docker smoke", command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def display_path(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
 
 
 def git_text(args: list[str]) -> str:
@@ -167,6 +231,8 @@ def render_report(
             "```sh",
             "gh auth login -h github.com",
             "make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop",
+            "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check",
+            "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
             "make set-demo-url DEMO_URL=https://your-public-demo-url",
             "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E4B-it",
             "make submission-ready-check",
