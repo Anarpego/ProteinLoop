@@ -17,6 +17,7 @@ If `gh auth` is invalid during final submission, the team can create the GitHub 
 5. The helper shall still update `submission/lablab-submission.md` only after publish commands succeed.
 6. The Make target and docs shall expose the existing-repository path.
 7. Unit tests shall cover command planning and GitHub auth requirements for both creation and existing-repo modes.
+8. If `origin` already exists, the helper shall refuse to update the submission draft unless `origin` matches the requested GitHub repository URL.
 
 ## Acceptance Criteria
 

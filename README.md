@@ -408,7 +408,7 @@ CI intentionally skips `docker-compose.gemma-rocm.yml` because AMD-hosted Gemma 
 
 The GitHub publication checklist is documented in `deploy/public-repo.md`.
 
-The local repository already has commits. Publishing requires either a valid GitHub CLI session or an already-created public GitHub repository that Git can push to. The helper sets `origin`, pushes `main`, and replaces `Public GitHub Repository: TODO` in `submission/lablab-submission.md` after a successful push.
+The local repository already has commits. Publishing requires either a valid GitHub CLI session or an already-created public GitHub repository that Git can push to. The helper sets `origin`, pushes `main`, and replaces `Public GitHub Repository: TODO` in `submission/lablab-submission.md` after a successful push. If `origin` already exists, it must match `GITHUB_REPOSITORY`; the helper refuses mismatched remotes so the submission draft cannot point at a different repo than the one pushed.
 
 Preview the publish steps:
 

@@ -5,7 +5,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.publish_public_repo import gh_auth_required, parse_repo, plan_commands, update_submission_repo_url
+from scripts.publish_public_repo import (
+    gh_auth_required,
+    normalize_git_remote,
+    parse_repo,
+    plan_commands,
+    update_submission_repo_url,
+)
 
 
 class PublishPublicRepoTests(unittest.TestCase):
@@ -45,6 +51,42 @@ class PublishPublicRepoTests(unittest.TestCase):
         )
 
         self.assertEqual(commands[0], ["git", "remote", "add", "origin", "git@github.com:Anarpego/proteinloop.git"])
+
+    def test_plan_commands_accepts_matching_existing_https_origin(self):
+        commands = plan_commands(
+            parse_repo("Anarpego/proteinloop"),
+            has_origin=True,
+            origin_url="https://github.com/Anarpego/proteinloop.git",
+        )
+
+        self.assertEqual(commands, [["git", "push", "-u", "origin", "main"]])
+
+    def test_plan_commands_accepts_matching_existing_ssh_origin(self):
+        commands = plan_commands(
+            parse_repo("Anarpego/proteinloop"),
+            has_origin=True,
+            origin_url="git@github.com:Anarpego/proteinloop.git",
+        )
+
+        self.assertEqual(commands, [["git", "push", "-u", "origin", "main"]])
+
+    def test_plan_commands_rejects_mismatched_existing_origin(self):
+        with self.assertRaises(ValueError):
+            plan_commands(
+                parse_repo("Anarpego/proteinloop"),
+                has_origin=True,
+                origin_url="https://github.com/other/project.git",
+            )
+
+    def test_normalize_git_remote_supports_https_and_ssh(self):
+        self.assertEqual(
+            normalize_git_remote("https://github.com/Anarpego/proteinloop.git"),
+            "github.com/anarpego/proteinloop",
+        )
+        self.assertEqual(
+            normalize_git_remote("git@github.com:Anarpego/proteinloop.git"),
+            "github.com/anarpego/proteinloop",
+        )
 
     def test_existing_repo_mode_does_not_require_gh_auth(self):
         create_commands = plan_commands(parse_repo("Anarpego/proteinloop"), has_origin=False, existing=False)

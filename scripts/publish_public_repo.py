@@ -41,12 +41,18 @@ def main(argv: list[str] | None = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
 
-    commands = plan_commands(
-        repo,
-        origin_exists(ROOT),
-        existing=args.existing,
-        remote_url=args.remote_url,
-    )
+    origin_url = configured_origin(ROOT)
+    try:
+        commands = plan_commands(
+            repo,
+            origin_url is not None,
+            existing=args.existing,
+            remote_url=args.remote_url,
+            origin_url=origin_url,
+        )
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
 
     if args.dry_run:
         print(f"public repo URL: {repo.url}")
@@ -101,8 +107,18 @@ def plan_commands(
     has_origin: bool,
     existing: bool = False,
     remote_url: str | None = None,
+    origin_url: str | None = None,
 ) -> list[list[str]]:
     if has_origin:
+        if not origin_url:
+            raise ValueError("origin remote exists but its URL could not be read")
+
+        expected = remote_url or repo.clone_url
+        if normalize_git_remote(origin_url) != normalize_git_remote(expected):
+            raise ValueError(
+                "origin remote does not match requested repository: "
+                f"origin={origin_url} expected={expected}"
+            )
         return [["git", "push", "-u", "origin", "main"]]
 
     if existing:
@@ -121,9 +137,28 @@ def gh_auth_required(commands: list[list[str]]) -> bool:
     return any(command[:2] == ["gh", "repo"] for command in commands)
 
 
-def origin_exists(root: Path) -> bool:
+def configured_origin(root: Path) -> str | None:
     result = run(["git", "config", "--get", "remote.origin.url"], root)
-    return result.returncode == 0 and bool(result.stdout.strip())
+    if result.returncode != 0:
+        return None
+    origin = result.stdout.strip()
+    return origin or None
+
+
+def normalize_git_remote(url: str) -> str:
+    cleaned = url.strip()
+    if cleaned.endswith(".git"):
+        cleaned = cleaned[:-4]
+
+    ssh_match = re.match(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>.+)$", cleaned)
+    if ssh_match:
+        return f"github.com/{ssh_match.group('owner')}/{ssh_match.group('repo')}".lower()
+
+    parsed = re.match(r"^https?://(?P<host>[^/]+)/(?P<path>.+)$", cleaned)
+    if parsed:
+        return f"{parsed.group('host')}/{parsed.group('path')}".strip("/").lower()
+
+    return cleaned.strip("/").lower()
 
 
 def update_submission_repo_url(path: Path, repo_url: str) -> None:

@@ -53,4 +53,6 @@ The helper updates this field automatically. Then run:
 make submission-ready-check
 ```
 
+If `origin` already exists, it must point at the same repository passed in `GITHUB_REPOSITORY`. The helper fails before pushing or editing the submission draft when the remote does not match.
+
 The readiness gate will still fail until the application URL is also filled in.
