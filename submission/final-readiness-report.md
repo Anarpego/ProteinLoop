@@ -1,7 +1,7 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-09T04:41:51+00:00
-Commit: `0d22087`
+Generated: 2026-07-09T04:46:18+00:00
+Commit: `ab7b87d`
 Working tree (source): `clean`
 
 ## Command Evidence
@@ -43,7 +43,7 @@ PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make pub
 FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
 make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E4B-it
-make submission-ready-check
+make submission-finalize
 ```
 
 ## Output Snippets
@@ -52,9 +52,9 @@ make submission-ready-check
 
 ```text
 python3 -m unittest discover -s tests
-..............................................................................................................
+.................................................................................................................
 ----------------------------------------------------------------------
-Ran 110 tests in 0.126s
+Ran 113 tests in 0.117s
 
 OK
 ```
@@ -143,7 +143,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 0d220879b75a9efb93bc7b9b12ac9a7f59206135
+[ok] local git commit - ab7b87d38ff5f5d405b758b17fc920d9a5d246a6
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
