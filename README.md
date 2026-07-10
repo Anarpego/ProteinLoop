@@ -1,127 +1,91 @@
 # ProteinLoop
 
-ProteinLoop is a hackathon prototype for an agentic aquaponic protein loop: fish, prawns, duckweed, hydroponic plants, and chickens coordinated by a deterministic safety harness and Gemma-powered Sagents agents.
+<p align="center">
+  <img src="submission/cover.png" alt="ProteinLoop agentic aquaponic control system" width="960">
+</p>
 
-The first vertical slice is a Python simulator and verifier. It proves the core demo behavior: a naive routine collapses after an ammonia spike, while a safety-aware harness policy stabilizes the ecosystem.
+**Verifier-gated multi-agent control for a closed aquaponic protein loop.**
 
-The second slice is a Phoenix LiveView app. It consumes the simulator API, broadcasts state through PubSub, renders a judge/operator dashboard, and includes a Spanish producer approval route.
+ProteinLoop coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
 
-The third slice is an agent harness. It proposes structured actions, routes every proposal through the simulator verifier before execution, and shows accepted/rejected proposals in the operator dashboard.
+[Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Agentic development](#agentic-development-workflow) · [Evidence packet](#submission-packet)
 
-The fourth slice adds provider control and RLVR traces. Every harness run appends a JSONL record with state, action, verifier result, reward, and provider metadata.
+## What Runs Today
 
-The fifth slice makes those traces inspectable: the operator dashboard renders a recent trace timeline, and the Python CLI can summarize the JSONL artifact.
+| Capability | Executable behavior | Proof |
+| --- | --- | --- |
+| Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
+| Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
+| Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
+| Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
+| Spanish human control | Risky actions pause for approve, edit, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
+| Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
+| Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
+| Reproducible application | Docker profiles start the simulator, operator dashboard, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
 
-The sixth slice adds a one-click judge demo cascade. The operator dashboard can reset the simulator, inject an ammonia spike, show an unsafe agent proposal rejected by the verifier, run a safe recovery proposal, and append both outcomes to the RLVR trace artifact.
+## System Workflow
 
-The seventh slice makes the model boundary visible. The dashboard shows the configured OpenAI-compatible `GEMMA_ENDPOINT`, selected `GEMMA_MODEL`, and a `Check model` control that probes `/v1/models` without blocking the core simulator demo.
+```mermaid
+flowchart TD
+    Radio["Physical DECT NR+ evidence<br/>FT / PT sequence #100"] --> Replay["Explicit simulated sensor replay"]
+    Replay --> Simulator["Deterministic ecosystem simulator"]
+    Simulator --> Snapshot["Current ecosystem state"]
+    Snapshot --> Agents["4 Gemma / Sagents domain agents"]
+    Agents --> Supervisor["Parent supervisor<br/>structured action proposal"]
+    Supervisor --> Verifier{"Deterministic safety verifier"}
+    Verifier -- "unsafe" --> Reject["Reject action + append RLVR trace"]
+    Verifier -- "safe routine" --> Apply["Apply simulator step"]
+    Verifier -- "safe but risky" --> HITL["Spanish producer HITL"]
+    HITL -- "approve or edit" --> Apply
+    HITL -- "reject" --> Reject
+    Apply --> Simulator
+```
 
-The eighth slice adds a lightweight RLVR reward panel. The simulator scores naive and safety policies across repeatable scenarios, exposes the reward verifier payload through the API, and renders reward improvement on the operator dashboard.
+The boundaries are deliberate:
 
-The ninth slice makes the multi-agent topology visible. The operator dashboard derives advisory cards for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and supervisor agents from simulator state while keeping mutation behind the verified harness.
+- **Physical evidence:** Nordic `hello_dect` proves bidirectional radio transport. It is not presented as a chemical sensor reading.
+- **Agentic reasoning:** Gemma and Sagents produce structured recommendations, not authorization.
+- **Safety authority:** the Python verifier is the source of truth for admissible actions and RLVR reward.
+- **Human authority:** irreversible or operationally risky actions remain paused until the producer decides in Spanish.
 
-The tenth slice adds a local self-healing mesh demo. The operator dashboard can simulate an edge node loss, migrate subsystem agents to healthy nodes, recover the failed node, and show migration events.
+## Agentic Development Workflow
 
-The eleventh slice connects Spanish HITL approval to the operator flow. Risky water exchange and duckweed harvest actions pause through Sagents HumanInTheLoop until the producer approves, edits, or rejects them; the decision resumes the interrupted Sagents tool.
+Changes enter the repository through a fixed evidence loop. Code is not the source of product intent; the active feature spec is.
 
-The twelfth slice originally added a deterministic loop fallback. It remains for credential-free tests, while the active runtime is the real Sagents integration described below.
+```mermaid
+flowchart LR
+    subgraph Define["1. Define"]
+        direction TB
+        Intent["User intent"] --> Constitution["Constitution + agent rules"]
+        Constitution --> Spec["spec.md<br/>value + acceptance criteria"]
+        Spec --> Plan["plan.md + tasks.md<br/>vertical slice"]
+    end
+    subgraph Build["2. Build"]
+        direction TB
+        Red["Failing executable test"] --> Code["Smallest coherent implementation"]
+        Code --> Verify["Tests + runtime evidence"]
+        Verify --> Gate{"Acceptance criteria pass?"}
+    end
+    subgraph Deliver["3. Deliver"]
+        direction TB
+        Evidence["Versioned evidence"] --> Ship["Commit + checksum manifest"]
+    end
+    Plan --> Red
+    Gate -- "no" --> Red
+    Gate -- "yes" --> Evidence
+```
 
-The thirteenth slice adds the AMD Gemma deployment profile. It includes `.env.example`, a ROCm/vLLM Compose profile using `vllm/vllm-openai-rocm:gemma4`, and a runbook for connecting AMD-hosted Gemma to `GEMMA_ENDPOINT`.
+| Phase | Repository artifact | Exit condition |
+| --- | --- | --- |
+| Govern | [Constitution](.specify/memory/constitution.md) and [agent rules](AGENTS.md) | Safety, scope, and product constraints are explicit. |
+| Specify | `specs/NNN-feature/spec.md` | User value and measurable acceptance criteria are written before code. |
+| Plan | `plan.md` and `tasks.md` | One end-to-end vertical slice has clear ownership and guardrails. |
+| Prove | Python, ExUnit, or contract tests | The intended behavior fails for the expected reason. |
+| Implement | Simulator, verifier, harness, or LiveView code | The smallest complete behavior makes the focused test pass. |
+| Verify | Full tests, Docker smoke, and generated evidence | Claims are backed by commands and artifacts, not implementation intent. |
+| Ship | Git commit plus checksum manifest | Source, evidence, and documentation describe the same behavior. |
 
-The fourteenth slice adds submission materials: MIT license, lablab submission draft, video script, slide source, and a cover SVG.
-
-The fifteenth slice adds deterministic anomaly forecasting. The simulator forecasts routine-operation ammonia/oxygen risk without mutating live state, exposes `GET /forecast/anomaly`, and renders the near-term risk on the operator dashboard.
-
-The sixteenth slice adds offline producer fallback. The producer route now includes deterministic Spanish emergency guidance that works without model access or cloud connectivity.
-
-The seventeenth slice renders the submission deck. The repo now includes an editable PowerPoint deck at `submission/proteinloop-hackathon-deck.pptx` plus a validation script for the submission packet.
-
-The eighteenth slice adds Docker smoke verification. After `docker compose up`, `make docker-smoke` checks simulator health, forecast, RLVR, reset/spike/recovery, the operator dashboard, and the Spanish producer route.
-
-The CI readiness slice adds public repository CI. GitHub Actions now runs simulator tests, Phoenix formatting/tests, submission artifact validation, Docker Compose build, and the Docker smoke test without requiring AMD ROCm hardware or live Gemma credentials.
-
-The live demo verification slice adds an executable check for the submitted demo URL. `make live-demo-check DEMO_URL=https://...` verifies the operator dashboard and Spanish producer route, with optional simulator API checks when `SIMULATOR_PUBLIC_URL` is set.
-
-The Gemma endpoint verification slice adds `make gemma-check`, which verifies `/v1/models`, verifies `/v1/chat/completions` returns a valid ProteinLoop action, and writes `submission/gemma-evidence.json` on success.
-
-The generated demo video slice adds a deterministic video artifact at `submission/proteinloop-demo-video.avi`, built from the existing script and evidence without requiring `ffmpeg`.
-
-The submission bundle slice adds `submission/proteinloop-lablab-upload.zip` and `submission/bundle-manifest.json` so the upload packet can be archived and checksum-verified as one artifact set.
-
-The public demo Compose slice adds `docker-compose.public.yml`, a production-oriented profile that exposes only Phoenix and keeps the simulator private on the Compose network.
-
-The public repository publish helper adds `make publish-repo GITHUB_REPOSITORY=owner/name`, which creates or uses a public GitHub repo, pushes `main`, and updates the lablab repository URL.
-
-The verified demo URL setter adds `make set-demo-url DEMO_URL=https://...`, which checks the public dashboard and Spanish producer route before updating the lablab Application URL.
-
-The lablab form export slice adds `submission/lablab-form.json`, a structured copy/paste packet with artifact paths and unresolved URL fields.
-
-The final readiness report slice adds `submission/final-readiness-report.md`, a generated handoff report that records passing local gates, failing external gates, and the exact commands needed before lablab upload.
-
-The producer message packet slice adds a provider-free Spanish SMS/WhatsApp handoff message to the producer view, reusing the same HITL approval and offline emergency rules.
-
-The RLVR policy improvement slice adds a dependency-free verifier-guided policy search loop with CLI, API, dashboard, and generated evidence output.
-
-The generated demo video now includes an RLVR policy search scene so the submitted AVI matches the current dashboard and evidence packet.
-
-The demo rehearsal packet adds `submission/demo-rehearsal.json` and `.md`, generated from simulator behavior to prove the judge path before the public deployment is available.
-
-The mesh evidence packet adds `submission/mesh-evidence.json` and `.md`, generated from the Elixir mesh model to prove agent migration and state-token preservation.
-
-The live nRF9151 evidence slice records read-only UART output from two physical DECT NR+ boards. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number; the artifact is marked `simulated: false`, and no flash or reset command was invoked.
-
-The DECT operator/producer slice loads that evidence directly into both LiveViews. The operator can replay sequence `#100` as an explicitly simulated sensor alert and then run the verified Gemma agents; the Spanish producer view shows the same real-radio status without presenting `hello_dect` as chemical sensor telemetry.
-
-The nRF9151 field plan maps PT to the tank edge node and FT to the community gateway/controller. Nordic's stock `hello_dect` firmware proves the physical radio link; it does not claim to carry ProteinLoop sensor telemetry yet.
-
-The nRF9151 telemetry bridge packet maps sample two-board JSONL readings into simulator and dashboard events, proving how a critical tank reading becomes an ammonia-spike request and how an offline edge node becomes a mesh failure hint.
-
-The real Sagents runtime slice pins Sagents `0.9.0` and LangChain `0.9.2`, starts `Sagents.Supervisor` under OTP, runs four real `Sagents.SubAgent` workers with Gemma concurrently, inserts `verify_ecosystem_safety` before tool execution, terminates through `until_tool_success`, and preserves executable JSON/Markdown evidence at `submission/sagents-evidence.*`.
-
-The real Horde failover slice pins Horde `0.10.0`, runs two distributed BEAM nodes with participation membership, persists managed Sagents state atomically, stops the probe's actual owner service, restores the same agent on the survivor, and verifies identity, state token, and canonical fingerprint preservation in `submission/horde-evidence.*`.
-
-## Workflow
-
-This repo is set up for a Spec Kit-style flow:
-
-- `.specify/memory/constitution.md` defines project principles.
-- `specs/001-simulator-verifier/spec.md` defines the first feature.
-- `specs/001-simulator-verifier/plan.md` defines the implementation plan.
-- `specs/001-simulator-verifier/tasks.md` tracks executable tasks.
-- `specs/003-agent-harness/spec.md` defines the current agent harness slice.
-- `specs/004-provider-traces/spec.md` defines provider selection and trace recording.
-- `specs/007-demo-cascade/spec.md` defines the repeatable one-click judge demo.
-- `specs/008-model-endpoint-status/spec.md` defines model endpoint visibility.
-- `specs/009-rlvr-reward-panel/spec.md` defines the lightweight RLVR reward verifier view.
-- `specs/010-subsystem-agent-topology/spec.md` defines deterministic subsystem agent topology.
-- `specs/011-self-healing-mesh/spec.md` defines the local self-healing mesh demo.
-- `specs/012-spanish-hitl-queue/spec.md` defines the connected Spanish HITL approval queue.
-- `specs/013-sagents-loop-contract/spec.md` defines the superseded deterministic loop fallback.
-- `specs/014-amd-gemma-deployment/spec.md` defines the AMD Gemma vLLM deployment profile.
-- `specs/015-submission-packet/spec.md` defines the hackathon submission packet.
-- `specs/016-anomaly-forecast/spec.md` defines near-term ammonia/oxygen risk prediction.
-- `specs/017-offline-emergency-fallback/spec.md` defines the Spanish offline emergency rule path.
-- `specs/018-rendered-slide-deck/spec.md` defines the rendered PowerPoint deck artifact.
-- `specs/019-docker-smoke-verification/spec.md` defines the runnable Docker smoke check.
-- `specs/020-demo-evidence-packet/spec.md` defines generated demo evidence artifacts.
-- `specs/021-public-repo-ci/spec.md` defines the public GitHub Actions CI path.
-- `specs/022-live-demo-verification/spec.md` defines the public demo URL verification path.
-- `specs/024-gemma-endpoint-verification/spec.md` defines the OpenAI-compatible Gemma endpoint verification path.
-- `specs/030-lablab-form-export/spec.md` defines the structured lablab form export.
-- `specs/031-final-readiness-report/spec.md` defines the generated final readiness handoff report.
-- `specs/032-producer-message-packet/spec.md` defines the Spanish SMS/WhatsApp handoff packet.
-- `specs/033-rlvr-policy-improvement/spec.md` defines the verifier-guided policy search curve.
-- `specs/034-demo-video-rlvr-search/spec.md` defines the generated video update for the policy search scene.
-- `specs/035-demo-rehearsal-packet/spec.md` defines the executable judge demo rehearsal packet.
-- `specs/036-mesh-evidence-packet/spec.md` defines the generated self-healing mesh evidence packet.
-- `specs/037-nrf9151-field-plan/spec.md` defines the two-board DECT NR+ field extension plan.
-- `specs/038-nrf9151-telemetry-bridge/spec.md` defines the two-board telemetry bridge contract.
-- `specs/047-real-sagents-runtime/spec.md` defines the real Sagents, Gemma, verifier, and HITL runtime.
-- `specs/048-real-horde-failover/spec.md` defines the two-node Sagents/Horde failover proof.
-- `specs/049-live-nrf9151-evidence/spec.md` defines read-only physical two-board DECT NR+ evidence.
-- `specs/051-dect-operator-producer/spec.md` defines the live DECT evidence panels, simulated replay, and Gemma action.
-
-`AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
+Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), and this [README redesign](specs/052-agentic-readme-workflow/spec.md).
 
 ## Run Tests
 
