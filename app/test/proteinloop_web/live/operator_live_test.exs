@@ -58,7 +58,14 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "ProteinLoop system control"
     assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
+    assert has_element?(view, "#operator-system-scene [data-tank-fullscreen]")
+    assert has_element?(view, "#tank-agent-console")
+    assert has_element?(view, "#fullscreen-mission-select option[value='recover-water']")
+    assert has_element?(view, "#fullscreen-run-agentic-mission[phx-click='run-agentic-mission']")
     assert html =~ "Live tank simulation"
+    assert html =~ "Agentic AI control"
+    assert html =~ "Safety verifier"
+    assert html =~ "Human approval"
     assert html =~ "Main fish &amp; prawn tank"
     assert html =~ "Waste in water"
     assert html =~ "Ammonia"
@@ -67,6 +74,35 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Simulate water emergency"
     assert has_element?(view, "#operator-system-scene [data-tank-fallback]")
     refute html =~ "protein-loop-system.svg"
+  end
+
+  test "fullscreen mission control reuses the operator mission state", %{conn: conn} do
+    Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    html =
+      view
+      |> element("#fullscreen-mission-select")
+      |> render_change(%{"mission" => "protect-protein"})
+
+    assert html =~ "Protect protein yield"
+
+    assert has_element?(
+             view,
+             "#fullscreen-mission-select option[value='protect-protein'][selected]"
+           )
+
+    html = view |> element("#fullscreen-run-agentic-mission") |> render_click()
+    assert html =~ "Specialists deliberating"
+    assert_receive {:test_sagents_runtime_started, :run, task}
+    send(task, {:continue_test_sagents_runtime, :run})
+
+    html = render_async(view, 1_000)
+    assert has_element?(view, "#fullscreen-agent-result")
+    assert html =~ "Verified intervention applied"
+    assert html =~ "Reward 203.7"
+    assert html =~ "Ammonia 0.9 mg/L"
+    assert html =~ "Oxygen 6.4 mg/L"
   end
 
   test "streams simulator snapshots into the animated tank", %{conn: conn} do

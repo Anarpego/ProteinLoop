@@ -16,11 +16,11 @@ Open `http://localhost:4001/`.
 
 Action:
 
-Press `Simulate water emergency`. Watch the water, bubbles, fish, and prawns change, then ask the AI team for a safe recovery plan. Open `Advanced evidence and controls` and press `Run demo cascade` for the baseline comparison.
+Use the tank's expand icon, press `Simulate water emergency`, and watch the water, bubbles, fish, and prawns change. In the full-screen `Agentic AI control`, choose `Recover water quality` and press `Run agent team`. Exit with `Escape`, then open `Advanced evidence and controls` and press `Run demo cascade` for the baseline comparison.
 
 Narration:
 
-The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. The producer scene is read-only. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
+The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. Full screen keeps live chemistry, emergency controls, mission selection, Gemma configuration, the five-agent team, the deterministic safety verifier, and human approval visible together. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. The producer scene is a read-only full-screen viewer. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
 
 ## Scene 3: RLVR Evidence
 

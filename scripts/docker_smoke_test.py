@@ -131,6 +131,10 @@ def check_web() -> list[Check]:
         "until_tool_success",
         "Human approval",
         "Live tank simulation",
+        "Open tank full screen",
+        "Agentic AI control",
+        "Safety verifier",
+        "Run agent team",
         "Simulate water emergency",
         "Waste in water",
         "Self-healing mesh",
@@ -150,13 +154,22 @@ def check_web() -> list[Check]:
         "Sequence #100",
         "real radio",
         "Live tank simulation",
+        "Open tank full screen",
         "Waste in water",
         "Breathing oxygen",
     ]
 
+    producer_forbidden = ["tank-agent-console", "Simulate water emergency", "Run agent team"]
+    producer_leaks = [marker for marker in producer_forbidden if marker in producer]
+
     checks = [
         Check("guided operator control route", all(needle in operator for needle in operator_needles)),
         Check("producer English route", all(needle in producer for needle in producer_needles)),
+        Check(
+            "producer tank remains read-only",
+            not producer_leaks,
+            f"unexpected: {', '.join(producer_leaks)}" if producer_leaks else "",
+        ),
         Check(
             "bundled PBR fish model",
             fish_model_size == 12_488_144,

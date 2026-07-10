@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-10T19:38:00.438183+00:00",
+  "checked_at": "2026-07-10T19:56:49.838049+00:00",
   "checks": [
     {
       "detail": "",
@@ -44,6 +44,11 @@
     {
       "detail": "",
       "name": "producer English route",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "producer tank remains read-only",
       "ok": true
     },
     {

@@ -583,7 +583,118 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </header>
 
-        <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true} />
+        <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true}>
+          <:agent_controls>
+            <div class="realtime-tank__agent-header">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-primary">
+                  Agentic AI control
+                </p>
+                <h3 class="mt-1 text-base font-semibold">Live recovery mission</h3>
+              </div>
+              <span class={[
+                "badge badge-sm",
+                if(@sagents_status.endpoint_configured?, do: "badge-success", else: "badge-warning")
+              ]}>
+                {if @sagents_status.endpoint_configured?,
+                  do: "Gemma configured",
+                  else: "Gemma unavailable"}
+              </span>
+            </div>
+
+            <label
+              for="fullscreen-mission-select"
+              class="mt-3 block text-xs font-semibold text-base-content/65"
+            >
+              Mission
+            </label>
+            <select
+              id="fullscreen-mission-select"
+              name="mission"
+              class="select select-sm mt-1 w-full border-base-300 bg-white"
+              phx-change="select-agentic-mission"
+              disabled={@sagents_running?}
+            >
+              <option
+                :for={mission <- @agentic_missions}
+                value={mission.id}
+                selected={mission.id == @selected_mission.id}
+              >
+                {mission.title}
+              </option>
+            </select>
+
+            <div class="mt-3 border-y border-base-300 py-3">
+              <p class="text-sm font-semibold">{@selected_mission.title}</p>
+              <p class="mt-1 text-xs leading-5 text-base-content/65">
+                {@selected_mission.objective}
+              </p>
+            </div>
+
+            <ol class="realtime-tank__agent-flow" aria-label="Agentic safety workflow">
+              <li>
+                <.icon name="hero-user-group" />
+                <span>{@sagents_status.agent_count}-agent team</span>
+              </li>
+              <li>
+                <.icon name="hero-shield-check" />
+                <span>Safety verifier</span>
+              </li>
+              <li>
+                <.icon name="hero-hand-raised" />
+                <span>Human approval</span>
+              </li>
+            </ol>
+
+            <button
+              id="fullscreen-run-agentic-mission"
+              type="button"
+              class="btn btn-sm btn-primary mt-3 w-full"
+              phx-click="run-agentic-mission"
+              disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
+            >
+              <.icon
+                name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
+                class={if @sagents_running?, do: "animate-spin", else: nil}
+              />
+              {if @sagents_running?, do: "Specialists deliberating", else: "Run agent team"}
+            </button>
+
+            <div
+              :if={@mission_phase == :completed && is_map(@loop_result)}
+              id="fullscreen-agent-result"
+              class="mt-3 border-l-2 border-success bg-success/10 px-3 py-2"
+            >
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-sm font-semibold">Verified intervention applied</p>
+                <span class={[
+                  "badge badge-sm",
+                  if(get_in(@loop_result, [:verification, "ok"]),
+                    do: "badge-success",
+                    else: "badge-error"
+                  )
+                ]}>
+                  {if get_in(@loop_result, [:verification, "ok"]),
+                    do: "Verifier accepted",
+                    else: "Verifier rejected"}
+                </span>
+              </div>
+              <p class="mt-1 text-xs font-semibold text-base-content/70">
+                Reward {rounded(@loop_result.reward)} · Ammonia {rounded(
+                  @loop_result.state["ammonia_mg_l"]
+                )} mg/L · Oxygen {rounded(@loop_result.state["dissolved_oxygen_mg_l"])} mg/L
+              </p>
+            </div>
+
+            <p
+              :if={@mission_phase == :failed}
+              id="fullscreen-agent-failed"
+              class="mt-3 border-l-2 border-error bg-error/10 px-3 py-2 text-xs font-semibold"
+            >
+              Agent mission failed. No simulator action was applied.
+            </p>
+          </:agent_controls>
+        </.realtime_tank_scene>
 
         <section
           id="agentic-mission"

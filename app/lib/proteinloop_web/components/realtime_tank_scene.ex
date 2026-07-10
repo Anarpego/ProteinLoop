@@ -8,6 +8,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
   attr :id, :string, required: true
   attr :state, :map, required: true
   attr :controls, :boolean, default: false
+  slot :agent_controls
 
   def realtime_tank_scene(assigns) do
     ammonia = number(assigns.state, "ammonia_mg_l")
@@ -46,14 +47,18 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       data-fish-model-url={~p"/models/barramundi-fish.glb"}
       data-prawn-texture-url={~p"/models/greasyback-shrimp.jpeg"}
     >
-      <div
-        class="realtime-tank__viewport"
-        role="img"
-        aria-label={
-          "Animated fish and freshwater prawn tank. #{@health.heading}. Ammonia #{@ammonia} milligrams per liter and dissolved oxygen #{@oxygen} milligrams per liter."
-        }
-      >
-        <div id={"#{@id}-webgl"} phx-update="ignore" class="realtime-tank__render-layer">
+      <div class="realtime-tank__viewport">
+        <p id={"#{@id}-description"} class="sr-only">
+          Animated fish and freshwater prawn tank. {@health.heading}. Ammonia {@ammonia} milligrams
+          per liter and dissolved oxygen {@oxygen} milligrams per liter.
+        </p>
+        <div
+          id={"#{@id}-webgl"}
+          phx-update="ignore"
+          class="realtime-tank__render-layer"
+          role="img"
+          aria-labelledby={"#{@id}-description"}
+        >
           <div
             data-tank-fallback
             class="realtime-tank__fallback"
@@ -79,11 +84,12 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
           </p>
         </div>
 
-        <div :if={@controls} class="realtime-tank__commands">
-          <button class="btn btn-sm btn-error" phx-click="spike">
+        <div class="realtime-tank__commands">
+          <button :if={@controls} class="btn btn-sm btn-error" phx-click="spike">
             <.icon name="hero-bolt" /> Simulate water emergency
           </button>
           <button
+            :if={@controls}
             class="btn btn-square btn-sm btn-outline bg-white"
             phx-click="reset"
             title="Reset tank"
@@ -91,7 +97,27 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
             <.icon name="hero-arrow-uturn-left" />
             <span class="sr-only">Reset tank</span>
           </button>
+          <button
+            id={"#{@id}-fullscreen"}
+            type="button"
+            class="btn btn-square btn-sm btn-outline bg-white"
+            data-tank-fullscreen
+            aria-label="Open tank full screen"
+            aria-pressed="false"
+            title="Open tank full screen"
+          >
+            <.icon name="hero-arrows-pointing-out" class="realtime-tank__fullscreen-open" />
+            <.icon name="hero-arrows-pointing-in" class="realtime-tank__fullscreen-close" />
+          </button>
         </div>
+
+        <aside
+          :if={@agent_controls != []}
+          id="tank-agent-console"
+          class="realtime-tank__agent-console"
+        >
+          {render_slot(@agent_controls)}
+        </aside>
 
         <div class="realtime-tank__hud">
           <div class="realtime-tank__condition">

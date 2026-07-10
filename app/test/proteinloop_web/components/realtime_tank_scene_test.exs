@@ -20,7 +20,11 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ ~s(data-fish-model-url="/models/barramundi-fish.glb")
     assert html =~ ~s(data-prawn-texture-url="/models/greasyback-shrimp.jpeg")
     assert html =~ ~s(data-tank-canvas)
-    assert html =~ ~s(aria-label="Animated fish and freshwater prawn tank)
+    assert html =~ ~s(data-tank-fullscreen)
+    assert html =~ "Open tank full screen"
+    assert html =~ ~s(role="img")
+    assert html =~ ~s(aria-labelledby="test-realtime-tank-description")
+    assert html =~ "Animated fish and freshwater prawn tank"
     assert html =~ "Live tank simulation"
     assert html =~ "Simulate water emergency"
     assert html =~ "Waste in water"
@@ -40,6 +44,7 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
 
     assert html =~ ~s(phx-hook="RealtimeTank")
     assert html =~ ~s(data-tank-fallback)
+    assert html =~ ~s(data-tank-fullscreen)
     refute html =~ ~s(phx-click="spike")
     refute html =~ ~s(phx-click="reset")
   end

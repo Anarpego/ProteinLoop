@@ -46,6 +46,13 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertIn("Latest DECT NR+ link", PRODUCER_NEEDLES)
         self.assertIn("real radio", PRODUCER_NEEDLES)
 
+    def test_routes_require_the_immersive_agentic_tank(self):
+        self.assertIn("Open tank full screen", OPERATOR_NEEDLES)
+        self.assertIn("Agentic AI control", OPERATOR_NEEDLES)
+        self.assertIn("Safety verifier", OPERATOR_NEEDLES)
+        self.assertIn("Run agent team", OPERATOR_NEEDLES)
+        self.assertIn("Open tank full screen", PRODUCER_NEEDLES)
+
 
 if __name__ == "__main__":
     unittest.main()

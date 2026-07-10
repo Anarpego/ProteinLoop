@@ -39,6 +39,8 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
 
     assert has_element?(view, "#producer-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#producer-system-scene canvas[data-tank-canvas]")
+    assert has_element?(view, "#producer-system-scene [data-tank-fullscreen]")
+    refute has_element?(view, "#tank-agent-console")
     refute has_element?(view, "#producer-system-scene button[phx-click='spike']")
     refute has_element?(view, "#producer-system-scene button[phx-click='reset']")
     assert html =~ "Producer decisions"

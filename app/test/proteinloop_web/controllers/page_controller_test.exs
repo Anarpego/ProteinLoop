@@ -61,6 +61,11 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert app_js =~ "RealtimeTank"
     assert tank_hook =~ "setAnimationLoop"
     assert tank_hook =~ "ResizeObserver"
+    assert tank_hook =~ "requestFullscreen"
+    assert tank_hook =~ "exitFullscreen"
+    assert tank_hook =~ "fullscreenchange"
+    assert tank_hook =~ ~s(setAttribute("aria-pressed",)
+    assert tank_hook =~ ~s(removeEventListener("fullscreenchange",)
   end
 
   test "bundles and loads the licensed PBR fish without a runtime CDN" do

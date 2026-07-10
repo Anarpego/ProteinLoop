@@ -30,6 +30,10 @@ OPERATOR_NEEDLES = [
     "until_tool_success",
     "Human approval",
     "Live tank simulation",
+    "Open tank full screen",
+    "Agentic AI control",
+    "Safety verifier",
+    "Run agent team",
     "Simulate water emergency",
     "Waste in water",
     "Self-healing mesh",
@@ -50,6 +54,7 @@ PRODUCER_NEEDLES = [
     "Sequence #100",
     "real radio",
     "Live tank simulation",
+    "Open tank full screen",
     "Waste in water",
     "Breathing oxygen",
 ]

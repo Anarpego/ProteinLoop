@@ -15,9 +15,9 @@
     "Model evidence: live local Gemma 4 E2B inference through llama.cpp/Metal; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim."
   ],
   "key_demo_path": [
-    "Open the operator route and inspect `Live tank simulation`: moving fish and freshwater prawns, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates.",
+    "Open the operator route, inspect `Live tank simulation`, and use its expand icon: moving fish and freshwater prawns, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates continue in full screen.",
     "Press `Simulate water emergency` and watch the deterministic ammonia spike change water color, bubble activity, and animal behavior.",
-    "In `Ask the AI team to help`, select `Protect protein yield` and press `Ask AI team for a safe plan`.",
+    "In the full-screen `Agentic AI control`, select `Protect protein yield` and press `Run agent team`; the same verified Sagents workflow runs without leaving the tank.",
     "Inspect the `Intelligence receipt` and watch the verified before/after chemistry update the same animated tank.",
     "Open `Advanced evidence and controls`, then press `Run demo cascade` to show unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.",
     "Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.",

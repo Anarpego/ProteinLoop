@@ -855,6 +855,9 @@ const disposeRuntime = runtime => {
   runtime.mediaQuery?.removeEventListener?.("change", runtime.handleMotionChange)
   runtime.element?.removeEventListener("pointermove", runtime.handlePointerMove)
   runtime.element?.removeEventListener("pointerleave", runtime.handlePointerLeave)
+  runtime.fullscreenButton?.removeEventListener("click", runtime.handleFullscreenClick)
+  document.removeEventListener("fullscreenchange", runtime.handleFullscreenChange)
+  document.removeEventListener("webkitfullscreenchange", runtime.handleFullscreenChange)
 
   disposeObject3D(runtime.scene)
   runtime.prawnTexture?.dispose()
@@ -914,6 +917,40 @@ const RealtimeTank = {
       runtime.resizeObserver.observe(canvas.parentElement)
       runtime.resize()
 
+      runtime.fullscreenButton = this.el.querySelector("[data-tank-fullscreen]")
+      runtime.handleFullscreenChange = () => {
+        const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+        const isFullscreen = fullscreenElement === this.el
+        const label = isFullscreen ? "Exit tank full screen" : "Open tank full screen"
+
+        this.el.dataset.fullscreen = String(isFullscreen)
+        runtime.fullscreenButton?.setAttribute("aria-pressed", String(isFullscreen))
+        runtime.fullscreenButton?.setAttribute("aria-label", label)
+        if (runtime.fullscreenButton) runtime.fullscreenButton.title = label
+        runtime.resize()
+      }
+      runtime.handleFullscreenClick = async () => {
+        const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+        const isFullscreen = fullscreenElement === this.el
+
+        try {
+          if (isFullscreen) {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen
+            if (exitFullscreen) await exitFullscreen.call(document)
+          } else {
+            const requestFullscreen = this.el.requestFullscreen || this.el.webkitRequestFullscreen
+            if (requestFullscreen) await requestFullscreen.call(this.el)
+          }
+        } catch (error) {
+          this.el.dataset.fullscreenError = "true"
+          console.warn("ProteinLoop tank could not change full-screen mode", error)
+        }
+      }
+      runtime.fullscreenButton?.addEventListener("click", runtime.handleFullscreenClick)
+      document.addEventListener("fullscreenchange", runtime.handleFullscreenChange)
+      document.addEventListener("webkitfullscreenchange", runtime.handleFullscreenChange)
+      runtime.handleFullscreenChange()
+
       runtime.handlePointerMove = event => {
         const bounds = this.el.getBoundingClientRect()
         runtime.pointer.x = clamp(((event.clientX - bounds.left) / bounds.width) * 2 - 1, -1, 1)
@@ -949,6 +986,14 @@ const RealtimeTank = {
 
   updated() {
     if (!this.runtime) return
+    const fullscreenButton = this.el.querySelector("[data-tank-fullscreen]")
+    if (fullscreenButton !== this.runtime.fullscreenButton) {
+      this.runtime.fullscreenButton?.removeEventListener("click", this.runtime.handleFullscreenClick)
+      this.runtime.fullscreenButton = fullscreenButton
+      this.runtime.fullscreenButton?.addEventListener("click", this.runtime.handleFullscreenClick)
+    }
+    this.runtime.handleFullscreenChange?.()
+
     const next = stateFromElement(this.el)
     const previous = this.runtime.target
     if (

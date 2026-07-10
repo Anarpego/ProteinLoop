@@ -46,9 +46,9 @@ TODO
 
 ## Key Demo Path
 
-1. Open the operator route and inspect `Live tank simulation`: locally loaded PBR fish, four recognizable foreground prawns, physical water and glass, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates.
+1. Open the operator route, inspect `Live tank simulation`, and use its expand icon: locally loaded PBR fish, four recognizable foreground prawns, physical water and glass, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates continue in full screen.
 2. Press `Simulate water emergency` and watch the deterministic ammonia spike change water color, bubble activity, and animal behavior.
-3. In `Ask the AI team to help`, select `Protect protein yield` and press `Ask AI team for a safe plan`.
+3. In the full-screen `Agentic AI control`, select `Protect protein yield` and press `Run agent team`; the same verifier-gated Sagents workflow runs without leaving the tank.
 4. Inspect the `Intelligence receipt` and watch the verified before/after chemistry update the same animated tank.
 5. Open `Advanced evidence and controls`, then press `Run demo cascade` to show unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
 6. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
