@@ -67,7 +67,7 @@ def build_scenes(evidence: dict) -> list[Scene]:
             [
                 "Aquaponics already integrates aquatic animals and plants.",
                 "ProteinLoop makes fish and prawn biomass, plant filtration, duckweed feed, and eggs visible as one loop.",
-                "Gemma proposes, ecosystem rules verify, and the producer controls irreversible actions.",
+                "Private field radio, local Gemma, deterministic safety, and producer control are designed for farms without dependable Wi-Fi or cloud access.",
             ],
             "Fish + prawns + eggs + vegetables",
             CYAN,
@@ -120,13 +120,13 @@ def build_scenes(evidence: dict) -> list[Scene]:
         ),
         Scene(
             "Physical DECT NR+",
-            "Two nRF9151 DKs exchange live radio traffic",
+            "DECT NR+ keeps tank data local",
             [
-                "FT 1051223739 is the community gateway; PT 1051239227 is the tank edge node.",
-                "Each board sent locally and received its peer's matching DECT NR+ sequence number.",
-                "The evidence came from read-only UART capture with no flash or reset command.",
+                "PT 1051239227 reaches FT 1051223739 without Wi-Fi, a SIM, or cloud access.",
+                "A separate edge computer runs self-hosted Gemma and the verifier; the radio boards transport data.",
+                "Sequence 100 is proven now. Chemistry probes and measured solar-plus-battery autonomy come next.",
             ],
-            "FT -> PT match | PT -> FT match | simulated: false",
+            "private radio proven | simulated: false | solar design planned",
             GREEN,
         ),
         Scene(
@@ -156,7 +156,7 @@ def build_scenes(evidence: dict) -> list[Scene]:
             "Gemma 4 E2B runs offline behind GEMMA_ENDPOINT",
             [
                 "The app uses an OpenAI-compatible boundary for model proposals.",
-                "The proven runtime uses llama.cpp and Metal with Google's smallest Gemma 4 model.",
+                "A separate local computer uses llama.cpp and Metal with Google's smallest Gemma 4 model.",
                 "Local endpoint and real Sagents evidence prove models, chat, tools, verifier, and HITL.",
             ],
             f"Gemma 4 E2B | forecast after spike: {forecast['risk_level']}",

@@ -657,7 +657,13 @@ defmodule ProteinLoopWeb.ProducerLive do
             </div>
           </dl>
 
-          <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
+          <p class="mt-3 text-sm text-base-content/70">
+            DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway.
+            It moves field data without Wi-Fi, a SIM, or cloud access. Gemma runs on a separate
+            local edge computer connected to the gateway radio, not on either nRF9151 board.
+          </p>
+
+          <p :if={@nrf9151_evidence.available?} class="mt-2 text-sm text-base-content/70">
             Water chemistry remains simulated. Nordic hello_dect proves the radio transport, not a
             chemical sensor reading.
           </p>

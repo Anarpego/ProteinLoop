@@ -95,6 +95,45 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Portable path · current demo is local"
     assert has_element?(view, "#run-judge-proof[phx-click='demo-cascade']")
     assert has_element?(view, "#producer-decision-link", "Producer view")
+
+    assert has_element?(
+             view,
+             "#off-grid-continuity[aria-labelledby='off-grid-continuity-title']"
+           )
+
+    assert has_element?(view, "#off-grid-continuity > summary")
+    refute has_element?(view, "#off-grid-continuity[open]")
+
+    assert html =~ "Keep the food control loop local"
+    assert html =~ "No Wi-Fi"
+    assert html =~ "DECT NR+ private field link"
+    assert html =~ "No cloud"
+    assert html =~ "Self-hosted Gemma + local verifier"
+    assert html =~ "No electrical grid"
+    assert html =~ "Solar + battery edge power"
+    assert html =~ "Physical radio proven"
+    assert html =~ "Local AI proven"
+    assert html =~ "Deployment design"
+    assert has_element?(view, "#field-acquisition-path[aria-label='Local field data path']")
+
+    acquisition_labels = [
+      "Water probes",
+      "nRF9151 PT tank node",
+      "DECT NR+ private link",
+      "nRF9151 FT gateway radio",
+      "Separate edge computer",
+      "Producer decision"
+    ]
+
+    acquisition_positions =
+      Enum.map(acquisition_labels, fn label ->
+        {position, _length} = :binary.match(html, label)
+        position
+      end)
+
+    assert acquisition_positions == Enum.sort(acquisition_positions)
+    assert html =~ "Gemma runs on the edge computer, not on either radio board"
+    assert html =~ "Chemistry probes are the next field integration"
     assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
     assert has_element?(view, "#operator-system-scene [data-tank-fullscreen]")
@@ -310,6 +349,9 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "1051223739"
     assert html =~ "1051239227"
     assert html =~ "real radio capture"
+    assert html =~ "private, non-cellular 5G field link"
+    assert html =~ "does not need Wi-Fi, a SIM, or cloud access"
+    assert html =~ "separate edge computer runs self-hosted Gemma"
     assert html =~ ~r/simulated sensor\s+alert/
     assert has_element?(view, "#dect-live-evidence")
 

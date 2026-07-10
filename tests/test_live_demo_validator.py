@@ -46,6 +46,13 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertIn("Latest DECT NR+ link", PRODUCER_NEEDLES)
         self.assertIn("real radio", PRODUCER_NEEDLES)
 
+    def test_routes_require_the_off_grid_continuity_story(self):
+        self.assertIn("Keep the food control loop local", OPERATOR_NEEDLES)
+        self.assertIn("DECT NR+ private field link", OPERATOR_NEEDLES)
+        self.assertIn("Self-hosted Gemma + local verifier", OPERATOR_NEEDLES)
+        self.assertIn("Solar + battery edge power", OPERATOR_NEEDLES)
+        self.assertIn("DECT NR+ is the private, non-cellular 5G field link", PRODUCER_NEEDLES)
+
     def test_routes_require_the_immersive_agentic_tank(self):
         self.assertIn("Open tank full screen", OPERATOR_NEEDLES)
         self.assertIn("Protect every protein output in the loop", OPERATOR_NEEDLES)

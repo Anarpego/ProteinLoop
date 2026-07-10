@@ -5,8 +5,8 @@ const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
 const evidence = {
-  python_tests: 156,
-  phoenix_tests: 119,
+  python_tests: 160,
+  phoenix_tests: 120,
   reward_delta: 463,
   collapse_avoidance: "100%",
 };
@@ -33,6 +33,8 @@ await fs.writeFile(
     "No third-party logos or identity assets are embedded.",
     "Gemma/llama.cpp/Metal are named as proven runtime references; ROCm/vLLM is labeled optional.",
     "Physical hardware proof: nRF9151 FT 1051223739 and PT 1051239227 show matching DECT NR+ sequences in both directions.",
+    "DECT NR+ capability basis: ETSI non-cellular 5G and Nordic nRF9151/DECT NR+ product documentation.",
+    "Solar-plus-battery power and physical chemistry probes are labeled as planned field proofs, not measured evidence.",
     "",
   ].join("\n"),
 );
@@ -45,7 +47,7 @@ await fs.writeFile(
     "slide 4: Deterministic physics, not the model, controls every mutation.",
     `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
     "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
-    "slide 7: Real Sagents/Horde evidence proves state-preserving failover; two physical nRF9151 DKs prove bidirectional DECT NR+.",
+    "slide 7: Private DECT NR+ carries tank data locally; a separate edge computer runs Gemma and the verifier; solar and probes remain planned field proofs.",
     "slide 8: Human approval is resumable control flow with approve, apply-half, and reject decisions.",
     "slide 9: Real Sagents and local Gemma 4 E2B run through the same portable endpoint contract.",
     "slide 10: The startup ask is backed by code, Docker, evidence, and a platform path.",
@@ -197,16 +199,18 @@ export default async function slide06(presentation, ctx) {
 }`,
   `import { colors, slideBase, h1, sub, box, arrowText, footer } from "./common.mjs";
 export default async function slide07(presentation, ctx) {
-  const s = slideBase(presentation, ctx, "Self-healing");
-  h1(ctx, s, "Real failover and real field radio have executable proof");
-  sub(ctx, s, "Horde preserves managed agent state across owner loss; two physical nRF9151 DKs prove the DECT NR+ link.");
-  box(ctx, s, { x: 104, y: 240, w: 270, h: 122, title: "proteinloop_web@web", body: "Initial owner persists the completed Gemma probe.", fill: colors.redSoft, line: colors.red });
-  arrowText(ctx, s, 392, 286, "stop");
-  box(ctx, s, { x: 468, y: 240, w: 270, h: 122, title: "Horde 0.10.0", body: "Participation membership transfers managed ownership.", fill: colors.tealSoft, line: colors.teal });
-  arrowText(ctx, s, 756, 286);
-  box(ctx, s, { x: 832, y: 240, w: 300, h: 122, title: "proteinloop_peer@peer", body: "Survivor restores the same Sagents AgentServer state.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 104, y: 424, w: 520, h: 116, title: "Horde proof", body: "Identity, state token, and fingerprint stay unchanged; restore_count increases on the peer and both nodes rejoin.", fill: "#ffffff", line: colors.teal });
-  box(ctx, s, { x: 656, y: 424, w: 520, h: 116, title: "Physical DECT NR+ proof", body: "FT 1051223739 and PT 1051239227 show matching sequences in both directions. Read-only capture; no flash/reset; simulated: false.", fill: colors.greenSoft, line: colors.green });
+  const s = slideBase(presentation, ctx, "Off-grid continuity");
+  h1(ctx, s, "Private field radio keeps the food control loop local");
+  sub(ctx, s, "No Wi-Fi for the tank hop. No cloud for inference. Solar-plus-battery power is the next measured field proof.");
+  box(ctx, s, { x: 46, y: 238, w: 210, h: 132, title: "PT tank node", body: "nRF9151 at the tank. Physical board proven; chemistry probes integrate next.", fill: colors.blueSoft, line: colors.blue });
+  arrowText(ctx, s, 266, 286);
+  box(ctx, s, { x: 324, y: 238, w: 248, h: 132, title: "DECT NR+", body: "Private non-cellular 5G hop. No Wi-Fi, SIM, or cloud. Sequence 100 proven.", fill: colors.greenSoft, line: colors.green });
+  arrowText(ctx, s, 582, 286);
+  box(ctx, s, { x: 640, y: 238, w: 210, h: 132, title: "FT gateway radio", body: "nRF9151 receives the field packet and hands it to edge compute.", fill: colors.blueSoft, line: colors.blue });
+  arrowText(ctx, s, 860, 286);
+  box(ctx, s, { x: 918, y: 238, w: 310, h: 132, title: "Separate edge computer", body: "Self-hosted Gemma + deterministic verifier + producer workflow. The radios do not run the model.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 90, y: 432, w: 520, h: 116, title: "Proven now", body: "Two-board bidirectional radio, local Gemma 4 E2B, offline rules, verifier gating, and producer approval.", fill: colors.greenSoft, line: colors.green });
+  box(ctx, s, { x: 670, y: 432, w: 520, h: 116, title: "Next measured field proof", body: "Physical water probes, solar energy budget, battery autonomy, range, and regional spectrum approval.", fill: colors.amberSoft, line: colors.amber });
   footer(ctx, s, 7);
   return s;
 }`,
@@ -224,14 +228,14 @@ export default async function slide08(presentation, ctx) {
   `import { colors, slideBase, h1, sub, box, arrowText, footer } from "./common.mjs";
 export default async function slide09(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Gemma runtime");
-  h1(ctx, s, "Local Gemma 4 already powers the real Sagents runtime");
-  sub(ctx, s, "E2B proves the loop offline through the same portable GEMMA_ENDPOINT contract.");
+  h1(ctx, s, "Self-hosted Gemma keeps reasoning on the farm");
+  sub(ctx, s, "The radios move field data; a separate edge computer runs AI and deterministic safety without cloud access.");
   box(ctx, s, { x: 80, y: 256, w: 250, h: 142, title: "Sagents 0.9.0", body: "Five agents, custom safety mode, until_tool_success, and resumable HITL.", fill: colors.tealSoft, line: colors.teal });
   arrowText(ctx, s, 350, 306);
   box(ctx, s, { x: 420, y: 260, w: 280, h: 128, title: "GEMMA_ENDPOINT", body: "/v1/models and /v1/chat/completions; no code change for Fireworks or vLLM.", fill: colors.blueSoft, line: colors.blue });
   arrowText(ctx, s, 720, 306);
-  box(ctx, s, { x: 790, y: 260, w: 330, h: 128, title: "llama.cpp + Metal", body: "The smallest Gemma 4 instruction model runs locally and offline after installation.", fill: colors.amberSoft, line: colors.amber });
-  box(ctx, s, { x: 220, y: 454, w: 780, h: 102, title: "Verifier remains in front", body: "Local Gemma proposals cannot mutate state without passing deterministic simulator safety rules.", fill: "#ffffff", line: colors.teal });
+  box(ctx, s, { x: 790, y: 260, w: 330, h: 128, title: "Separate edge runtime", body: "Gemma 4 E2B runs locally through llama.cpp + Metal. nRF9151 transports data; it does not run Gemma.", fill: colors.amberSoft, line: colors.amber });
+  box(ctx, s, { x: 220, y: 454, w: 780, h: 102, title: "Verifier remains in front", body: "Local Gemma proposals cannot mutate state without deterministic safety. Solar autonomy is a planned power proof, not a current claim.", fill: "#ffffff", line: colors.teal });
   footer(ctx, s, 9);
   return s;
 }`,
@@ -240,9 +244,9 @@ export default async function slide10(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Submission ask");
   h1(ctx, s, "ProteinLoop is a startup pitch with executable proof");
   sub(ctx, s, "A food-security product built as a verifier-gated, human-aware, fault-tolerant agentic system.");
-  box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives that need low-cost, resilient protein production.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents/Horde failover, physical DECT NR+ proof, physics verifier, RLVR scoring, resumable HITL, and offline Gemma 4.", fill: colors.tealSoft, line: colors.teal });
-  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and validated software plus hardware evidence packets.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives where farm Wi-Fi, cloud access, and grid electricity cannot be assumed.", fill: colors.greenSoft, line: colors.green });
+  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Private DECT NR+ field transport, self-hosted Gemma, physics verifier, RLVR, resumable HITL, and real Sagents/Horde failover.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and proven radio evidence with honest solar/sensor milestones.", fill: colors.blueSoft, line: colors.blue });
   ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn", fontSize: 30, bold: true, color: colors.ink, align: "center" });
   footer(ctx, s, 10);
   return s;

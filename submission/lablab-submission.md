@@ -6,13 +6,15 @@ ProteinLoop
 
 ## Short Description
 
-An agentic aquaponic protein loop that makes tank health understandable, then keeps fish, prawns, duckweed, hydroponic plants, and chickens stable through a deterministic verifier, local Gemma 4 agents, and human approval.
+An off-grid-ready protein loop using private DECT NR+, self-hosted Gemma 4, deterministic verification, and producer approval to protect fish, prawns, plants, duckweed, and eggs without relying on Wi-Fi or cloud access.
 
 ## Long Description
 
 ProteinLoop tackles a practical food security problem: aquaponics already integrates aquatic animals and plants, but operating the connected animal-protein outcome safely remains difficult. ProteinLoop makes that outcome visible and recoverable, then extends the managed loop across fish, freshwater prawns, duckweed feed, plants, laying chickens, and eggs.
 
 The simulator is the verifier. The first screen quantifies the fish-and-prawn biomass at risk, the plants cleaning the water, the duckweed feed reserve, and the chickens and eggs supported downstream. A locally bundled PBR fish model, four recognizable foreground prawns from a licensed CC0 visual, physical water and glass, plants, substrate, and aeration make the main tank immediately recognizable. It explains ammonia as waste in the water and dissolved oxygen as air the animals can breathe before showing technical values. Every proposed feed, aeration, water exchange, or harvest action is checked against deterministic ecosystem rules before state can mutate. The operator chooses a recovery or production mission, and a real Sagents 0.9.0 runtime sends that objective to four concurrent `Sagents.SubAgent` specialists plus a parent supervisor. The resulting verified recovery receipt shows every structured recommendation and resource request, the supervisor's bounded action, verifier warnings, reward, and measured before/after chemistry. The same interface demonstrates collapse-versus-recovery behavior, rejected unsafe proposals, RLVR reward comparison, verifier-guided policy search improvement, the custom `verify_ecosystem_safety` mode, `until_tool_success`, and resumable English HumanInTheLoop approval. A two-node Horde 0.10.0 cluster proves real owner loss and state restoration: the verifier stops the managed agent's actual owner, observes the same identity, state token, and fingerprint on the peer, then rejoins the node. A provider-free WhatsApp/SMS handoff supports low-bandwidth operation. Two physical nRF9151 DKs prove the field radio path: FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching DECT NR+ sequence number in a read-only UART capture marked `simulated: false`. The separate sample JSONL bridge documents the future water-quality payload contract without claiming Nordic's stock `hello_dect` logs contain sensor telemetry.
+
+DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway. It lets the PT tank node reach the FT gateway without Wi-Fi, a SIM, or cloud access. The FT radio then hands data to a separate edge computer that runs self-hosted Gemma, Phoenix, and the deterministic verifier; Gemma does not run on either nRF9151 board. This makes internet access optional for local monitoring, AI proposals, safety checks, and producer decisions. The target power design adds a solar panel, charge controller, and battery so the same local control path can operate without the electrical grid. The current submission proves the physical two-board radio link and local Gemma runtime, but labels chemistry probes, solar autonomy, field range, and regional spectrum approval as the next measured field integrations.
 
 The proven model runtime is Google's smallest Gemma 4 instruction model, `google/gemma-4-E2B-it`, served locally through llama.cpp/Metal behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. The evidence packet records live `/v1/models`, structured chat, five-agent Sagents, verifier, and HITL behavior. The repo also includes an unclaimed ROCm/vLLM promotion profile for a future AMD host; the submitted evidence does not describe local inference as AMD-hosted.
 
@@ -28,6 +30,9 @@ The proven model runtime is Google's smallest Gemma 4 instruction model, `google
 - Multi-agent systems
 - Horde
 - Human-in-the-loop
+- DECT NR+
+- Edge AI
+- Off-grid systems
 - RLVR
 - Docker
 - Food security
@@ -46,7 +51,7 @@ TODO
 
 ## Key Demo Path
 
-1. Open the operator route and read the animated fish-to-eggs loop plus the executable proof ribbon: live Gemma path, five-agent team, deterministic verifier, physical DECT NR+, producer approval, and the explicitly portable AMD ROCm/vLLM profile.
+1. Open the operator route and read the animated fish-to-eggs loop, executable proof ribbon, and `Off-grid continuity` band. The band explains no-Wi-Fi DECT NR+, no-cloud self-hosted Gemma, the planned solar-plus-battery power layer, and the proven-versus-planned acquisition path.
 2. Press `Run one-click verifier proof` to reproduce the emergency, block one unsafe proposal before mutation, admit a safe recovery, and show zero unsafe actions executed with measured final chemistry.
 3. Inspect `Live tank simulation` and use its expand icon: locally loaded PBR fish, four recognizable foreground prawns, physical water and glass, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates continue in full screen.
 4. Press `Inject demo water emergency` and watch water color, bubble activity, animal behavior, the animated food loop, and quantified fish-and-prawn risk change together.
@@ -54,13 +59,13 @@ TODO
 6. Read `Recovery verified`, including chemistry before/after and zero unsafe actions executed, then inspect the detailed `Verified recovery receipt` below the tank.
 7. Open `Advanced evidence and controls` to inspect RLVR policy-search improvement and the same `Run demo cascade` harness action. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
 8. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
-9. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
+9. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Explain that PT-to-FT transport is private non-cellular 5G and that a separate edge computer runs Gemma and the verifier. Press `Replay sensor alert` to map the proven radio event into an explicitly simulated ammonia alert.
 10. Press `Request producer approval`, then use the English `/producer` route to inspect the same animated tank in read-only mode, approve, apply half, or reject, and inspect the WhatsApp/SMS handoff message.
 11. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
 
 ## Judging Notes
 
-- Creativity: a state-driven PBR Three.js protein tank, operator-directed multi-agent interventions, closed protein loop, real state-preserving Horde failover, physical two-board DECT NR+ proof, verifier-gated human actions.
-- Product potential: low-cost protein production for rural Latin America.
+- Creativity: a state-driven PBR Three.js protein tank, operator-directed multi-agent interventions, closed protein loop, real state-preserving Horde failover, private two-board DECT NR+ field transport, self-hosted Gemma, and verifier-gated human actions.
+- Product potential: resilient protein production for rural Latin America where farm Wi-Fi, cloud access, and grid electricity cannot be assumed; solar autonomy and physical chemistry probes remain measured deployment milestones.
 - Completeness: simulator, dashboard, harness, traces, physical radio evidence, Docker, deployment profile, submission artifacts.
 - Model evidence: live local Gemma 4 E2B inference through llama.cpp/Metal; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim.

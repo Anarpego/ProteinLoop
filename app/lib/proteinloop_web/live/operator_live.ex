@@ -872,7 +872,7 @@ defmodule ProteinLoopWeb.OperatorLive do
                     do: "2-board DECT NR+ capture",
                     else: "DECT NR+ capture unavailable"}
                 </strong>
-                <small>Physical radio evidence</small>
+                <small>Private field link · no Wi-Fi</small>
               </span>
             </li>
             <li>
@@ -891,6 +891,114 @@ defmodule ProteinLoopWeb.OperatorLive do
             </li>
           </ul>
         </section>
+
+        <details
+          id="off-grid-continuity"
+          class="off-grid-continuity"
+          aria-labelledby="off-grid-continuity-title"
+        >
+          <summary class="off-grid-continuity__header">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
+                Off-grid continuity
+              </p>
+              <h2 id="off-grid-continuity-title" class="mt-1 text-xl font-semibold">
+                Keep the food control loop local
+              </h2>
+            </div>
+            <p class="max-w-2xl text-sm leading-6 text-base-content/65">
+              Monitoring, AI guidance, safety checks, and producer decisions can stay at the farm
+              so food operations do not stop with an internet outage. Measured solar autonomy is
+              the next deployment proof.
+            </p>
+            <.icon name="hero-chevron-down" class="off-grid-continuity__chevron" />
+          </summary>
+
+          <div class="off-grid-continuity__modes">
+            <div>
+              <.icon name="hero-signal-slash" />
+              <span>
+                <small>No Wi-Fi</small>
+                <strong>DECT NR+ private field link</strong>
+                <p>PT-to-FT traffic stays local without Wi-Fi, a SIM, or cloud access.</p>
+              </span>
+              <span class="badge badge-sm badge-success">Physical radio proven</span>
+            </div>
+            <div>
+              <.icon name="hero-cloud" />
+              <span>
+                <small>No cloud</small>
+                <strong>Self-hosted Gemma + local verifier</strong>
+                <p>A separate edge computer keeps inference and deterministic safety on site.</p>
+              </span>
+              <span class="badge badge-sm badge-success">Local AI proven</span>
+            </div>
+            <div>
+              <.icon name="hero-sun" />
+              <span>
+                <small>No electrical grid</small>
+                <strong>Solar + battery edge power</strong>
+                <p>The target power system removes grid dependence after an energy audit.</p>
+              </span>
+              <span class="badge badge-sm badge-warning">Deployment design</span>
+            </div>
+          </div>
+
+          <ol
+            id="field-acquisition-path"
+            class="off-grid-continuity__path"
+            aria-label="Local field data path"
+          >
+            <li data-proof-state="planned">
+              <span class="off-grid-continuity__step">1</span>
+              <div>
+                <strong>Water probes</strong>
+                <p>Chemistry probes are the next field integration.</p>
+              </div>
+              <span class="badge badge-sm badge-warning">planned</span>
+            </li>
+            <li data-proof-state="mixed">
+              <span class="off-grid-continuity__step">2</span>
+              <div>
+                <strong>nRF9151 PT tank node</strong>
+                <p>Physical board proven; sensor packet firmware comes next.</p>
+              </div>
+              <span class="badge badge-sm badge-info">board proven</span>
+            </li>
+            <li data-proof-state="proven">
+              <span class="off-grid-continuity__step">3</span>
+              <div>
+                <strong>DECT NR+ private link</strong>
+                <p>Bidirectional PT and FT sequence #100 is captured.</p>
+              </div>
+              <span class="badge badge-sm badge-success">link proven</span>
+            </li>
+            <li data-proof-state="mixed">
+              <span class="off-grid-continuity__step">4</span>
+              <div>
+                <strong>nRF9151 FT gateway radio</strong>
+                <p>The FT radio hands local packets to edge compute.</p>
+              </div>
+              <span class="badge badge-sm badge-info">board proven</span>
+            </li>
+            <li data-proof-state="proven">
+              <span class="off-grid-continuity__step">5</span>
+              <div>
+                <strong>Separate edge computer</strong>
+                <p>Gemma runs on the edge computer, not on either radio board; local rules verify.</p>
+              </div>
+              <span class="badge badge-sm badge-success">runtime proven</span>
+            </li>
+            <li data-proof-state="proven">
+              <span class="off-grid-continuity__step">6</span>
+              <div>
+                <strong>Producer decision</strong>
+                <p>Approve, reduce, or reject risky action without a cloud dependency.</p>
+              </div>
+              <span class="badge badge-sm badge-success">workflow proven</span>
+            </li>
+          </ol>
+        </details>
 
         <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true}>
           <:agent_controls>
@@ -1220,6 +1328,11 @@ defmodule ProteinLoopWeb.OperatorLive do
                   </div>
                   <p class="mt-1 text-sm text-base-content/60">
                     Latest read-only exchange from the two connected nRF9151 boards.
+                  </p>
+                  <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/75">
+                    DECT NR+ is a private, non-cellular 5G field link. The PT tank node can reach
+                    the FT gateway locally; this hop does not need Wi-Fi, a SIM, or cloud access. A
+                    separate edge computer runs self-hosted Gemma and the deterministic verifier.
                   </p>
                 </div>
                 <div class="flex flex-wrap gap-2">

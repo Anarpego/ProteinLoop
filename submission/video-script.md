@@ -8,7 +8,7 @@ Show the title and closed-loop diagram.
 
 Narration:
 
-ProteinLoop is an agentic aquaponic system for rural protein security. Aquaponics already joins fish and plants. ProteinLoop makes that animal-protein outcome measurable and recoverable, then extends the managed loop to prawns, duckweed feed, and eggs.
+ProteinLoop is an off-grid-ready agentic aquaponic system for rural protein security. Aquaponics already joins fish and plants. ProteinLoop makes that animal-protein outcome measurable and recoverable, then extends the managed loop to prawns, duckweed feed, and eggs without assuming farm Wi-Fi or cloud access.
 
 ## Scene 2: Collapse Versus Recovery
 
@@ -16,7 +16,7 @@ Open `http://localhost:4001/`.
 
 Action:
 
-Start with the animated fish-to-eggs flow and executable proof ribbon. Press `Run one-click verifier proof` and show the emergency, blocked unsafe proposal, admitted safe recovery, and zero unsafe actions executed. Then use the tank's expand icon, press `Inject demo water emergency`, and watch the water, bubbles, fish, prawns, animated food loop, and quantified biomass risk change. In the full-screen `Verified recovery` control, choose `Recover water quality` and press `Create safe recovery plan`. Read the separate live-Gemma before/after recovery receipt, then exit with `Escape`.
+Start with the animated fish-to-eggs flow, executable proof ribbon, and `Off-grid continuity` band. Trace water probes to PT, DECT NR+, FT, separate edge computer, and producer. Press `Run one-click verifier proof` and show the emergency, blocked unsafe proposal, admitted safe recovery, and zero unsafe actions executed. Then use the tank's expand icon, press `Inject demo water emergency`, and watch the water, bubbles, fish, prawns, animated food loop, and quantified biomass risk change. In the full-screen `Verified recovery` control, choose `Recover water quality` and press `Create safe recovery plan`. Read the separate live-Gemma before/after recovery receipt, then exit with `Escape`.
 
 Narration:
 
@@ -48,7 +48,7 @@ Show both connected nRF9151 DKs, then open the `Physical DECT NR+ link` panel. P
 
 Narration:
 
-The field link is physical, not simulated. FT board 1051223739 acts as the community gateway and PT board 1051239227 maps to the tank edge. Each board sent locally and received sequence 100 from its peer. The evidence was captured from both UARTs read-only, with no flash or reset. Nordic's stock hello_dect proves the radio link; pressing replay explicitly creates a simulated water-quality alert and does not claim a chemical reading from the boards.
+DECT NR+ is the private, non-cellular 5G field link. PT board 1051239227 maps to the tank edge and FT board 1051223739 maps to the gateway radio. This local hop needs no Wi-Fi, SIM, or cloud account. Each board sent locally and received sequence 100 from its peer, captured from both UARTs read-only with no flash or reset. A separate edge computer, not the nRF9151 boards, runs self-hosted Gemma and the deterministic verifier. Nordic's stock hello_dect proves radio transport; pressing replay explicitly creates a simulated water-quality alert and does not claim a chemical reading. Physical probes and measured solar-plus-battery autonomy are the next field proofs.
 
 ## Scene 6: Human Approval
 
@@ -76,10 +76,10 @@ Show the model status panel and `submission/local-gemma-evidence.json`.
 
 Narration:
 
-The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model, running locally through llama.cpp and Metal. It uses the same OpenAI-compatible `GEMMA_ENDPOINT` contract as the agents. The ROCm/vLLM profile remains a portable future deployment path, not an AMD-hosted claim in this submission.
+The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model, running on a separate local computer through llama.cpp and Metal. The radios transport field data; they do not run the model. The OpenAI-compatible `GEMMA_ENDPOINT` contract lets the same agents move to a solar-powered edge host or a future ROCm/vLLM deployment without changing their safety boundary. The ROCm/vLLM profile remains a portable future path, not an AMD-hosted claim in this submission.
 
 ## Closing
 
 Narration:
 
-ProteinLoop is a food system and an agent system at the same time: a closed protein loop controlled by a verifier-gated, human-aware, fault-tolerant agentic loop.
+ProteinLoop is a food system and an agent system at the same time: private field radio, local intelligence, deterministic safety, and human control designed to keep protein production operable when Wi-Fi, cloud access, and the electrical grid cannot be assumed.

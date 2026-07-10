@@ -7,19 +7,19 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 39020,
+      "bytes": 43880,
       "path": "README.md",
-      "sha256": "3f8d5e3aa15a02e1830611bf058f0fa545c312b654d2db06124b0a6c31774913"
+      "sha256": "1b1c8395ef55cfd0132a20ca17b4a88f4b7afff7be046b537c8fc46115da4c1d"
     },
     {
-      "bytes": 6414,
+      "bytes": 7619,
       "path": "submission/lablab-submission.md",
-      "sha256": "a12eaff91c7272ab8c4af2bbf86cbf32d1d76cd868c29f1258fe4c7fd5363e1e"
+      "sha256": "6785fa570b7a4c3a56b20af5374cd1860e61a469f44beab02ad0fbe0b920e39b"
     },
     {
-      "bytes": 6352,
+      "bytes": 8084,
       "path": "submission/lablab-form.json",
-      "sha256": "ef9930856bbff62413d70e2553e143bf5771fd896d41eadc79a55b4b7ec07e6b"
+      "sha256": "bbab7b0ba0adc65c06c757259c81d97853925dc57774972eb0c64af4dc2ebb0d"
     },
     {
       "bytes": 6501,
@@ -27,24 +27,24 @@
       "sha256": "9368e1b69c2d02e8c33c3c924606834b309f3bc1ee7264fa4c6c169f5fba72a6"
     },
     {
-      "bytes": 5251,
+      "bytes": 5902,
       "path": "submission/video-script.md",
-      "sha256": "4498e460fc1827b2b1b2fcaebedcca3cd933b6dbe49dfa7807da3bbe0f5e9e70"
+      "sha256": "41bfae4fa2fad2e0476c90ce3d7e1b27fb53df2745bba4a6016b53e6b4d65c94"
     },
     {
-      "bytes": 3188,
+      "bytes": 3669,
       "path": "submission/slides.md",
-      "sha256": "9f5d7dfbfaae51574ed151b814465191c8395bfde2a5fff614e78dbdeb420845"
+      "sha256": "5001259cf9dde9a53be42cfb7f7b28675a055a99c43a2a58cacd3c8d25681218"
     },
     {
-      "bytes": 48010,
+      "bytes": 48382,
       "path": "submission/proteinloop-hackathon-deck.pptx",
-      "sha256": "ce652f9feeac56c26d0ee5c132875a0d2efb3b0605b8e762ae41c4ea7921948e"
+      "sha256": "9de128a3f6868a22441545c2571a4bdd28ecc965a73dcff2ddc7ddad09b733b1"
     },
     {
-      "bytes": 10967196,
+      "bytes": 11123368,
       "path": "submission/proteinloop-demo-video.avi",
-      "sha256": "ee5c3c6b7c89e347c56154578794686051b531ae08885a5a62e23a8b9a5f45c8"
+      "sha256": "118cfba1f8c0953b3b1ceee035db0a769e0f1f3445d5f3cc58bcb0cd9001d9b3"
     },
     {
       "bytes": 2615,
@@ -144,8 +144,8 @@
     {
       "bytes": 1296,
       "path": "submission/docker-smoke-evidence.json",
-      "sha256": "c244b49d03abac06241c65b1c391c581d47abee6fe8b46f1350c68b427f4ab2f"
+      "sha256": "f26427a531aab5c0be6104976634159113823af9ef2b9fe051d3dc127072709a"
     }
   ],
-  "generated_at": "2026-07-10T21:06:18.662123+00:00"
+  "generated_at": "2026-07-10T22:04:20.296429+00:00"
 }

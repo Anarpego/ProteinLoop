@@ -64,6 +64,12 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     assert html =~ "1051223739"
     assert html =~ "1051239227"
     assert html =~ "real radio"
+    assert html =~ "DECT NR+ is the private, non-cellular 5G field link"
+    assert html =~ "without Wi-Fi, a SIM, or cloud access"
+
+    assert html =~
+             ~r/Gemma runs on a separate\s+local edge computer connected to the gateway radio, not on either nRF9151 board/
+
     assert html =~ "Water chemistry remains simulated"
     assert html =~ ~r/not a\s+chemical\s+sensor reading/
     assert html =~ "Approve"

@@ -8,7 +8,7 @@
 
 ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
 
-[Run the judge proof](#run-the-one-click-judge-proof) · [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Evidence packet](#submission-packet)
+[Off-grid architecture](#why-dect-nr-matters-off-grid) · [Run the judge proof](#run-the-one-click-judge-proof) · [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Evidence packet](#submission-packet)
 
 ## Why ProteinLoop Focuses on Protein Outcomes
 
@@ -28,15 +28,52 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
 | Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
-| Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
+| Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a private, non-cellular 5G radio link that does not require Wi-Fi, a SIM, or cloud access for the local hop. | [DECT evidence](submission/nrf9151-live-evidence.md) |
+| Local decision path | Self-hosted Gemma 4, the deterministic verifier, producer approval, and rule-based emergency guidance remain available without a cloud model. | [Gemma evidence](submission/local-gemma-evidence.json) · [HITL evidence](submission/sagents-evidence.md) |
 | Reproducible application | Docker profiles start the simulator, guided operator control, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
+
+## Why DECT NR+ Matters Off Grid
+
+[ETSI recognizes DECT-2020 NR as non-cellular 5G](https://www.etsi.org/newsroom/press-releases/1988-2021-10-world-s-first-non-cellular-5g-technology-etsi-dect-2020-gets-itu-r-approval-setting-example-of-new-era-connectivity), designed for autonomous massive-IoT networks. [Nordic describes DECT NR+](https://www.nordicsemi.com/Products/Wireless/DECT-NR) as a private network technology that needs no cellular base station, SIM card, or subscription. For ProteinLoop, its value is narrower and practical: it carries field packets between the tank and a nearby gateway without depending on farm Wi-Fi or an internet service.
+
+The two nRF9151 boards are radios and embedded acquisition nodes; they do not run Gemma. The PT board maps to the tank edge. The FT board maps to the gateway radio. A **separate edge computer** runs self-hosted Gemma, Phoenix, the Python simulator/verifier, and producer controls. Nordic's [nRF9151 product specification](https://docs.nordicsemi.com/r/bundle/ps_nrf9151/page/product_overview.html) documents the integrated DECT NR+ network processor and Cortex-M33 application processor; its embedded resources are for sensing and communications, not this language-model runtime.
+
+### Target Field Acquisition Path
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":false,"background":"#ffffff","primaryColor":"#ecfdf5","primaryTextColor":"#0f172a","primaryBorderColor":"#0f766e","lineColor":"#64748b","secondaryColor":"#e0f2fe","tertiaryColor":"#fff7ed","clusterBkg":"#f8fafc","clusterBorder":"#cbd5e1","edgeLabelBackground":"#ffffff"}}}%%
+flowchart LR
+    Probes["Water probes<br/>next integration"] -. "local sensor bus" .-> PT["nRF9151 PT<br/>tank node"]
+    PT -->|"DECT NR+<br/>no Wi-Fi / SIM / cloud<br/>physical link proven"| FT["nRF9151 FT<br/>gateway radio"]
+    FT --> Edge["Separate edge computer<br/>self-hosted Gemma + verifier<br/>local runtime proven"]
+    Edge --> Producer["Producer decision<br/>approve / reduce / reject<br/>workflow proven"]
+    Solar["Solar panel + charge controller + battery<br/>deployment design; autonomy not yet measured"] -. "local DC power" .-> PT
+    Solar -. "local DC power" .-> FT
+    Solar -. "local DC power" .-> Edge
+    Cloud["Internet / AMD cloud<br/>optional promotion and remote support"] -.-> Edge
+    classDef proven fill:#dcfce7,stroke:#15803d,color:#0f172a
+    classDef planned fill:#fff7ed,stroke:#c2410c,color:#0f172a
+    classDef optional fill:#e0f2fe,stroke:#0369a1,color:#0f172a
+    class PT,FT,Edge,Producer proven
+    class Probes,Solar planned
+    class Cloud optional
+```
+
+This creates three independent continuity layers:
+
+- **No Wi-Fi:** the PT-to-FT DECT NR+ hop remains local.
+- **No cloud:** self-hosted Gemma proposes actions locally; the deterministic verifier and offline emergency rules remain authoritative even if the model is unavailable.
+- **No electrical grid:** the target deployment uses a solar panel, charge controller, and battery for the radios, gateway, and edge computer.
+
+The proof boundary is deliberate. The repository proves the bidirectional two-board radio exchange, local Gemma inference, deterministic fallback rules, and producer approval. It does **not yet** claim physical chemistry-probe acquisition, measured solar autonomy, field range, or region-specific spectrum approval. Those require a probe integration, an energy budget and battery test, a field range test, and confirmation of the deployment frequency with the local regulator. Nordic supports DECT NR+ across 1.9 GHz and, on supported nRF9151 configurations, [915 MHz](https://www.nordicsemi.com/Nordic-news/2025/03/Nordic-Semiconductor-extends-NR-non-cellular-5G-mesh-networking); the final band cannot be selected from a global claim alone.
 
 ## Run the One-Click Judge Proof
 
-1. Open `http://localhost:4001/` and press `Run one-click verifier proof`.
-2. Inspect the three executable stages: emergency reproduced, unsafe proposal blocked before mutation, and safe recovery admitted.
-3. Confirm `0 unsafe actions executed`, the measured final ammonia and oxygen, and the state-driven loop changing to `Verifier proof complete`.
-4. Continue to `Create a verified recovery` for the separate live Gemma 4 path.
+1. Open `http://localhost:4001/`, expand `Off-grid continuity`, and trace the proven-versus-planned field path from probes to producer.
+2. Press `Run one-click verifier proof`.
+3. Inspect the three executable stages: emergency reproduced, unsafe proposal blocked before mutation, and safe recovery admitted.
+4. Confirm `0 unsafe actions executed`, the measured final ammonia and oxygen, and the state-driven loop changing to `Verifier proof complete`.
+5. Continue to `Create a verified recovery` for the separate live Gemma 4 path.
 
 The one-click proof is intentionally deterministic and does not claim to call Gemma. It demonstrates the simulator/verifier mutation boundary quickly. The model-backed workflow remains separate so judges can distinguish model reasoning, deterministic safety authority, and producer approval.
 
@@ -132,7 +169,7 @@ flowchart LR
 | Verify | Full tests, Docker smoke, and generated evidence | Claims are backed by commands and artifacts, not implementation intent. |
 | Ship | Git commit plus checksum manifest | Source, evidence, and documentation describe the same behavior. |
 
-Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md), and the [visual plain-language system](specs/054-visual-plain-language-system/spec.md).
+Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md), the [visual plain-language system](specs/054-visual-plain-language-system/spec.md), and the [off-grid continuity story](specs/062-off-grid-continuity-story/spec.md).
 
 ## Run Tests
 
@@ -721,6 +758,7 @@ make readiness-report
 ├── specs/048-real-horde-failover/ # Real two-node Sagents/Horde migration
 ├── specs/049-live-nrf9151-evidence/ # Physical two-board DECT NR+ capture
 ├── specs/051-dect-operator-producer/ # DECT UI, replay, and Gemma control
+├── specs/062-off-grid-continuity-story/ # No-Wi-Fi, no-cloud, solar-ready field path
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks

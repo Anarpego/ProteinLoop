@@ -49,7 +49,9 @@ Two real BEAM nodes run Sagents through Horde. Stopping the managed agent's actu
 
 ## 10. Physical DECT NR+
 
-Two physical nRF9151 DKs exchange bidirectional DECT NR+ traffic. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number in a read-only, non-simulated capture with no flash or reset.
+DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway. Two physical nRF9151 DKs exchange bidirectional traffic without Wi-Fi, a SIM, or cloud access: FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number in a read-only, non-simulated capture with no flash or reset.
+
+The nRF9151 boards transport field data. A separate edge computer runs self-hosted Gemma and the deterministic verifier. Physical chemistry probes and measured solar-plus-battery autonomy are the next field proofs.
 
 ## 11. Human Approval
 
@@ -61,15 +63,15 @@ Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `
 
 ## 13. Proven Gemma Runtime
 
-`google/gemma-4-E2B-it` runs locally through llama.cpp/Metal behind `GEMMA_ENDPOINT`; the same boundary can later move to vLLM/ROCm without changing the agent code.
+`google/gemma-4-E2B-it` runs on a separate local computer through llama.cpp/Metal behind `GEMMA_ENDPOINT`; the same boundary can later move to a solar-powered edge host or vLLM/ROCm without changing the agent code.
 
 ## 14. Market
 
-Rural families and cooperatives in Latin America need low-cost, resilient protein production.
+Rural families and cooperatives in Latin America need resilient protein production where Wi-Fi, cloud access, and grid electricity cannot be assumed.
 
 ## 15. Business Model
 
-Community mesh node plus shared cloud agent subscription; local producers use a plain-language, mobile-first approval flow.
+Community edge node plus optional remote services; local producers retain private radio, local inference, deterministic fallback, and a plain-language approval flow.
 
 ## 16. Ask
 
