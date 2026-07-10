@@ -26,19 +26,33 @@ ProteinLoop coordinates fish, freshwater prawns, hydroponic plants, duckweed, an
 ## System Workflow
 
 ```mermaid
-flowchart TD
-    Radio["Physical DECT NR+ evidence<br/>FT / PT sequence #100"] --> Replay["Explicit simulated sensor replay"]
-    Replay --> Simulator["Deterministic ecosystem simulator"]
-    Simulator --> Snapshot["Current ecosystem state"]
-    Snapshot --> Agents["4 Gemma / Sagents domain agents"]
-    Agents --> Supervisor["Parent supervisor<br/>structured action proposal"]
-    Supervisor --> Verifier{"Deterministic safety verifier"}
-    Verifier -- "unsafe" --> Reject["Reject action + append RLVR trace"]
-    Verifier -- "safe routine" --> Apply["Apply simulator step"]
-    Verifier -- "safe but risky" --> HITL["Spanish producer HITL"]
-    HITL -- "approve or edit" --> Apply
-    HITL -- "reject" --> Reject
-    Apply --> Simulator
+%%{init: {"theme":"base","themeVariables":{"darkMode":false,"background":"#ffffff","primaryColor":"#ecfdf5","primaryTextColor":"#0f172a","primaryBorderColor":"#0f766e","lineColor":"#64748b","secondaryColor":"#e0f2fe","tertiaryColor":"#f8fafc","clusterBkg":"#f8fafc","clusterBorder":"#cbd5e1","edgeLabelBackground":"#ffffff"}}}%%
+flowchart LR
+    subgraph Canvas["ProteinLoop control loop"]
+        direction LR
+        Radio["Physical DECT NR+<br/>sequence #100"] --> Replay["Explicit simulated<br/>sensor replay"]
+        Replay --> Simulator["Deterministic simulator<br/>current ecosystem state"]
+        Simulator --> Agents["4 Gemma / Sagents<br/>domain agents"]
+        Agents --> Supervisor["Parent supervisor<br/>structured proposal"]
+        Supervisor --> Verifier{"Safety verifier"}
+        Verifier -- "unsafe" --> Reject["Reject + RLVR trace"]
+        Verifier -- "safe routine" --> Apply["Apply simulator step"]
+        Verifier -- "safe but risky" --> HITL["Spanish producer HITL"]
+        HITL -- "approve or edit" --> Apply
+        HITL -- "reject" --> Reject
+        Apply --> Simulator
+    end
+    classDef physical fill:#e0f2fe,stroke:#0369a1,color:#0f172a
+    classDef agent fill:#ecfdf5,stroke:#0f766e,color:#0f172a
+    classDef decision fill:#fff7ed,stroke:#c2410c,color:#0f172a
+    classDef action fill:#dcfce7,stroke:#15803d,color:#0f172a
+    classDef rejected fill:#fee2e2,stroke:#b91c1c,color:#0f172a
+    class Radio,Replay physical
+    class Agents,Supervisor agent
+    class Verifier,HITL decision
+    class Simulator,Apply action
+    class Reject rejected
+    style Canvas fill:#ffffff,stroke:#cbd5e1,stroke-width:1px,color:#0f172a
 ```
 
 The boundaries are deliberate:
@@ -53,26 +67,26 @@ The boundaries are deliberate:
 Changes enter the repository through a fixed evidence loop. Code is not the source of product intent; the active feature spec is.
 
 ```mermaid
+%%{init: {"theme":"base","themeVariables":{"darkMode":false,"background":"#ffffff","primaryColor":"#ecfdf5","primaryTextColor":"#0f172a","primaryBorderColor":"#0f766e","lineColor":"#64748b","secondaryColor":"#e0f2fe","tertiaryColor":"#f8fafc","clusterBkg":"#f8fafc","clusterBorder":"#cbd5e1","edgeLabelBackground":"#ffffff"}}}%%
 flowchart LR
-    subgraph Define["1. Define"]
-        direction TB
-        Intent["User intent"] --> Constitution["Constitution + agent rules"]
-        Constitution --> Spec["spec.md<br/>value + acceptance criteria"]
-        Spec --> Plan["plan.md + tasks.md<br/>vertical slice"]
+    subgraph Canvas["Spec-to-evidence loop"]
+        direction LR
+        Intent["1. Intent<br/>constitution + rules"] --> Spec["2. Specify<br/>spec + plan + tasks"]
+        Spec --> Red["3. Prove<br/>failing executable test"]
+        Red --> Code["4. Implement<br/>smallest vertical slice"]
+        Code --> Gate{"5. Verify<br/>acceptance passes?"}
+        Gate -- "no" --> Red
+        Gate -- "yes" --> Ship["6. Ship<br/>evidence + commit"]
     end
-    subgraph Build["2. Build"]
-        direction TB
-        Red["Failing executable test"] --> Code["Smallest coherent implementation"]
-        Code --> Verify["Tests + runtime evidence"]
-        Verify --> Gate{"Acceptance criteria pass?"}
-    end
-    subgraph Deliver["3. Deliver"]
-        direction TB
-        Evidence["Versioned evidence"] --> Ship["Commit + checksum manifest"]
-    end
-    Plan --> Red
-    Gate -- "no" --> Red
-    Gate -- "yes" --> Evidence
+    classDef define fill:#e0f2fe,stroke:#0369a1,color:#0f172a
+    classDef build fill:#ecfdf5,stroke:#0f766e,color:#0f172a
+    classDef decision fill:#fff7ed,stroke:#c2410c,color:#0f172a
+    classDef deliver fill:#dcfce7,stroke:#15803d,color:#0f172a
+    class Intent,Spec define
+    class Red,Code build
+    class Gate decision
+    class Ship deliver
+    style Canvas fill:#ffffff,stroke:#cbd5e1,stroke-width:1px,color:#0f172a
 ```
 
 | Phase | Repository artifact | Exit condition |

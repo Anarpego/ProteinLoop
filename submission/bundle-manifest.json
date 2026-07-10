@@ -7,9 +7,9 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 31290,
+      "bytes": 32678,
       "path": "README.md",
-      "sha256": "7feb5c47395b8c6d0690fa314ee30de8a69f919710b91acafcbd9c138a0e0d69"
+      "sha256": "97d9f384710c1179fefbb7a16e16b8777261ab539b5555c02a5a7cc9aba5560b"
     },
     {
       "bytes": 4378,
@@ -42,19 +42,19 @@
       "sha256": "9911d141bb4fa38f69a9e4bebeeeaacf6d1108673595615cdce5bde3213348c7"
     },
     {
-      "bytes": 10611684,
+      "bytes": 10480374,
       "path": "submission/proteinloop-demo-video.avi",
-      "sha256": "0ab563f5b8824fe74bc5d707093ea9eca6e22d8ef11e9b1257a19424961b3a42"
+      "sha256": "bbad20cf4ef6821d8aba289f694526445bf528a6b9765f235f030dc27cb61a36"
     },
     {
-      "bytes": 2581,
+      "bytes": 2615,
       "path": "submission/cover.svg",
-      "sha256": "1040ddd48a995a5552b13dbf289f94444885d6ea8d5dbb4496625a050a8ddf9f"
+      "sha256": "8eebd27f3a03aa57d005b408e8fe6bdb23544ad86638d80432f3005b5a9cf7dd"
     },
     {
-      "bytes": 41526,
+      "bytes": 41803,
       "path": "submission/cover.png",
-      "sha256": "0b79a3c1dcd76edbaa4795c0fd01ad19abb8c84bfe67394c25add82ae26b2a73"
+      "sha256": "8461dd4b60fb21c5fca87d507699091d11f216570ac78c582c4004f03f627d2a"
     },
     {
       "bytes": 5044,
@@ -147,5 +147,5 @@
       "sha256": "f87693cd22ab78a3415ece112126cace7ad2298ddb315150ce83ff3fbcf60efe"
     }
   ],
-  "generated_at": "2026-07-10T16:44:02.518155+00:00"
+  "generated_at": "2026-07-10T16:53:12.342382+00:00"
 }

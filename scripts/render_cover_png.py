@@ -34,9 +34,15 @@ def centered(draw: ImageDraw.ImageDraw, xy: tuple[int, int], text: str, fnt, fil
 
 
 def main() -> None:
-    image = Image.new("RGB", (1600, 900), "#0b1220")
+    image = Image.new("RGB", (1600, 900), "#f1f5f9")
     draw = ImageDraw.Draw(image)
-    draw.rounded_rectangle((72, 72, 1528, 828), radius=36, fill="#f8fafc")
+    draw.rounded_rectangle(
+        (72, 72, 1528, 828),
+        radius=36,
+        fill="#ffffff",
+        outline="#cbd5e1",
+        width=3,
+    )
 
     title_font = font(84, bold=True)
     subtitle_font = font(34)

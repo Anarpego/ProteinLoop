@@ -15,10 +15,11 @@ Repository visitors can understand what ProteinLoop does, where agents are allow
 3. The product workflow shall show physical DECT evidence, simulator state, Gemma/Sagents proposals, deterministic verification, Spanish HITL, mutation, and trace evidence.
 4. The development workflow shall show constitution, spec, plan, failing test, implementation, verification, review, and versioned evidence.
 5. Current capabilities shall be summarized by executable proof rather than by implementation chronology.
-6. GitHub Mermaid diagrams shall use short labels that remain readable in light and dark themes.
+6. GitHub Mermaid diagrams shall force a light theme with a white canvas, dark text, restrained colored accents, and short labels.
 7. The complete spec system shall remain discoverable through links to the constitution, `AGENTS.md`, and `specs/`.
 8. Existing run, test, deployment, and submission commands shall remain available below the redesigned workflow.
 9. The README shall not claim that Nordic `hello_dect` contains chemical sensor readings or that local Gemma is AMD-hosted.
+10. The README cover shall use a light neutral background rather than the previous dark navy frame.
 
 ## Acceptance Criteria
 
@@ -27,3 +28,4 @@ Repository visitors can understand what ProteinLoop does, where agents are allow
 3. A new evidence table links directly to the simulator, Sagents, Horde, Gemma, DECT, and Docker proof artifacts.
 4. The README still links to the test and demo instructions.
 5. Markdown links introduced by this feature resolve to files or headings in the repository.
+6. The rendered cover and both Mermaid diagrams use the documented light palette even when the surrounding GitHub theme is dark.
