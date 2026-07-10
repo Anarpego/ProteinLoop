@@ -7,4 +7,4 @@
 - [x] Remove all dark-theme behavior.
 - [x] Update validators and documentation.
 - [x] Run Docker and live-route verification.
-- [ ] Publish the completed feature.
+- [x] Publish the completed feature.

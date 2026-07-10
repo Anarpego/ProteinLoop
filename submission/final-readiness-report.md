@@ -1,21 +1,8 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T17:54:26+00:00
-Commit: `45074ae`
-Working tree (source): `M .specify/memory/constitution.md
- M README.md
- M app/assets/css/app.css
- M app/lib/proteinloop_web/components/layouts/root.html.heex
- M app/lib/proteinloop_web/live/operator_live.ex
- M app/test/proteinloop_web/controllers/page_controller_test.exs
- M app/test/proteinloop_web/live/operator_live_test.exs
- M scripts/docker_smoke_test.py
- M scripts/validate_live_demo.py
- M scripts/validate_submission_readiness.py
- M submission/lablab-form.json
- M submission/lablab-submission.md
- M submission/video-script.md
-?? specs/055-guided-light-operator/`
+Generated: 2026-07-10T17:56:51+00:00
+Commit: `af548c6`
+Working tree (source): `M specs/055-guided-light-operator/tasks.md`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -64,7 +51,7 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 python3 -m unittest discover -s tests
 ...........................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 155 tests in 0.129s
+Ran 155 tests in 0.133s
 
 OK
 ```
@@ -205,7 +192,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [FAIL] application URL - missing or TODO
 [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - 45074ae8f90354069f7f225b45c0a12ceef121d3
+[ok] local git commit - af548c6a5bcdf20c8d943b640f5c1a73b7d1d1db
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 2 submission readiness check(s) failed
