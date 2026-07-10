@@ -9,7 +9,7 @@
 - [x] Update README, submission path, executable validators, and the rendered deck.
 - [x] Run all tests, assets, Docker, live-demo, smoke, and submission evidence.
 - [ ] Capture browser evidence when a backend is available.
-- [ ] Publish the implementation and evidence.
+- [x] Publish the implementation and evidence.
 
 ## Executable Evidence
 
@@ -22,3 +22,4 @@
 - `mix format --check-formatted` and `make ci-check`: formatting and CI workflow contracts passed.
 - The light 108-frame demo video and 10-slide deck were regenerated; representative frames and the deck contact sheet were visually inspected.
 - Browser discovery returned no available backend, so application screenshots remain explicitly pending.
+- Published to `main` in commit `51a530f`.
