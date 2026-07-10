@@ -11,4 +11,4 @@
 - [x] Update README and submission demo notes.
 - [x] Run application, Docker, and route verification.
 - [ ] Capture desktop/mobile PBR canvas pixels when browser automation is available.
-- [ ] Publish the implementation and evidence.
+- [x] Publish the implementation and evidence.
