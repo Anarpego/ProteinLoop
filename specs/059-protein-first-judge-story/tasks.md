@@ -9,7 +9,7 @@
 - [x] Verify producer permissions and responsive styles.
 - [x] Run tests, build assets, rebuild Docker, and run live-demo validation.
 - [ ] Capture desktop and mobile browser evidence when browser control is available.
-- [ ] Publish executable evidence.
+- [x] Publish executable evidence.
 
 ## Executable Evidence
 
@@ -18,3 +18,5 @@
 - `cd app && mix assets.build`: production CSS and JavaScript compiled.
 - `DEMO_URL=http://127.0.0.1:4001 SIMULATOR_PUBLIC_URL=http://127.0.0.1:8000 make live-demo-check`: all public route, asset, and simulator checks passed.
 - `python3 scripts/docker_smoke_test.py`: simulator recovery, operator route, producer permissions, and bundled visual assets passed.
+- Browser automation reported no available browser backend; screenshot evidence remains explicitly pending.
+- Published to `main` in commit `ed9bf0a`.
