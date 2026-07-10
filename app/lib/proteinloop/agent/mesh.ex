@@ -18,6 +18,7 @@ defmodule ProteinLoop.Agent.Mesh do
       agents: [
         agent("fish-tank", "Fish tank agent", "edge-tank-a"),
         agent("hydroponia", "Hydroponia agent", "edge-tank-a"),
+        agent("freshwater-prawn", "Freshwater prawn agent", "edge-tank-b"),
         agent("duckweed-chickens", "Duckweed/chickens agent", "edge-tank-b"),
         agent("supervisor", "Supervisor agent", "cloud-loop")
       ],

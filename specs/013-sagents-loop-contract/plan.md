@@ -1,11 +1,13 @@
-# Implementation Plan: Sagents-Compatible Loop Contract
+# Implementation Plan: Deterministic Loop Fallback
+
+Status: historical implementation plan, superseded by spec 047 for production behavior.
 
 ## Scope
 
 - Add `ProteinLoop.Agent.LoopRunner` as a deterministic adapter around the current harness/simulator boundary.
 - Keep action generation provider-based so the OpenAI-compatible provider can be used later.
-- Add dashboard state and a `Run verified loop` control.
-- Keep the slice dependency-free while targeting Sagents `0.9.0` semantics documented on Hex/GitHub.
+- Retain the dependency-free runner as an offline test adapter.
+- Keep it separate from the real Sagents `0.9.0` runtime.
 
 ## Design
 

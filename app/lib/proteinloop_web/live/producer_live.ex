@@ -65,13 +65,7 @@ defmodule ProteinLoopWeb.ProducerLive do
           assign(socket, :decision, "Accion rechazada")
 
         pending ->
-          {:ok, _entry, approval_queue} =
-            ApprovalQueue.resolve(pending.id, :rejected, %{message: "producer_rejected"})
-
-          socket
-          |> assign(:approval_queue, approval_queue)
-          |> assign(:action, producer_action(approval_queue, socket.assigns.state))
-          |> assign(:decision, "Accion rechazada")
+          reject_pending_action(socket, pending)
       end
 
     {:noreply, socket}
@@ -119,33 +113,133 @@ defmodule ProteinLoopWeb.ProducerLive do
   end
 
   defp apply_pending_action(socket, pending, action, decision, message) do
-    case SimulatorClient.step(action) do
-      {:ok, %{"state" => state, "reward" => reward}} ->
-        {:ok, _entry, approval_queue} =
-          ApprovalQueue.resolve(pending.id, decision, %{
-            reward: reward,
-            action: action,
-            message: Atom.to_string(decision)
-          })
+    with {:ok, claimed, socket} <- claim_pending(socket, pending) do
+      case execute_pending_action(claimed, action, decision) do
+        {:ok, result} ->
+          state = result_value(result, :state)
+          reward = result_value(result, :reward)
+          applied_action = result_value(result, :action, action)
 
-        snapshot = %{
-          connected?: true,
-          source: "producer_#{decision}",
-          state: state,
-          reward: reward,
-          error: nil
-        }
+          case ApprovalQueue.resolve(claimed.id, decision, %{
+                 reward: reward,
+                 action: applied_action,
+                 verification: result_value(result, :verification),
+                 message: Atom.to_string(decision)
+               }) do
+            {:ok, _entry, approval_queue} ->
+              snapshot = %{
+                connected?: true,
+                source: "producer_#{decision}",
+                state: state,
+                reward: reward,
+                error: nil
+              }
 
-        socket
-        |> assign(:approval_queue, approval_queue)
-        |> assign_snapshot(snapshot)
-        |> assign(:decision, message)
+              socket
+              |> assign(:approval_queue, approval_queue)
+              |> assign_snapshot(snapshot)
+              |> assign(:decision, message)
 
-      {:error, reason} ->
-        socket
-        |> put_flash(:error, "No se pudo aplicar: #{inspect(reason)}")
-        |> assign(:decision, "Pendiente")
+            {:error, reason, approval_queue} ->
+              resolution_error(socket, approval_queue, reason)
+          end
+
+        {:error, reason} ->
+          release_pending(socket, claimed.id, "No se pudo aplicar", reason)
+      end
+    else
+      {:error, socket} -> socket
     end
+  end
+
+  defp execute_pending_action(
+         %{source: "sagents_hitl", runtime_context: runtime_context},
+         action,
+         decision
+       )
+       when is_map(runtime_context) do
+    case decision do
+      :approved -> sagents_runtime().resume_irreversible(runtime_context, :approve)
+      :edited -> sagents_runtime().resume_irreversible(runtime_context, :edit, action)
+    end
+  end
+
+  defp execute_pending_action(_pending, action, _decision) do
+    SimulatorClient.step(action)
+  end
+
+  defp reject_pending_action(socket, pending) do
+    with {:ok, claimed, socket} <- claim_pending(socket, pending) do
+      result =
+        case claimed do
+          %{source: "sagents_hitl", runtime_context: runtime_context}
+          when is_map(runtime_context) ->
+            sagents_runtime().resume_irreversible(runtime_context, :reject)
+
+          _other ->
+            {:ok, %{decision: :rejected, mutated: false}}
+        end
+
+      case result do
+        {:ok, resume_result} ->
+          case ApprovalQueue.resolve(claimed.id, :rejected, %{
+                 message: "producer_rejected",
+                 sagents: resume_result
+               }) do
+            {:ok, _entry, approval_queue} ->
+              socket
+              |> assign(:approval_queue, approval_queue)
+              |> assign(:action, producer_action(approval_queue, socket.assigns.state))
+              |> assign(:decision, "Accion rechazada")
+
+            {:error, reason, approval_queue} ->
+              resolution_error(socket, approval_queue, reason)
+          end
+
+        {:error, reason} ->
+          release_pending(socket, claimed.id, "No se pudo rechazar", reason)
+      end
+    else
+      {:error, socket} -> socket
+    end
+  end
+
+  defp claim_pending(socket, pending) do
+    case ApprovalQueue.claim(pending.id) do
+      {:ok, claimed, approval_queue} ->
+        {:ok, claimed, assign(socket, :approval_queue, approval_queue)}
+
+      {:error, reason, approval_queue} ->
+        {:error, resolution_error(socket, approval_queue, reason)}
+    end
+  end
+
+  defp release_pending(socket, id, message, reason) do
+    approval_queue =
+      case ApprovalQueue.release(id) do
+        {:ok, _released, approval_queue} -> approval_queue
+        {:error, _release_reason, approval_queue} -> approval_queue
+      end
+
+    socket
+    |> assign(:approval_queue, approval_queue)
+    |> put_flash(:error, "#{message}: #{inspect(reason)}")
+    |> assign(:decision, "Pendiente")
+  end
+
+  defp resolution_error(socket, approval_queue, reason) do
+    message =
+      case reason do
+        :already_processing -> "Esta accion ya se esta procesando"
+        :not_pending -> "Esta accion ya fue resuelta"
+        :not_processing -> "La accion no esta lista para resolverse"
+        _other -> "No se pudo resolver: #{inspect(reason)}"
+      end
+
+    socket
+    |> assign(:approval_queue, approval_queue)
+    |> put_flash(:error, message)
+    |> assign(:decision, "Pendiente")
   end
 
   defp apply_step(socket, action, message, source) do
@@ -168,6 +262,14 @@ defmodule ProteinLoopWeb.ProducerLive do
         |> put_flash(:error, "No se pudo aplicar: #{inspect(reason)}")
         |> assign(:decision, "Pendiente")
     end
+  end
+
+  defp result_value(result, key, default \\ nil) do
+    Map.get(result, key, Map.get(result, Atom.to_string(key), default))
+  end
+
+  defp sagents_runtime do
+    Application.get_env(:proteinloop, :sagents_runtime, ProteinLoop.Agent.SagentsRuntime)
   end
 
   defp assign_snapshot(socket, snapshot) do
@@ -212,6 +314,9 @@ defmodule ProteinLoopWeb.ProducerLive do
   defp pending_prompt(%{pending: %{prompt: prompt}}), do: prompt
   defp pending_prompt(_approval_queue), do: nil
 
+  defp processing?(%{pending: %{status: "processing"}}), do: true
+  defp processing?(_approval_queue), do: false
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -238,12 +343,14 @@ defmodule ProteinLoopWeb.ProducerLive do
             <span class={[
               "badge",
               cond do
+                processing?(@approval_queue) -> "badge-info"
                 @approval_queue.pending -> "badge-warning"
                 @snapshot.connected? -> "badge-success"
                 true -> "badge-warning"
               end
             ]}>
               {cond do
+                processing?(@approval_queue) -> "procesando"
                 @approval_queue.pending -> "aprobacion pendiente"
                 @snapshot.connected? -> "en linea"
                 true -> "modo local"
@@ -311,13 +418,17 @@ defmodule ProteinLoopWeb.ProducerLive do
           </div>
 
           <div class="mt-5 grid gap-2 sm:grid-cols-3">
-            <button class="btn btn-success" phx-click="approve">
+            <button
+              class="btn btn-success"
+              phx-click="approve"
+              disabled={processing?(@approval_queue)}
+            >
               <.icon name="hero-check" /> Aprobar
             </button>
-            <button class="btn btn-warning" phx-click="half">
+            <button class="btn btn-warning" phx-click="half" disabled={processing?(@approval_queue)}>
               <.icon name="hero-adjustments-horizontal" /> Solo mitad
             </button>
-            <button class="btn btn-outline" phx-click="reject">
+            <button class="btn btn-outline" phx-click="reject" disabled={processing?(@approval_queue)}>
               <.icon name="hero-x-mark" /> Rechazar
             </button>
           </div>

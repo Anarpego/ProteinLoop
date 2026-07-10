@@ -16,6 +16,10 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
           prompt: String.t(),
           rationale: String.t(),
           requested_by: String.t(),
+          source: String.t(),
+          allowed_decisions: [atom()],
+          tool_call_id: String.t() | nil,
+          runtime_context: map() | nil,
           status: String.t(),
           created_at: String.t()
         }
@@ -34,6 +38,14 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
 
   def reset do
     GenServer.call(__MODULE__, :reset)
+  end
+
+  def claim(id) when is_integer(id) do
+    GenServer.call(__MODULE__, {:claim, id})
+  end
+
+  def release(id) when is_integer(id) do
+    GenServer.call(__MODULE__, {:release, id})
   end
 
   def request_irreversible_action(state \\ %{}, opts \\ []) do
@@ -89,6 +101,10 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
       prompt: Keyword.get(opts, :prompt, default_prompt(action)),
       rationale: Keyword.get(opts, :rationale, "accion irreversible requiere aprobacion humana"),
       requested_by: Keyword.get(opts, :requested_by, "operator"),
+      source: Keyword.get(opts, :source, "manual"),
+      allowed_decisions: Keyword.get(opts, :allowed_decisions, [:approve, :edit, :reject]),
+      tool_call_id: Keyword.get(opts, :tool_call_id),
+      runtime_context: Keyword.get(opts, :runtime_context),
       status: "pending",
       created_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_iso8601()
     }
@@ -103,13 +119,48 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
     {:reply, {:pending, pending, state}, state}
   end
 
+  def handle_call({:claim, id}, _from, %{pending: %{id: id, status: "pending"} = pending} = state) do
+    claimed = %{pending | status: "processing"}
+    state = %{state | pending: claimed}
+    broadcast(state)
+    {:reply, {:ok, claimed, state}, state}
+  end
+
+  def handle_call(
+        {:claim, id},
+        _from,
+        %{pending: %{id: id, status: "processing"}} = state
+      ) do
+    {:reply, {:error, :already_processing, state}, state}
+  end
+
+  def handle_call({:claim, _id}, _from, state) do
+    {:reply, {:error, :not_pending, state}, state}
+  end
+
+  def handle_call(
+        {:release, id},
+        _from,
+        %{pending: %{id: id, status: "processing"} = pending} = state
+      ) do
+    released = %{pending | status: "pending"}
+    state = %{state | pending: released}
+    broadcast(state)
+    {:reply, {:ok, released, state}, state}
+  end
+
+  def handle_call({:release, _id}, _from, state) do
+    {:reply, {:error, :not_processing, state}, state}
+  end
+
   def handle_call(
         {:resolve, id, decision, result},
         _from,
-        %{pending: %{id: id} = pending} = state
+        %{pending: %{id: id, status: "processing"} = pending} = state
       ) do
     entry =
       pending
+      |> Map.delete(:runtime_context)
       |> Map.put(:status, Atom.to_string(decision))
       |> Map.put(
         :resolved_at,
@@ -124,7 +175,7 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
   end
 
   def handle_call({:resolve, _id, _decision, _result}, _from, state) do
-    {:reply, {:error, :not_pending}, state}
+    {:reply, {:error, :not_processing, state}, state}
   end
 
   defp broadcast(state) do

@@ -23,7 +23,9 @@ OPERATOR_NEEDLES = [
     "RLVR reward verifier",
     "Policy search improvement",
     "Anomaly forecast",
-    "Sagents loop contract",
+    "Real Sagents runtime",
+    "Sagents 0.9.0",
+    "until_tool_success",
     "Spanish HITL approval",
     "Self-healing mesh",
 ]

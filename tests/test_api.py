@@ -29,6 +29,37 @@ class ApiContractTests(unittest.TestCase):
         self.assertEqual(payload["error"], "unsafe action")
         self.assertFalse(payload["verification"]["ok"])
 
+    def test_verify_accepts_safe_action_without_mutating_state(self):
+        before = self.sim.state.to_dict()
+        action = {
+            "feed_kg": 0.1,
+            "aeration_hours": 12.0,
+            "water_exchange_fraction": 0.15,
+            "duckweed_harvest_kg": 0.2,
+            "note": "preflight",
+        }
+
+        status, payload = handle_request(
+            "POST", "/verify", {"action": action}, self.sim
+        )
+
+        self.assertEqual(status, HTTPStatus.OK)
+        self.assertTrue(payload["verification"]["ok"])
+        self.assertEqual(payload["action"], action)
+        self.assertEqual(self.sim.state.to_dict(), before)
+
+    def test_verify_rejects_unsafe_action_without_mutating_state(self):
+        before = self.sim.state.to_dict()
+
+        status, payload = handle_request(
+            "POST", "/verify", {"action": {"feed_kg": 4.0}}, self.sim
+        )
+
+        self.assertEqual(status, HTTPStatus.OK)
+        self.assertFalse(payload["verification"]["ok"])
+        self.assertIn("feed_kg", " ".join(payload["verification"]["violations"]))
+        self.assertEqual(self.sim.state.to_dict(), before)
+
     def test_safety_policy_endpoint_advances_state(self):
         handle_request("POST", "/scenario/ammonia_spike", {}, self.sim)
         status, payload = handle_request("POST", "/policy/safety_step", {}, self.sim)

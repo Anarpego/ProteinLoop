@@ -14,7 +14,14 @@ services:
       PHX_HOST: "localhost"
       PORT: "4000"
       SIMULATOR_URL: "http://simulator:8000"
+      GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-http://host.docker.internal:8001}
+      GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E2B-it}
+      GEMMA_API_KEY: ${GEMMA_API_KEY:-}
+      GEMMA_RECEIVE_TIMEOUT_MS: ${GEMMA_RECEIVE_TIMEOUT_MS:-120000}
+      GEMMA_MAX_TOKENS: ${GEMMA_MAX_TOKENS:-1024}
       SECRET_KEY_BASE: "proteinloop-docker-secret-key-base-000000000000000000000000000000000000000000000000000000000000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "4001:4000"
     volumes:

@@ -12,6 +12,7 @@ from scripts.generate_readiness_report import (
     docker_smoke_evidence,
     extract_blockers,
     render_report,
+    sagents_runtime_evidence,
     status_label,
     truncate_output,
 )
@@ -25,6 +26,7 @@ class ReadinessReportTests(unittest.TestCase):
             "Unit tests",
             "Submission artifacts",
             "Docker smoke",
+            "Real Sagents evidence",
             "Credit access",
             "Public demo environment",
             "Gemma endpoint evidence",
@@ -81,6 +83,59 @@ class ReadinessReportTests(unittest.TestCase):
 
         self.assertNotEqual(evidence.returncode, 0)
         self.assertIn("missing", evidence.stderr)
+
+    def test_sagents_runtime_evidence_reads_passing_json(self):
+        checks = {
+            "real_sagents_runtime": True,
+            "four_subagents_completed": True,
+            "real_sagents_subagents": True,
+            "custom_safety_mode": True,
+            "until_tool_success": True,
+            "verification_accepted": True,
+            "action_preserved": True,
+            "hitl_interrupted_before_mutation": True,
+            "hitl_reject_resumed_without_mutation": True,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "sagents-evidence.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "runtime": {"framework": "sagents", "framework_version": "0.9.0"},
+                        "model": {"name": "google/gemma-4-E2B-it"},
+                        "checks": checks,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            evidence = sagents_runtime_evidence(path)
+
+        self.assertEqual(evidence.returncode, 0)
+        self.assertIn("Sagents 0.9.0", evidence.stdout)
+        self.assertIn("[ok] hitl_reject_resumed_without_mutation", evidence.stdout)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "sagents-evidence.json"
+            incomplete = dict(checks)
+            incomplete.pop("real_sagents_subagents")
+            path.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "runtime": {"framework": "sagents", "framework_version": "0.9.0"},
+                        "model": {"name": "google/gemma-4-E2B-it"},
+                        "checks": incomplete,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            incomplete_evidence = sagents_runtime_evidence(path)
+
+        self.assertNotEqual(incomplete_evidence.returncode, 0)
 
     def test_render_report_includes_gemma4_next_command_and_failures(self):
         report = render_report(

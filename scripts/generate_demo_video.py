@@ -130,14 +130,14 @@ def build_scenes(evidence: dict) -> list[Scene]:
             GREEN,
         ),
         Scene(
-            "Sagents-compatible loop",
-            "call_llm -> verify -> execute -> until_tool",
+            "Real Sagents + Gemma",
+            "4 subagents -> supervisor -> close_cycle",
             [
-                "The explicit loop contract mirrors a Sagents execution pipeline.",
-                "verify_ecosystem_safety is the deterministic boundary before mutation.",
-                "until_tool returns structured completion evidence for the crop cycle.",
+                "Sagents 0.9.0 runs four Gemma subsystem agents and a supervisor.",
+                "verify_ecosystem_safety gates tool execution through the simulator.",
+                "until_tool_success returns accepted action, reward, and verifier evidence.",
             ],
-            "verify_ecosystem_safety + until_tool",
+            "Sagents 0.9.0 + until_tool_success",
             AMBER,
         ),
         Scene(

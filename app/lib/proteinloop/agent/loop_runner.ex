@@ -1,6 +1,6 @@
 defmodule ProteinLoop.Agent.LoopRunner do
   @moduledoc """
-  Deterministic Sagents-compatible loop adapter.
+  Deterministic offline loop fallback retained for tests and judge rehearsal.
 
   Sagents exposes agent execution as explicit steps. This module mirrors the
   project-specific contract without requiring live model credentials:

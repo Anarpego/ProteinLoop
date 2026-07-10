@@ -11,6 +11,7 @@ defmodule ProteinLoop.Application do
       ProteinLoopWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:proteinloop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ProteinLoop.PubSub},
+      Sagents.Supervisor,
       ProteinLoop.Agent.ApprovalQueue,
       ProteinLoop.SimulatorPoller,
       # Start to serve requests, typically the last entry

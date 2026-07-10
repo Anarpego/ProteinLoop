@@ -5,7 +5,7 @@ defmodule ProteinLoop.MixProject do
     [
       app: :proteinloop,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -60,6 +60,8 @@ defmodule ProteinLoop.MixProject do
       {:jason, "1.4.5"},
       {:dns_cluster, "0.2.0"},
       {:bandit, "1.12.0"},
+      {:sagents, "0.9.0"},
+      {:langchain, "0.9.2"},
       {:req, "0.6.2"}
     ]
   end

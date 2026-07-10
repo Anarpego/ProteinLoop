@@ -19,6 +19,8 @@ REHEARSAL_JSON = SUBMISSION / "demo-rehearsal.json"
 REHEARSAL_MD = SUBMISSION / "demo-rehearsal.md"
 MESH_JSON = SUBMISSION / "mesh-evidence.json"
 MESH_MD = SUBMISSION / "mesh-evidence.md"
+SAGENTS_JSON = SUBMISSION / "sagents-evidence.json"
+SAGENTS_MD = SUBMISSION / "sagents-evidence.md"
 NRF9151_JSON = SUBMISSION / "nrf9151-field-plan.json"
 NRF9151_MD = SUBMISSION / "nrf9151-field-plan.md"
 NRF9151_BRIDGE_JSON = SUBMISSION / "nrf9151-telemetry-bridge.json"
@@ -38,6 +40,8 @@ REQUIRED_FILES = [
     REHEARSAL_MD,
     MESH_JSON,
     MESH_MD,
+    SAGENTS_JSON,
+    SAGENTS_MD,
     NRF9151_JSON,
     NRF9151_MD,
     NRF9151_BRIDGE_JSON,
@@ -132,6 +136,10 @@ def main() -> int:
         print("mesh evidence packet is missing required migration proof", file=sys.stderr)
         return 1
 
+    if not sagents_evidence_ok(SAGENTS_JSON, SAGENTS_MD):
+        print("Sagents evidence packet is missing required runtime or HITL proof", file=sys.stderr)
+        return 1
+
     if not nrf9151_plan_ok(NRF9151_JSON, NRF9151_MD):
         print("nRF9151 field plan is missing required two-board DECT NR+ details", file=sys.stderr)
         return 1
@@ -193,6 +201,8 @@ def bundle_ok(
         "submission/demo-rehearsal.md",
         "submission/mesh-evidence.json",
         "submission/mesh-evidence.md",
+        "submission/sagents-evidence.json",
+        "submission/sagents-evidence.md",
         "submission/nrf9151-field-plan.json",
         "submission/nrf9151-field-plan.md",
         "submission/nrf9151-telemetry-bridge.json",
@@ -294,6 +304,76 @@ def mesh_evidence_ok(json_path: Path, md_path: Path) -> bool:
         and checks.get("agents_stay_on_migrated_nodes_after_recovery") is True
         and len(migrated_agents) == 2
         and "ProteinLoop Mesh Evidence" in markdown
+    )
+
+
+def sagents_evidence_ok(json_path: Path, md_path: Path) -> bool:
+    if not json_path.exists() or not md_path.exists():
+        return False
+
+    packet = json_load(json_path)
+    runtime = packet.get("runtime", {})
+    cycle = packet.get("cycle", {})
+    hitl = packet.get("hitl", {})
+    checks = packet.get("checks", {})
+    model = packet.get("model", {})
+    action = cycle.get("action", {})
+    subagent_names = {agent.get("name") for agent in cycle.get("subagents", [])}
+    required_subagents = {
+        "fish-tank",
+        "freshwater-prawn",
+        "hydroponia",
+        "duckweed-chickens",
+    }
+    required_action = {
+        "feed_kg",
+        "aeration_hours",
+        "water_exchange_fraction",
+        "duckweed_harvest_kg",
+        "note",
+    }
+    required_checks = {
+        "real_sagents_runtime",
+        "four_subagents_completed",
+        "real_sagents_subagents",
+        "custom_safety_mode",
+        "until_tool_success",
+        "verification_accepted",
+        "action_preserved",
+        "hitl_interrupted_before_mutation",
+        "hitl_reject_resumed_without_mutation",
+    }
+    markdown = md_path.read_text(encoding="utf-8")
+    model_name = str(model.get("name", ""))
+
+    return (
+        packet.get("ok") is True
+        and runtime.get("framework") == "sagents"
+        and runtime.get("framework_version") == "0.9.0"
+        and runtime.get("langchain_version") == "0.9.2"
+        and runtime.get("execution_mode") == "Elixir.ProteinLoop.Agent.SafetyMode"
+        and runtime.get("termination") == "until_tool_success"
+        and "gemma-4" in model_name.lower()
+        and "e2b" in model_name.lower()
+        and cycle.get("tool") == "close_cycle"
+        and cycle.get("verification", {}).get("ok") is True
+        and cycle.get("state", {}).get("day", 0) >= 1
+        and required_action.issubset(action)
+        and subagent_names == required_subagents
+        and all(
+            agent.get("runtime") == "Elixir.Sagents.SubAgent"
+            for agent in cycle.get("subagents", [])
+        )
+        and hitl.get("tool") == "irreversible_cycle"
+        and set(hitl.get("allowed_decisions", [])) == {"approve", "edit", "reject"}
+        and hitl.get("mutation_before_approval") is False
+        and hitl.get("before_day") == hitl.get("after_day")
+        and hitl.get("reject_decision") == "rejected"
+        and hitl.get("mutation_after_reject") is False
+        and hitl.get("before_day") == hitl.get("after_reject_day")
+        and all(checks.get(name) is True for name in required_checks)
+        and "ProteinLoop Real Sagents Evidence" in markdown
+        and "No mutation before approval: true" in markdown
     )
 
 

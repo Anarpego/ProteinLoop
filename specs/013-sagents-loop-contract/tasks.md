@@ -1,6 +1,6 @@
-# Tasks: Sagents-Compatible Loop Contract
+# Tasks: Deterministic Loop Fallback
 
-- [x] Define Sagents loop contract spec.
+- [x] Define the original loop contract spec.
 - [x] Implement deterministic loop runner.
 - [x] Add operator control and result rendering.
 - [x] Add loop and route tests.

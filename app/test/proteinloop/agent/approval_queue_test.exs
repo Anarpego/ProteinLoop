@@ -19,6 +19,15 @@ defmodule ProteinLoop.Agent.ApprovalQueueTest do
 
     assert {:pending, ^request, _snapshot} =
              ApprovalQueue.request_irreversible_action(%{"duckweed_kg" => 3.0})
+
+    assert {:ok, claimed, snapshot} = ApprovalQueue.claim(request.id)
+    assert claimed.status == "processing"
+    assert snapshot.pending.status == "processing"
+    assert {:error, :already_processing, ^snapshot} = ApprovalQueue.claim(request.id)
+
+    assert {:ok, released, snapshot} = ApprovalQueue.release(request.id)
+    assert released.status == "pending"
+    assert snapshot.pending.status == "pending"
   end
 
   test "half action reduces irreversible portions" do
@@ -32,7 +41,10 @@ defmodule ProteinLoop.Agent.ApprovalQueueTest do
   end
 
   test "resolve moves pending request into decisions" do
-    {:ok, request, _snapshot} = ApprovalQueue.request_irreversible_action()
+    {:ok, request, _snapshot} =
+      ApprovalQueue.request_irreversible_action(%{}, runtime_context: %{agent: :test})
+
+    assert {:ok, _claimed, _snapshot} = ApprovalQueue.claim(request.id)
 
     assert {:ok, decision, snapshot} =
              ApprovalQueue.resolve(request.id, :approved, %{reward: 123.4})
@@ -42,10 +54,12 @@ defmodule ProteinLoop.Agent.ApprovalQueueTest do
     assert snapshot.pending == nil
     assert [latest] = snapshot.decisions
     assert latest.id == request.id
+    refute Map.has_key?(latest, :runtime_context)
   end
 
   test "reject resolves without an execution result" do
     {:ok, request, _snapshot} = ApprovalQueue.request_irreversible_action()
+    {:ok, _claimed, _snapshot} = ApprovalQueue.claim(request.id)
 
     assert {:ok, decision, snapshot} =
              ApprovalQueue.resolve(request.id, :rejected, %{message: "producer_rejected"})
@@ -57,6 +71,7 @@ defmodule ProteinLoop.Agent.ApprovalQueueTest do
 
   test "reset clears pending and decisions" do
     {:ok, request, _snapshot} = ApprovalQueue.request_irreversible_action()
+    {:ok, _claimed, _snapshot} = ApprovalQueue.claim(request.id)
     {:ok, _decision, _snapshot} = ApprovalQueue.resolve(request.id, :edited, %{reward: 1.0})
 
     assert %{pending: nil, decisions: []} = ApprovalQueue.reset()

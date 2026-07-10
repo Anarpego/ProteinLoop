@@ -41,7 +41,7 @@ The simulator reward scores survival, biomass, water quality, and mortality. The
 
 ## 8. Multi-Agent Topology
 
-Subsystem agents cover fish tank, hydroponia, duckweed/chickens, and supervisor roles.
+Four subsystem agents cover fish tank, freshwater prawn, hydroponia, and duckweed/chickens; a fifth parent supervisor closes the cycle.
 
 ## 9. Self-Healing Mesh
 
@@ -51,9 +51,9 @@ Edge node failure migrates agents to healthy nodes while preserving identity and
 
 Risky water exchange and harvest actions pause for producer approval in Spanish: approve, edit, or reject.
 
-## 11. Sagents-Compatible Loop
+## 11. Real Sagents Runtime
 
-Explicit steps: `call_llm`, `verify_ecosystem_safety`, `execute_tools`, `until_tool`.
+Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `close_cycle` through `verify_ecosystem_safety`, and terminates with `until_tool_success`.
 
 ## 12. AMD Gemma Path
 

@@ -3,8 +3,8 @@ defmodule ProteinLoop.SimulatorClient do
   Client for the Python simulator API.
 
   The simulator is the deterministic verifier source of truth. The Phoenix app
-  uses this module only through JSON-compatible maps so the contract remains
-  easy to replace with Sagents later.
+  uses this module through JSON-compatible maps, including the verifier calls
+  made by the Sagents safety mode.
   """
 
   @critical_action %{
@@ -49,6 +49,10 @@ defmodule ProteinLoop.SimulatorClient do
 
   def safety_step do
     request(:post, "/policy/safety_step", %{})
+  end
+
+  def verify(action) when is_map(action) do
+    request(:post, "/verify", %{"action" => action})
   end
 
   def step(action) when is_map(action) do

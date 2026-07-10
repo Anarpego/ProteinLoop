@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 OUTPUT = SUBMISSION / "final-readiness-report.md"
 DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
+SAGENTS_EVIDENCE = SUBMISSION / "sagents-evidence.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -24,6 +25,7 @@ EVIDENCE_COMMANDS = [
     ("Unit tests", ["make", "test"]),
     ("Submission artifacts", ["make", "submission-check"]),
     ("Docker smoke", ["make", "docker-smoke"]),
+    ("Real Sagents evidence", ["make", "sagents-evidence"]),
     ("CI workflow contract", ["make", "ci-check"]),
     ("Public deploy profile", ["make", "public-deploy-check"]),
     ("Credit access", ["make", "credit-check"]),
@@ -72,6 +74,8 @@ def collect_evidence() -> list[CommandEvidence]:
     for name, command in EVIDENCE_COMMANDS:
         if name == "Docker smoke":
             evidence.append(docker_smoke_evidence(DOCKER_SMOKE_EVIDENCE))
+        elif name == "Real Sagents evidence":
+            evidence.append(sagents_runtime_evidence(SAGENTS_EVIDENCE))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -136,6 +140,60 @@ def docker_smoke_evidence(path: Path) -> CommandEvidence:
         lines.append("docker smoke OK")
 
     return CommandEvidence("Docker smoke", command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def sagents_runtime_evidence(path: Path) -> CommandEvidence:
+    name = "Real Sagents evidence"
+    command = ["make", "sagents-evidence"]
+    path_label = display_path(path)
+    if not path.exists():
+        return CommandEvidence(name, command, 1, "", f"missing {path_label}; run make sagents-evidence")
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CommandEvidence(name, command, 1, "", f"invalid {path_label}: {exc}")
+
+    checks = evidence.get("checks")
+    runtime = evidence.get("runtime", {})
+    model = evidence.get("model", {})
+    if not isinstance(checks, dict):
+        return CommandEvidence(name, command, 1, "", f"{path_label} missing checks")
+
+    required_checks = {
+        "real_sagents_runtime",
+        "four_subagents_completed",
+        "real_sagents_subagents",
+        "custom_safety_mode",
+        "until_tool_success",
+        "verification_accepted",
+        "action_preserved",
+        "hitl_interrupted_before_mutation",
+        "hitl_reject_resumed_without_mutation",
+    }
+
+    lines = [
+        f"evidence: {path_label}",
+        f"Sagents {runtime.get('framework_version', 'unknown')}",
+        f"model: {model.get('name', 'unknown')}",
+    ]
+    for check_name, passed in sorted(checks.items()):
+        lines.append(f"[{'ok' if passed else 'FAIL'}] {check_name}")
+
+    model_name = str(model.get("name", "")).lower()
+    ok = (
+        evidence.get("ok") is True
+        and runtime.get("framework") == "sagents"
+        and runtime.get("framework_version") == "0.9.0"
+        and "gemma-4" in model_name
+        and "e2b" in model_name
+        and required_checks.issubset(checks)
+        and all(checks[name] is True for name in required_checks)
+    )
+    if ok:
+        lines.append("real Sagents evidence OK")
+
+    return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
 
 
 def display_path(path: Path) -> str:

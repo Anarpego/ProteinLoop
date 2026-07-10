@@ -9,6 +9,7 @@ defmodule ProteinLoop.Agent.Topology do
   def from_state(state) when is_map(state) do
     [
       fish_tank(state),
+      freshwater_prawn(state),
       hydroponia(state),
       duckweed_chickens(state),
       supervisor(state)
@@ -40,6 +41,40 @@ defmodule ProteinLoop.Agent.Topology do
 
       true ->
         agent("Fish tank agent", :stable, "growth", "Maintain balanced feed and oxygen", 0.12)
+    end
+  end
+
+  defp freshwater_prawn(state) do
+    ammonia = number(state, "ammonia_mg_l")
+    oxygen = number(state, "dissolved_oxygen_mg_l")
+
+    cond do
+      ammonia >= 3.0 or oxygen < 3.5 ->
+        agent(
+          "Freshwater prawn agent",
+          :critical,
+          "benthic survival",
+          "Protect oxygen and shelter capacity before allocating feed",
+          0.9
+        )
+
+      oxygen < 5.0 ->
+        agent(
+          "Freshwater prawn agent",
+          :warning,
+          "oxygen competition",
+          "Defer feed and increase aeration for the lower water column",
+          0.58
+        )
+
+      true ->
+        agent(
+          "Freshwater prawn agent",
+          :stable,
+          "prawn growth",
+          "Maintain conservative feed allocation and dissolved oxygen",
+          0.14
+        )
     end
   end
 

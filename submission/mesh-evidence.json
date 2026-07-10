@@ -18,6 +18,14 @@
         "status": "running"
       },
       {
+        "id": "freshwater-prawn",
+        "label": "Freshwater prawn agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "freshwater-prawn:state:v1",
+        "status": "running"
+      },
+      {
         "id": "duckweed-chickens",
         "label": "Duckweed/chickens agent",
         "migrations": 0,
@@ -77,6 +85,14 @@
         "migrations": 1,
         "node_id": "cloud-loop",
         "state_token": "hydroponia:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "freshwater-prawn",
+        "label": "Freshwater prawn agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "freshwater-prawn:state:v1",
         "status": "running"
       },
       {
@@ -150,6 +166,14 @@
         "migrations": 0,
         "node_id": "edge-tank-a",
         "state_token": "hydroponia:state:v1",
+        "status": "running"
+      },
+      {
+        "id": "freshwater-prawn",
+        "label": "Freshwater prawn agent",
+        "migrations": 0,
+        "node_id": "edge-tank-b",
+        "state_token": "freshwater-prawn:state:v1",
         "status": "running"
       },
       {

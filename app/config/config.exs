@@ -21,6 +21,8 @@ config :proteinloop,
   gemma_api_key: nil,
   gemma_model: "gemma"
 
+config :sagents, distribution: :local
+
 # Configure the endpoint
 config :proteinloop, ProteinLoopWeb.Endpoint,
   url: [host: "localhost"],

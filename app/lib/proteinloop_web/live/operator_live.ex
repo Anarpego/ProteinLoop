@@ -4,9 +4,9 @@ defmodule ProteinLoopWeb.OperatorLive do
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Agent.DemoCascade
   alias ProteinLoop.Agent.Harness
-  alias ProteinLoop.Agent.LoopRunner
   alias ProteinLoop.Agent.Mesh
   alias ProteinLoop.Agent.ModelStatus
+  alias ProteinLoop.Agent.SagentsRuntime
   alias ProteinLoop.Agent.Topology
   alias ProteinLoop.Agent.TraceStore
   alias ProteinLoop.SimulatorClient
@@ -33,6 +33,9 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:agent_result, nil)
       |> assign(:demo_result, nil)
       |> assign(:loop_result, nil)
+      |> assign(:sagents_status, sagents_runtime().status())
+      |> assign(:sagents_running?, false)
+      |> assign(:hitl_running?, false)
       |> assign(:agent_provider, :stub_safe)
       |> assign(:mesh, Mesh.initial())
       |> assign(:approval_queue, ApprovalQueue.snapshot())
@@ -167,52 +170,46 @@ defmodule ProteinLoopWeb.OperatorLive do
   end
 
   def handle_event("request-hitl", _params, socket) do
-    socket =
-      case ApprovalQueue.request_irreversible_action(socket.assigns.state) do
-        {:ok, _request, approval_queue} ->
-          socket
-          |> assign(:approval_queue, approval_queue)
-          |> update(:action_log, fn log -> Enum.take(["producer approval requested" | log], 6) end)
+    cond do
+      socket.assigns.hitl_running? ->
+        {:noreply, socket}
 
-        {:pending, _request, approval_queue} ->
-          socket
-          |> assign(:approval_queue, approval_queue)
-          |> update(:action_log, fn log ->
-            Enum.take(["producer approval already pending" | log], 6)
-          end)
-      end
+      socket.assigns.approval_queue.pending != nil ->
+        {:noreply,
+         update(socket, :action_log, fn log ->
+           Enum.take(["producer approval already pending" | log], 6)
+         end)}
 
-    {:noreply, socket}
+      not socket.assigns.sagents_status.endpoint_configured? ->
+        {:noreply, put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents HITL")}
+
+      true ->
+        state = socket.assigns.state
+        runtime = sagents_runtime()
+
+        {:noreply,
+         socket
+         |> assign(:hitl_running?, true)
+         |> start_async(:sagents_hitl, fn -> runtime.request_irreversible(state) end)}
+    end
   end
 
   def handle_event("run-verified-loop", _params, socket) do
-    socket =
-      case LoopRunner.run(target_day: metric(socket.assigns.state, "day") + 3) do
-        {:ok, result} ->
-          snapshot = %{
-            connected?: true,
-            source: "agentic_loop",
-            state: result.state,
-            reward: result.reward,
-            error: nil
-          }
+    cond do
+      socket.assigns.sagents_running? ->
+        {:noreply, socket}
 
-          socket
-          |> assign(:loop_result, result)
-          |> assign_snapshot(snapshot, "verified loop completed")
+      socket.assigns.sagents_status.endpoint_configured? ->
+        runtime = sagents_runtime()
 
-        {:rejected, result} ->
-          socket
-          |> assign(:loop_result, result)
-          |> update(:action_log, fn log -> Enum.take(["verified loop rejected" | log], 6) end)
+        {:noreply,
+         socket
+         |> assign(:sagents_running?, true)
+         |> start_async(:sagents_cycle, fn -> runtime.run() end)}
 
-        {:error, result} ->
-          socket
-          |> assign(:loop_result, result)
-          |> put_flash(:error, "Verified loop error: #{inspect(result.reason)}")
-      end
-
-    {:noreply, socket}
+      true ->
+        {:noreply, put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents")}
+    end
   end
 
   def handle_event("demo-cascade", _params, socket) do
@@ -241,12 +238,92 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_async(:sagents_cycle, {:ok, {:ok, result}}, socket) do
+    snapshot = %{
+      connected?: true,
+      source: "sagents:gemma",
+      state: result.state,
+      reward: result.reward,
+      error: nil
+    }
+
+    {:noreply,
+     socket
+     |> assign(:sagents_running?, false)
+     |> assign(:loop_result, result)
+     |> assign_snapshot(snapshot, "real Sagents cycle completed")}
+  end
+
+  def handle_async(:sagents_cycle, {:ok, {:error, reason}}, socket) do
+    {:noreply,
+     socket
+     |> assign(:sagents_running?, false)
+     |> put_flash(:error, "Sagents error: #{inspect(reason)}")}
+  end
+
+  def handle_async(:sagents_cycle, {:exit, reason}, socket) do
+    {:noreply,
+     socket
+     |> assign(:sagents_running?, false)
+     |> put_flash(:error, "Sagents task exited: #{inspect(reason)}")}
+  end
+
+  def handle_async(:sagents_hitl, {:ok, {:interrupt, pending}}, socket) do
+    [action_request | _rest] = pending.interrupt_data.action_requests
+
+    queue_result =
+      ApprovalQueue.request(action_request.arguments,
+        rationale: "Sagents HumanInTheLoop pauso la accion antes de mutar el simulador",
+        requested_by: "sagents-supervisor",
+        source: "sagents_hitl",
+        allowed_decisions: pending.allowed_decisions,
+        tool_call_id: action_request.tool_call_id,
+        runtime_context: pending
+      )
+
+    case queue_result do
+      {:ok, _request, approval_queue} ->
+        {:noreply,
+         socket
+         |> assign(:hitl_running?, false)
+         |> assign(:approval_queue, approval_queue)
+         |> update(:action_log, fn log ->
+           Enum.take(["Sagents HITL requested producer approval" | log], 6)
+         end)}
+
+      {:pending, _request, approval_queue} ->
+        {:noreply,
+         socket
+         |> assign(:hitl_running?, false)
+         |> assign(:approval_queue, approval_queue)}
+    end
+  end
+
+  def handle_async(:sagents_hitl, {:ok, other}, socket) do
+    {:noreply,
+     socket
+     |> assign(:hitl_running?, false)
+     |> put_flash(:error, "Sagents HITL did not interrupt: #{inspect(other)}")}
+  end
+
+  def handle_async(:sagents_hitl, {:exit, reason}, socket) do
+    {:noreply,
+     socket
+     |> assign(:hitl_running?, false)
+     |> put_flash(:error, "Sagents HITL task exited: #{inspect(reason)}")}
+  end
+
   defp assign_snapshot(socket, snapshot, log_entry) do
     socket
     |> assign(:snapshot, snapshot)
     |> assign(:state, snapshot.state)
     |> assign(:topology, Topology.from_state(snapshot.state))
     |> update(:action_log, fn log -> Enum.take([log_entry | log], 6) end)
+  end
+
+  defp sagents_runtime do
+    Application.get_env(:proteinloop, :sagents_runtime, SagentsRuntime)
   end
 
   defp run_agent(socket, provider) do
@@ -464,8 +541,16 @@ defmodule ProteinLoopWeb.OperatorLive do
                 Risky water and harvest actions wait for producer decision.
               </p>
             </div>
-            <button class="btn btn-sm btn-warning" phx-click="request-hitl">
-              <.icon name="hero-hand-raised" /> Request producer approval
+            <button
+              class="btn btn-sm btn-warning"
+              phx-click="request-hitl"
+              disabled={@hitl_running? || !@sagents_status.endpoint_configured?}
+            >
+              <.icon
+                name={if @hitl_running?, do: "hero-arrow-path", else: "hero-hand-raised"}
+                class={if @hitl_running?, do: "animate-spin", else: nil}
+              />
+              {if @hitl_running?, do: "Waiting for Gemma", else: "Request producer approval"}
             </button>
           </div>
           <.approval_queue queue={@approval_queue} />
@@ -474,15 +559,47 @@ defmodule ProteinLoopWeb.OperatorLive do
         <section class="rounded-box border border-base-300 bg-base-100 p-4">
           <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 class="text-lg font-semibold">Sagents loop contract</h2>
-              <p class="text-sm text-base-content/60">
-                Explicit steps: call_llm, verify_ecosystem_safety, execute_tools, until_tool.
-              </p>
+              <h2 class="text-lg font-semibold">Real Sagents runtime</h2>
+              <div class="mt-1 flex flex-wrap gap-2 text-sm text-base-content/60">
+                <span>Sagents {@sagents_status.framework_version}</span>
+                <span>LangChain {@sagents_status.langchain_version}</span>
+                <span>{@sagents_status.termination}</span>
+              </div>
             </div>
-            <button class="btn btn-sm btn-primary" phx-click="run-verified-loop">
-              <.icon name="hero-forward" /> Run verified loop
+            <button
+              class="btn btn-sm btn-primary"
+              phx-click="run-verified-loop"
+              disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
+            >
+              <.icon
+                name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
+                class={if @sagents_running?, do: "animate-spin", else: nil}
+              />
+              {if @sagents_running?, do: "Running agents", else: "Run Gemma agents"}
             </button>
           </div>
+          <dl class="mb-3 grid gap-3 border-y border-base-300 py-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div>
+              <dt class="text-xs text-base-content/60">Execution mode</dt>
+              <dd class="mt-1 font-mono text-sm">verify_ecosystem_safety</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Agents</dt>
+              <dd class="mt-1 text-sm font-semibold">
+                {@sagents_status.agent_count} real agents
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Distribution</dt>
+              <dd class="mt-1 text-sm font-semibold">{@sagents_status.distribution}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Gemma endpoint</dt>
+              <dd class="mt-1 text-sm font-semibold">
+                {if @sagents_status.endpoint_configured?, do: "ready", else: "not configured"}
+              </dd>
+            </div>
+          </dl>
           <.loop_result result={@loop_result} />
         </section>
 
@@ -505,7 +622,7 @@ defmodule ProteinLoopWeb.OperatorLive do
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-              <form phx-change="select-provider">
+              <form id="agent-provider-form" phx-change="select-provider">
                 <select name="provider" class="select select-sm" aria-label="Agent provider">
                   <option value="stub_safe" selected={@agent_provider == :stub_safe}>
                     safe stub
@@ -678,6 +795,37 @@ defmodule ProteinLoopWeb.OperatorLive do
     ~H"""
     <div class="rounded-box bg-base-200 p-3 text-sm text-base-content/60">
       The verified loop has not run yet.
+    </div>
+    """
+  end
+
+  def loop_result(%{result: %{framework: "sagents"}} = assigns) do
+    ~H"""
+    <div class="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+      <div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="badge badge-success">verified</span>
+          <span class="badge badge-outline">{@result.tool}</span>
+        </div>
+        <p class="mt-2 text-lg font-semibold">
+          Day {@result.state["day"]} / reward {@result.reward}
+        </p>
+        <p class="mt-1 text-sm text-base-content/60">
+          feed={@result.action["feed_kg"]}kg aeration={@result.action["aeration_hours"]}h
+          water={@result.action["water_exchange_fraction"] * 100}% harvest={@result.action[
+            "duckweed_harvest_kg"
+          ]}kg
+        </p>
+      </div>
+      <ol class="grid gap-2 sm:grid-cols-2">
+        <li
+          :for={subagent <- @result.subagents}
+          class="flex items-center justify-between gap-2 border-b border-base-300 py-2 text-sm"
+        >
+          <span class="font-mono">{subagent.name}</span>
+          <span class="badge badge-sm badge-outline">{subagent.report["status"]}</span>
+        </li>
+      </ol>
     </div>
     """
   end

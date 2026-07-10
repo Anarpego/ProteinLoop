@@ -47,6 +47,14 @@ def handle_request(
         simulator.apply_ammonia_spike(ammonia, oxygen)
         return HTTPStatus.OK, {"state": simulator.state.to_dict()}
 
+    if method == "POST" and path == "/verify":
+        action = EcosystemAction.from_dict(payload.get("action", payload))
+        verification = simulator.verifier.validate_action(simulator.state, action)
+        return HTTPStatus.OK, {
+            "action": action.to_dict(),
+            "verification": verification.to_dict(),
+        }
+
     if method == "POST" and path == "/step":
         action = EcosystemAction.from_dict(payload.get("action", payload))
         try:

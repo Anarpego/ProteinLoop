@@ -50,15 +50,15 @@ Narration:
 
 Risky water exchange and harvest actions pause for the producer in Spanish. The producer can approve, reject, or edit the tool call. Even after approval, the simulator verifier remains the mutation boundary.
 
-## Scene 6: Sagents-Compatible Loop
+## Scene 6: Real Sagents Runtime
 
 Action:
 
-Press `Run verified loop`.
+Press `Run Gemma agents`.
 
 Narration:
 
-The agentic loop is explicit: `call_llm`, `verify_ecosystem_safety`, `execute_tools`, and `until_tool`. This mirrors the Sagents execution model while keeping the local demo deterministic.
+Sagents 0.9.0 runs four Gemma subsystem agents in parallel, then a fifth parent supervisor calls `close_cycle`. The custom `verify_ecosystem_safety` mode checks the action before execution, and `until_tool_success` returns the accepted action, verifier result, and reward.
 
 ## Scene 7: AMD Gemma
 

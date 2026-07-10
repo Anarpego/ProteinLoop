@@ -4,8 +4,15 @@ import path from "node:path";
 const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
+const evidence = {
+  python_tests: 131,
+  phoenix_tests: 75,
+  reward_delta: 463,
+  collapse_avoidance: "100%",
+};
 
 await fs.mkdir(slidesDir, { recursive: true });
+await fs.writeFile(path.join(workspace, "data.json"), `${JSON.stringify(evidence, null, 2)}\n`);
 await fs.writeFile(
   path.join(workspace, "profile-plan.txt"),
   [
@@ -22,8 +29,25 @@ await fs.writeFile(
   path.join(workspace, "source-notes.txt"),
   [
     "ProteinLoop deck generated from repo-local submission sources.",
+    `Test counts: make test (${evidence.python_tests}) and app mix test (${evidence.phoenix_tests}), verified July 10, 2026.`,
     "No third-party logos or identity assets are embedded.",
     "AMD/Gemma/vLLM are named as technology references; no unofficial logos are drawn.",
+    "",
+  ].join("\n"),
+);
+await fs.writeFile(
+  path.join(workspace, "claim-spine.txt"),
+  [
+    "slide 1: ProteinLoop closes the food-protein cycle through a verifier-gated agentic loop.",
+    "slide 2: Aquaponics does not solve resilient protein production by itself.",
+    "slide 3: The biological loop maps to a coordinated actor system.",
+    "slide 4: Deterministic physics, not the model, controls every mutation.",
+    `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
+    "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
+    "slide 7: Local mesh evidence demonstrates state-preserving failover without claiming Horde.",
+    "slide 8: Spanish HITL is resumable control flow with approve, edit, and reject decisions.",
+    "slide 9: Real Sagents and local E2B already run; AMD-hosted vLLM is the promotion target.",
+    "slide 10: The startup ask is backed by code, Docker, evidence, and a platform path.",
     "",
   ].join("\n"),
 );
@@ -135,13 +159,13 @@ export default async function slide04(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Harness");
   h1(ctx, s, "The simulator is the safety boundary");
   sub(ctx, s, "Models and humans can propose actions, but deterministic physics decides whether state can mutate.");
-  box(ctx, s, { x: 80, y: 248, w: 210, h: 136, title: "call_llm", body: "OpenAI-compatible Gemma or deterministic stub proposes JSON action.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 80, y: 248, w: 210, h: 136, title: "call_llm", body: "Four Gemma subagents report to a Sagents supervisor.", fill: colors.blueSoft, line: colors.blue });
   arrowText(ctx, s, 312, 296);
   box(ctx, s, { x: 360, y: 248, w: 260, h: 136, title: "verify_ecosystem_safety", body: "Checks feed, oxygen, water exchange, duckweed reserve, and collapse state.", fill: colors.redSoft, line: colors.red });
   arrowText(ctx, s, 642, 296);
   box(ctx, s, { x: 690, y: 248, w: 210, h: 136, title: "execute_tools", body: "Only accepted actions mutate simulator state.", fill: colors.greenSoft, line: colors.green });
   arrowText(ctx, s, 922, 296);
-  box(ctx, s, { x: 970, y: 248, w: 210, h: 136, title: "until_tool", body: "Stops with structured cycle completion data.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 950, y: 248, w: 230, h: 136, title: "until_tool_success", body: "Stops only on an accepted close_cycle result.", fill: colors.tealSoft, line: colors.teal });
   box(ctx, s, { x: 240, y: 452, w: 760, h: 84, title: "Proof in repo", body: "Unsafe overfeeding is rejected before mutation; accepted recovery appends verifier evidence to the RLVR trace artifact.", fill: "#ffffff", line: colors.slate });
   footer(ctx, s, 4);
   return s;
@@ -151,11 +175,11 @@ export default async function slide05(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Demo evidence");
   h1(ctx, s, "The local demo proves collapse versus recovery");
   sub(ctx, s, "One button runs reset, ammonia spike, unsafe rejection, safe recovery, and trace recording.");
-  metric(ctx, s, { x: 92, y: 250, label: "Python tests", value: "18", note: "sim/API/RLVR/forecast", fill: colors.blueSoft });
-  metric(ctx, s, { x: 350, y: 250, label: "Phoenix tests", value: "44", note: "dashboard + agent flows", fill: colors.greenSoft });
-  metric(ctx, s, { x: 608, y: 250, label: "Reward delta", value: "463", note: "safety vs naive avg", fill: colors.tealSoft });
-  metric(ctx, s, { x: 866, y: 250, label: "Avoidance", value: "100%", note: "baseline collapses recovered", fill: colors.amberSoft });
-  box(ctx, s, { x: 160, y: 430, w: 860, h: 92, title: "Judge path", body: "Run demo cascade -> inspect trace timeline -> view RLVR reward verifier -> run verified loop.", fill: "#ffffff", line: colors.teal });
+  metric(ctx, s, { x: 92, y: 250, label: "Python tests", value: "${evidence.python_tests}", note: "sim/API/evidence/deploy", fill: colors.blueSoft });
+  metric(ctx, s, { x: 350, y: 250, label: "Phoenix tests", value: "${evidence.phoenix_tests}", note: "Sagents + LiveView + HITL", fill: colors.greenSoft });
+  metric(ctx, s, { x: 608, y: 250, label: "Reward delta", value: "${evidence.reward_delta}", note: "safety vs naive avg", fill: colors.tealSoft });
+  metric(ctx, s, { x: 866, y: 250, label: "Avoidance", value: "${evidence.collapse_avoidance}", note: "baseline collapses recovered", fill: colors.amberSoft });
+  box(ctx, s, { x: 160, y: 430, w: 860, h: 92, title: "Judge path", body: "Run demo cascade -> inspect RLVR evidence -> run four real Sagents/Gemma agents -> verify close_cycle.", fill: "#ffffff", line: colors.teal });
   footer(ctx, s, 5);
   return s;
 }`,
@@ -189,8 +213,8 @@ export default async function slide08(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Producer UX");
   h1(ctx, s, "Spanish HITL is control flow, not decoration");
   sub(ctx, s, "Risky water and harvest actions pause for the producer, while offline rules keep emergency guidance available.");
-  box(ctx, s, { x: 90, y: 246, w: 330, h: 230, title: "Approve", body: "Producer accepts the pending action; simulator verifier still gates execution.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 474, y: 246, w: 330, h: 230, title: "Edit", body: "Solo mitad reduces irreversible water exchange and harvest before verification.", fill: colors.amberSoft, line: colors.amber });
+  box(ctx, s, { x: 90, y: 246, w: 330, h: 230, title: "Approve", body: "Agent.resume executes the interrupted Sagents tool exactly once after producer approval.", fill: colors.greenSoft, line: colors.green });
+  box(ctx, s, { x: 474, y: 246, w: 330, h: 230, title: "Edit / Reject", body: "Solo mitad is re-verified; rejection resumes with zero simulator mutation.", fill: colors.amberSoft, line: colors.amber });
   box(ctx, s, { x: 858, y: 246, w: 330, h: 230, title: "Offline fallback", body: "Respaldo offline gives deterministic Spanish emergency instructions without model or cloud access.", fill: colors.blueSoft, line: colors.blue });
   footer(ctx, s, 8);
   return s;
@@ -198,9 +222,9 @@ export default async function slide08(presentation, ctx) {
   `import { colors, slideBase, h1, sub, box, arrowText, footer } from "./common.mjs";
 export default async function slide09(presentation, ctx) {
   const s = slideBase(presentation, ctx, "AMD Gemma");
-  h1(ctx, s, "The model boundary is already OpenAI-compatible");
-  sub(ctx, s, "Local stubs keep the demo runnable; AMD-hosted Gemma can be swapped in by setting GEMMA_ENDPOINT.");
-  box(ctx, s, { x: 80, y: 256, w: 250, h: 142, title: "Phoenix harness", body: "Provider selector runs safe, unsafe, or OpenAI-compatible proposals.", fill: colors.tealSoft, line: colors.teal });
+  h1(ctx, s, "Gemma already powers the real Sagents runtime");
+  sub(ctx, s, "Local E2B proves the loop offline; AMD-hosted Gemma uses the same GEMMA_ENDPOINT contract.");
+  box(ctx, s, { x: 80, y: 256, w: 250, h: 142, title: "Sagents 0.9.0", body: "Five agents, custom safety mode, until_tool_success, and resumable HITL.", fill: colors.tealSoft, line: colors.teal });
   arrowText(ctx, s, 350, 306);
   box(ctx, s, { x: 420, y: 260, w: 280, h: 128, title: "GEMMA_ENDPOINT", body: "/v1/models and /v1/chat/completions; no code change for Fireworks or vLLM.", fill: colors.blueSoft, line: colors.blue });
   arrowText(ctx, s, 720, 306);
@@ -215,8 +239,8 @@ export default async function slide10(presentation, ctx) {
   h1(ctx, s, "ProteinLoop is a startup pitch with executable proof");
   sub(ctx, s, "A food-security product built as a verifier-gated, human-aware, fault-tolerant agentic system.");
   box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives that need low-cost, resilient protein production.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Physics verifier, RLVR scoring, HITL approvals, self-healing mesh, AMD Gemma path.", fill: colors.tealSoft, line: colors.teal });
-  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker Compose app, simulator API, dashboard, producer route, traces, deployment docs.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents, physics verifier, RLVR scoring, resumable HITL, mesh model, AMD Gemma path.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and evidence packets.", fill: colors.blueSoft, line: colors.blue });
   ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn + Best AMD-Hosted Gemma", fontSize: 30, bold: true, color: colors.ink, align: "center" });
   footer(ctx, s, 10);
   return s;

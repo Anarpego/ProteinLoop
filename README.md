@@ -1,6 +1,6 @@
 # ProteinLoop
 
-ProteinLoop is a hackathon prototype for an agentic aquaponic protein loop: fish, prawns, duckweed, hydroponic plants, and chickens coordinated by a deterministic safety harness and, later, Gemma-powered agents.
+ProteinLoop is a hackathon prototype for an agentic aquaponic protein loop: fish, prawns, duckweed, hydroponic plants, and chickens coordinated by a deterministic safety harness and Gemma-powered Sagents agents.
 
 The first vertical slice is a Python simulator and verifier. It proves the core demo behavior: a naive routine collapses after an ammonia spike, while a safety-aware harness policy stabilizes the ecosystem.
 
@@ -18,13 +18,13 @@ The seventh slice makes the model boundary visible. The dashboard shows the conf
 
 The eighth slice adds a lightweight RLVR reward panel. The simulator scores naive and safety policies across repeatable scenarios, exposes the reward verifier payload through the API, and renders reward improvement on the operator dashboard.
 
-The ninth slice makes the multi-agent topology visible. The operator dashboard derives advisory subsystem cards for fish tank, hydroponia, duckweed/chickens, and supervisor agents from simulator state while keeping mutation behind the verified harness.
+The ninth slice makes the multi-agent topology visible. The operator dashboard derives advisory cards for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and supervisor agents from simulator state while keeping mutation behind the verified harness.
 
 The tenth slice adds a local self-healing mesh demo. The operator dashboard can simulate an edge node loss, migrate subsystem agents to healthy nodes, recover the failed node, and show migration events.
 
-The eleventh slice connects Spanish HITL approval to the operator flow. Risky water exchange and duckweed harvest actions now pause in an OTP queue until the producer approves, edits, or rejects them.
+The eleventh slice connects Spanish HITL approval to the operator flow. Risky water exchange and duckweed harvest actions pause through Sagents HumanInTheLoop until the producer approves, edits, or rejects them; the decision resumes the interrupted Sagents tool.
 
-The twelfth slice adds a Sagents-compatible loop contract. The operator dashboard can run an explicit `call_llm -> verify_ecosystem_safety -> execute_tools -> until_tool` loop that returns structured completion data without requiring live model credentials.
+The twelfth slice originally added a deterministic loop fallback. It remains for credential-free tests, while the active runtime is the real Sagents integration described below.
 
 The thirteenth slice adds the AMD Gemma deployment profile. It includes `.env.example`, a ROCm/vLLM Compose profile using `vllm/vllm-openai-rocm:gemma4`, and a runbook for connecting AMD-hosted Gemma to `GEMMA_ENDPOINT`.
 
@@ -72,6 +72,8 @@ The nRF9151 field plan records the two available DECT NR+ boards as a non-blocki
 
 The nRF9151 telemetry bridge packet maps sample two-board JSONL readings into simulator and dashboard events, proving how a critical tank reading becomes an ammonia-spike request and how an offline edge node becomes a mesh failure hint.
 
+The real Sagents runtime slice pins Sagents `0.9.0` and LangChain `0.9.2`, starts `Sagents.Supervisor` under OTP, runs four real `Sagents.SubAgent` workers with Gemma concurrently, inserts `verify_ecosystem_safety` before tool execution, terminates through `until_tool_success`, and preserves executable JSON/Markdown evidence at `submission/sagents-evidence.*`.
+
 ## Workflow
 
 This repo is set up for a Spec Kit-style flow:
@@ -88,7 +90,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/010-subsystem-agent-topology/spec.md` defines deterministic subsystem agent topology.
 - `specs/011-self-healing-mesh/spec.md` defines the local self-healing mesh demo.
 - `specs/012-spanish-hitl-queue/spec.md` defines the connected Spanish HITL approval queue.
-- `specs/013-sagents-loop-contract/spec.md` defines the deterministic Sagents-compatible loop contract.
+- `specs/013-sagents-loop-contract/spec.md` defines the superseded deterministic loop fallback.
 - `specs/014-amd-gemma-deployment/spec.md` defines the AMD Gemma vLLM deployment profile.
 - `specs/015-submission-packet/spec.md` defines the hackathon submission packet.
 - `specs/016-anomaly-forecast/spec.md` defines near-term ammonia/oxygen risk prediction.
@@ -108,6 +110,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/036-mesh-evidence-packet/spec.md` defines the generated self-healing mesh evidence packet.
 - `specs/037-nrf9151-field-plan/spec.md` defines the two-board DECT NR+ field extension plan.
 - `specs/038-nrf9151-telemetry-bridge/spec.md` defines the two-board telemetry bridge contract.
+- `specs/047-real-sagents-runtime/spec.md` defines the real Sagents, Gemma, verifier, and HITL runtime.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -122,7 +125,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 51 tests
+Ran 131 tests
 
 OK
 ```
@@ -135,7 +138,7 @@ mix deps.get
 mix test
 ```
 
-Current expected result: `44 tests, 0 failures`.
+Current expected result: `75 tests, 0 failures`.
 
 Validate the GitHub Actions workflow contract before pushing:
 
@@ -248,6 +251,14 @@ make local-gemma-check
 
 The first start downloads Google's official QAT Q4 GGUF weights (about 2.9 GB for E2B weights, plus its multimodal projection/cache metadata). After that, the model runs offline at `http://127.0.0.1:8001/v1`. Local evidence is written to `outputs/local-gemma-evidence.json`, separate from the non-local AMD evidence required for final submission. The managed server disables thinking for reliable low-latency JSON actions; the deterministic verifier still gates mutation. See `deploy/local-gemma.md` for lifecycle commands, memory assumptions, and the promotion path.
 
+With Docker and local Gemma running, generate the real Sagents proof:
+
+```sh
+make sagents-evidence
+```
+
+The target defaults to local E2B at `http://127.0.0.1:8001` and the simulator at `http://127.0.0.1:8000`; explicit environment variables still override both for AMD deployment. It runs four subsystem agents, a verified supervisor cycle, a HumanInTheLoop interrupt, and a rejection resume with zero mutation. It writes `submission/sagents-evidence.json` and `.md`.
+
 Summarize harness traces:
 
 ```sh
@@ -349,7 +360,7 @@ The dashboard includes an `RLVR reward verifier` panel. It compares the naive ba
 
 The same panel includes a deterministic policy search curve from `GET /rlvr/training`. Candidate policies are scored by `SafetyVerifier.reward`, and the dashboard shows best-so-far improvement without requiring any training framework.
 
-The dashboard includes `Subsystem agent topology` cards for the fish tank, hydroponia, duckweed/chickens, and supervisor agents. These are advisory only; state mutation still goes through the harness and simulator verifier.
+The dashboard includes `Subsystem agent topology` cards for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and the parent supervisor. State mutation still goes through the harness and simulator verifier.
 
 The dashboard includes a `Self-healing mesh` panel. `Simulate node loss` marks an edge node offline and migrates its agents to healthy nodes while preserving agent identity/state tokens. `Recover node` brings the failed node back online.
 
@@ -357,9 +368,9 @@ The physical hardware extension uses two available Nordic nRF9151 DECT NR+ board
 
 The stdlib telemetry bridge can also convert sample nRF9151 JSONL records into the demo contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action.
 
-The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` creates a pending risky water/harvest action. The producer route shows the request in Spanish and lets the producer approve, edit to half, or reject it before simulator mutation.
+The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
-The dashboard includes a `Sagents loop contract` panel. `Run verified loop` executes explicit agent steps and stops only when the configured `until_tool` returns structured cycle completion data. The custom `verify_ecosystem_safety` step is the simulator verifier boundary.
+The dashboard includes a `Real Sagents runtime` panel. `Run Gemma agents` runs four subsystem agents concurrently and passes their reports to a fifth parent supervisor. The custom `verify_ecosystem_safety` mode calls the simulator's non-mutating verifier before execution, and `until_tool_success` returns the accepted action, final state, reward, and verifier evidence.
 
 The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 
@@ -382,7 +393,7 @@ Optional OpenAI-compatible model boundary:
 ```sh
 GEMMA_ENDPOINT=http://your-vllm-host:8000 \
 GEMMA_API_KEY=optional \
-GEMMA_MODEL=gemma \
+GEMMA_MODEL=google/gemma-4-E2B-it \
 SIMULATOR_URL=http://127.0.0.1:8000 \
 PORT=4001 \
 mix phx.server
@@ -527,6 +538,7 @@ Submission source artifacts live in `submission/`:
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
+- `sagents-evidence.json` / `sagents-evidence.md`: live local Gemma evidence for real Sagents agents, custom safety mode, `until_tool_success`, and non-mutating HITL rejection.
 - `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: two-board DECT NR+ hardware extension plan.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
@@ -581,6 +593,12 @@ Generate the self-healing mesh evidence packet:
 make mesh-evidence
 ```
 
+Generate the real Sagents and local Gemma evidence packet:
+
+```sh
+make sagents-evidence
+```
+
 Generate the nRF9151 two-board DECT NR+ field plan:
 
 ```sh
@@ -616,7 +634,7 @@ make readiness-report
 ├── specs/010-subsystem-agent-topology/ # Deterministic subsystem agents
 ├── specs/011-self-healing-mesh/     # Local self-healing mesh demo
 ├── specs/012-spanish-hitl-queue/    # Connected Spanish HITL approval queue
-├── specs/013-sagents-loop-contract/ # Explicit verifier step + until_tool
+├── specs/013-sagents-loop-contract/ # Superseded deterministic loop fallback
 ├── specs/014-amd-gemma-deployment/  # AMD Gemma/vLLM deployment profile
 ├── specs/015-submission-packet/     # Hackathon submission packet
 ├── specs/016-anomaly-forecast/      # Near-term ammonia/oxygen forecast
@@ -641,6 +659,7 @@ make readiness-report
 ├── specs/036-mesh-evidence-packet/ # Self-healing mesh evidence packet
 ├── specs/037-nrf9151-field-plan/ # Two-board nRF9151 field plan
 ├── specs/038-nrf9151-telemetry-bridge/ # Two-board nRF9151 bridge contract
+├── specs/047-real-sagents-runtime/ # Real Sagents + Gemma + HITL runtime
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks

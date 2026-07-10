@@ -5,6 +5,8 @@ defmodule ProteinLoop.Agent.MeshTest do
 
   test "agents on a failed edge node migrate to online nodes" do
     mesh = Mesh.initial()
+    assert length(mesh.agents) == 5
+    assert Enum.any?(mesh.agents, &(&1.id == "freshwater-prawn"))
 
     failed = Mesh.fail_edge_node(mesh, "edge-tank-a")
 

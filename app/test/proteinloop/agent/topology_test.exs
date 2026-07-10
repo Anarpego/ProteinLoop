@@ -36,7 +36,8 @@ defmodule ProteinLoop.Agent.TopologyTest do
         "collapsed" => false
       })
 
-    assert length(topology) == 4
+    assert length(topology) == 5
+    assert Enum.find(topology, &(&1.name == "Freshwater prawn agent")).status == :stable
     refute Enum.any?(topology, &(&1.status == :critical))
     assert Enum.all?(topology, &is_float(&1.tension))
   end
