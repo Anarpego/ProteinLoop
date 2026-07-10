@@ -18,8 +18,10 @@ services:
       SIMULATOR_URL: "http://simulator:8000"
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE}
       GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-}
-      GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E4B-it}
+      GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E2B-it}
       GEMMA_API_KEY: ${GEMMA_API_KEY:-}
+      GEMMA_RECEIVE_TIMEOUT_MS: ${GEMMA_RECEIVE_TIMEOUT_MS:-120000}
+      GEMMA_MAX_TOKENS: ${GEMMA_MAX_TOKENS:-1024}
     ports:
       - "${PUBLIC_PORT:-80}:4000"
     volumes:

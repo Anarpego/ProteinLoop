@@ -1,4 +1,9 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+
+LOCAL_GEMMA_HOST ?= 127.0.0.1
+LOCAL_GEMMA_PORT ?= 8001
+LOCAL_GEMMA_CONTEXT_SIZE ?= 8192
+LOCAL_GEMMA_WAIT_SECONDS ?= 1800
 
 test:
 	python3 -m unittest discover -s tests
@@ -79,6 +84,24 @@ credit-check:
 
 gemma-check:
 	GEMMA_ENDPOINT="$(GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" python3 scripts/validate_gemma_endpoint.py
+
+local-gemma-install:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" install
+
+local-gemma-start:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" start --context-size "$(LOCAL_GEMMA_CONTEXT_SIZE)" --wait-seconds "$(LOCAL_GEMMA_WAIT_SECONDS)"
+
+local-gemma-status:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" status
+
+local-gemma-check:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" check
+
+local-gemma-stop:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" stop
+
+local-gemma-command:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" print-command --context-size "$(LOCAL_GEMMA_CONTEXT_SIZE)"
 
 public-env-check:
 	python3 scripts/validate_public_env.py

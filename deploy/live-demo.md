@@ -18,7 +18,7 @@ PHX_HOST=proteinloop.example.com
 SECRET_KEY_BASE=replace-with-mix-phx-gen-secret-output
 SIMULATOR_URL=http://simulator:8000
 GEMMA_ENDPOINT=https://your-openai-compatible-endpoint
-GEMMA_MODEL=google/gemma-4-E4B-it
+GEMMA_MODEL=google/gemma-4-E2B-it
 GEMMA_API_KEY=optional
 ```
 

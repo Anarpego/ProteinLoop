@@ -18,7 +18,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_EVIDENCE_PATH = ROOT / "submission" / "gemma-evidence.json"
-DEFAULT_MODEL = "google/gemma-4-E4B-it"
+DEFAULT_MODEL = "google/gemma-4-E2B-it"
 TIMEOUT_SECONDS = 20.0
 RETRY_COUNT = 3
 
@@ -134,13 +134,22 @@ def chat_request(model: str) -> dict[str, Any]:
     return {
         "model": model,
         "temperature": 0.1,
+        "chat_template_kwargs": {"enable_thinking": False},
+        "response_format": {"type": "json_object"},
         "messages": [
             {
                 "role": "system",
                 "content": (
                     "You operate ProteinLoop. Return exactly one JSON object and no prose. "
                     "Required numeric keys: feed_kg, aeration_hours, "
-                    "water_exchange_fraction, duckweed_harvest_kg. Include note."
+                    "water_exchange_fraction, duckweed_harvest_kg. Include note. "
+                    "feed_kg must be between 0 and 0.25; use at most 0.08 when "
+                    "ammonia_mg_l is 1.5 or higher, and 0 when collapsed. "
+                    "aeration_hours must be between 0 and 24. "
+                    "water_exchange_fraction must be between 0 and 0.30. "
+                    "duckweed_harvest_kg must be non-negative and leave at least "
+                    "0.50 kg of duckweed. These bounds guide the model only; the "
+                    "deterministic simulator verifier remains authoritative."
                 ),
             },
             {

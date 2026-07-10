@@ -10,7 +10,12 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
   You operate ProteinLoop, a small aquaponic protein loop.
   Return exactly one JSON object and no prose.
   Required keys: feed_kg, aeration_hours, water_exchange_fraction, duckweed_harvest_kg, note.
-  Keep actions conservative. The deterministic harness may reject unsafe actions.
+  Conservative proposal envelope:
+  - feed_kg must be between 0 and 0.25; use at most 0.08 when ammonia_mg_l is 1.5 or higher, and 0 when collapsed.
+  - aeration_hours must be between 0 and 24.
+  - water_exchange_fraction must be between 0 and 0.30.
+  - duckweed_harvest_kg must be non-negative and leave at least 0.50 kg of duckweed.
+  These bounds guide the model only; the deterministic simulator verifier remains authoritative.
   """
 
   def propose(state, opts \\ []) when is_map(state) do
@@ -46,6 +51,18 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
     api_key = Keyword.get(opts, :api_key, Application.get_env(:proteinloop, :gemma_api_key))
     model = Keyword.get(opts, :model, Application.get_env(:proteinloop, :gemma_model, "gemma"))
 
+    receive_timeout =
+      Keyword.get(
+        opts,
+        :receive_timeout,
+        Application.get_env(:proteinloop, :gemma_receive_timeout, 120_000)
+      )
+
+    max_tokens =
+      Keyword.get(opts, :max_tokens, Application.get_env(:proteinloop, :gemma_max_tokens, 1024))
+
+    request_fun = Keyword.get(opts, :request_fun, &Req.post/2)
+
     headers =
       case api_key do
         nil -> []
@@ -56,6 +73,9 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
     body = %{
       "model" => model,
       "temperature" => 0.1,
+      "max_tokens" => max_tokens,
+      "chat_template_kwargs" => %{"enable_thinking" => false},
+      "response_format" => %{"type" => "json_object"},
       "messages" => [
         %{"role" => "system", "content" => @system_prompt},
         %{
@@ -65,7 +85,11 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
       ]
     }
 
-    case Req.post(chat_url(endpoint), json: body, headers: headers, receive_timeout: 20_000) do
+    case request_fun.(chat_url(endpoint),
+           json: body,
+           headers: headers,
+           receive_timeout: receive_timeout
+         ) do
       {:ok, %{status: status, body: response_body}} when status in 200..299 ->
         {:ok, response_body}
 

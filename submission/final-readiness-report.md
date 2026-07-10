@@ -1,8 +1,31 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-09T04:46:18+00:00
-Commit: `ab7b87d`
-Working tree (source): `clean`
+Generated: 2026-07-10T04:49:31+00:00
+Commit: `35de74e`
+Working tree (source): `M .env.example
+ M .gitignore
+ M Makefile
+ M README.md
+ M app/config/runtime.exs
+ M app/lib/proteinloop/agent/openai_compatible.ex
+ M app/test/proteinloop/agent/openai_compatible_test.exs
+ M deploy/amd-gemma-vllm.md
+ M deploy/live-demo.md
+ M docker-compose.gemma-rocm.yml
+ M docker-compose.public.yml
+ M goal.md
+ M scripts/generate_readiness_report.py
+ M scripts/validate_credit_access.py
+ M scripts/validate_gemma_endpoint.py
+ M scripts/validate_public_deploy.py
+ M scripts/validate_submission_artifacts.py
+ M tests/test_gemma_endpoint_validator.py
+ M tests/test_readiness_report.py
+ M tests/test_submission_readiness.py
+?? deploy/local-gemma.md
+?? scripts/local_gemma.py
+?? specs/046-local-gemma-inference/
+?? tests/test_local_gemma.py`
 
 ## Command Evidence
 
@@ -42,7 +65,7 @@ make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop
 PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check
 FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
-make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E4B-it
+make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it
 make submission-finalize
 ```
 
@@ -52,9 +75,9 @@ make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-.................................................................................................................
+............................................................................................................................
 ----------------------------------------------------------------------
-Ran 113 tests in 0.117s
+Ran 124 tests in 0.122s
 
 OK
 ```
@@ -71,7 +94,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-09T04:34:23.167962+00:00
+checked_at: 2026-07-10T04:49:13.283630+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -143,7 +166,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - ab7b87d38ff5f5d405b758b17fc920d9a5d246a6
+[ok] local git commit - 35de74e912491e61c646048920b6a793429a1716
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed

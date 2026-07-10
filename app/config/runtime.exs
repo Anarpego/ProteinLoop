@@ -24,7 +24,10 @@ config :proteinloop,
   simulator_url: System.get_env("SIMULATOR_URL") || "http://127.0.0.1:8000",
   gemma_endpoint: System.get_env("GEMMA_ENDPOINT"),
   gemma_api_key: System.get_env("GEMMA_API_KEY"),
-  gemma_model: System.get_env("GEMMA_MODEL") || "gemma"
+  gemma_model: System.get_env("GEMMA_MODEL") || "gemma",
+  gemma_receive_timeout:
+    String.to_integer(System.get_env("GEMMA_RECEIVE_TIMEOUT_MS") || "120000"),
+  gemma_max_tokens: String.to_integer(System.get_env("GEMMA_MAX_TOKENS") || "1024")
 
 config :proteinloop, ProteinLoopWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]

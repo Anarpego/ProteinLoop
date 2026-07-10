@@ -3,7 +3,7 @@
 **Track:** Unicorn 🦄 (all levels · build your startup)
 **Fechas:** Julio 6–11, 2026 · Online · lablab.ai · Kick-off Jul 6, 10:00 AM CST
 **Objetivo:** 1er lugar Unicorn ($2,500) + Best AMD-Hosted Gemma ($2,000) = **$4,500**
-**Stack:** Python (sim + RLVR + Gemma self-host en ROCm) · Elixir/Sagents/Phoenix (orquestación + demo)
+**Stack:** Python (sim + RLVR + Gemma self-host en ROCm) · llama.cpp/Metal (Gemma local offline para desarrollo) · Elixir/Sagents/Phoenix (orquestación + demo)
 
 ---
 
@@ -134,11 +134,12 @@ Mismo backend, mismos agentes, mismo PubSub, dos `live` routes. Comunica que pen
 Elixir/Sagents  ──llama a──►  GEMMA_ENDPOINT (env var)
                                    │
                  ┌─────────────────┴─────────────────┐
-                 │  Días 1-2: Fireworks API          │  ← desarrollo rápido, créditos ya
-                 │  Días 3+:  tu vLLM en AMD Cloud    │  ← self-host, gana puntos AMD
+                 │  Local: llama.cpp + Gemma 4 E2B    │  ← modelo menor, offline, mismo contrato
+                 │  Fallback: Fireworks API           │  ← respaldo administrado
+                 │  Final: vLLM en AMD Cloud          │  ← self-host, gana puntos AMD
                  └───────────────────────────────────┘
 ```
-Ambos exponen API OpenAI-compatible. Cambiás una env var. Si el self-host se complica el día del deadline, Fireworks es fallback → cero riesgo de quedarte sin demo. En Sagents/Elixir LangChain se usa el provider OpenAI-compatible apuntado al endpoint.
+Los tres exponen API OpenAI-compatible. Cambiás una env var. El desarrollo y ensayo usan Gemma 4 E2B IT Q4 local, la variante Gemma 4 más pequeña; la evidencia final usa el mismo modelo servido por vLLM/ROCm en AMD. Si el self-host se complica el día del deadline, Fireworks queda como fallback. En Sagents/Elixir LangChain se usa el provider OpenAI-compatible apuntado al endpoint.
 
 ---
 

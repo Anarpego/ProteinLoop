@@ -252,7 +252,7 @@ def report_ok(path: Path) -> bool:
         "## Remaining Blockers",
         "## Next Commands",
         "make submission-ready-check",
-        "GEMMA_MODEL=google/gemma-4-E4B-it",
+        "GEMMA_MODEL=google/gemma-4-E2B-it",
     ]
     return all(fragment in text for fragment in required_fragments)
 

@@ -230,13 +230,23 @@ Validate an AMD-hosted or fallback OpenAI-compatible Gemma endpoint:
 
 ```sh
 GEMMA_ENDPOINT=https://your-vllm-host \
-GEMMA_MODEL=google/gemma-4-E4B-it \
+GEMMA_MODEL=google/gemma-4-E2B-it \
 make gemma-check
 ```
 
 On success, the check writes `submission/gemma-evidence.json`.
 
 The evidence must show that `/v1/models` advertises the requested Gemma 4 model and that `/v1/chat/completions` returns a valid ProteinLoop action.
+
+Run the smallest Gemma 4 model, E2B IT, locally on Apple Silicon before using AMD cloud credits:
+
+```sh
+make local-gemma-install
+make local-gemma-start
+make local-gemma-check
+```
+
+The first start downloads Google's official QAT Q4 GGUF weights (about 2.9 GB for E2B weights, plus its multimodal projection/cache metadata). After that, the model runs offline at `http://127.0.0.1:8001/v1`. Local evidence is written to `outputs/local-gemma-evidence.json`, separate from the non-local AMD evidence required for final submission. The managed server disables thinking for reliable low-latency JSON actions; the deterministic verifier still gates mutation. See `deploy/local-gemma.md` for lifecycle commands, memory assumptions, and the promotion path.
 
 Summarize harness traces:
 
@@ -479,6 +489,8 @@ docker compose -f docker-compose.public.yml up -d --build
 ## AMD Gemma Deployment
 
 The AMD-hosted Gemma path is documented in `deploy/amd-gemma-vllm.md`.
+
+The local Apple Silicon rehearsal path is documented in `deploy/local-gemma.md`. It serves the same `google/gemma-4-E2B-it` model alias through the same OpenAI-compatible API before the AMD credit activation window starts.
 
 Validate the profile syntax locally:
 

@@ -30,15 +30,15 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
         )
 
     def test_extract_model_ids_reads_openai_compatible_payload(self):
-        payload = {"data": [{"id": "google/gemma-4-E4B-it"}, {"ignored": True}]}
+        payload = {"data": [{"id": "google/gemma-4-E2B-it"}, {"ignored": True}]}
 
-        self.assertEqual(extract_model_ids(payload), ["google/gemma-4-E4B-it"])
+        self.assertEqual(extract_model_ids(payload), ["google/gemma-4-E2B-it"])
 
     def test_model_advertised_accepts_exact_or_suffix_match(self):
-        model_ids = ["accounts/team/models/google/gemma-4-E4B-it", "other-model"]
+        model_ids = ["accounts/team/models/google/gemma-4-E2B-it", "other-model"]
 
-        self.assertTrue(model_is_advertised("google/gemma-4-E4B-it", model_ids))
-        self.assertTrue(model_is_advertised("accounts/team/models/google/gemma-4-E4B-it", model_ids))
+        self.assertTrue(model_is_advertised("google/gemma-4-E2B-it", model_ids))
+        self.assertTrue(model_is_advertised("accounts/team/models/google/gemma-4-E2B-it", model_ids))
         self.assertFalse(model_is_advertised("google/gemma-4-27B-it", model_ids))
 
     def test_parse_chat_action_strips_json_code_fence(self):
@@ -74,10 +74,14 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
         self.assertIn("non-numeric", invalid.detail)
 
     def test_chat_request_uses_model_and_requires_action_contract(self):
-        request = chat_request("google/gemma-4-E4B-it")
+        request = chat_request("google/gemma-4-E2B-it")
 
-        self.assertEqual(request["model"], "google/gemma-4-E4B-it")
+        self.assertEqual(request["model"], "google/gemma-4-E2B-it")
         self.assertIn("feed_kg", request["messages"][0]["content"])
+        self.assertIn("between 0 and 0.25", request["messages"][0]["content"])
+        self.assertIn("simulator verifier remains authoritative", request["messages"][0]["content"])
+        self.assertEqual(request["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertEqual(request["response_format"], {"type": "json_object"})
 
 
 if __name__ == "__main__":

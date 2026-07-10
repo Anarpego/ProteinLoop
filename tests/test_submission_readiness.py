@@ -186,8 +186,8 @@ https://demo.example.com
                 """
                 {
                   "endpoint": "https://gemma.example.com",
-                  "model": "google/gemma-4-E4B-it",
-                  "models": ["google/gemma-4-E4B-it"],
+                  "model": "google/gemma-4-E2B-it",
+                  "models": ["google/gemma-4-E2B-it"],
                   "action": {
                     "feed_kg": 0.1,
                     "aeration_hours": 12,
@@ -212,7 +212,7 @@ https://demo.example.com
                 """
                 {
                   "endpoint": "https://gemma.example.com",
-                  "model": "google/gemma-4-E4B-it",
+                  "model": "google/gemma-4-E2B-it",
                   "models": ["other-model"],
                   "action": {
                     "feed_kg": 0.1,
@@ -238,8 +238,8 @@ https://demo.example.com
                 """
                 {
                   "endpoint": "http://127.0.0.1:8001",
-                  "model": "google/gemma-4-E4B-it",
-                  "models": ["google/gemma-4-E4B-it"],
+                  "model": "google/gemma-4-E2B-it",
+                  "models": ["google/gemma-4-E2B-it"],
                   "action": {
                     "feed_kg": 0.1,
                     "aeration_hours": 12,

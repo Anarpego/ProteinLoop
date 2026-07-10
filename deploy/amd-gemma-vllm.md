@@ -12,8 +12,11 @@ Notes from the current vLLM recipe:
 
 - The historical Gemma 4 page points to `recipes.vllm.ai` for the freshest interactive commands.
 - The AMD image is `vllm/vllm-openai-rocm:gemma4`.
+- AMD Developer Cloud currently offers the vLLM 0.23.0 quick-start with Gemma 4 support.
 - The documented AMD Docker path uses `/dev/kfd`, `/dev/dri`, host IPC/networking, ROCm privileges, and a Hugging Face cache mount.
 - Gemma 4 models expose an OpenAI-compatible API through vLLM.
+- ProteinLoop uses Gemma 4 E2B IT, the smallest Gemma 4 model. The text-only profile disables image/audio profiling to preserve KV-cache capacity.
+- The ProteinLoop client sends `enable_thinking=false` and requests JSON output for low-latency structured actions; the simulator verifier remains the safety authority.
 
 ## Environment
 
@@ -27,10 +30,10 @@ Set at least:
 
 ```sh
 HF_TOKEN=...
-VLLM_MODEL=google/gemma-4-E4B-it
+VLLM_MODEL=google/gemma-4-E2B-it
 VLLM_PORT=8001
 GEMMA_ENDPOINT=http://127.0.0.1:8001
-GEMMA_MODEL=google/gemma-4-E4B-it
+GEMMA_MODEL=google/gemma-4-E2B-it
 ```
 
 The app expects `GEMMA_ENDPOINT` without `/v1`; it appends `/v1/models` for status checks and `/v1/chat/completions` for proposals.

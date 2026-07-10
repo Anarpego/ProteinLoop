@@ -19,7 +19,7 @@ REQUIRED_SNIPPETS = [
     "SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE}",
     'SIMULATOR_URL: "http://simulator:8000"',
     "GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-}",
-    "GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E4B-it}",
+    "GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E2B-it}",
     'ports:\n      - "${PUBLIC_PORT:-80}:4000"',
     "proteinloop_traces:",
 ]

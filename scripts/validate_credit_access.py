@@ -126,7 +126,7 @@ def next_steps(checks: list[Check]) -> list[str]:
     if all(check.ok for check in checks):
         return [
             "Deploy or configure an OpenAI-compatible Gemma endpoint.",
-            "Run GEMMA_ENDPOINT=https://... GEMMA_MODEL=google/gemma-4-E4B-it make gemma-check.",
+            "Run GEMMA_ENDPOINT=https://... GEMMA_MODEL=google/gemma-4-E2B-it make gemma-check.",
         ]
 
     steps: list[str] = []

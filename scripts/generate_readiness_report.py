@@ -252,7 +252,7 @@ def render_report(
             "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check",
             "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
             "make set-demo-url DEMO_URL=https://your-public-demo-url",
-            "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E4B-it",
+            "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it",
             "make submission-finalize",
             "```",
             "",
