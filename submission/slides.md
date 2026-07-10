@@ -51,9 +51,9 @@ Two real BEAM nodes run Sagents through Horde. Stopping the managed agent's actu
 
 Two physical nRF9151 DKs exchange bidirectional DECT NR+ traffic. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number in a read-only, non-simulated capture with no flash or reset.
 
-## 11. Spanish HITL
+## 11. Human Approval
 
-Risky water exchange and harvest actions pause for producer approval in Spanish: approve, edit, or reject.
+Risky water exchange and harvest actions pause for an English producer decision: approve, apply half, or reject.
 
 ## 12. Real Sagents Runtime
 
@@ -69,7 +69,7 @@ Rural families and cooperatives in Latin America need low-cost, resilient protei
 
 ## 15. Business Model
 
-Community mesh node plus shared cloud agent subscription; local producers use Spanish mobile-first approval flows.
+Community mesh node plus shared cloud agent subscription; local producers use a plain-language, mobile-first approval flow.
 
 ## 16. Ask
 

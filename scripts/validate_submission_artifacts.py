@@ -304,7 +304,7 @@ def rehearsal_ok(json_path: Path, md_path: Path) -> bool:
         "unsafe_rejection",
         "safe_recovery",
         "rlvr_policy_search",
-        "spanish_hitl",
+        "human_approval",
         "offline_guidance",
     }
     markdown = md_path.read_text(encoding="utf-8")

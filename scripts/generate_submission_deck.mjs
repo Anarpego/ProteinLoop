@@ -46,7 +46,7 @@ await fs.writeFile(
     `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
     "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
     "slide 7: Real Sagents/Horde evidence proves state-preserving failover; two physical nRF9151 DKs prove bidirectional DECT NR+.",
-    "slide 8: Spanish HITL is resumable control flow with approve, edit, and reject decisions.",
+    "slide 8: Human approval is resumable control flow with approve, apply-half, and reject decisions.",
     "slide 9: Real Sagents and local Gemma 4 E2B run through the same portable endpoint contract.",
     "slide 10: The startup ask is backed by code, Docker, evidence, and a platform path.",
     "",
@@ -135,7 +135,7 @@ export default async function slide02(presentation, ctx) {
   sub(ctx, s, "Vegetables are useful, but rural families need resilient daily protein and a system they can operate safely.");
   box(ctx, s, { x: 70, y: 238, w: 330, h: 240, title: "Current aquaponics", body: "Often optimized around greens and water loops. Protein production is secondary and fragile.", fill: colors.redSoft, line: colors.red });
   box(ctx, s, { x: 476, y: 238, w: 330, h: 240, title: "Operational barrier", body: "Feed, ammonia, oxygen, nitrate, harvest timing, and mortality cascades interact every day.", fill: colors.amberSoft, line: colors.amber });
-  box(ctx, s, { x: 882, y: 238, w: 330, h: 240, title: "ProteinLoop answer", body: "A closed protein cycle controlled by a verifier-gated agentic loop and Spanish producer approvals.", fill: colors.greenSoft, line: colors.green });
+  box(ctx, s, { x: 882, y: 238, w: 330, h: 240, title: "ProteinLoop answer", body: "A closed protein cycle controlled by a verifier-gated agentic loop and clear producer approvals.", fill: colors.greenSoft, line: colors.green });
   footer(ctx, s, 2);
   return s;
 }`,
@@ -213,11 +213,11 @@ export default async function slide07(presentation, ctx) {
   `import { colors, slideBase, h1, sub, box, footer } from "./common.mjs";
 export default async function slide08(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Producer UX");
-  h1(ctx, s, "Spanish HITL is control flow, not decoration");
+  h1(ctx, s, "Human approval is control flow, not decoration");
   sub(ctx, s, "Risky water and harvest actions pause for the producer, while offline rules keep emergency guidance available.");
   box(ctx, s, { x: 90, y: 246, w: 330, h: 230, title: "Approve", body: "Agent.resume executes the interrupted Sagents tool exactly once after producer approval.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 474, y: 246, w: 330, h: 230, title: "Edit / Reject", body: "Solo mitad is re-verified; rejection resumes with zero simulator mutation.", fill: colors.amberSoft, line: colors.amber });
-  box(ctx, s, { x: 858, y: 246, w: 330, h: 230, title: "Offline fallback", body: "Respaldo offline gives deterministic Spanish emergency instructions without model or cloud access.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 474, y: 246, w: 330, h: 230, title: "Half / Reject", body: "Apply half is re-verified; rejection resumes with zero simulator mutation.", fill: colors.amberSoft, line: colors.amber });
+  box(ctx, s, { x: 858, y: 246, w: 330, h: 230, title: "Offline fallback", body: "Deterministic English emergency instructions remain available without model or cloud access.", fill: colors.blueSoft, line: colors.blue });
   footer(ctx, s, 8);
   return s;
 }`,

@@ -80,7 +80,7 @@ class ReadinessReportTests(unittest.TestCase):
                         "ok": True,
                         "checks": [
                             {"name": "simulator health", "ok": True, "detail": ""},
-                            {"name": "producer Spanish route", "ok": True, "detail": ""},
+                            {"name": "producer English route", "ok": True, "detail": ""},
                         ],
                     }
                 ),

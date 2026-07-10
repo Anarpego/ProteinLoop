@@ -130,14 +130,14 @@ def build_scenes(evidence: dict) -> list[Scene]:
             GREEN,
         ),
         Scene(
-            "Spanish HITL",
+            "Human Approval",
             "Risky actions pause for producer approval",
             [
                 "Water exchange and harvest actions are irreversible enough to ask a human.",
-                "The producer route offers Aprobar, Solo mitad, and Rechazar.",
+                "The producer route offers Approve, Apply half, and Reject.",
                 "Even approved actions still pass through the deterministic simulator verifier.",
             ],
-            "Aprobar | Solo mitad | Rechazar",
+            "Approve | Apply half | Reject",
             GREEN,
         ),
         Scene(

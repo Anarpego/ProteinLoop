@@ -18,9 +18,13 @@ Prefer one complete flow that runs locally and in Docker over disconnected advan
 
 Simulator rules, reward functions, safety thresholds, and API contracts require automated tests. Tests should prove the behaviors the pitch depends on: collapse without intervention, recovery with safe intervention, and rejection of unsafe actions.
 
-### V. Spanish Producer UX Is a Product Requirement
+### V. Plain-Language English Producer UX Is a Product Requirement
 
-The producer-facing path must use direct Spanish action language. It should ask for approval or edits before irreversible actions and avoid technical jargon.
+The producer-facing path must use direct English action language. It should ask for approval or edits before irreversible actions and explain technical conditions in everyday terms.
+
+### VI. Show the Living System Before the Metrics
+
+The primary interface must visually identify the tank, plants, duckweed, chickens, and resource flow. Plain-language health meaning appears before technical chemistry names or analytics.
 
 ## Technical Constraints
 
@@ -38,4 +42,3 @@ A feature is done only when:
 3. Relevant tests pass.
 4. README or run instructions are updated when behavior changes.
 5. The delivered behavior can be verified from commands, tests, or runtime output.
-

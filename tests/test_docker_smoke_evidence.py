@@ -12,7 +12,7 @@ class DockerSmokeEvidenceTests(unittest.TestCase):
         evidence = build_evidence(
             [
                 Check("simulator health", True),
-                Check("producer Spanish route", True, "ok"),
+                Check("producer English route", True, "ok"),
             ]
         )
 

@@ -37,14 +37,27 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
   } do
     {:ok, view, html} = live(conn, ~p"/producer")
 
+    assert has_element?(view, "#producer-system-scene")
+    assert html =~ "Producer decisions"
+    assert html =~ "Main fish &amp; prawn tank"
+    assert html =~ "Waste in the water"
+    assert html =~ "Air the animals can breathe"
+    assert html =~ "Hydroponic plants"
+    assert html =~ "Duckweed reserve"
+    assert html =~ "Chicken &amp; egg output"
     assert has_element?(view, "#producer-dect-status")
-    assert html =~ "Ultimo enlace DECT NR+"
-    assert html =~ "Secuencia #100"
+    assert html =~ "Latest DECT NR+ link"
+    assert html =~ "Sequence #100"
     assert html =~ "1051223739"
     assert html =~ "1051239227"
-    assert html =~ "radio real"
-    assert html =~ "telemetria de agua es simulada"
-    assert html =~ ~r/no una\s+lectura de sensores quimicos/
+    assert html =~ "real radio"
+    assert html =~ "Water chemistry remains simulated"
+    assert html =~ ~r/not a\s+chemical\s+sensor reading/
+    assert html =~ "Approve"
+    assert html =~ "Apply half"
+    assert html =~ "Reject"
+    refute html =~ "Productor"
+    refute html =~ "Aprobar"
   end
 
   test "producer approval resumes the interrupted Sagents tool", %{conn: conn} do
@@ -54,7 +67,7 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     html = view |> element("button[phx-click='approve']") |> render_click()
 
     assert_receive {:sagents_resumed, :approve, nil}
-    assert html =~ "Accion aprobada"
+    assert html =~ "Action approved"
     assert ApprovalQueue.snapshot().pending == nil
     assert hd(ApprovalQueue.snapshot().decisions).status == "approved"
   end
@@ -68,7 +81,7 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     assert_receive {:sagents_resumed, :edit, edited}
     assert edited["water_exchange_fraction"] == 0.075
     assert edited["duckweed_harvest_kg"] == 0.25
-    assert html =~ "Accion editada"
+    assert html =~ "Action reduced and approved"
     assert hd(ApprovalQueue.snapshot().decisions).status == "edited"
   end
 
@@ -79,7 +92,7 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     html = view |> element("button[phx-click='reject']") |> render_click()
 
     assert_receive {:sagents_resumed, :reject, nil}
-    assert html =~ "Accion rechazada"
+    assert html =~ "Action rejected"
     assert hd(ApprovalQueue.snapshot().decisions).status == "rejected"
   end
 
@@ -91,7 +104,7 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     html = render_click(view, "approve")
 
     refute_receive {:sagents_resumed, :approve, nil}
-    assert html =~ "procesando"
+    assert html =~ "processing"
     assert html =~ "disabled"
     assert ApprovalQueue.snapshot().pending.status == "processing"
   end

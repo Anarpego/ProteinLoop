@@ -64,13 +64,13 @@
       "ok": true
     },
     {
-      "copy": "Aprobar | Solo mitad | Rechazar",
+      "copy": "Approve | Apply half | Reject",
       "detail": "Producer path asks for approval before irreversible water or harvest action.",
-      "name": "spanish_hitl",
+      "name": "human_approval",
       "ok": true
     },
     {
-      "copy": "No alimente. Active aireacion fuerte, cambie agua verificada y llame al tecnico comunitario.",
+      "copy": "Do not feed. Start maximum aeration, use a verified partial water change, and call the community technician.",
       "detail": "Fallback producer guidance remains deterministic when model/cloud access is absent.",
       "name": "offline_guidance",
       "ok": true

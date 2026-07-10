@@ -14,7 +14,7 @@ defmodule ProteinLoop.Agent.ApprovalQueueTest do
 
     assert request.action["water_exchange_fraction"] == 0.2
     assert request.action["duckweed_harvest_kg"] == 0.4
-    assert request.prompt =~ "Procedo?"
+    assert request.prompt =~ "Continue?"
     assert snapshot.pending.id == request.id
 
     assert {:pending, ^request, _snapshot} =

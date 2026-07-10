@@ -33,14 +33,14 @@ Generated from executable simulator behavior.
 - Detail: Verifier-guided candidate search improves best reward.
 - Search: best growth_biased improved reward by 2.7556 over 5 iterations.
 
-## spanish_hitl
+## human_approval
 
 - Status: PASS.
 - Detail: Producer path asks for approval before irreversible water or harvest action.
-- Copy: Aprobar | Solo mitad | Rechazar
+- Copy: Approve | Apply half | Reject
 
 ## offline_guidance
 
 - Status: PASS.
 - Detail: Fallback producer guidance remains deterministic when model/cloud access is absent.
-- Copy: No alimente. Active aireacion fuerte, cambie agua verificada y llame al tecnico comunitario.
+- Copy: Do not feed. Start maximum aeration, use a verified partial water change, and call the community technician.

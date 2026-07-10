@@ -1,6 +1,8 @@
 defmodule ProteinLoopWeb.OperatorLive do
   use ProteinLoopWeb, :live_view
 
+  import ProteinLoopWeb.SystemScene
+
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Agent.DemoCascade
   alias ProteinLoop.Agent.Harness
@@ -365,7 +367,7 @@ defmodule ProteinLoopWeb.OperatorLive do
 
     queue_result =
       ApprovalQueue.request(action_request.arguments,
-        rationale: "Sagents HumanInTheLoop pauso la accion antes de mutar el simulador",
+        rationale: "Sagents HumanInTheLoop paused the action before simulator mutation",
         requested_by: "sagents-supervisor",
         source: "sagents_hitl",
         allowed_decisions: pending.allowed_decisions,
@@ -581,6 +583,8 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </header>
 
+        <.system_scene id="operator-system-scene" state={@state} />
+
         <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <.metric_card
             label="Day"
@@ -588,15 +592,15 @@ defmodule ProteinLoopWeb.OperatorLive do
             detail={metric(@state, "last_event")}
           />
           <.metric_card
-            label="Ammonia"
+            label="Waste in water"
             value={"#{rounded(metric(@state, "ammonia_mg_l"))} mg/L"}
-            detail="safe target < 1.5"
+            detail="Ammonia · safe below 1.5"
             value_class={risk_class(metric(@state, "ammonia_mg_l"), 1.5, 3.0)}
           />
           <.metric_card
-            label="Dissolved oxygen"
+            label="Breathing oxygen"
             value={"#{rounded(metric(@state, "dissolved_oxygen_mg_l"))} mg/L"}
-            detail="safe target > 5.0"
+            detail="Dissolved oxygen · comfortable above 5.0"
             value_class={
               if metric(@state, "dissolved_oxygen_mg_l") < 3.5, do: "text-error", else: "text-success"
             }
@@ -796,7 +800,7 @@ defmodule ProteinLoopWeb.OperatorLive do
         <section class="rounded-box border border-base-300 bg-base-100 p-4">
           <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 class="text-lg font-semibold">Spanish HITL approval</h2>
+              <h2 class="text-lg font-semibold">Human approval</h2>
               <p class="text-sm text-base-content/60">
                 Risky water and harvest actions wait for producer decision.
               </p>

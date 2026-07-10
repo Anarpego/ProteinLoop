@@ -50,15 +50,15 @@ Narration:
 
 The field link is physical, not simulated. FT board 1051223739 acts as the community gateway and PT board 1051239227 maps to the tank edge. Each board sent locally and received sequence 100 from its peer. The evidence was captured from both UARTs read-only, with no flash or reset. Nordic's stock hello_dect proves the radio link; pressing replay explicitly creates a simulated water-quality alert and does not claim a chemical reading from the boards.
 
-## Scene 6: Spanish HITL
+## Scene 6: Human Approval
 
 Action:
 
-Press `Request producer approval`, open `/producer`, press `Solo mitad` or `Aprobar`.
+Press `Request producer approval`, open `/producer`, then press `Apply half` or `Approve`.
 
 Narration:
 
-Risky water exchange and harvest actions pause for the producer in Spanish. The producer can approve, reject, or edit the tool call. Even after approval, the simulator verifier remains the mutation boundary.
+Risky water exchange and harvest actions pause for the producer. The English decision screen explains the tank in plain language and lets the producer approve, reject, or halve the irreversible parts of the tool call. Even after approval, the simulator verifier remains the mutation boundary.
 
 ## Scene 7: Agentic Intervention Mission
 

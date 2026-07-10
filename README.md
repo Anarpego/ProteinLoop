@@ -14,12 +14,13 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
+| Visual system understanding | A first-time user sees the main tank, plants, duckweed, chickens, and plain-language water health before technical analytics. | [Visual system spec](specs/054-visual-plain-language-system/spec.md) |
 | Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
 | Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
-| Spanish human control | Risky actions pause for approve, edit, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
+| Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
 | Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
 | Reproducible application | Docker profiles start the simulator, operator dashboard, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
@@ -48,7 +49,7 @@ flowchart LR
         Supervisor --> Verifier{"Safety verifier"}
         Verifier -- "unsafe" --> Reject["Reject + RLVR trace"]
         Verifier -- "safe routine" --> Apply["Apply simulator step"]
-        Verifier -- "safe but risky" --> HITL["Spanish producer HITL"]
+        Verifier -- "safe but risky" --> HITL["Producer approval"]
         HITL -- "approve or edit" --> Apply
         HITL -- "reject" --> Reject
         Apply --> Receipt["Intelligence receipt<br/>briefs + plan + state delta"]
@@ -73,7 +74,7 @@ The boundaries are deliberate:
 - **Physical evidence:** Nordic `hello_dect` proves bidirectional radio transport. It is not presented as a chemical sensor reading.
 - **Agentic intervention:** the operator's mission reaches all four specialists and the supervisor; the UI exposes structured recommendations and decisions, not hidden chain-of-thought.
 - **Safety authority:** the Python verifier is the source of truth for admissible actions and RLVR reward.
-- **Human authority:** irreversible or operationally risky actions remain paused until the producer decides in Spanish.
+- **Human authority:** irreversible or operationally risky actions remain paused until the producer approves, reduces, or rejects them.
 
 ## Agentic Development Workflow
 
@@ -112,7 +113,7 @@ flowchart LR
 | Verify | Full tests, Docker smoke, and generated evidence | Claims are backed by commands and artifacts, not implementation intent. |
 | Ship | Git commit plus checksum manifest | Source, evidence, and documentation describe the same behavior. |
 
-Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [README redesign](specs/052-agentic-readme-workflow/spec.md), and the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md).
+Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md), and the [visual plain-language system](specs/054-visual-plain-language-system/spec.md).
 
 ## Run Tests
 
@@ -138,7 +139,7 @@ mix deps.get
 mix test
 ```
 
-Current expected result: `103 tests, 0 failures`.
+Current expected result: `107 tests, 0 failures`.
 
 Validate the GitHub Actions workflow contract before pushing:
 
@@ -383,19 +384,21 @@ The dashboard includes a `Self-healing mesh` panel whose real Sagents/Horde stat
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
-The first panel below the dashboard metrics is `Physical DECT NR+ link`. It shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary agent control. `/producer` shows the compact `Ultimo enlace DECT NR+` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
+The first operational panel is `Your protein loop at a glance`. It visually identifies the main fish and prawn tank, hydroponic plants, duckweed reserve, and chicken output. It introduces ammonia as `Waste in the water` and dissolved oxygen as `Air the animals can breathe`, while retaining technical values and safe thresholds as secondary evidence.
+
+The `Physical DECT NR+ link` panel shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary agent control. `/producer` shows the compact `Latest DECT NR+ link` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 
 Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records into the future sensor contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action. Those sample water-quality values are not attributed to the stock `hello_dect` logs.
 
-The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the producer route resumes that same Sagents call with approve, edit-to-half, or reject.
+The dashboard includes a `Human approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the English producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
 The `Agentic intervention mission` is the primary Gemma workflow. The operator selects a concrete objective, `Run verified intervention` sends it to four subsystem agents concurrently, and a fifth parent supervisor resolves their resource requests into one bounded action. The `Intelligence receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
 
 The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 
-The producer route includes a `Respaldo offline` panel. It applies deterministic Spanish emergency rules to the current readings, so a producer still gets clear local guidance when model/cloud services are unavailable.
+The producer route includes an `Offline fallback` panel. It applies deterministic English emergency rules to the current readings, so a producer still gets clear local guidance when model/cloud services are unavailable.
 
-The producer route also includes `Mensaje WhatsApp/SMS`: a short provider-free Spanish text packet with tank status, proposed action, offline guidance, and `APROBAR` / `MITAD` / `RECHAZAR` reply options for low-bandwidth handoff.
+The producer route also includes `WhatsApp/SMS message`: a short provider-free English text packet with tank status, proposed action, offline guidance, and `APPROVE` / `HALF` / `REJECT` reply options for low-bandwidth handoff.
 
 Harness runs append trace data to:
 
@@ -501,7 +504,7 @@ DEMO_URL=https://your-demo-url make live-demo-check
 That check verifies the two judge-facing routes:
 
 - Operator dashboard: `/`
-- Spanish producer path: `/producer`
+- English producer decision path: `/producer`
 
 For a public host, use:
 
@@ -555,7 +558,7 @@ Submission source artifacts live in `submission/`:
 - `cover.svg`: cover image source.
 - `cover.png`: rendered upload-ready cover image.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
-- `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
+- `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and human-approval copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `sagents-evidence.json` / `sagents-evidence.md`: live local Gemma evidence for real Sagents agents, custom safety mode, `until_tool_success`, and non-mutating HITL rejection.
 - `local-gemma-evidence.json`: live loopback proof that the local OpenAI-compatible endpoint advertises Gemma 4 E2B and returns a structured ProteinLoop action.
@@ -669,12 +672,12 @@ make readiness-report
 ├── specs/009-rlvr-reward-panel/     # Lightweight RLVR reward verifier
 ├── specs/010-subsystem-agent-topology/ # Deterministic subsystem agents
 ├── specs/011-self-healing-mesh/     # Local self-healing mesh demo
-├── specs/012-spanish-hitl-queue/    # Connected Spanish HITL approval queue
+├── specs/012-spanish-hitl-queue/    # Original connected HITL queue specification
 ├── specs/013-sagents-loop-contract/ # Superseded deterministic loop fallback
 ├── specs/014-amd-gemma-deployment/  # AMD Gemma/vLLM deployment profile
 ├── specs/015-submission-packet/     # Hackathon submission packet
 ├── specs/016-anomaly-forecast/      # Near-term ammonia/oxygen forecast
-├── specs/017-offline-emergency-fallback/ # Spanish offline emergency guidance
+├── specs/017-offline-emergency-fallback/ # Original offline emergency guidance
 ├── specs/018-rendered-slide-deck/   # Rendered PowerPoint deck artifact
 ├── specs/019-docker-smoke-verification/ # Runnable Docker smoke check
 ├── specs/020-demo-evidence-packet/  # Generated demo evidence packet
@@ -688,7 +691,7 @@ make readiness-report
 ├── specs/029-verified-demo-url-setter/ # Verified lablab demo URL setter
 ├── specs/030-lablab-form-export/ # Structured lablab form export
 ├── specs/031-final-readiness-report/ # Final readiness handoff report
-├── specs/032-producer-message-packet/ # Spanish SMS/WhatsApp handoff packet
+├── specs/032-producer-message-packet/ # SMS/WhatsApp handoff packet
 ├── specs/033-rlvr-policy-improvement/ # RLVR policy search improvement
 ├── specs/034-demo-video-rlvr-search/ # Demo video policy-search scene
 ├── specs/035-demo-rehearsal-packet/ # Executable demo rehearsal packet

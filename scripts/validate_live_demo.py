@@ -26,7 +26,9 @@ OPERATOR_NEEDLES = [
     "Agentic intervention mission",
     "Sagents 0.9.0",
     "until_tool_success",
-    "Spanish HITL approval",
+    "Human approval",
+    "Your protein loop at a glance",
+    "Waste in the water",
     "Self-healing mesh",
     "Physical DECT NR+ link",
     "Sequence #100",
@@ -35,15 +37,16 @@ OPERATOR_NEEDLES = [
 ]
 
 PRODUCER_NEEDLES = [
-    "Productor",
-    "Aprobar",
-    "Solo mitad",
-    "Rechazar",
-    "Respaldo offline",
-    "Mensaje WhatsApp/SMS",
-    "Ultimo enlace DECT NR+",
-    "Secuencia #100",
-    "radio real",
+    "Producer decisions",
+    "Approve",
+    "Apply half",
+    "Reject",
+    "Offline fallback",
+    "WhatsApp/SMS message",
+    "Latest DECT NR+ link",
+    "Sequence #100",
+    "real radio",
+    "Waste in the water",
 ]
 
 
@@ -118,7 +121,7 @@ def check_web(base_url: str, timeout: float) -> list[Check]:
 
     return [
         marker_check("operator dashboard route", operator, OPERATOR_NEEDLES),
-        marker_check("producer Spanish route", producer, PRODUCER_NEEDLES),
+        marker_check("producer English route", producer, PRODUCER_NEEDLES),
     ]
 
 

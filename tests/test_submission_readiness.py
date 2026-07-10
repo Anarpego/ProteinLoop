@@ -192,12 +192,12 @@ https://demo.example.com
         result = reachable_check(
             "producer",
             "https://demo.example.com/producer",
-            required_text="Productor",
+            required_text="Producer decisions",
             request_fun=lambda _url: "<h1>Producer</h1>",
         )
 
         self.assertFalse(result.ok)
-        self.assertIn("Productor", result.detail)
+        self.assertIn("Producer decisions", result.detail)
 
     def test_gemma_evidence_requires_gemma4_and_passing_checks(self):
         with tempfile.TemporaryDirectory() as temp_dir:

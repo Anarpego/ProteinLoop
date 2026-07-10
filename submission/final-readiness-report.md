@@ -1,52 +1,46 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T16:37:54+00:00
-Commit: `9913a1e`
-Working tree (source): `M Makefile
+Generated: 2026-07-10T17:41:22+00:00
+Commit: `cfcf391`
+Working tree (source): `M .specify/memory/constitution.md
  M README.md
+ M app/lib/proteinloop/agent/approval_queue.ex
+ M app/lib/proteinloop/offline/emergency_rules.ex
+ M app/lib/proteinloop/producer_message.ex
+ M app/lib/proteinloop_web/components/layouts/root.html.heex
  M app/lib/proteinloop_web/live/operator_live.ex
  M app/lib/proteinloop_web/live/producer_live.ex
+ M app/test/proteinloop/agent/approval_queue_test.exs
+ M app/test/proteinloop/offline/emergency_rules_test.exs
+ M app/test/proteinloop/producer_message_test.exs
+ M app/test/proteinloop_web/controllers/page_controller_test.exs
  M app/test/proteinloop_web/live/operator_live_test.exs
  M app/test/proteinloop_web/live/producer_live_test.exs
- M docker-compose.horde.yml
- M docker-compose.public.yml
- M docker-compose.yml
- M scripts/build_submission_bundle.py
  M scripts/docker_smoke_test.py
+ M scripts/generate_demo_rehearsal.py
  M scripts/generate_demo_video.py
- M scripts/generate_readiness_report.py
  M scripts/generate_submission_deck.mjs
- M scripts/local_gemma.py
- M scripts/validate_gemma_endpoint.py
  M scripts/validate_live_demo.py
  M scripts/validate_submission_artifacts.py
  M scripts/validate_submission_readiness.py
- M specs/015-submission-packet/spec.md
- M specs/024-gemma-endpoint-verification/spec.md
- M specs/025-generated-demo-video/spec.md
- M specs/045-final-submission-finalizer/spec.md
- M specs/046-local-gemma-inference/tasks.md
  M submission/artifact-build-manifest.json
+ M submission/demo-rehearsal.json
+ M submission/demo-rehearsal.md
  M submission/lablab-form.json
  M submission/lablab-submission.md
  M submission/proteinloop-demo-video.avi
  M submission/proteinloop-hackathon-deck.pptx
- M submission/sagents-evidence.json
  M submission/slides.md
  M submission/video-script.md
- M tests/test_gemma_endpoint_validator.py
+ M tests/test_demo_rehearsal.py
+ M tests/test_docker_smoke_evidence.py
  M tests/test_live_demo_validator.py
- M tests/test_local_gemma.py
  M tests/test_readiness_report.py
- M tests/test_submission_bundle.py
  M tests/test_submission_readiness.py
-?? app/lib/proteinloop/nrf9151_evidence.ex
-?? app/test/proteinloop/nrf9151_evidence_test.exs
-?? app/test/support/test_nrf9151_evidence.ex
-?? specs/050-local-gemma-submission/
-?? specs/051-dect-operator-producer/
-?? submission/local-gemma-evidence.json
-?? tests/test_submission_artifact_report.py`
+?? app/lib/proteinloop_web/components/system_scene.ex
+?? app/priv/static/images/protein-loop-system.svg
+?? app/test/proteinloop_web/components/
+?? specs/054-visual-plain-language-system/`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -64,13 +58,15 @@ Gemma evidence mode: `local`
 | Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
 | Public demo environment | `make public-env-check` | 2 | FAIL |
 | Final submission readiness | `make submission-ready-check` | 2 | FAIL |
-| GitHub CLI authentication | `gh auth status` | 0 | PASS |
+| GitHub CLI authentication | `gh auth status` | 1 | FAIL |
 
 ## Remaining Blockers
 
 - Public demo environment: [FAIL] PHX_HOST - set PHX_HOST to the public hostname
 - Public demo environment: [FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
 - Final submission readiness: [FAIL] application URL - missing or TODO
+- Final submission readiness: [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+- GitHub CLI authentication: - The token in default is invalid.
 
 ## Next Commands
 
@@ -93,7 +89,7 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 python3 -m unittest discover -s tests
 ...........................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 155 tests in 0.124s
+Ran 155 tests in 0.129s
 
 OK
 ```
@@ -110,7 +106,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T16:37:54.617811+00:00
+checked_at: 2026-07-10T17:40:59.254595+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -119,7 +115,7 @@ checked_at: 2026-07-10T16:37:54.617811+00:00
 [ok] ammonia spike endpoint
 [ok] safety recovery endpoint - reward=135.2741
 [ok] operator dashboard route
-[ok] producer Spanish route
+[ok] producer English route
 docker smoke OK
 ```
 
@@ -219,7 +215,7 @@ python3 scripts/validate_public_env.py
 [ok] PUBLIC_PORT - default 80
 [ok] SIMULATOR_URL - http://simulator:8000
 2 public environment check(s) failed
-make[2]: *** [public-env-check] Error 1
+make[1]: *** [public-env-check] Error 1
 ```
 
 ### Final submission readiness
@@ -232,22 +228,22 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] Local Gemma evidence - google/gemma-4-E2B-it via 127.0.0.1
 [ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
 [FAIL] application URL - missing or TODO
-[ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
+[FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - 9913a1e6fd0340f94d81d5e8edce440df31988fd
+[ok] local git commit - cfcf3911382b63a8cf801e74a40b1661da7868d2
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
-1 submission readiness check(s) failed
-make[2]: *** [submission-ready-check] Error 1
+2 submission readiness check(s) failed
+make[1]: *** [submission-ready-check] Error 1
 ```
 
 ### GitHub CLI authentication
 
 ```text
 github.com
-  ✓ Logged in to github.com account Anarpego (keyring)
+  X Failed to log in to github.com account Anarpego (default)
   - Active account: true
-  - Git operations protocol: ssh
-  - Token: gho_************************************
-  - Token scopes: 'gist', 'read:org', 'repo'
+  - The token in default is invalid.
+  - To re-authenticate, run: gh auth login -h github.com
+  - To forget about this account, run: gh auth logout -h github.com -u Anarpego
 ```

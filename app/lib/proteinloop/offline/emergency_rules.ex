@@ -1,6 +1,6 @@
 defmodule ProteinLoop.Offline.EmergencyRules do
   @moduledoc """
-  Deterministic Spanish fallback guidance for degraded producer operation.
+  Deterministic English fallback guidance for degraded producer operation.
 
   These rules are intentionally simple enough to run without cloud model access.
   """
@@ -14,28 +14,28 @@ defmodule ProteinLoop.Offline.EmergencyRules do
       collapsed? or ammonia >= 3.0 or oxygen < 3.5 ->
         %{
           severity: :critical,
-          label: "emergencia",
+          label: "emergency",
           message:
-            "No alimente. Active aireacion fuerte, cambie agua verificada y llame al tecnico comunitario.",
-          action: "detener alimento"
+            "Do not feed. Start maximum aeration, use a verified partial water change, and call the community technician.",
+          action: "stop feeding"
         }
 
       ammonia >= 1.5 or oxygen < 5.0 ->
         %{
           severity: :warning,
-          label: "atencion",
+          label: "attention",
           message:
-            "Reduzca alimento, suba aireacion y revise olor/color del agua en las proximas horas.",
-          action: "vigilar de cerca"
+            "Reduce feed, increase aeration, and check the water smell and color during the next few hours.",
+          action: "watch closely"
         }
 
       true ->
         %{
           severity: :stable,
-          label: "estable",
+          label: "stable",
           message:
-            "Rutina normal. Mantenga observacion diaria y no aumente alimento sin nueva lectura.",
-          action: "seguir rutina"
+            "Normal routine. Keep the daily check and do not increase feed without a new reading.",
+          action: "follow routine"
         }
     end
   end

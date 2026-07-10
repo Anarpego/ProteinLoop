@@ -1,6 +1,8 @@
 defmodule ProteinLoopWeb.ProducerLive do
   use ProteinLoopWeb, :live_view
 
+  import ProteinLoopWeb.SystemScene
+
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Offline.EmergencyRules
   alias ProteinLoop.ProducerMessage
@@ -20,7 +22,7 @@ defmodule ProteinLoopWeb.ProducerLive do
 
     socket =
       socket
-      |> assign(:page_title, "Productor")
+      |> assign(:page_title, "Producer")
       |> assign(:snapshot, snapshot)
       |> assign(:state, snapshot.state)
       |> assign(:nrf9151_evidence, nrf9151_evidence().snapshot())
@@ -53,7 +55,7 @@ defmodule ProteinLoopWeb.ProducerLive do
           apply_routine_action(socket)
 
         pending ->
-          apply_pending_action(socket, pending, pending.action, :approved, "Accion aprobada")
+          apply_pending_action(socket, pending, pending.action, :approved, "Action approved")
       end
 
     {:noreply, socket}
@@ -63,7 +65,7 @@ defmodule ProteinLoopWeb.ProducerLive do
     socket =
       case socket.assigns.approval_queue.pending do
         nil ->
-          assign(socket, :decision, "Accion rechazada")
+          assign(socket, :decision, "Action rejected")
 
         pending ->
           reject_pending_action(socket, pending)
@@ -81,11 +83,11 @@ defmodule ProteinLoopWeb.ProducerLive do
             |> Map.update!("feed_kg", &(&1 / 2))
             |> Map.put("note", "producer_half_feed")
 
-          apply_step(socket, edited, "Accion editada", "producer_edit")
+          apply_step(socket, edited, "Action reduced and approved", "producer_edit")
 
         pending ->
           edited = ApprovalQueue.half_action(pending.action)
-          apply_pending_action(socket, pending, edited, :edited, "Accion editada")
+          apply_pending_action(socket, pending, edited, :edited, "Action reduced and approved")
       end
 
     {:noreply, socket}
@@ -104,12 +106,12 @@ defmodule ProteinLoopWeb.ProducerLive do
 
         socket
         |> assign_snapshot(snapshot)
-        |> assign(:decision, "Accion aprobada")
+        |> assign(:decision, "Action approved")
 
       {:error, reason} ->
         socket
-        |> put_flash(:error, "No se pudo aplicar: #{inspect(reason)}")
-        |> assign(:decision, "Pendiente")
+        |> put_flash(:error, "Could not apply the action: #{inspect(reason)}")
+        |> assign(:decision, "Pending")
     end
   end
 
@@ -146,7 +148,7 @@ defmodule ProteinLoopWeb.ProducerLive do
           end
 
         {:error, reason} ->
-          release_pending(socket, claimed.id, "No se pudo aplicar", reason)
+          release_pending(socket, claimed.id, "Could not apply the action", reason)
       end
     else
       {:error, socket} -> socket
@@ -191,14 +193,14 @@ defmodule ProteinLoopWeb.ProducerLive do
               socket
               |> assign(:approval_queue, approval_queue)
               |> assign(:action, producer_action(approval_queue, socket.assigns.state))
-              |> assign(:decision, "Accion rechazada")
+              |> assign(:decision, "Action rejected")
 
             {:error, reason, approval_queue} ->
               resolution_error(socket, approval_queue, reason)
           end
 
         {:error, reason} ->
-          release_pending(socket, claimed.id, "No se pudo rechazar", reason)
+          release_pending(socket, claimed.id, "Could not reject the action", reason)
       end
     else
       {:error, socket} -> socket
@@ -225,22 +227,22 @@ defmodule ProteinLoopWeb.ProducerLive do
     socket
     |> assign(:approval_queue, approval_queue)
     |> put_flash(:error, "#{message}: #{inspect(reason)}")
-    |> assign(:decision, "Pendiente")
+    |> assign(:decision, "Pending")
   end
 
   defp resolution_error(socket, approval_queue, reason) do
     message =
       case reason do
-        :already_processing -> "Esta accion ya se esta procesando"
-        :not_pending -> "Esta accion ya fue resuelta"
-        :not_processing -> "La accion no esta lista para resolverse"
-        _other -> "No se pudo resolver: #{inspect(reason)}"
+        :already_processing -> "This action is already processing"
+        :not_pending -> "This action was already resolved"
+        :not_processing -> "This action is not ready to be resolved"
+        _other -> "Could not resolve the action: #{inspect(reason)}"
       end
 
     socket
     |> assign(:approval_queue, approval_queue)
     |> put_flash(:error, message)
-    |> assign(:decision, "Pendiente")
+    |> assign(:decision, "Pending")
   end
 
   defp apply_step(socket, action, message, source) do
@@ -260,8 +262,8 @@ defmodule ProteinLoopWeb.ProducerLive do
 
       {:error, reason} ->
         socket
-        |> put_flash(:error, "No se pudo aplicar: #{inspect(reason)}")
-        |> assign(:decision, "Pendiente")
+        |> put_flash(:error, "Could not apply the action: #{inspect(reason)}")
+        |> assign(:decision, "Pending")
     end
   end
 
@@ -298,23 +300,19 @@ defmodule ProteinLoopWeb.ProducerLive do
   defp producer_action(%{pending: %{action: action}}, _state), do: action
   defp producer_action(_approval_queue, state), do: SimulatorClient.proposed_action(state)
 
-  defp metric(state, key), do: Map.get(state, key, 0)
-  defp rounded(value) when is_float(value), do: Float.round(value, 2)
-  defp rounded(value), do: value
-
   defp instruction(%{"note" => "critical_ammonia_recovery"}) do
-    "El tanque necesita aireacion fuerte y cambio parcial de agua."
+    "The main tank needs maximum aeration and a verified partial water change."
   end
 
   defp instruction(%{"note" => "ammonia_stabilization"}) do
-    "El tanque necesita menos alimento y mas aireacion."
+    "The main tank needs less feed and more aeration."
   end
 
   defp instruction(%{"note" => "oxygen_recovery"}) do
-    "El tanque necesita mas aireacion antes de alimentar normal."
+    "The main tank needs more aeration before normal feeding resumes."
   end
 
-  defp instruction(_action), do: "El sistema esta listo para rutina normal."
+  defp instruction(_action), do: "The system is ready for the normal routine."
 
   defp pending_prompt(%{pending: %{prompt: prompt}}), do: prompt
   defp pending_prompt(_approval_queue), do: nil
@@ -326,27 +324,29 @@ defmodule ProteinLoopWeb.ProducerLive do
   def render(assigns) do
     ~H"""
     <main class="min-h-screen bg-base-200 text-base-content">
-      <section class="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-4 px-4 py-6">
+      <section class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <header class="flex items-center justify-between gap-3 border-b border-base-300 pb-4">
           <div>
             <p class="text-sm font-semibold uppercase tracking-wide text-secondary">ProteinLoop</p>
-            <h1 class="text-2xl font-semibold">Productor</h1>
+            <h1 class="text-2xl font-semibold">Producer decisions</h1>
           </div>
           <.link navigate={~p"/"} class="btn btn-sm btn-outline">
-            <.icon name="hero-chart-bar-square" /> Panel
+            <.icon name="hero-arrow-left" /> Operator view
           </.link>
         </header>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-5">
-          <div class="mb-4 flex items-start justify-between gap-4">
+        <section class="rounded-box border border-base-300 bg-base-100 px-4 py-4 sm:px-5">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p class="text-sm text-base-content/60">Tanque principal</p>
-              <p class="text-2xl font-semibold">
-                {pending_prompt(@approval_queue) || instruction(@action)}
+              <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
+                Current decision
               </p>
+              <h2 class="mt-1 max-w-3xl text-xl font-semibold">
+                {pending_prompt(@approval_queue) || instruction(@action)}
+              </h2>
             </div>
             <span class={[
-              "badge",
+              "badge whitespace-nowrap",
               cond do
                 processing?(@approval_queue) -> "badge-info"
                 @approval_queue.pending -> "badge-warning"
@@ -355,129 +355,154 @@ defmodule ProteinLoopWeb.ProducerLive do
               end
             ]}>
               {cond do
-                processing?(@approval_queue) -> "procesando"
-                @approval_queue.pending -> "aprobacion pendiente"
-                @snapshot.connected? -> "en linea"
-                true -> "modo local"
+                processing?(@approval_queue) -> "processing"
+                @approval_queue.pending -> "approval pending"
+                @snapshot.connected? -> "online"
+                true -> "local fallback"
               end}
             </span>
           </div>
+        </section>
 
-          <dl class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded-box bg-base-200 p-3">
-              <dt class="text-sm text-base-content/60">Amonio</dt>
-              <dd class="text-xl font-semibold">{rounded(metric(@state, "ammonia_mg_l"))} mg/L</dd>
-            </div>
-            <div class="rounded-box bg-base-200 p-3">
-              <dt class="text-sm text-base-content/60">Oxigeno</dt>
-              <dd class="text-xl font-semibold">
-                {rounded(metric(@state, "dissolved_oxygen_mg_l"))} mg/L
-              </dd>
-            </div>
-            <div class="rounded-box bg-base-200 p-3">
-              <dt class="text-sm text-base-content/60">Dia</dt>
-              <dd class="text-xl font-semibold">{metric(@state, "day")}</dd>
-            </div>
-          </dl>
+        <.system_scene id="producer-system-scene" state={@state} />
 
-          <div id="producer-dect-status" class="mt-5 border-y border-base-300 py-4">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p class="font-semibold">Ultimo enlace DECT NR+</p>
-                <p :if={@nrf9151_evidence.available?} class="mt-1 text-sm text-base-content/60">
-                  Secuencia #{@nrf9151_evidence.sequence} recibida en ambos sentidos
-                </p>
-                <p :if={!@nrf9151_evidence.available?} class="mt-1 text-sm text-error">
-                  Captura no disponible
-                </p>
+        <section class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+          <div class="rounded-box border border-base-300 bg-base-100 p-4 sm:p-5">
+            <div class="flex items-center gap-2">
+              <.icon name="hero-clipboard-document-check" class="size-5 text-primary" />
+              <h2 class="font-semibold">Proposed action</h2>
+            </div>
+            <dl class="mt-4 grid grid-cols-2 border-y border-base-300 sm:grid-cols-4">
+              <div class="border-base-300 p-3 sm:border-r">
+                <dt class="text-xs text-base-content/60">Feed</dt>
+                <dd class="mt-1 font-mono text-sm font-semibold">{@action["feed_kg"]} kg</dd>
               </div>
-              <span class={[
-                "badge",
-                if(@nrf9151_evidence.available?, do: "badge-success", else: "badge-error")
-              ]}>
-                {if @nrf9151_evidence.available?, do: "radio real", else: "sin evidencia"}
-              </span>
-            </div>
-
-            <dl :if={@nrf9151_evidence.available?} class="mt-3 grid gap-3 text-sm sm:grid-cols-2">
-              <div>
-                <dt class="text-base-content/60">FT · puerta de enlace</dt>
-                <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
+              <div class="border-l border-base-300 p-3 sm:border-l-0 sm:border-r">
+                <dt class="text-xs text-base-content/60">Extra air</dt>
+                <dd class="mt-1 font-mono text-sm font-semibold">{@action["aeration_hours"]} h</dd>
               </div>
-              <div>
-                <dt class="text-base-content/60">PT · nodo del tanque</dt>
-                <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
+              <div class="border-t border-base-300 p-3 sm:border-r sm:border-t-0">
+                <dt class="text-xs text-base-content/60">Replace water</dt>
+                <dd class="mt-1 font-mono text-sm font-semibold">
+                  {@action["water_exchange_fraction"] * 100}%
+                </dd>
+              </div>
+              <div class="border-l border-t border-base-300 p-3 sm:border-l-0 sm:border-t-0">
+                <dt class="text-xs text-base-content/60">Harvest duckweed</dt>
+                <dd class="mt-1 font-mono text-sm font-semibold">
+                  {@action["duckweed_harvest_kg"]} kg
+                </dd>
               </div>
             </dl>
-
-            <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
-              La telemetria de agua es simulada: hello_dect demuestra el transporte de radio, no una
-              lectura de sensores quimicos.
+            <p class="mt-3 text-sm text-base-content/65">
+              Approve the full action, reduce the irreversible water and harvest amounts by half, or
+              reject it without changing the simulator.
             </p>
           </div>
 
-          <div class="mt-5 rounded-box bg-base-200 p-4">
-            <p class="font-semibold">Accion propuesta</p>
-            <p class="mt-1 text-sm">
-              Alimento {@action["feed_kg"]} kg · Aireacion {@action["aeration_hours"]} h · Agua {@action[
-                "water_exchange_fraction"
-              ] * 100}% · Cosecha {@action["duckweed_harvest_kg"]} kg
-            </p>
-          </div>
-
-          <div class="mt-5 rounded-box border border-base-300 bg-base-200 p-4">
+          <div class="rounded-box border border-base-300 bg-base-100 p-4 sm:p-5">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <p class="font-semibold">Respaldo offline</p>
-                <p class="mt-1 text-sm">{@offline_guidance.message}</p>
+                <div class="flex items-center gap-2">
+                  <.icon name="hero-shield-check" class="size-5 text-secondary" />
+                  <h2 class="font-semibold">Offline fallback</h2>
+                </div>
+                <p class="mt-2 text-sm">{@offline_guidance.message}</p>
               </div>
               <span class={["badge", offline_badge(@offline_guidance.severity)]}>
                 {@offline_guidance.label}
               </span>
             </div>
-            <p class="mt-2 text-sm text-base-content/60">
-              Accion local: {@offline_guidance.action}
+            <p class="mt-3 border-t border-base-300 pt-3 text-sm text-base-content/65">
+              Local action: <strong>{@offline_guidance.action}</strong>
             </p>
           </div>
+        </section>
 
-          <div class="mt-5 rounded-box border border-base-300 bg-base-200 p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <p class="font-semibold">Mensaje WhatsApp/SMS</p>
-                <p class="mt-1 text-sm text-base-content/60">
-                  Texto corto para enviar cuando el productor no usa el panel.
-                </p>
+        <section
+          id="producer-dect-status"
+          class="rounded-box border border-base-300 bg-base-100 p-4 sm:p-5"
+        >
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <.icon name="hero-signal" class="size-5 text-info" />
+                <h2 class="font-semibold">Latest DECT NR+ link</h2>
               </div>
-              <span class={[
-                "badge",
-                if(@producer_message.approval_required, do: "badge-warning", else: "badge-success")
-              ]}>
-                {if @producer_message.approval_required, do: "requiere aprobacion", else: "listo"}
-              </span>
+              <p :if={@nrf9151_evidence.available?} class="mt-1 text-sm text-base-content/60">
+                Sequence #{@nrf9151_evidence.sequence} received in both directions
+              </p>
+              <p :if={!@nrf9151_evidence.available?} class="mt-1 text-sm text-error">
+                Capture unavailable
+              </p>
             </div>
-            <pre class="mt-3 whitespace-pre-wrap rounded-box bg-base-100 p-3 text-sm leading-relaxed"><%= @producer_message.text %></pre>
+            <span class={[
+              "badge",
+              if(@nrf9151_evidence.available?, do: "badge-success", else: "badge-error")
+            ]}>
+              {if @nrf9151_evidence.available?, do: "real radio", else: "no evidence"}
+            </span>
           </div>
 
-          <div class="mt-5 grid gap-2 sm:grid-cols-3">
-            <button
-              class="btn btn-success"
-              phx-click="approve"
-              disabled={processing?(@approval_queue)}
-            >
-              <.icon name="hero-check" /> Aprobar
-            </button>
-            <button class="btn btn-warning" phx-click="half" disabled={processing?(@approval_queue)}>
-              <.icon name="hero-adjustments-horizontal" /> Solo mitad
-            </button>
-            <button class="btn btn-outline" phx-click="reject" disabled={processing?(@approval_queue)}>
-              <.icon name="hero-x-mark" /> Rechazar
-            </button>
-          </div>
+          <dl :if={@nrf9151_evidence.available?} class="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <dt class="text-base-content/60">FT gateway</dt>
+              <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
+            </div>
+            <div>
+              <dt class="text-base-content/60">PT tank node</dt>
+              <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
+            </div>
+          </dl>
 
-          <p :if={@decision} class="mt-4 rounded-box bg-info/10 p-3 text-sm text-info">
-            {@decision}
+          <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
+            Water chemistry remains simulated. Nordic hello_dect proves the radio transport, not a
+            chemical sensor reading.
           </p>
         </section>
+
+        <section class="rounded-box border border-base-300 bg-base-100 p-4 sm:p-5">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <.icon name="hero-chat-bubble-left-right" class="size-5 text-secondary" />
+                  <h2 class="font-semibold">WhatsApp/SMS message</h2>
+                </div>
+                <p class="mt-1 text-sm text-base-content/60">
+                  Short handoff text for a producer without access to this screen.
+                </p>
+              </div>
+            </div>
+            <span class={[
+              "badge",
+              if(@producer_message.approval_required, do: "badge-warning", else: "badge-success")
+            ]}>
+              {if @producer_message.approval_required, do: "approval required", else: "ready"}
+            </span>
+          </div>
+          <pre class="mt-3 whitespace-pre-wrap border-t border-base-300 pt-3 text-sm leading-relaxed"><%= @producer_message.text %></pre>
+        </section>
+
+        <div class="sticky bottom-0 grid gap-2 border-t border-base-300 bg-base-200/95 py-3 backdrop-blur sm:grid-cols-3">
+          <button
+            class="btn btn-success"
+            phx-click="approve"
+            disabled={processing?(@approval_queue)}
+          >
+            <.icon name="hero-check" /> Approve
+          </button>
+          <button class="btn btn-warning" phx-click="half" disabled={processing?(@approval_queue)}>
+            <.icon name="hero-adjustments-horizontal" /> Apply half
+          </button>
+          <button class="btn btn-outline" phx-click="reject" disabled={processing?(@approval_queue)}>
+            <.icon name="hero-x-mark" /> Reject
+          </button>
+        </div>
+
+        <p :if={@decision} class="rounded-box bg-info/10 p-3 text-sm font-semibold text-info">
+          {@decision}
+        </p>
       </section>
     </main>
     """

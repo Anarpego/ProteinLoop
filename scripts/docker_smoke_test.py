@@ -125,7 +125,9 @@ def check_web() -> list[Check]:
         "Agentic intervention mission",
         "Sagents 0.9.0",
         "until_tool_success",
-        "Spanish HITL approval",
+        "Human approval",
+        "Your protein loop at a glance",
+        "Waste in the water",
         "Self-healing mesh",
         "Physical DECT NR+ link",
         "Sequence #100",
@@ -133,20 +135,21 @@ def check_web() -> list[Check]:
         "1051239227",
     ]
     producer_needles = [
-        "Productor",
-        "Aprobar",
-        "Solo mitad",
-        "Rechazar",
-        "Respaldo offline",
-        "Mensaje WhatsApp/SMS",
-        "Ultimo enlace DECT NR+",
-        "Secuencia #100",
-        "radio real",
+        "Producer decisions",
+        "Approve",
+        "Apply half",
+        "Reject",
+        "Offline fallback",
+        "WhatsApp/SMS message",
+        "Latest DECT NR+ link",
+        "Sequence #100",
+        "real radio",
+        "Waste in the water",
     ]
 
     checks = [
         Check("operator dashboard route", all(needle in operator for needle in operator_needles)),
-        Check("producer Spanish route", all(needle in producer for needle in producer_needles)),
+        Check("producer English route", all(needle in producer for needle in producer_needles)),
     ]
 
     return checks

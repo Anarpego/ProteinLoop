@@ -50,6 +50,22 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     :ok
   end
 
+  test "shows the living system and explains tank chemistry in plain language", %{conn: conn} do
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert has_element?(view, "#operator-system-scene")
+    assert html =~ "Your protein loop at a glance"
+    assert html =~ "Main fish &amp; prawn tank"
+    assert html =~ "Waste in the water"
+    assert html =~ "Ammonia"
+    assert html =~ "Air the animals can breathe"
+    assert html =~ "Dissolved oxygen"
+    assert html =~ "Hydroponic plants"
+    assert html =~ "Duckweed reserve"
+    assert html =~ "Chicken &amp; egg output"
+    assert has_element?(view, "img[alt*='fish and prawn tank']")
+  end
+
   test "shows and replays the latest physical DECT capture as simulated telemetry", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 

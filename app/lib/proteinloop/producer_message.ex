@@ -1,6 +1,6 @@
 defmodule ProteinLoop.ProducerMessage do
   @moduledoc """
-  Deterministic Spanish message packet for SMS or WhatsApp handoff.
+  Deterministic English message packet for SMS or WhatsApp handoff.
 
   This is intentionally provider-free. The app can display or copy the text
   without depending on a messaging vendor during the hackathon demo.
@@ -16,7 +16,7 @@ defmodule ProteinLoop.ProducerMessage do
 
     %{
       channel: "sms_whatsapp",
-      language: "es",
+      language: "en",
       approval_required: not is_nil(pending),
       severity: guidance.severity,
       label: guidance.label,
@@ -27,45 +27,45 @@ defmodule ProteinLoop.ProducerMessage do
   def render_text(state, action, guidance, pending \\ nil)
       when is_map(state) and is_map(action) and is_map(guidance) do
     [
-      "ProteinLoop productor",
+      "ProteinLoop producer",
       headline(pending, action),
       status_line(state),
       action_line(action),
-      "Respaldo offline: #{guidance.message}",
-      "Responda: APROBAR, MITAD o RECHAZAR."
+      "Offline fallback: #{guidance.message}",
+      "Reply: APPROVE, HALF, or REJECT."
     ]
     |> Enum.join("\n")
   end
 
   defp headline(nil, action), do: instruction(action)
-  defp headline(%{prompt: prompt}, _action), do: "Aprobacion requerida: #{prompt}"
-  defp headline(%{"prompt" => prompt}, _action), do: "Aprobacion requerida: #{prompt}"
-  defp headline(_pending, action), do: "Aprobacion requerida: #{instruction(action)}"
+  defp headline(%{prompt: prompt}, _action), do: "Approval required: #{prompt}"
+  defp headline(%{"prompt" => prompt}, _action), do: "Approval required: #{prompt}"
+  defp headline(_pending, action), do: "Approval required: #{instruction(action)}"
 
   defp instruction(%{"note" => "critical_ammonia_recovery"}) do
-    "El tanque necesita aireacion fuerte y cambio parcial de agua."
+    "The main tank needs maximum aeration and a verified partial water change."
   end
 
   defp instruction(%{"note" => "ammonia_stabilization"}) do
-    "El tanque necesita menos alimento y mas aireacion."
+    "The main tank needs less feed and more aeration."
   end
 
   defp instruction(%{"note" => "oxygen_recovery"}) do
-    "El tanque necesita mas aireacion antes de alimentar normal."
+    "The main tank needs more aeration before normal feeding resumes."
   end
 
   defp instruction(%{"note" => "producer_irreversible_harvest"}) do
-    "El agente propone una accion irreversible de cosecha y cambio de agua."
+    "The agent proposes an irreversible harvest and water-change action."
   end
 
-  defp instruction(_action), do: "El sistema esta listo para rutina normal."
+  defp instruction(_action), do: "The system is ready for the normal routine."
 
   defp status_line(state) do
     ammonia = rounded(Map.get(state, "ammonia_mg_l", 0))
     oxygen = rounded(Map.get(state, "dissolved_oxygen_mg_l", 0))
     day = Map.get(state, "day", 0)
 
-    "Estado: dia #{day}, amonio #{ammonia} mg/L, oxigeno #{oxygen} mg/L."
+    "Status: day #{day}, waste ammonia #{ammonia} mg/L, breathing oxygen #{oxygen} mg/L."
   end
 
   defp action_line(action) do
@@ -74,7 +74,7 @@ defmodule ProteinLoop.ProducerMessage do
     exchange = rounded(number(Map.get(action, "water_exchange_fraction", 0)) * 100)
     harvest = rounded(Map.get(action, "duckweed_harvest_kg", 0))
 
-    "Accion: alimento #{feed} kg, aireacion #{aeration} h, agua #{exchange}%, cosecha #{harvest} kg."
+    "Action: feed #{feed} kg, aeration #{aeration} h, water exchange #{exchange}%, harvest #{harvest} kg."
   end
 
   defp pending_action(%{action: action}, _fallback) when is_map(action), do: action

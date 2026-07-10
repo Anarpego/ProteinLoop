@@ -1,6 +1,6 @@
 defmodule ProteinLoop.Agent.ApprovalQueue do
   @moduledoc """
-  One-slot Spanish HITL queue for irreversible producer actions.
+  One-slot English HITL queue for irreversible producer actions.
 
   The queue stores intent only. Simulator mutation still happens through
   `ProteinLoop.SimulatorClient.step/1` after the producer approves or edits.
@@ -99,7 +99,7 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
       id: System.unique_integer([:positive]),
       action: action,
       prompt: Keyword.get(opts, :prompt, default_prompt(action)),
-      rationale: Keyword.get(opts, :rationale, "accion irreversible requiere aprobacion humana"),
+      rationale: Keyword.get(opts, :rationale, "irreversible action requires human approval"),
       requested_by: Keyword.get(opts, :requested_by, "operator"),
       source: Keyword.get(opts, :source, "manual"),
       allowed_decisions: Keyword.get(opts, :allowed_decisions, [:approve, :edit, :reject]),
@@ -183,7 +183,7 @@ defmodule ProteinLoop.Agent.ApprovalQueue do
   end
 
   defp default_prompt(action) do
-    "El agente propone cambiar #{percent(action["water_exchange_fraction"])}% del agua y cosechar #{action["duckweed_harvest_kg"]} kg de lenteja. Procedo?"
+    "The agent proposes replacing #{percent(action["water_exchange_fraction"])}% of the tank water and harvesting #{action["duckweed_harvest_kg"]} kg of duckweed. Continue?"
   end
 
   defp percent(value) when is_float(value), do: round(value * 100)

@@ -346,7 +346,7 @@ def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:
             reachable_check(
                 "application producer route reachable",
                 f"{app_base}/producer",
-                required_text="Productor",
+                required_text="Producer decisions",
             )
         )
 

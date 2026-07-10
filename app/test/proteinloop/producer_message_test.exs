@@ -18,21 +18,21 @@ defmodule ProteinLoop.ProducerMessageTest do
     "note" => "ammonia_stabilization"
   }
 
-  test "builds Spanish SMS WhatsApp packet with approval options" do
+  test "builds English SMS WhatsApp packet with approval options" do
     packet = ProducerMessage.build(@stable_state, @action)
 
     assert packet.channel == "sms_whatsapp"
-    assert packet.language == "es"
+    assert packet.language == "en"
     refute packet.approval_required
-    assert packet.text =~ "ProteinLoop productor"
-    assert packet.text =~ "Estado: dia 4"
-    assert packet.text =~ "Responda: APROBAR, MITAD o RECHAZAR."
+    assert packet.text =~ "ProteinLoop producer"
+    assert packet.text =~ "Status: day 4"
+    assert packet.text =~ "Reply: APPROVE, HALF, or REJECT."
   end
 
   test "pending irreversible request is marked as approval required" do
     pending = %{
       pending: %{
-        prompt: "El tanque 2 esta listo para cosechar. Procedo?",
+        prompt: "Tank 2 is ready to harvest. Continue?",
         action: Map.put(@action, "note", "producer_irreversible_harvest")
       }
     }
@@ -40,8 +40,8 @@ defmodule ProteinLoop.ProducerMessageTest do
     packet = ProducerMessage.build(@stable_state, @action, pending)
 
     assert packet.approval_required
-    assert packet.text =~ "Aprobacion requerida"
-    assert packet.text =~ "tanque 2"
+    assert packet.text =~ "Approval required"
+    assert packet.text =~ "Tank 2"
   end
 
   test "critical state includes offline emergency guidance" do
@@ -52,7 +52,7 @@ defmodule ProteinLoop.ProducerMessageTest do
       )
 
     assert packet.severity == :critical
-    assert packet.text =~ "No alimente"
-    assert packet.text =~ "tecnico comunitario"
+    assert packet.text =~ "Do not feed"
+    assert packet.text =~ "community technician"
   end
 end

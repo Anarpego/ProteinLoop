@@ -78,16 +78,16 @@ def build_rehearsal_packet() -> dict[str, Any]:
                 "iterations": training["iteration_count"],
             },
             {
-                "name": "spanish_hitl",
+                "name": "human_approval",
                 "ok": True,
                 "detail": "Producer path asks for approval before irreversible water or harvest action.",
-                "copy": "Aprobar | Solo mitad | Rechazar",
+                "copy": "Approve | Apply half | Reject",
             },
             {
                 "name": "offline_guidance",
                 "ok": True,
                 "detail": "Fallback producer guidance remains deterministic when model/cloud access is absent.",
-                "copy": "No alimente. Active aireacion fuerte, cambie agua verificada y llame al tecnico comunitario.",
+                "copy": "Do not feed. Start maximum aeration, use a verified partial water change, and call the community technician.",
             },
         ],
     }

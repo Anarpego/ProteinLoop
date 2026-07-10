@@ -10,7 +10,9 @@ defmodule ProteinLoopWeb.PageControllerTest do
 
   test "GET / renders the operator dashboard", %{conn: conn} do
     conn = get(conn, ~p"/")
+    assert html_response(conn, 200) =~ ~r/<html[^>]*lang="en"[^>]*data-theme="light"/
     assert html_response(conn, 200) =~ "Operator dashboard"
+    assert html_response(conn, 200) =~ "Your protein loop at a glance"
     assert html_response(conn, 200) =~ "Agent harness"
     assert html_response(conn, 200) =~ "Unsafe proposal"
     assert html_response(conn, 200) =~ "RLVR trace artifact"
@@ -28,7 +30,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Real Sagents/Horde cluster"
     assert html_response(conn, 200) =~ "Deterministic failover rehearsal"
     assert html_response(conn, 200) =~ "Simulate node loss"
-    assert html_response(conn, 200) =~ "Spanish HITL approval"
+    assert html_response(conn, 200) =~ "Human approval"
     assert html_response(conn, 200) =~ "Request producer approval"
     assert html_response(conn, 200) =~ "Agentic intervention mission"
     assert html_response(conn, 200) =~ "Sagents 0.9.0"
@@ -38,23 +40,23 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Near-term risk"
   end
 
-  test "GET /producer renders the Spanish HITL view", %{conn: conn} do
+  test "GET /producer renders the English HITL view", %{conn: conn} do
     conn = get(conn, ~p"/producer")
-    assert html_response(conn, 200) =~ "Productor"
-    assert html_response(conn, 200) =~ "Aprobar"
-    assert html_response(conn, 200) =~ "Respaldo offline"
-    assert html_response(conn, 200) =~ "Accion local"
-    assert html_response(conn, 200) =~ "Mensaje WhatsApp/SMS"
-    assert html_response(conn, 200) =~ "Responda: APROBAR, MITAD o RECHAZAR."
+    assert html_response(conn, 200) =~ "Producer decisions"
+    assert html_response(conn, 200) =~ "Approve"
+    assert html_response(conn, 200) =~ "Offline fallback"
+    assert html_response(conn, 200) =~ "Local action"
+    assert html_response(conn, 200) =~ "WhatsApp/SMS message"
+    assert html_response(conn, 200) =~ "Reply: APPROVE, HALF, or REJECT."
   end
 
-  test "GET /producer renders pending Spanish HITL request", %{conn: conn} do
+  test "GET /producer renders a pending English HITL request", %{conn: conn} do
     {:ok, _request, _snapshot} = ApprovalQueue.request_irreversible_action()
 
     conn = get(conn, ~p"/producer")
 
-    assert html_response(conn, 200) =~ "aprobacion pendiente"
-    assert html_response(conn, 200) =~ "Cosecha"
-    assert html_response(conn, 200) =~ "Solo mitad"
+    assert html_response(conn, 200) =~ "approval pending"
+    assert html_response(conn, 200) =~ "harvest"
+    assert html_response(conn, 200) =~ "Apply half"
   end
 end

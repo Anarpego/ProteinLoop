@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="title description">
+  <title id="title">ProteinLoop living system</title>
+  <desc id="description">A fish and prawn tank circulates water through hydroponic plants and duckweed that supports chickens.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0L8 4L0 8Z" fill="#0891b2"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0L8 4L0 8Z" fill="#15803d"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="520" rx="8" fill="#f7fbfc"/>
+
+  <!-- Main tank -->
+  <rect x="46" y="145" width="486" height="310" rx="10" fill="#ffffff" stroke="#334155" stroke-width="8"/>
+  <path d="M54 211H524V447H54Z" fill="#cffafe"/>
+  <path d="M54 211C120 198 178 224 244 211C310 198 370 224 436 211C468 205 496 205 524 211" fill="none" stroke="#0891b2" stroke-width="7"/>
+
+  <!-- Fish silhouettes -->
+  <g fill="#0e7490" stroke="#155e75" stroke-width="2">
+    <ellipse cx="190" cy="282" rx="48" ry="25"/>
+    <path d="M145 281L106 252V312Z"/>
+    <circle cx="216" cy="276" r="4" fill="#f8fafc" stroke="none"/>
+    <ellipse cx="365" cy="350" rx="54" ry="27"/>
+    <path d="M315 349L271 316V383Z"/>
+    <circle cx="395" cy="343" r="4" fill="#f8fafc" stroke="none"/>
+    <ellipse cx="235" cy="399" rx="36" ry="19"/>
+    <path d="M202 398L170 374V422Z"/>
+    <circle cx="255" cy="394" r="3" fill="#f8fafc" stroke="none"/>
+  </g>
+
+  <!-- Prawns and oxygen bubbles -->
+  <g fill="none" stroke="#be123c" stroke-linecap="round" stroke-width="5">
+    <path d="M408 267C446 235 480 269 458 298C440 319 405 305 404 283"/>
+    <path d="M443 247L456 229M452 254L472 242M409 292L390 304" stroke-width="3"/>
+  </g>
+  <g fill="#ffffff" stroke="#0284c7" stroke-width="3">
+    <circle cx="108" cy="393" r="8"/>
+    <circle cx="127" cy="365" r="5"/>
+    <circle cx="112" cy="337" r="4"/>
+    <circle cx="485" cy="402" r="7"/>
+    <circle cx="475" cy="374" r="4"/>
+  </g>
+  <rect x="76" y="415" width="66" height="20" rx="4" fill="#0369a1"/>
+  <path d="M88 415V382M108 415V372M128 415V388" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Water pipes -->
+  <path d="M515 178H564V113H619" fill="none" stroke="#0891b2" stroke-width="10" marker-end="url(#arrow-blue)"/>
+  <path d="M619 163H566V240H519" fill="none" stroke="#15803d" stroke-width="8" marker-end="url(#arrow-green)"/>
+  <path d="M520 312H606" fill="none" stroke="#0891b2" stroke-width="9" marker-end="url(#arrow-blue)"/>
+
+  <!-- Hydroponic grow bed -->
+  <rect x="624" y="99" width="288" height="84" rx="8" fill="#dcfce7" stroke="#166534" stroke-width="6"/>
+  <rect x="642" y="139" width="252" height="26" rx="4" fill="#86efac"/>
+  <g fill="#22c55e" stroke="#166534" stroke-width="3">
+    <path d="M678 140V91"/>
+    <ellipse cx="661" cy="103" rx="20" ry="11" transform="rotate(28 661 103)"/>
+    <ellipse cx="694" cy="91" rx="20" ry="11" transform="rotate(-28 694 91)"/>
+    <path d="M758 140V82"/>
+    <ellipse cx="740" cy="96" rx="21" ry="11" transform="rotate(28 740 96)"/>
+    <ellipse cx="777" cy="87" rx="21" ry="11" transform="rotate(-28 777 87)"/>
+    <path d="M842 140V91"/>
+    <ellipse cx="824" cy="103" rx="20" ry="11" transform="rotate(28 824 103)"/>
+    <ellipse cx="859" cy="93" rx="20" ry="11" transform="rotate(-28 859 93)"/>
+  </g>
+
+  <!-- Duckweed tray -->
+  <rect x="624" y="269" width="288" height="93" rx="8" fill="#e0f2fe" stroke="#0369a1" stroke-width="6"/>
+  <g fill="#4ade80" stroke="#15803d" stroke-width="2">
+    <ellipse cx="664" cy="306" rx="25" ry="13"/>
+    <ellipse cx="710" cy="328" rx="27" ry="14"/>
+    <ellipse cx="754" cy="300" rx="24" ry="13"/>
+    <ellipse cx="803" cy="327" rx="28" ry="14"/>
+    <ellipse cx="855" cy="304" rx="25" ry="13"/>
+  </g>
+
+  <!-- Duckweed to chicken output -->
+  <path d="M768 365V400" fill="none" stroke="#15803d" stroke-width="8" marker-end="url(#arrow-green)"/>
+  <rect x="635" y="414" width="267" height="66" rx="8" fill="#fef3c7" stroke="#a16207" stroke-width="6"/>
+  <g fill="#f59e0b" stroke="#92400e" stroke-width="3">
+    <ellipse cx="721" cy="439" rx="37" ry="25"/>
+    <circle cx="754" cy="420" r="17"/>
+    <path d="M768 414L785 421L769 428Z" fill="#fbbf24"/>
+    <path d="M695 441L673 424V455Z"/>
+    <path d="M712 462V478M734 462V478" fill="none"/>
+  </g>
+  <g fill="#ffffff" stroke="#a16207" stroke-width="3">
+    <ellipse cx="827" cy="450" rx="14" ry="19"/>
+    <ellipse cx="857" cy="447" rx="14" ry="19"/>
+  </g>
+
+  <!-- Foreground circulation links and simple plant leaves -->
+  <g fill="#0891b2">
+    <rect x="526" y="180" width="45" height="10" rx="5"/>
+    <rect x="561" y="123" width="10" height="67" rx="5"/>
+    <rect x="561" y="118" width="57" height="10" rx="5"/>
+    <rect x="526" y="310" width="88" height="10" rx="5"/>
+  </g>
+  <g fill="#15803d">
+    <rect x="526" y="231" width="48" height="8" rx="4"/>
+    <rect x="566" y="170" width="8" height="69" rx="4"/>
+    <rect x="566" y="166" width="52" height="8" rx="4"/>
+    <rect x="764" y="365" width="8" height="38" rx="4"/>
+  </g>
+  <g fill="#0891b2">
+    <path d="M618 123L594 110V136Z"/>
+    <path d="M614 315L590 302V328Z"/>
+  </g>
+  <g fill="#15803d">
+    <path d="M526 235L550 222V248Z"/>
+    <path d="M768 403L755 379H781Z"/>
+  </g>
+  <g fill="#22c55e" stroke="#166534" stroke-width="2">
+    <ellipse cx="661" cy="103" rx="19" ry="11"/>
+    <ellipse cx="695" cy="93" rx="19" ry="11"/>
+    <ellipse cx="740" cy="96" rx="19" ry="11"/>
+    <ellipse cx="778" cy="87" rx="19" ry="11"/>
+    <ellipse cx="823" cy="103" rx="19" ry="11"/>
+    <ellipse cx="860" cy="93" rx="19" ry="11"/>
+  </g>
+</svg>

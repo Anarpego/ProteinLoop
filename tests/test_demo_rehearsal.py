@@ -33,14 +33,14 @@ class DemoRehearsalTests(unittest.TestCase):
             "unsafe_rejection",
             "safe_recovery",
             "rlvr_policy_search",
-            "spanish_hitl",
+            "human_approval",
             "offline_guidance",
         ]:
             self.assertIn(name, steps)
             self.assertTrue(steps[name]["ok"])
 
         self.assertGreater(steps["rlvr_policy_search"]["improvement"], 0)
-        self.assertIn("Aprobar", steps["spanish_hitl"]["copy"])
+        self.assertIn("Approve", steps["human_approval"]["copy"])
 
 
 if __name__ == "__main__":
