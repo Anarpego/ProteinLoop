@@ -903,7 +903,7 @@ const RealtimeTank = {
       runtime.renderer.toneMapping = THREE.ACESFilmicToneMapping
       runtime.renderer.toneMappingExposure = 1.02
       runtime.renderer.shadowMap.enabled = true
-      runtime.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+      runtime.renderer.shadowMap.type = THREE.PCFShadowMap
 
       buildTank(runtime)
       loadPBRFish(runtime)

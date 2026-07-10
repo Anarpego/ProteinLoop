@@ -62,6 +62,8 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert app_js =~ "RealtimeTank"
     assert tank_hook =~ "setAnimationLoop"
     assert tank_hook =~ "ResizeObserver"
+    assert tank_hook =~ "THREE.PCFShadowMap"
+    refute tank_hook =~ "THREE.PCFSoftShadowMap"
     assert tank_hook =~ "requestFullscreen"
     assert tank_hook =~ "exitFullscreen"
     assert tank_hook =~ "fullscreenchange"
