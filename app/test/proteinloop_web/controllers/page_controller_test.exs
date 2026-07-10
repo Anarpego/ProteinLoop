@@ -74,6 +74,14 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert tank_hook =~ "syncRendererPresentation(this.runtime)"
     assert css =~ ".realtime-tank__canvas--ready"
     assert css =~ ".realtime-tank__fallback--hidden"
+    assert css =~ "@keyframes protein-loop-flow"
+    assert css =~ "@keyframes protein-loop-stage"
+    assert css =~ ~s(.protein-loop-story[data-story-phase="risk"])
+    assert css =~ ~s(.protein-loop-story[data-story-phase="recovered"])
+    assert css =~ ".judge-proof-result"
+    assert css =~ "min-height: 2.75rem"
+    assert css =~ "prefers-reduced-motion: reduce"
+    assert css =~ "animation: none"
   end
 
   test "bundles and loads the licensed PBR fish without a runtime CDN" do
@@ -135,6 +143,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html =~ "WhatsApp/SMS message"
     assert html =~ "Reply: APPROVE, HALF, or REJECT."
     refute html =~ "Inject demo water emergency"
+    refute html =~ "Run one-click verifier proof"
     refute html =~ "protein-loop-system.svg"
   end
 

@@ -72,7 +72,7 @@ body {
 
 .protein-loop-story {
   display: grid;
-  grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2.25fr);
+  grid-template-columns: minmax(17rem, 0.9fr) minmax(0, 2.1fr);
   border-top: 1px solid #d8e0e3;
   border-bottom: 1px solid #d8e0e3;
   background: #ffffff;
@@ -84,18 +84,46 @@ body {
 }
 
 .protein-loop-story__steps {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.protein-loop-story__steps::before {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 0.55rem;
+  left: 1.25rem;
+  height: 2px;
+  background: linear-gradient(90deg, #0ea5e9, #14b8a6 38%, #84cc16 68%, #f59e0b);
+  content: "";
+  opacity: 0.35;
+}
+
+.protein-loop-story__steps::after {
+  position: absolute;
+  bottom: 0.32rem;
+  left: 1.25rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #0d9488;
+  box-shadow: 0 0 0 3px rgb(13 148 136 / 18%);
+  content: "";
+  animation: protein-loop-flow 4.8s linear infinite;
 }
 
 .protein-loop-story__steps li {
   position: relative;
+  z-index: 1;
   display: flex;
   min-width: 0;
   min-height: 5.5rem;
   align-items: center;
   gap: 0.65rem;
-  padding: 0.85rem 0.9rem;
+  padding: 0.75rem 0.9rem 1.25rem;
 }
 
 .protein-loop-story__steps li + li {
@@ -125,6 +153,19 @@ body {
   height: 1.15rem;
   flex: none;
   color: #ea580c;
+  animation: protein-loop-stage 4.8s ease-in-out infinite;
+}
+
+.protein-loop-story__steps li:nth-child(2) svg {
+  animation-delay: 1.2s;
+}
+
+.protein-loop-story__steps li:nth-child(3) svg {
+  animation-delay: 2.4s;
+}
+
+.protein-loop-story__steps li:nth-child(4) svg {
+  animation-delay: 3.6s;
 }
 
 .protein-loop-story__steps p,
@@ -145,6 +186,235 @@ body {
   margin-top: 0.15rem;
   font-size: 0.78rem;
   line-height: 1.1rem;
+}
+
+.protein-loop-story[data-story-phase="risk"] .protein-loop-story__intro {
+  border-left: 4px solid #e11d48;
+  background: #fff7f8;
+}
+
+.protein-loop-story[data-story-phase="risk"] .protein-loop-story__steps::before {
+  background: #e11d48;
+}
+
+.protein-loop-story[data-story-phase="risk"] .protein-loop-story__steps::after {
+  background: #e11d48;
+  box-shadow: 0 0 0 4px rgb(225 29 72 / 18%);
+  animation-duration: 1.4s;
+}
+
+.protein-loop-story[data-story-phase="risk"] .protein-loop-story__steps svg {
+  color: #be123c;
+  animation-duration: 1.4s;
+}
+
+.protein-loop-story[data-story-phase="recovered"] .protein-loop-story__intro {
+  border-left: 4px solid #059669;
+  background: #f0fdf8;
+}
+
+.protein-loop-story[data-story-phase="recovered"] .protein-loop-story__steps::before {
+  background: linear-gradient(90deg, #0284c7, #0d9488, #65a30d, #d97706);
+  opacity: 0.7;
+}
+
+.protein-loop-story[data-story-phase="recovered"] .protein-loop-story__steps::after {
+  background: #059669;
+  box-shadow: 0 0 0 4px rgb(5 150 105 / 18%);
+}
+
+.protein-loop-story[data-story-phase="recovered"] .protein-loop-story__steps svg {
+  color: #047857;
+}
+
+.judge-proof-ribbon {
+  border-bottom: 1px solid #d8e0e3;
+  background: #f8fafc;
+}
+
+.judge-proof-ribbon__items {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.judge-proof-ribbon__items li {
+  display: flex;
+  min-width: 0;
+  min-height: 3.75rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.judge-proof-ribbon__items li + li {
+  border-left: 1px solid #d8e0e3;
+}
+
+.judge-proof-ribbon__items svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  color: #2563eb;
+}
+
+.judge-proof-ribbon__items span,
+.judge-proof-ribbon__items strong,
+.judge-proof-ribbon__items small {
+  display: block;
+  min-width: 0;
+}
+
+.judge-proof-ribbon__items strong {
+  font-size: 0.68rem;
+  line-height: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.judge-proof-ribbon__items small {
+  margin-top: 0.1rem;
+  color: rgb(31 41 55 / 58%);
+  font-size: 0.6rem;
+  line-height: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.judge-proof-ribbon__items li:last-child svg {
+  color: #ea580c;
+}
+
+.judge-proof-result {
+  border-top: 1px solid #a7f3d0;
+  border-bottom: 1px solid #a7f3d0;
+  background: #ffffff;
+  animation: judge-proof-reveal 420ms ease-out both;
+}
+
+.judge-proof-result__header,
+.judge-proof-result__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+}
+
+.judge-proof-result__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #d8e0e3;
+  border-bottom: 1px solid #d8e0e3;
+}
+
+.judge-proof-result__steps li {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  animation: judge-proof-reveal 420ms ease-out both;
+}
+
+.judge-proof-result__steps li:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.judge-proof-result__steps li:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.judge-proof-result__steps li + li {
+  border-left: 1px solid #d8e0e3;
+}
+
+.judge-proof-result__number {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid #94a3b8;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.judge-proof-result__steps p,
+.judge-proof-result__steps strong,
+.judge-proof-result__steps small {
+  display: block;
+}
+
+.judge-proof-result__steps p {
+  color: rgb(31 41 55 / 62%);
+  font-size: 0.7rem;
+}
+
+.judge-proof-result__steps strong {
+  margin-top: 0.15rem;
+  font-size: 0.86rem;
+}
+
+.judge-proof-result__steps small {
+  margin-top: 0.12rem;
+  color: rgb(31 41 55 / 58%);
+  font-size: 0.65rem;
+}
+
+.judge-proof-result__steps [data-proof-stage="emergency"] .judge-proof-result__number {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.judge-proof-result__steps [data-proof-stage="blocked"] .judge-proof-result__number {
+  border-color: #e11d48;
+  color: #be123c;
+}
+
+.judge-proof-result__steps [data-proof-stage="recovered"] .judge-proof-result__number {
+  border-color: #059669;
+  color: #047857;
+}
+
+.judge-proof-result__footer {
+  color: rgb(31 41 55 / 65%);
+  font-size: 0.72rem;
+  line-height: 1.1rem;
+}
+
+#run-judge-proof:focus-visible,
+.judge-proof-result a:focus-visible {
+  outline: 3px solid rgb(37 99 235 / 45%);
+  outline-offset: 2px;
+}
+
+@keyframes protein-loop-flow {
+  from {
+    left: 1.25rem;
+  }
+  to {
+    left: calc(100% - 1.8rem);
+  }
+}
+
+@keyframes protein-loop-stage {
+  0%, 60%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  12% {
+    transform: translateY(-2px) scale(1.16);
+  }
+}
+
+@keyframes judge-proof-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .realtime-tank {
@@ -490,6 +760,18 @@ body {
     border-right: 0;
     border-bottom: 1px solid #d8e0e3;
   }
+
+  .judge-proof-ribbon__items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .judge-proof-ribbon__items li:nth-child(n + 4) {
+    border-top: 1px solid #d8e0e3;
+  }
+
+  .judge-proof-ribbon__items li:nth-child(4) {
+    border-left: 0;
+  }
 }
 
 @media (max-width: 767px) {
@@ -512,6 +794,53 @@ body {
 
   .protein-loop-story__steps li::after {
     display: none;
+  }
+
+  .protein-loop-story__steps::before,
+  .protein-loop-story__steps::after {
+    display: none;
+  }
+
+  .judge-proof-ribbon__items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .judge-proof-ribbon__items li:nth-child(n + 3) {
+    border-top: 1px solid #d8e0e3;
+  }
+
+  .judge-proof-ribbon__items li:nth-child(3),
+  .judge-proof-ribbon__items li:nth-child(5) {
+    border-left: 0;
+  }
+
+  .judge-proof-ribbon__items li:nth-child(4) {
+    border-left: 1px solid #d8e0e3;
+  }
+
+  .judge-proof-result__header,
+  .judge-proof-result__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .judge-proof-result__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .judge-proof-result__steps li + li {
+    border-top: 1px solid #d8e0e3;
+    border-left: 0;
+  }
+
+  #run-judge-proof,
+  .realtime-tank__commands .btn {
+    min-height: 2.75rem;
+  }
+
+  .realtime-tank__commands .btn-square {
+    width: 2.75rem;
+    min-width: 2.75rem;
   }
 
   .realtime-tank__viewport {
@@ -591,6 +920,13 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .protein-loop-story__steps::after,
+  .protein-loop-story__steps svg,
+  .judge-proof-result,
+  .judge-proof-result__steps li {
+    animation: none;
+  }
+
   .realtime-tank__live-dot {
     animation: none;
   }

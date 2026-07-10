@@ -34,8 +34,9 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ "Fish + prawn stock"
     assert html =~ "14.5 kg"
     assert html =~ "12.0 kg fish · 2.5 kg prawns"
-    assert html =~ "Plant loop"
-    assert html =~ "duckweed"
+    assert html =~ "Plants → feed → eggs"
+    assert html =~ "5.0 kg plants"
+    assert html =~ "3.0 kg duckweed · 6 hens · 0.0 eggs"
     refute html =~ "protein-loop-system.svg"
     refute html =~ "<img"
   end
@@ -84,6 +85,8 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
       "prawn_biomass_kg" => 2.5,
       "plant_biomass_kg" => 5.0,
       "duckweed_kg" => 3.0,
+      "chicken_count" => 6,
+      "eggs_count" => 0.0,
       "collapsed" => false,
       "last_event" => "initialized"
     }

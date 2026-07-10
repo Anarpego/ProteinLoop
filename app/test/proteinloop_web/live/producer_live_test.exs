@@ -48,7 +48,8 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     assert html =~ "Main fish &amp; prawn tank"
     assert html =~ "Waste in water"
     assert html =~ "Breathing oxygen"
-    assert html =~ "Plant loop"
+    assert html =~ "Plants → feed → eggs"
+    assert html =~ "6 hens · 0.0 eggs"
     assert has_element?(view, "#producer-dect-status")
     assert html =~ "Latest DECT NR+ link"
     assert html =~ "Sequence #100"
@@ -60,6 +61,7 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     assert html =~ "Approve"
     assert html =~ "Apply half"
     assert html =~ "Reject"
+    refute html =~ "Run one-click verifier proof"
     refute html =~ "Productor"
     refute html =~ "Aprobar"
   end

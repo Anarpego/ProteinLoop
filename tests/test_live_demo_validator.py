@@ -53,6 +53,9 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertIn("Ecosystem safety check", OPERATOR_NEEDLES)
         self.assertIn("Create safe recovery plan", OPERATOR_NEEDLES)
         self.assertIn("Inject demo water emergency", OPERATOR_NEEDLES)
+        self.assertIn("Run one-click verifier proof", OPERATOR_NEEDLES)
+        self.assertIn("AMD ROCm + vLLM profile", OPERATOR_NEEDLES)
+        self.assertIn("Portable path · current demo is local", OPERATOR_NEEDLES)
         self.assertIn("Open tank full screen", PRODUCER_NEEDLES)
 
 

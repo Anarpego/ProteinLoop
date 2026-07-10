@@ -46,15 +46,17 @@ TODO
 
 ## Key Demo Path
 
-1. Open the operator route, inspect `Live tank simulation`, and use its expand icon: locally loaded PBR fish, four recognizable foreground prawns, physical water and glass, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates continue in full screen.
-2. Press `Inject demo water emergency` and watch the deterministic ammonia spike change water color, bubble activity, animal behavior, and the quantified fish-and-prawn risk.
-3. In the full-screen `Verified recovery` control, select `Protect protein yield` and press `Create safe recovery plan`; the same verifier-gated Sagents workflow runs without leaving the tank.
-4. Read `Recovery verified`, including chemistry before/after and zero unsafe actions executed, then inspect the detailed `Verified recovery receipt` below the tank.
-5. Open `Advanced evidence and controls`, then press `Run demo cascade` to show unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
-6. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
-7. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
-8. Press `Request producer approval`, then use the English `/producer` route to inspect the same animated tank in read-only mode, approve, apply half, or reject, and inspect the WhatsApp/SMS handoff message.
-9. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
+1. Open the operator route and read the animated fish-to-eggs loop plus the executable proof ribbon: live Gemma path, five-agent team, deterministic verifier, physical DECT NR+, producer approval, and the explicitly portable AMD ROCm/vLLM profile.
+2. Press `Run one-click verifier proof` to reproduce the emergency, block one unsafe proposal before mutation, admit a safe recovery, and show zero unsafe actions executed with measured final chemistry.
+3. Inspect `Live tank simulation` and use its expand icon: locally loaded PBR fish, four recognizable foreground prawns, physical water and glass, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates continue in full screen.
+4. Press `Inject demo water emergency` and watch water color, bubble activity, animal behavior, the animated food loop, and quantified fish-and-prawn risk change together.
+5. In the full-screen `Verified recovery` control, select `Protect protein yield` and press `Create safe recovery plan`; the separate live Gemma/Sagents workflow runs without leaving the tank.
+6. Read `Recovery verified`, including chemistry before/after and zero unsafe actions executed, then inspect the detailed `Verified recovery receipt` below the tank.
+7. Open `Advanced evidence and controls` to inspect RLVR policy-search improvement and the same `Run demo cascade` harness action. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
+8. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
+9. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
+10. Press `Request producer approval`, then use the English `/producer` route to inspect the same animated tank in read-only mode, approve, apply half, or reject, and inspect the WhatsApp/SMS handoff message.
+11. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
 
 ## Judging Notes
 

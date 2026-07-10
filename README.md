@@ -8,19 +8,19 @@
 
 ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
 
-[Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Agentic development](#agentic-development-workflow) · [Evidence packet](#submission-packet)
+[Run the judge proof](#run-the-one-click-judge-proof) · [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Evidence packet](#submission-packet)
 
 ## Why ProteinLoop Focuses on Protein Outcomes
 
 [Aquaponics already integrates aquatic animals and hydroponic plants](https://www.nal.usda.gov/farms-and-agricultural-production-systems/aquaculture-and-aquaponics); ProteinLoop does not claim otherwise. It treats plant growth as one connected output, not the whole result. The live control shows the fish-and-prawn biomass at risk, the plants cleaning the water, the duckweed feed reserve, and the chickens and eggs supported downstream.
 
-That changes the promise from "monitor an aquaponic garden" to "protect every food output in a closed protein loop." When water chemistry fails, the operator sees what animal biomass depends on recovery. Gemma proposes a plan, ecosystem rules verify it, and the producer retains control of irreversible actions. The product claim and UX acceptance contract are documented in the [protein-first judge-story spec](specs/059-protein-first-judge-story/spec.md).
+That changes the promise from "monitor an aquaponic garden" to "protect every food output in a closed protein loop." When water chemistry fails, the operator sees what animal biomass depends on recovery. Gemma proposes a plan, ecosystem rules verify it, and the producer retains control of irreversible actions. The product claim and final judge-experience contract are documented in the [protein-first spec](specs/059-protein-first-judge-story/spec.md) and [competition proof spec](specs/060-judge-winning-experience/spec.md).
 
 ## What Runs Today
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
-| Real-time system understanding | Operator and producer routes share a full-screen-capable Three.js aquarium with a local PBR fish model, a licensed realistic prawn visual, physical water and glass, bubbles, plants, live protein-loop quantities, and stress driven by the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) · [Protein-first UX spec](specs/059-protein-first-judge-story/spec.md) |
+| Real-time system understanding | Operator and producer routes share a full-screen-capable Three.js aquarium with a local PBR fish model, a licensed realistic prawn visual, physical water and glass, bubbles, plants, live protein-loop quantities, and an animated fish-to-eggs flow that changes with stable, risk, and recovery state. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) · [Judge experience spec](specs/060-judge-winning-experience/spec.md) |
 | Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
@@ -30,6 +30,15 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
 | Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
 | Reproducible application | Docker profiles start the simulator, guided operator control, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
+
+## Run the One-Click Judge Proof
+
+1. Open `http://localhost:4001/` and press `Run one-click verifier proof`.
+2. Inspect the three executable stages: emergency reproduced, unsafe proposal blocked before mutation, and safe recovery admitted.
+3. Confirm `0 unsafe actions executed`, the measured final ammonia and oxygen, and the state-driven loop changing to `Verifier proof complete`.
+4. Continue to `Create a verified recovery` for the separate live Gemma 4 path.
+
+The one-click proof is intentionally deterministic and does not claim to call Gemma. It demonstrates the simulator/verifier mutation boundary quickly. The model-backed workflow remains separate so judges can distinguish model reasoning, deterministic safety authority, and producer approval.
 
 ## Run an Agentic Intervention
 
@@ -452,7 +461,7 @@ Routes:
 - Guided operator control: `http://localhost:4001/`
 - Producer HITL: `http://localhost:4001/producer`
 
-Open `Advanced evidence and controls`, then use `Run demo cascade` for the fastest end-to-end judge path.
+Use `Run one-click verifier proof` in the first viewport for the fastest end-to-end judge path. `Run demo cascade` remains available inside `Advanced evidence and controls` as the same deterministic harness action.
 
 The web container talks to the simulator at `http://simulator:8000` inside the Compose network. RLVR trace output is persisted in the `proteinloop_traces` Docker volume.
 

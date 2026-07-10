@@ -121,10 +121,19 @@ def check_web() -> list[Check]:
     operator_needles = [
         "Protect every protein output in the loop",
         "Aquaponics already links fish and plants",
-        "One water failure threatens the connected food loop",
         "Fish + prawns",
+        "Plants clean the water",
         "Duckweed becomes feed",
         "Chickens + eggs",
+        "Run one-click verifier proof",
+        "Executable competition proof",
+        "Gemma 4 endpoint configured",
+        "5-agent recovery team",
+        "Deterministic verifier",
+        "2-board DECT NR+ capture",
+        "Producer approval",
+        "AMD ROCm + vLLM profile",
+        "Portable path · current demo is local",
         "Run demo cascade",
         "RLVR reward verifier",
         "Policy search improvement",
@@ -170,6 +179,7 @@ def check_web() -> list[Check]:
         "tank-agent-console",
         "Inject demo water emergency",
         "Create safe recovery plan",
+        "Run one-click verifier proof",
     ]
     producer_leaks = [marker for marker in producer_forbidden if marker in producer]
 

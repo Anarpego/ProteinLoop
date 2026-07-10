@@ -134,8 +134,9 @@ defmodule ProteinLoopWeb.OperatorLive do
                 error: nil
               }
 
-              assign_snapshot(
-                socket,
+              socket
+              |> clear_recovery_receipts()
+              |> assign_snapshot(
                 snapshot,
                 "DECT capture ##{evidence.sequence} replayed as simulated sensor alert"
               )
@@ -153,7 +154,10 @@ defmodule ProteinLoopWeb.OperatorLive do
       case SimulatorClient.trigger_ammonia_spike() do
         {:ok, %{"state" => state}} ->
           snapshot = %{connected?: true, source: "spike", state: state, reward: nil, error: nil}
-          assign_snapshot(socket, snapshot, "ammonia spike injected")
+
+          socket
+          |> clear_recovery_receipts()
+          |> assign_snapshot(snapshot, "ammonia spike injected")
 
         {:error, reason} ->
           put_flash(socket, :error, "Simulator error: #{inspect(reason)}")
@@ -174,7 +178,9 @@ defmodule ProteinLoopWeb.OperatorLive do
             error: nil
           }
 
-          assign_snapshot(socket, snapshot, "safety action applied")
+          socket
+          |> clear_recovery_receipts()
+          |> assign_snapshot(snapshot, "safety action applied")
 
         {:error, reason} ->
           put_flash(socket, :error, "Simulator error: #{inspect(reason)}")
@@ -188,7 +194,10 @@ defmodule ProteinLoopWeb.OperatorLive do
       case SimulatorClient.reset() do
         {:ok, %{"state" => state}} ->
           snapshot = %{connected?: true, source: "reset", state: state, reward: nil, error: nil}
-          assign_snapshot(socket, snapshot, "scenario reset")
+
+          socket
+          |> clear_recovery_receipts()
+          |> assign_snapshot(snapshot, "scenario reset")
 
         {:error, reason} ->
           put_flash(socket, :error, "Simulator error: #{inspect(reason)}")
@@ -285,6 +294,7 @@ defmodule ProteinLoopWeb.OperatorLive do
         socket
         |> assign(:selected_mission, mission)
         |> assign(:loop_result, nil)
+        |> assign(:demo_result, nil)
         |> assign(:mission_phase, :ready)
         |> update(:action_log, fn log ->
           Enum.take(["agentic mission selected: #{mission.title}" | log], 6)
@@ -304,7 +314,7 @@ defmodule ProteinLoopWeb.OperatorLive do
 
   def handle_event("demo-cascade", _params, socket) do
     socket =
-      case DemoCascade.run() do
+      case demo_cascade().run() do
         {:ok, result} ->
           snapshot = %{
             connected?: true,
@@ -316,6 +326,8 @@ defmodule ProteinLoopWeb.OperatorLive do
 
           socket
           |> assign(:demo_result, result)
+          |> assign(:loop_result, nil)
+          |> assign(:mission_phase, :ready)
           |> assign(:agent_result, result.safe_result)
           |> assign(:trace_status, TraceStore.status())
           |> assign(:trace_entries, trace_entries())
@@ -418,6 +430,8 @@ defmodule ProteinLoopWeb.OperatorLive do
 
         socket
         |> assign(:sagents_running?, true)
+        |> assign(:demo_result, nil)
+        |> assign(:loop_result, nil)
         |> assign(:mission_phase, :deliberating)
         |> update(:action_log, fn log ->
           Enum.take(["agentic mission started: #{mission.title}" | log], 6)
@@ -437,6 +451,13 @@ defmodule ProteinLoopWeb.OperatorLive do
     |> update(:action_log, fn log -> Enum.take([log_entry | log], 6) end)
   end
 
+  defp clear_recovery_receipts(socket) do
+    socket
+    |> assign(:demo_result, nil)
+    |> assign(:loop_result, nil)
+    |> assign(:mission_phase, :ready)
+  end
+
   defp sagents_runtime do
     Application.get_env(:proteinloop, :sagents_runtime, SagentsRuntime)
   end
@@ -451,6 +472,10 @@ defmodule ProteinLoopWeb.OperatorLive do
 
   defp dect_simulator_client do
     Application.get_env(:proteinloop, :dect_simulator_client, SimulatorClient)
+  end
+
+  defp demo_cascade do
+    Application.get_env(:proteinloop, :demo_cascade, DemoCascade)
   end
 
   defp run_agent(socket, provider) do
@@ -559,11 +584,66 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp oxygen_class(value) when value < 5.0, do: "text-warning"
   defp oxygen_class(_value), do: "text-success"
 
+  defp judge_story(state, mission_phase, loop_result, demo_result, aquatic_biomass) do
+    ammonia = rounded(metric(state, "ammonia_mg_l"))
+    oxygen = rounded(metric(state, "dissolved_oxygen_mg_l"))
+
+    cond do
+      ammonia >= 3.0 or oxygen < 3.5 ->
+        %{
+          phase: "risk",
+          eyebrow: "Protein at risk",
+          headline: "#{aquatic_biomass} kg fish + prawn stock depend on recovery",
+          summary:
+            "Ammonia is #{ammonia} mg/L and breathing oxygen is #{oxygen} mg/L. The connected food loop is under immediate stress."
+        }
+
+      ammonia >= 1.5 or oxygen < 5.0 ->
+        %{
+          phase: "risk",
+          eyebrow: "Early warning",
+          headline: "#{aquatic_biomass} kg fish + prawn stock need protection",
+          summary:
+            "Water chemistry is leaving the comfortable range before downstream feed and egg output are interrupted."
+        }
+
+      mission_phase == :completed and is_map(loop_result) and
+          get_in(loop_result, [:verification, "ok"]) ->
+        %{
+          phase: "recovered",
+          eyebrow: "Recovery verified",
+          headline: "#{aquatic_biomass} kg fish + prawn stock protected",
+          summary:
+            "Ammonia #{rounded(loop_result.before_state["ammonia_mg_l"])} → #{rounded(loop_result.state["ammonia_mg_l"])} mg/L; oxygen #{rounded(loop_result.before_state["dissolved_oxygen_mg_l"])} → #{rounded(loop_result.state["dissolved_oxygen_mg_l"])} mg/L; 0 unsafe actions executed."
+        }
+
+      is_map(demo_result) ->
+        %{
+          phase: "recovered",
+          eyebrow: "Verifier proof complete",
+          headline: "Unsafe proposal blocked; safe recovery admitted",
+          summary:
+            "Emergency ammonia #{rounded(demo_result.spike_state["ammonia_mg_l"])} mg/L recovered to #{rounded(demo_result.final_state["ammonia_mg_l"])} mg/L with 0 unsafe actions executed."
+        }
+
+      true ->
+        %{
+          phase: "stable",
+          eyebrow: "Loop protected",
+          headline: "#{aquatic_biomass} kg fish + prawn stock are stable",
+          summary:
+            "Plants clean the water, duckweed stores feed, and the same loop supports chickens and eggs."
+        }
+    end
+  end
+
   @impl true
   def render(assigns) do
     {badge_class, badge_text} = status_badge(assigns.snapshot)
     fish_biomass = rounded(metric(assigns.state, "fish_biomass_kg"))
     prawn_biomass = rounded(metric(assigns.state, "prawn_biomass_kg"))
+
+    aquatic_biomass = rounded(fish_biomass + prawn_biomass)
 
     assigns =
       assigns
@@ -571,11 +651,21 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:badge_text, badge_text)
       |> assign(:fish_biomass, fish_biomass)
       |> assign(:prawn_biomass, prawn_biomass)
-      |> assign(:aquatic_biomass, rounded(fish_biomass + prawn_biomass))
+      |> assign(:aquatic_biomass, aquatic_biomass)
       |> assign(:plant_biomass, rounded(metric(assigns.state, "plant_biomass_kg")))
       |> assign(:duckweed, rounded(metric(assigns.state, "duckweed_kg")))
       |> assign(:chickens, metric(assigns.state, "chicken_count"))
       |> assign(:eggs, rounded(metric(assigns.state, "eggs_count")))
+      |> assign(
+        :judge_story,
+        judge_story(
+          assigns.state,
+          assigns.mission_phase,
+          assigns.loop_result,
+          assigns.demo_result,
+          aquatic_biomass
+        )
+      )
 
     ~H"""
     <main class="min-h-screen bg-base-200 text-base-content">
@@ -596,6 +686,20 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
           <div class="flex shrink-0 flex-wrap items-center gap-2">
             <span class={["badge", @badge_class]}>{@badge_text}</span>
+            <span id="judge-proof-description" class="sr-only">
+              Runs a deterministic unsafe-versus-safe verifier rehearsal. The live Gemma recovery is
+              a separate workflow below.
+            </span>
+            <button
+              id="run-judge-proof"
+              type="button"
+              class="btn btn-sm btn-primary"
+              phx-click="demo-cascade"
+              phx-disable-with="Running verifier proof..."
+              aria-describedby="judge-proof-description"
+            >
+              <.icon name="hero-play" /> Run one-click verifier proof
+            </button>
             <.link navigate={~p"/producer"} class="btn btn-sm btn-outline">
               <.icon name="hero-language" /> Producer
             </.link>
@@ -608,15 +712,24 @@ defmodule ProteinLoopWeb.OperatorLive do
         <section
           id="protein-loop-story"
           class="protein-loop-story"
+          data-story-phase={@judge_story.phase}
           aria-labelledby="protein-loop-title"
         >
-          <div class="protein-loop-story__intro">
-            <p class="text-xs font-semibold uppercase tracking-wide text-primary">Why it matters</p>
+          <div
+            id="protein-loop-impact"
+            class="protein-loop-story__intro"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <p class="text-xs font-semibold uppercase tracking-wide text-primary">
+              {@judge_story.eyebrow}
+            </p>
             <h2 id="protein-loop-title" class="mt-1 text-base font-semibold">
-              One water failure threatens the connected food loop
+              {@judge_story.headline}
             </h2>
             <p class="mt-1 text-xs leading-5 text-base-content/65">
-              Live simulator values show what the recovery is protecting now.
+              {@judge_story.summary}
             </p>
           </div>
           <ol class="protein-loop-story__steps" aria-label="Connected protein loop">
@@ -649,6 +762,66 @@ defmodule ProteinLoopWeb.OperatorLive do
               </div>
             </li>
           </ol>
+        </section>
+
+        <section
+          id="judge-proof-ribbon"
+          class="judge-proof-ribbon"
+          aria-label="Executable competition proof"
+        >
+          <h2 class="sr-only">Executable competition proof</h2>
+          <ul class="judge-proof-ribbon__items">
+            <li>
+              <.icon name="hero-sparkles" />
+              <span>
+                <strong>
+                  {if @sagents_status.endpoint_configured?,
+                    do: "Gemma 4 endpoint configured",
+                    else: "Gemma 4 endpoint unavailable"}
+                </strong>
+                <small>Live model path</small>
+              </span>
+            </li>
+            <li>
+              <.icon name="hero-user-group" />
+              <span>
+                <strong>{@sagents_status.agent_count}-agent recovery team</strong>
+                <small>4 specialists + supervisor</small>
+              </span>
+            </li>
+            <li>
+              <.icon name="hero-shield-check" />
+              <span>
+                <strong>Deterministic verifier</strong>
+                <small>Only mutation authority</small>
+              </span>
+            </li>
+            <li>
+              <.icon name="hero-signal" />
+              <span>
+                <strong>
+                  {if @nrf9151_evidence.available?,
+                    do: "2-board DECT NR+ capture",
+                    else: "DECT NR+ capture unavailable"}
+                </strong>
+                <small>Physical radio evidence</small>
+              </span>
+            </li>
+            <li>
+              <.icon name="hero-hand-raised" />
+              <span>
+                <strong>Producer approval</strong>
+                <small>Risky actions pause</small>
+              </span>
+            </li>
+            <li title="Portable deployment profile included; the current local demo is not AMD-hosted.">
+              <.icon name="hero-cpu-chip" />
+              <span>
+                <strong>AMD ROCm + vLLM profile</strong>
+                <small>Portable path · current demo is local</small>
+              </span>
+            </li>
+          </ul>
         </section>
 
         <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true}>
@@ -742,6 +915,9 @@ defmodule ProteinLoopWeb.OperatorLive do
               :if={@mission_phase == :completed && is_map(@loop_result)}
               id="fullscreen-agent-result"
               class="mt-3 border-l-2 border-success bg-success/10 px-3 py-2"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
             >
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <p class="text-sm font-semibold">
@@ -802,6 +978,8 @@ defmodule ProteinLoopWeb.OperatorLive do
             </p>
           </:agent_controls>
         </.realtime_tank_scene>
+
+        <.judge_proof_result :if={is_map(@demo_result)} result={@demo_result} />
 
         <section
           id="agentic-mission"
@@ -1960,6 +2138,71 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp rlvr_percent(value) when is_float(value), do: "#{round(value * 100)}%"
   defp rlvr_percent(value) when is_integer(value), do: "#{value * 100}%"
   defp rlvr_percent(value), do: value
+
+  attr :result, :map, required: true
+
+  def judge_proof_result(assigns) do
+    violations = get_in(assigns.result, [:unsafe_result, :verification, "violations"]) || []
+
+    assigns = assign(assigns, :violation_count, length(violations))
+
+    ~H"""
+    <section
+      id="judge-proof-result"
+      class="judge-proof-result"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <header class="judge-proof-result__header">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-success">
+            Deterministic verifier proof
+          </p>
+          <h2 class="mt-1 text-lg font-semibold">One unsafe proposal blocked before recovery</h2>
+        </div>
+        <span class="badge badge-success">proof complete</span>
+      </header>
+
+      <ol class="judge-proof-result__steps" aria-label="Verifier proof sequence">
+        <li data-proof-stage="emergency">
+          <span class="judge-proof-result__number">1</span>
+          <div>
+            <p>Emergency reproduced</p>
+            <strong>{@result.spike_state["ammonia_mg_l"]} mg/L ammonia</strong>
+            <small>{@result.spike_state["dissolved_oxygen_mg_l"]} mg/L oxygen</small>
+          </div>
+        </li>
+        <li data-proof-stage="blocked">
+          <span class="judge-proof-result__number">2</span>
+          <div>
+            <p>Unsafe proposal blocked</p>
+            <strong>0 unsafe actions executed</strong>
+            <small>{@violation_count} verifier violation detected</small>
+          </div>
+        </li>
+        <li data-proof-stage="recovered">
+          <span class="judge-proof-result__number">3</span>
+          <div>
+            <p>Safe recovery admitted</p>
+            <strong>{@result.final_state["ammonia_mg_l"]} mg/L ammonia</strong>
+            <small>{@result.final_state["dissolved_oxygen_mg_l"]} mg/L oxygen · reward {@result.safe_result.reward}</small>
+          </div>
+        </li>
+      </ol>
+
+      <footer class="judge-proof-result__footer">
+        <p>
+          This is the repeatable deterministic verifier proof. The model-backed planning path remains
+          separate and inspectable.
+        </p>
+        <a href="#agentic-mission" class="btn btn-sm btn-outline">
+          Continue with live Gemma recovery <.icon name="hero-arrow-path" />
+        </a>
+      </footer>
+    </section>
+    """
+  end
 
   attr :result, :any, required: true
 

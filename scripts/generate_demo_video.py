@@ -24,14 +24,14 @@ FPS = 2
 SECONDS_PER_SCENE = 6
 JPEG_QUALITY = 86
 
-BG = (12, 18, 24)
-PANEL = (23, 32, 42)
-TEXT = (238, 244, 247)
-MUTED = (167, 181, 190)
-GREEN = (74, 222, 128)
-CYAN = (34, 211, 238)
-RED = (248, 113, 113)
-AMBER = (251, 191, 36)
+BG = (247, 249, 250)
+PANEL = (255, 255, 255)
+TEXT = (15, 23, 42)
+MUTED = (71, 85, 105)
+GREEN = (5, 150, 105)
+CYAN = (2, 132, 199)
+RED = (190, 18, 60)
+AMBER = (180, 83, 9)
 
 
 @dataclass(frozen=True)
@@ -65,20 +65,20 @@ def build_scenes(evidence: dict) -> list[Scene]:
             "Problem",
             "ProteinLoop closes the protein cycle",
             [
-                "Aquaponics often stops at vegetables and a little fish.",
-                "ProteinLoop models fish, prawns, duckweed, hydroponic plants, and chickens as one closed loop.",
-                "The agentic loop makes the complexity operable for rural families.",
+                "Aquaponics already integrates aquatic animals and plants.",
+                "ProteinLoop makes fish and prawn biomass, plant filtration, duckweed feed, and eggs visible as one loop.",
+                "Gemma proposes, ecosystem rules verify, and the producer controls irreversible actions.",
             ],
             "Fish + prawns + eggs + vegetables",
             CYAN,
         ),
         Scene(
             "Collapse versus recovery",
-            "The simulator is the verifier",
+            "The simulator proves the mutation boundary",
             [
-                "A naive response after an ammonia spike collapses the ecosystem.",
-                "Unsafe overfeeding is rejected before it can mutate state.",
-                "The safe recovery policy cuts feed, raises aeration, and exchanges water.",
+                "The judge proof reproduces an ammonia emergency deterministically.",
+                "Unsafe overfeeding is blocked before it can mutate state.",
+                "A safe recovery is admitted with zero unsafe actions executed; live Gemma planning remains separate.",
             ],
             f"naive reward {collapse['naive']['reward']} | safety reward {collapse['safety']['reward']}",
             GREEN,
@@ -206,7 +206,7 @@ def render_scene(
         y += 18
 
     metric_box = (108, 544, 830, 604)
-    draw.rounded_rectangle(metric_box, radius=12, fill=(32, 45, 58), outline=scene.accent, width=2)
+    draw.rounded_rectangle(metric_box, radius=12, fill=(226, 232, 240), outline=scene.accent, width=2)
     draw.text((132, 562), scene.metric, font=fonts["metric"], fill=TEXT)
 
     if cover is not None:
@@ -214,7 +214,7 @@ def render_scene(
         draw.rectangle((884, 394, 1172, 556), outline=scene.accent, width=2)
 
     progress_width = int((frame_index + 1) / frames_per_scene * 1098)
-    draw.rectangle((108, 626, 1206, 636), fill=(45, 56, 66))
+    draw.rectangle((108, 626, 1206, 636), fill=(203, 213, 225))
     draw.rectangle((108, 626, 108 + progress_width, 636), fill=scene.accent)
     draw.text((108, 662), f"Scene {scene_index + 1} of {scene_count}", font=fonts["small"], fill=MUTED)
     draw.text((978, 662), "ProteinLoop demo video", font=fonts["small"], fill=MUTED)

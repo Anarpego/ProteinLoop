@@ -28,6 +28,8 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       |> assign(:aquatic_biomass, aquatic_biomass)
       |> assign(:plant_biomass, number(assigns.state, "plant_biomass_kg"))
       |> assign(:duckweed, number(assigns.state, "duckweed_kg"))
+      |> assign(:chickens, whole_number(assigns.state, "chicken_count"))
+      |> assign(:eggs, number(assigns.state, "eggs_count"))
       |> assign(:last_event, Map.get(assigns.state, "last_event", "live update"))
       |> assign(:health, health)
       |> assign(:protection_message, protection_message(health.key, aquatic_biomass))
@@ -47,6 +49,8 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       data-aquatic-biomass={@aquatic_biomass}
       data-plant-biomass={@plant_biomass}
       data-duckweed={@duckweed}
+      data-chickens={@chickens}
+      data-eggs={@eggs}
       data-health={@health.key}
       data-collapsed={Map.get(@state, "collapsed", false)}
       data-last-event={@last_event}
@@ -56,7 +60,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       <div class="realtime-tank__viewport">
         <p id={"#{@id}-description"} class="sr-only">
           Animated fish and freshwater prawn tank with {@aquatic_biomass} kilograms of live animal
-          biomass. {@health.heading}. Ammonia {@ammonia} milligrams per liter and dissolved oxygen {@oxygen} milligrams per liter.
+          biomass connected to plants, duckweed feed, {@chickens} hens, and {@eggs} tracked eggs. {@health.heading}. Ammonia {@ammonia} milligrams per liter and dissolved oxygen {@oxygen} milligrams per liter.
         </p>
         <div
           id={"#{@id}-webgl"}
@@ -155,9 +159,9 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
               <p>{@fish_biomass} kg fish · {@prawn_biomass} kg prawns</p>
             </div>
             <div>
-              <dt>Plant loop</dt>
+              <dt>Plants → feed → eggs</dt>
               <dd>{@plant_biomass} kg plants</dd>
-              <p>{@duckweed} kg duckweed feed reserve</p>
+              <p>{@duckweed} kg duckweed · {@chickens} hens · {@eggs} eggs</p>
             </div>
           </dl>
         </div>

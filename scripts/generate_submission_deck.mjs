@@ -5,8 +5,8 @@ const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
 const evidence = {
-  python_tests: 155,
-  phoenix_tests: 101,
+  python_tests: 156,
+  phoenix_tests: 119,
   reward_delta: 463,
   collapse_avoidance: "100%",
 };
@@ -40,7 +40,7 @@ await fs.writeFile(
   path.join(workspace, "claim-spine.txt"),
   [
     "slide 1: ProteinLoop closes the food-protein cycle through a verifier-gated agentic loop.",
-    "slide 2: Aquaponics does not solve resilient protein production by itself.",
+    "slide 2: Aquaponics links fish and plants; ProteinLoop makes every protein output measurable and recoverable.",
     "slide 3: The biological loop maps to a coordinated actor system.",
     "slide 4: Deterministic physics, not the model, controls every mutation.",
     `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
@@ -131,9 +131,9 @@ export default async function slide01(presentation, ctx) {
   `import { colors, slideBase, h1, sub, box, footer } from "./common.mjs";
 export default async function slide02(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Problem");
-  h1(ctx, s, "Aquaponics is incomplete when protein is the real need");
-  sub(ctx, s, "Vegetables are useful, but rural families need resilient daily protein and a system they can operate safely.");
-  box(ctx, s, { x: 70, y: 238, w: 330, h: 240, title: "Current aquaponics", body: "Often optimized around greens and water loops. Protein production is secondary and fragile.", fill: colors.redSoft, line: colors.red });
+  h1(ctx, s, "Aquaponics links fish and plants. ProteinLoop protects every output.");
+  sub(ctx, s, "The operational gap is making animal biomass, cross-species tradeoffs, and verified recovery immediately visible.");
+  box(ctx, s, { x: 70, y: 238, w: 330, h: 240, title: "Aquaponics baseline", body: "Aquatic animals and plants share one water loop. A chemistry failure can threaten both.", fill: colors.redSoft, line: colors.red });
   box(ctx, s, { x: 476, y: 238, w: 330, h: 240, title: "Operational barrier", body: "Feed, ammonia, oxygen, nitrate, harvest timing, and mortality cascades interact every day.", fill: colors.amberSoft, line: colors.amber });
   box(ctx, s, { x: 882, y: 238, w: 330, h: 240, title: "ProteinLoop answer", body: "A closed protein cycle controlled by a verifier-gated agentic loop and clear producer approvals.", fill: colors.greenSoft, line: colors.green });
   footer(ctx, s, 2);
@@ -180,7 +180,7 @@ export default async function slide05(presentation, ctx) {
   metric(ctx, s, { x: 350, y: 250, label: "Phoenix tests", value: "${evidence.phoenix_tests}", note: "Sagents + LiveView + HITL", fill: colors.greenSoft });
   metric(ctx, s, { x: 608, y: 250, label: "Reward delta", value: "${evidence.reward_delta}", note: "safety vs naive avg", fill: colors.tealSoft });
   metric(ctx, s, { x: 866, y: 250, label: "Avoidance", value: "${evidence.collapse_avoidance}", note: "baseline collapses recovered", fill: colors.amberSoft });
-  box(ctx, s, { x: 160, y: 430, w: 860, h: 92, title: "Judge path", body: "Run demo cascade -> inspect RLVR evidence -> run four real Sagents/Gemma agents -> verify close_cycle.", fill: "#ffffff", line: colors.teal });
+  box(ctx, s, { x: 160, y: 430, w: 860, h: 92, title: "Judge path", body: "Run one-click verifier proof -> see unsafe rejection and safe recovery -> run the separate live Gemma mission -> inspect close_cycle.", fill: "#ffffff", line: colors.teal });
   footer(ctx, s, 5);
   return s;
 }`,

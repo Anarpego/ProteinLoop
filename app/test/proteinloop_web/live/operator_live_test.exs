@@ -10,10 +10,12 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     previous_horde = Application.get_env(:proteinloop, :horde_runtime)
     previous_evidence = Application.get_env(:proteinloop, :nrf9151_evidence)
     previous_dect_client = Application.get_env(:proteinloop, :dect_simulator_client)
+    previous_demo_cascade = Application.get_env(:proteinloop, :demo_cascade)
     Application.put_env(:proteinloop, :sagents_runtime, ProteinLoop.TestSagentsRuntime)
     Application.put_env(:proteinloop, :horde_runtime, ProteinLoop.TestHordeRuntime)
     Application.put_env(:proteinloop, :nrf9151_evidence, ProteinLoop.TestNRF9151Evidence)
     Application.put_env(:proteinloop, :dect_simulator_client, ProteinLoop.TestDectSimulatorClient)
+    Application.put_env(:proteinloop, :demo_cascade, ProteinLoop.TestDemoCascade)
     Application.put_env(:proteinloop, :test_dect_owner, self())
     ApprovalQueue.reset()
 
@@ -40,6 +42,12 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
         Application.put_env(:proteinloop, :dect_simulator_client, previous_dect_client)
       else
         Application.delete_env(:proteinloop, :dect_simulator_client)
+      end
+
+      if previous_demo_cascade do
+        Application.put_env(:proteinloop, :demo_cascade, previous_demo_cascade)
+      else
+        Application.delete_env(:proteinloop, :demo_cascade)
       end
 
       Application.delete_env(:proteinloop, :test_sagents_runtime_pause)
@@ -70,6 +78,22 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "3.0 kg reserve"
     assert html =~ "Chickens + eggs"
     assert html =~ "6 hens · 0.0 eggs tracked"
+
+    assert has_element?(
+             view,
+             "#protein-loop-story[data-story-phase='stable'] #protein-loop-impact[role='status'][aria-live='polite']"
+           )
+
+    assert html =~ "14.5 kg fish + prawn stock are stable"
+    assert has_element?(view, "#judge-proof-ribbon[aria-label='Executable competition proof']")
+    assert html =~ "Gemma 4 endpoint configured"
+    assert html =~ "5-agent recovery team"
+    assert html =~ "Deterministic verifier"
+    assert html =~ "2-board DECT NR+ capture"
+    assert html =~ "Producer approval"
+    assert html =~ "AMD ROCm + vLLM profile"
+    assert html =~ "Portable path · current demo is local"
+    assert has_element?(view, "#run-judge-proof[phx-click='demo-cascade']")
     assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
     assert has_element?(view, "#operator-system-scene [data-tank-fullscreen]")
@@ -124,6 +148,8 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "3.2 → 6.4 mg/L"
     assert html =~ "Unsafe actions executed"
     assert has_element?(view, "#fullscreen-agent-result .realtime-tank__safe-count strong", "0")
+    assert has_element?(view, "#protein-loop-story[data-story-phase='recovered']")
+    assert html =~ "14.5 kg fish + prawn stock protected"
   end
 
   test "streams simulator snapshots into the animated tank", %{conn: conn} do
@@ -150,6 +176,30 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
            )
 
     assert html =~ "Tank animals are in danger"
+    assert has_element?(view, "#protein-loop-story[data-story-phase='risk']")
+    assert html =~ "14.5 kg fish + prawn stock depend on recovery"
+  end
+
+  test "runs a one-click deterministic verifier proof without claiming Gemma execution", %{
+    conn: conn
+  } do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    html = view |> element("#run-judge-proof") |> render_click()
+
+    assert has_element?(view, "#judge-proof-result[role='status'][aria-live='polite']")
+    assert has_element?(view, "#protein-loop-story[data-story-phase='recovered']")
+    assert html =~ "One unsafe proposal blocked before recovery"
+    assert html =~ "Emergency reproduced"
+    assert html =~ "3.8 mg/L ammonia"
+    assert html =~ "Unsafe proposal blocked"
+    assert html =~ "0 unsafe actions executed"
+    assert html =~ "Safe recovery admitted"
+    assert html =~ "0.9 mg/L ammonia"
+    assert html =~ "6.4 mg/L oxygen"
+    assert html =~ "Deterministic verifier proof"
+    assert html =~ "Continue with live Gemma recovery"
+    refute html =~ "Gemma executed this verifier rehearsal"
   end
 
   test "keeps the Three.js render shell through an emergency snapshot patch", %{conn: conn} do
