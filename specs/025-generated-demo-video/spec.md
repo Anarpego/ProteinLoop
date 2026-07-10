@@ -12,7 +12,7 @@ The team has a deterministic fallback demo video file that can be uploaded or us
 
 1. The repo shall include a script that generates a local demo video artifact.
 2. The video shall use existing submission evidence and pitch copy.
-3. The generated video shall include scenes for problem, collapse versus recovery, RLVR, self-healing, Spanish HITL, Sagents loop, and AMD-hosted Gemma.
+3. The generated video shall include scenes for problem, collapse versus recovery, RLVR, self-healing, Spanish HITL, Sagents loop, and the selected proven Gemma runtime.
 4. The generator shall avoid external video binaries such as `ffmpeg`.
 5. The submission validator shall require the generated video artifact.
 6. The Make render target shall generate the video.

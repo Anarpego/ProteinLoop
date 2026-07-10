@@ -84,8 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if evidence is not None:
-        write_evidence(Path(args.evidence_file), evidence)
-        print(f"wrote evidence: {Path(args.evidence_file).relative_to(ROOT)}")
+        evidence_path = Path(args.evidence_file)
+        write_evidence(evidence_path, evidence)
+        print(f"wrote evidence: {display_path(evidence_path)}")
 
     print("Gemma endpoint OK")
     return 0
@@ -287,6 +288,13 @@ def open_url(request: urllib.request.Request, timeout: float) -> str:
 def write_evidence(path: Path, evidence: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def display_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
 
 
 if __name__ == "__main__":

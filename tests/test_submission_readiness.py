@@ -6,7 +6,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_submission_readiness import (
-    REQUIRED_ARTIFACTS,
+    BASE_REQUIRED_ARTIFACTS,
+    LOCAL_GEMMA_EVIDENCE,
+    REMOTE_GEMMA_EVIDENCE,
     ROOT,
     extract_application_url,
     extract_labeled_url,
@@ -14,6 +16,8 @@ from scripts.validate_submission_readiness import (
     is_public_http_url,
     lablab_form_check,
     normalize_git_remote,
+    normalize_model_mode,
+    required_artifacts,
     reachable_check,
     submission_bundle_check,
     url_check,
@@ -63,7 +67,7 @@ class SubmissionReadinessTests(unittest.TestCase):
         self.assertTrue(is_public_http_url("https://demo.example.com"))
 
     def test_readiness_requires_generated_upload_artifacts(self):
-        required = {path.relative_to(ROOT).as_posix() for path in REQUIRED_ARTIFACTS}
+        required = {path.relative_to(ROOT).as_posix() for path in BASE_REQUIRED_ARTIFACTS}
 
         for artifact in [
             "submission/proteinloop-demo-video.avi",
@@ -82,6 +86,18 @@ class SubmissionReadinessTests(unittest.TestCase):
         ]:
             with self.subTest(artifact=artifact):
                 self.assertIn(artifact, required)
+
+    def test_model_mode_selects_local_or_remote_evidence(self):
+        local = required_artifacts("local")
+        remote = required_artifacts("remote")
+
+        self.assertIn(LOCAL_GEMMA_EVIDENCE, local)
+        self.assertNotIn(REMOTE_GEMMA_EVIDENCE, local)
+        self.assertIn(REMOTE_GEMMA_EVIDENCE, remote)
+        self.assertNotIn(LOCAL_GEMMA_EVIDENCE, remote)
+        self.assertEqual(normalize_model_mode(None), "local")
+        with self.assertRaises(ValueError):
+            normalize_model_mode("unsupported")
 
     def test_lablab_form_check_accepts_current_export(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -260,6 +276,32 @@ https://demo.example.com
 
         self.assertFalse(result.ok)
         self.assertIn("localhost", result.detail)
+
+    def test_local_gemma_evidence_accepts_loopback_endpoint(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "local-gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "endpoint": "http://127.0.0.1:8001",
+                  "model": "google/gemma-4-E2B-it",
+                  "models": ["google/gemma-4-E2B-it"],
+                  "action": {
+                    "feed_kg": 0.05,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.15,
+                    "duckweed_harvest_kg": 1.5
+                  },
+                  "checks": [{"name": "chat action contract", "ok": true}]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = gemma_evidence_check(path, mode="local")
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.name, "Local Gemma evidence")
 
 
 if __name__ == "__main__":

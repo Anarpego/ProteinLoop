@@ -1,9 +1,10 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
 
 LOCAL_GEMMA_HOST ?= 127.0.0.1
 LOCAL_GEMMA_PORT ?= 8001
 LOCAL_GEMMA_CONTEXT_SIZE ?= 8192
 LOCAL_GEMMA_WAIT_SECONDS ?= 1800
+SUBMISSION_GEMMA_MODE ?= local
 
 test:
 	python3 -m unittest discover -s tests
@@ -38,7 +39,7 @@ submission-render:
 	node scripts/generate_submission_deck.mjs
 	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
 	python3 scripts/build_submission_bundle.py
-	python3 scripts/generate_readiness_report.py
+	SUBMISSION_GEMMA_MODE="$(SUBMISSION_GEMMA_MODE)" python3 scripts/generate_readiness_report.py
 
 submission-check:
 	python3 scripts/validate_submission_artifacts.py
@@ -50,7 +51,7 @@ submission-form:
 	python3 scripts/export_lablab_form.py
 
 submission-finalize:
-	python3 scripts/finalize_submission.py $(if $(DRY_RUN),--dry-run,)
+	SUBMISSION_GEMMA_MODE="$(SUBMISSION_GEMMA_MODE)" python3 scripts/finalize_submission.py $(if $(DRY_RUN),--dry-run,)
 
 demo-rehearsal:
 	python3 scripts/generate_demo_rehearsal.py
@@ -77,10 +78,10 @@ nrf9151-live-evidence:
 	python3 scripts/nrf9151_live_capture.py --write-submission
 
 readiness-report:
-	python3 scripts/generate_readiness_report.py
+	SUBMISSION_GEMMA_MODE="$(SUBMISSION_GEMMA_MODE)" python3 scripts/generate_readiness_report.py
 
 submission-ready-check:
-	python3 scripts/validate_submission_readiness.py
+	SUBMISSION_GEMMA_MODE="$(SUBMISSION_GEMMA_MODE)" python3 scripts/validate_submission_readiness.py
 
 docker-smoke:
 	python3 scripts/docker_smoke_test.py --write-evidence
@@ -108,6 +109,9 @@ local-gemma-status:
 
 local-gemma-check:
 	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" check
+
+local-gemma-submission-evidence:
+	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" check --evidence-file submission/local-gemma-evidence.json
 
 local-gemma-stop:
 	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" stop

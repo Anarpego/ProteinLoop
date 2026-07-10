@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import ipaddress
+import os
 import re
 import subprocess
 import sys
@@ -22,7 +23,10 @@ sys.path.insert(0, str(ROOT))
 from scripts.export_lablab_form import export_form  # noqa: E402
 from scripts.validate_submission_artifacts import BUNDLE, MANIFEST, bundle_ok  # noqa: E402
 
-REQUIRED_ARTIFACTS = [
+LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
+REMOTE_GEMMA_EVIDENCE = SUBMISSION / "gemma-evidence.json"
+
+BASE_REQUIRED_ARTIFACTS = [
     ROOT / "README.md",
     ROOT / "LICENSE",
     ROOT / "docker-compose.yml",
@@ -49,12 +53,14 @@ REQUIRED_ARTIFACTS = [
     SUBMISSION / "nrf9151-field-plan.md",
     SUBMISSION / "nrf9151-telemetry-bridge.json",
     SUBMISSION / "nrf9151-telemetry-bridge.md",
-    SUBMISSION / "gemma-evidence.json",
     SUBMISSION / "proteinloop-lablab-upload.zip",
     SUBMISSION / "bundle-manifest.json",
     SUBMISSION / "lablab-form.json",
     SUBMISSION / "final-readiness-report.md",
 ]
+
+# Backward-compatible name for callers that only need the selected default profile.
+REQUIRED_ARTIFACTS = [*BASE_REQUIRED_ARTIFACTS, LOCAL_GEMMA_EVIDENCE]
 
 
 @dataclass(frozen=True)
@@ -65,7 +71,11 @@ class Check:
 
 
 def main() -> int:
-    checks = run_checks(ROOT, LABLAB)
+    try:
+        checks = run_checks(ROOT, LABLAB)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
 
     for check in checks:
         mark = "ok" if check.ok else "FAIL"
@@ -81,14 +91,24 @@ def main() -> int:
     return 0
 
 
-def run_checks(root: Path, lablab_path: Path) -> list[Check]:
+def run_checks(
+    root: Path,
+    lablab_path: Path,
+    model_mode: str | None = None,
+) -> list[Check]:
     checks: list[Check] = []
+    model_mode = normalize_model_mode(model_mode or os.environ.get("SUBMISSION_GEMMA_MODE"))
 
-    missing = [path.relative_to(root).as_posix() for path in REQUIRED_ARTIFACTS if not path.exists()]
+    missing = [
+        path.relative_to(root).as_posix()
+        for path in required_artifacts(model_mode)
+        if not path.exists()
+    ]
     checks.append(Check("required local artifacts", not missing, ", ".join(missing)))
     checks.append(lablab_form_check(lablab_path, SUBMISSION / "lablab-form.json"))
     checks.append(submission_bundle_check(BUNDLE, MANIFEST))
-    checks.append(gemma_evidence_check(SUBMISSION / "gemma-evidence.json"))
+    evidence_path = LOCAL_GEMMA_EVIDENCE if model_mode == "local" else REMOTE_GEMMA_EVIDENCE
+    checks.append(gemma_evidence_check(evidence_path, mode=model_mode))
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
     repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
@@ -101,6 +121,19 @@ def run_checks(root: Path, lablab_path: Path) -> list[Check]:
     checks.extend(git_checks(root, repo_url))
 
     return checks
+
+
+def normalize_model_mode(value: str | None) -> str:
+    mode = (value or "local").strip().lower()
+    if mode not in {"local", "remote"}:
+        raise ValueError("SUBMISSION_GEMMA_MODE must be local or remote")
+    return mode
+
+
+def required_artifacts(model_mode: str | None = None) -> list[Path]:
+    mode = normalize_model_mode(model_mode)
+    evidence = LOCAL_GEMMA_EVIDENCE if mode == "local" else REMOTE_GEMMA_EVIDENCE
+    return [*BASE_REQUIRED_ARTIFACTS, evidence]
 
 
 def extract_labeled_url(text: str, label: str) -> str | None:
@@ -227,33 +260,38 @@ def is_public_http_url(url: str) -> bool:
     )
 
 
-def gemma_evidence_check(path: Path) -> Check:
+def gemma_evidence_check(path: Path, mode: str = "remote") -> Check:
+    mode = normalize_model_mode(mode)
+    name = "Local Gemma evidence" if mode == "local" else "Gemma endpoint evidence"
     if not path.exists():
-        return Check("Gemma endpoint evidence", False, "missing submission/gemma-evidence.json")
+        return Check(name, False, f"missing {display_path(path)}")
 
     try:
         evidence = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        return Check("Gemma endpoint evidence", False, f"invalid JSON: {exc}")
+        return Check(name, False, f"invalid JSON: {exc}")
 
     model = str(evidence.get("model", ""))
     if "gemma-4" not in model.lower():
-        return Check("Gemma endpoint evidence", False, f"expected Gemma 4 model, got {model!r}")
+        return Check(name, False, f"expected Gemma 4 model, got {model!r}")
 
     models = evidence.get("models")
     if not isinstance(models, list) or not all(isinstance(item, str) for item in models):
-        return Check("Gemma endpoint evidence", False, "missing advertised models list")
+        return Check(name, False, "missing advertised models list")
     if not model_is_advertised(model, models):
-        return Check("Gemma endpoint evidence", False, f"model {model!r} not advertised by /v1/models")
+        return Check(name, False, f"model {model!r} not advertised by /v1/models")
 
     endpoint = str(evidence.get("endpoint", ""))
     parsed = urllib.parse.urlparse(endpoint)
-    if parsed.hostname in {"127.0.0.1", "localhost", "::1"}:
-        return Check("Gemma endpoint evidence", False, "endpoint must not be localhost for final submission")
+    loopback = parsed.hostname in {"127.0.0.1", "localhost", "::1"}
+    if mode == "remote" and loopback:
+        return Check(name, False, "endpoint must not be localhost for remote submission mode")
+    if mode == "local" and not loopback:
+        return Check(name, False, "endpoint must be localhost for local submission mode")
 
     action = evidence.get("action")
     if not isinstance(action, dict):
-        return Check("Gemma endpoint evidence", False, "missing action object")
+        return Check(name, False, "missing action object")
 
     required_action_keys = {
         "feed_kg",
@@ -263,17 +301,17 @@ def gemma_evidence_check(path: Path) -> Check:
     }
     missing_action = sorted(required_action_keys - set(action))
     if missing_action:
-        return Check("Gemma endpoint evidence", False, f"action missing: {', '.join(missing_action)}")
+        return Check(name, False, f"action missing: {', '.join(missing_action)}")
 
     checks = evidence.get("checks")
     if not isinstance(checks, list) or not checks:
-        return Check("Gemma endpoint evidence", False, "missing endpoint checks")
+        return Check(name, False, "missing endpoint checks")
 
     failed = [str(check.get("name", "unnamed")) for check in checks if not check.get("ok")]
     if failed:
-        return Check("Gemma endpoint evidence", False, f"failed checks: {', '.join(failed)}")
+        return Check(name, False, f"failed checks: {', '.join(failed)}")
 
-    return Check("Gemma endpoint evidence", True, model)
+    return Check(name, True, f"{model} via {parsed.hostname}")
 
 
 def model_is_advertised(model: str, model_ids: list[str]) -> bool:

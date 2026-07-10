@@ -23,6 +23,7 @@ defmodule ProteinLoopWeb.ProducerLive do
       |> assign(:page_title, "Productor")
       |> assign(:snapshot, snapshot)
       |> assign(:state, snapshot.state)
+      |> assign(:nrf9151_evidence, nrf9151_evidence().snapshot())
       |> assign(:approval_queue, approval_queue)
       |> assign(:action, action)
       |> assign(:offline_guidance, EmergencyRules.evaluate(snapshot.state))
@@ -272,6 +273,10 @@ defmodule ProteinLoopWeb.ProducerLive do
     Application.get_env(:proteinloop, :sagents_runtime, ProteinLoop.Agent.SagentsRuntime)
   end
 
+  defp nrf9151_evidence do
+    Application.get_env(:proteinloop, :nrf9151_evidence, ProteinLoop.NRF9151Evidence)
+  end
+
   defp assign_snapshot(socket, snapshot) do
     approval_queue = socket.assigns.approval_queue
 
@@ -374,6 +379,42 @@ defmodule ProteinLoopWeb.ProducerLive do
               <dd class="text-xl font-semibold">{metric(@state, "day")}</dd>
             </div>
           </dl>
+
+          <div id="producer-dect-status" class="mt-5 border-y border-base-300 py-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold">Ultimo enlace DECT NR+</p>
+                <p :if={@nrf9151_evidence.available?} class="mt-1 text-sm text-base-content/60">
+                  Secuencia #{@nrf9151_evidence.sequence} recibida en ambos sentidos
+                </p>
+                <p :if={!@nrf9151_evidence.available?} class="mt-1 text-sm text-error">
+                  Captura no disponible
+                </p>
+              </div>
+              <span class={[
+                "badge",
+                if(@nrf9151_evidence.available?, do: "badge-success", else: "badge-error")
+              ]}>
+                {if @nrf9151_evidence.available?, do: "radio real", else: "sin evidencia"}
+              </span>
+            </div>
+
+            <dl :if={@nrf9151_evidence.available?} class="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt class="text-base-content/60">FT · puerta de enlace</dt>
+                <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
+              </div>
+              <div>
+                <dt class="text-base-content/60">PT · nodo del tanque</dt>
+                <dd class="mt-1 break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
+              </div>
+            </dl>
+
+            <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
+              La telemetria de agua es simulada: hello_dect demuestra el transporte de radio, no una
+              lectura de sensores quimicos.
+            </p>
+          </div>
 
           <div class="mt-5 rounded-box bg-base-200 p-4">
             <p class="font-semibold">Accion propuesta</p>

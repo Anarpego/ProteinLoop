@@ -28,6 +28,10 @@ OPERATOR_NEEDLES = [
     "until_tool_success",
     "Spanish HITL approval",
     "Self-healing mesh",
+    "Physical DECT NR+ link",
+    "Sequence #100",
+    "1051223739",
+    "1051239227",
 ]
 
 PRODUCER_NEEDLES = [
@@ -37,6 +41,9 @@ PRODUCER_NEEDLES = [
     "Rechazar",
     "Respaldo offline",
     "Mensaje WhatsApp/SMS",
+    "Ultimo enlace DECT NR+",
+    "Secuencia #100",
+    "radio real",
 ]
 
 

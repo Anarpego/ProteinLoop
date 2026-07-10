@@ -44,11 +44,11 @@ The executable failover proof runs two distributed BEAM nodes with Sagents 0.9.0
 
 Action:
 
-Show both connected nRF9151 DKs and `submission/nrf9151-live-evidence.md`.
+Show both connected nRF9151 DKs, then open the `Physical DECT NR+ link` panel. Point out sequence `#100`, both J-Link identities, and the `real radio capture` badge. Press `Replay sensor alert`.
 
 Narration:
 
-The field link is physical, not simulated. FT board 1051223739 acts as the community gateway and PT board 1051239227 maps to the tank edge. Each board sent locally and received its peer's matching DECT NR+ sequence number. The evidence was captured from both UARTs read-only, with no flash or reset. Nordic's stock hello_dect proves the radio link; the separate sample bridge defines the future sensor payload.
+The field link is physical, not simulated. FT board 1051223739 acts as the community gateway and PT board 1051239227 maps to the tank edge. Each board sent locally and received sequence 100 from its peer. The evidence was captured from both UARTs read-only, with no flash or reset. Nordic's stock hello_dect proves the radio link; pressing replay explicitly creates a simulated water-quality alert and does not claim a chemical reading from the boards.
 
 ## Scene 6: Spanish HITL
 
@@ -70,13 +70,13 @@ Narration:
 
 Sagents 0.9.0 runs four Gemma subsystem agents in parallel, then a fifth parent supervisor calls `close_cycle`. The custom `verify_ecosystem_safety` mode checks the action before execution, and `until_tool_success` returns the accepted action, verifier result, and reward.
 
-## Scene 8: AMD Gemma
+## Scene 8: Local Gemma 4
 
-Show `deploy/amd-gemma-vllm.md` or the model status panel.
+Show the model status panel and `submission/local-gemma-evidence.json`.
 
 Narration:
 
-For the AMD-hosted path, the same app points `GEMMA_ENDPOINT` at a vLLM OpenAI-compatible Gemma server running on ROCm. The repo includes the deployment profile using `vllm/vllm-openai-rocm:gemma4`.
+The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model, running locally through llama.cpp and Metal. It uses the same OpenAI-compatible `GEMMA_ENDPOINT` contract as the agents. The ROCm/vLLM profile remains a portable future deployment path, not an AMD-hosted claim in this submission.
 
 ## Closing
 

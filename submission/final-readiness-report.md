@@ -1,8 +1,53 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T15:44:48+00:00
-Commit: `43f352e`
-Working tree (source): `clean`
+Generated: 2026-07-10T16:37:54+00:00
+Commit: `9913a1e`
+Working tree (source): `M Makefile
+ M README.md
+ M app/lib/proteinloop_web/live/operator_live.ex
+ M app/lib/proteinloop_web/live/producer_live.ex
+ M app/test/proteinloop_web/live/operator_live_test.exs
+ M app/test/proteinloop_web/live/producer_live_test.exs
+ M docker-compose.horde.yml
+ M docker-compose.public.yml
+ M docker-compose.yml
+ M scripts/build_submission_bundle.py
+ M scripts/docker_smoke_test.py
+ M scripts/generate_demo_video.py
+ M scripts/generate_readiness_report.py
+ M scripts/generate_submission_deck.mjs
+ M scripts/local_gemma.py
+ M scripts/validate_gemma_endpoint.py
+ M scripts/validate_live_demo.py
+ M scripts/validate_submission_artifacts.py
+ M scripts/validate_submission_readiness.py
+ M specs/015-submission-packet/spec.md
+ M specs/024-gemma-endpoint-verification/spec.md
+ M specs/025-generated-demo-video/spec.md
+ M specs/045-final-submission-finalizer/spec.md
+ M specs/046-local-gemma-inference/tasks.md
+ M submission/artifact-build-manifest.json
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M submission/proteinloop-demo-video.avi
+ M submission/proteinloop-hackathon-deck.pptx
+ M submission/sagents-evidence.json
+ M submission/slides.md
+ M submission/video-script.md
+ M tests/test_gemma_endpoint_validator.py
+ M tests/test_live_demo_validator.py
+ M tests/test_local_gemma.py
+ M tests/test_readiness_report.py
+ M tests/test_submission_bundle.py
+ M tests/test_submission_readiness.py
+?? app/lib/proteinloop/nrf9151_evidence.ex
+?? app/test/proteinloop/nrf9151_evidence_test.exs
+?? app/test/support/test_nrf9151_evidence.ex
+?? specs/050-local-gemma-submission/
+?? specs/051-dect-operator-producer/
+?? submission/local-gemma-evidence.json
+?? tests/test_submission_artifact_report.py`
+Gemma evidence mode: `local`
 
 ## Command Evidence
 
@@ -16,36 +61,28 @@ Working tree (source): `clean`
 | Live nRF9151 DECT NR+ evidence | `make nrf9151-live-evidence` | 0 | PASS |
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
-| Credit access | `make credit-check` | 2 | FAIL |
+| Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
 | Public demo environment | `make public-env-check` | 2 | FAIL |
-| Gemma endpoint evidence | `make gemma-check` | 2 | FAIL |
 | Final submission readiness | `make submission-ready-check` | 2 | FAIL |
 | GitHub CLI authentication | `gh auth status` | 0 | PASS |
 
 ## Remaining Blockers
 
-- Credit access: [FAIL] Fireworks API key - set FIREWORKS_API_KEY from the Fireworks dashboard
-- Credit access: [FAIL] AMD Cloud credits - set AMD_CLOUD_STATUS=active after AMD Cloud console shows credits and GPU quota
 - Public demo environment: [FAIL] PHX_HOST - set PHX_HOST to the public hostname
 - Public demo environment: [FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
-- Gemma endpoint evidence: exited 2
-- Final submission readiness: [FAIL] required local artifacts - submission/gemma-evidence.json
-- Final submission readiness: [FAIL] Gemma endpoint evidence - missing submission/gemma-evidence.json
-- Final submission readiness: [FAIL] public GitHub repository URL - missing or TODO
 - Final submission readiness: [FAIL] application URL - missing or TODO
-- Final submission readiness: [FAIL] origin remote configured - git config --get remote.origin.url failed
-- Final submission readiness: [FAIL] origin matches lablab repository URL - missing repo URL or origin
 
 ## Next Commands
 
 ```sh
 gh auth login -h github.com
-make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop
+make publish-repo GITHUB_REPOSITORY=Anarpego/ProteinLoop
 PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check
-FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
-make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it
-make submission-finalize
+make local-gemma-check
+make local-gemma-submission-evidence
+make sagents-evidence
+SUBMISSION_GEMMA_MODE=local make submission-finalize
 ```
 
 ## Output Snippets
@@ -54,9 +91,9 @@ make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-.................................................................................................................................................
+...........................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 145 tests in 0.124s
+Ran 155 tests in 0.124s
 
 OK
 ```
@@ -73,7 +110,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T15:41:00.985718+00:00
+checked_at: 2026-07-10T16:37:54.617811+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -161,14 +198,16 @@ python3 scripts/validate_public_deploy.py
 public deploy profile OK
 ```
 
-### Credit access
+### Local Gemma endpoint evidence
 
 ```text
-FIREWORKS_API_KEY="" FIREWORKS_BASE_URL="" AMD_CLOUD_STATUS="" python3 scripts/validate_credit_access.py
-[FAIL] Fireworks API key - set FIREWORKS_API_KEY from the Fireworks dashboard
-[FAIL] AMD Cloud credits - set AMD_CLOUD_STATUS=active after AMD Cloud console shows credits and GPU quota
-credit access check failed
-make[1]: *** [credit-check] Error 1
+evidence: submission/local-gemma-evidence.json
+model: google/gemma-4-E2B-it
+endpoint scope: 127.0.0.1
+[ok] models endpoint
+[ok] requested model advertised
+[ok] chat action contract
+local Gemma endpoint evidence OK
 ```
 
 ### Public demo environment
@@ -180,33 +219,26 @@ python3 scripts/validate_public_env.py
 [ok] PUBLIC_PORT - default 80
 [ok] SIMULATOR_URL - http://simulator:8000
 2 public environment check(s) failed
-make[1]: *** [public-env-check] Error 1
-```
-
-### Gemma endpoint evidence
-
-```text
-GEMMA_ENDPOINT="" GEMMA_MODEL="" GEMMA_API_KEY="" python3 scripts/validate_gemma_endpoint.py
-GEMMA_ENDPOINT or --endpoint is required
-make[1]: *** [gemma-check] Error 2
+make[2]: *** [public-env-check] Error 1
 ```
 
 ### Final submission readiness
 
 ```text
-python3 scripts/validate_submission_readiness.py
-[FAIL] required local artifacts - submission/gemma-evidence.json
+SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
+[ok] required local artifacts
 [ok] lablab form matches draft - submission/lablab-form.json
 [ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
-[FAIL] Gemma endpoint evidence - missing submission/gemma-evidence.json
-[FAIL] public GitHub repository URL - missing or TODO
+[ok] Local Gemma evidence - google/gemma-4-E2B-it via 127.0.0.1
+[ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
 [FAIL] application URL - missing or TODO
+[ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
 [ok] local git repository
-[ok] local git commit - 43f352e858127e79b78f25f9f46304945de539a4
-[FAIL] origin remote configured - git config --get remote.origin.url failed
-[FAIL] origin matches lablab repository URL - missing repo URL or origin
-6 submission readiness check(s) failed
-make[1]: *** [submission-ready-check] Error 1
+[ok] local git commit - 9913a1e6fd0340f94d81d5e8edce440df31988fd
+[ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
+[ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
+1 submission readiness check(s) failed
+make[2]: *** [submission-ready-check] Error 1
 ```
 
 ### GitHub CLI authentication

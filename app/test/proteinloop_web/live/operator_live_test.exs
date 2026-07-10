@@ -8,8 +8,13 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   setup do
     previous = Application.get_env(:proteinloop, :sagents_runtime)
     previous_horde = Application.get_env(:proteinloop, :horde_runtime)
+    previous_evidence = Application.get_env(:proteinloop, :nrf9151_evidence)
+    previous_dect_client = Application.get_env(:proteinloop, :dect_simulator_client)
     Application.put_env(:proteinloop, :sagents_runtime, ProteinLoop.TestSagentsRuntime)
     Application.put_env(:proteinloop, :horde_runtime, ProteinLoop.TestHordeRuntime)
+    Application.put_env(:proteinloop, :nrf9151_evidence, ProteinLoop.TestNRF9151Evidence)
+    Application.put_env(:proteinloop, :dect_simulator_client, ProteinLoop.TestDectSimulatorClient)
+    Application.put_env(:proteinloop, :test_dect_owner, self())
     ApprovalQueue.reset()
 
     on_exit(fn ->
@@ -25,11 +30,56 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
         Application.delete_env(:proteinloop, :horde_runtime)
       end
 
+      if previous_evidence do
+        Application.put_env(:proteinloop, :nrf9151_evidence, previous_evidence)
+      else
+        Application.delete_env(:proteinloop, :nrf9151_evidence)
+      end
+
+      if previous_dect_client do
+        Application.put_env(:proteinloop, :dect_simulator_client, previous_dect_client)
+      else
+        Application.delete_env(:proteinloop, :dect_simulator_client)
+      end
+
       Application.delete_env(:proteinloop, :test_sagents_runtime_pause)
+      Application.delete_env(:proteinloop, :test_dect_owner)
       ApprovalQueue.reset()
     end)
 
     :ok
+  end
+
+  test "shows and replays the latest physical DECT capture as simulated telemetry", %{conn: conn} do
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert html =~ "Physical DECT NR+ link"
+    assert html =~ "Sequence #100"
+    assert html =~ "1051223739"
+    assert html =~ "1051239227"
+    assert html =~ "real radio capture"
+    assert html =~ ~r/simulated sensor\s+alert/
+    assert has_element?(view, "#dect-live-evidence")
+
+    html = view |> element("#replay-dect-sensor") |> render_click()
+
+    assert_receive :dect_replay_requested
+    assert html =~ "DECT capture #100 replayed as simulated sensor alert"
+    assert html =~ "3.8 mg/L"
+  end
+
+  test "starts the verified Sagents Gemma cycle from the DECT panel", %{conn: conn} do
+    Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    view |> element("#dect-run-gemma") |> render_click()
+
+    assert_receive {:test_sagents_runtime_started, :run, task}
+    send(task, {:continue_test_sagents_runtime, :run})
+
+    html = render_async(view, 1_000)
+    assert html =~ "Day 1 / reward 203.7"
+    assert html =~ "real Sagents cycle completed"
   end
 
   test "renders and refreshes the real Horde cluster status", %{conn: conn} do

@@ -59,9 +59,9 @@ Risky water exchange and harvest actions pause for producer approval in Spanish:
 
 Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `close_cycle` through `verify_ecosystem_safety`, and terminates with `until_tool_success`.
 
-## 13. AMD Gemma Path
+## 13. Proven Gemma Runtime
 
-`GEMMA_ENDPOINT` points to AMD-hosted Gemma through vLLM/ROCm using `vllm/vllm-openai-rocm:gemma4`.
+`google/gemma-4-E2B-it` runs locally through llama.cpp/Metal behind `GEMMA_ENDPOINT`; the same boundary can later move to vLLM/ROCm without changing the agent code.
 
 ## 14. Market
 

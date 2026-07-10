@@ -39,6 +39,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:hitl_running?, false)
       |> assign(:agent_provider, :stub_safe)
       |> assign(:horde_status, horde_runtime().cluster_status())
+      |> assign(:nrf9151_evidence, nrf9151_evidence().snapshot())
       |> assign(:mesh, Mesh.initial())
       |> assign(:approval_queue, ApprovalQueue.snapshot())
       |> assign(:model_status, ModelStatus.snapshot())
@@ -79,6 +80,46 @@ defmodule ProteinLoopWeb.OperatorLive do
      socket
      |> assign(:horde_status, horde_runtime().cluster_status())
      |> update(:action_log, fn log -> Enum.take(["Horde cluster status refreshed" | log], 6) end)}
+  end
+
+  def handle_event("refresh-dect", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:nrf9151_evidence, nrf9151_evidence().snapshot())
+     |> update(:action_log, fn log -> Enum.take(["DECT evidence refreshed" | log], 6) end)}
+  end
+
+  def handle_event("replay-dect-sensor", _params, socket) do
+    evidence = socket.assigns.nrf9151_evidence
+
+    socket =
+      cond do
+        not evidence.available? ->
+          put_flash(socket, :error, "A physical DECT capture is required for replay")
+
+        true ->
+          case dect_simulator_client().trigger_ammonia_spike() do
+            {:ok, %{"state" => state}} ->
+              snapshot = %{
+                connected?: true,
+                source: "dect-replay",
+                state: state,
+                reward: nil,
+                error: nil
+              }
+
+              assign_snapshot(
+                socket,
+                snapshot,
+                "DECT capture ##{evidence.sequence} replayed as simulated sensor alert"
+              )
+
+            {:error, reason} ->
+              put_flash(socket, :error, "Simulator error: #{inspect(reason)}")
+          end
+      end
+
+    {:noreply, socket}
   end
 
   def handle_event("spike", _params, socket) do
@@ -205,21 +246,11 @@ defmodule ProteinLoopWeb.OperatorLive do
   end
 
   def handle_event("run-verified-loop", _params, socket) do
-    cond do
-      socket.assigns.sagents_running? ->
-        {:noreply, socket}
+    {:noreply, start_sagents_cycle(socket)}
+  end
 
-      socket.assigns.sagents_status.endpoint_configured? ->
-        runtime = sagents_runtime()
-
-        {:noreply,
-         socket
-         |> assign(:sagents_running?, true)
-         |> start_async(:sagents_cycle, fn -> runtime.run() end)}
-
-      true ->
-        {:noreply, put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents")}
-    end
+  def handle_event("dect-run-gemma", _params, socket) do
+    {:noreply, start_sagents_cycle(socket)}
   end
 
   def handle_event("demo-cascade", _params, socket) do
@@ -324,6 +355,23 @@ defmodule ProteinLoopWeb.OperatorLive do
      |> put_flash(:error, "Sagents HITL task exited: #{inspect(reason)}")}
   end
 
+  defp start_sagents_cycle(socket) do
+    cond do
+      socket.assigns.sagents_running? ->
+        socket
+
+      socket.assigns.sagents_status.endpoint_configured? ->
+        runtime = sagents_runtime()
+
+        socket
+        |> assign(:sagents_running?, true)
+        |> start_async(:sagents_cycle, fn -> runtime.run() end)
+
+      true ->
+        put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents")
+    end
+  end
+
   defp assign_snapshot(socket, snapshot, log_entry) do
     socket
     |> assign(:snapshot, snapshot)
@@ -338,6 +386,14 @@ defmodule ProteinLoopWeb.OperatorLive do
 
   defp horde_runtime do
     Application.get_env(:proteinloop, :horde_runtime, HordeRuntime)
+  end
+
+  defp nrf9151_evidence do
+    Application.get_env(:proteinloop, :nrf9151_evidence, ProteinLoop.NRF9151Evidence)
+  end
+
+  defp dect_simulator_client do
+    Application.get_env(:proteinloop, :dect_simulator_client, SimulatorClient)
   end
 
   defp run_agent(socket, provider) do
@@ -468,6 +524,104 @@ defmodule ProteinLoopWeb.OperatorLive do
             value={@snapshot.reward || "pending"}
             detail={@snapshot.source}
           />
+        </section>
+
+        <section id="dect-live-evidence" class="rounded-box border border-base-300 bg-base-100 p-4">
+          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-lg font-semibold">Physical DECT NR+ link</h2>
+                <span :if={@nrf9151_evidence.available?} class="badge badge-success">
+                  real radio capture
+                </span>
+                <span :if={!@nrf9151_evidence.available?} class="badge badge-error">unavailable</span>
+              </div>
+              <p class="mt-1 text-sm text-base-content/60">
+                Latest read-only exchange from the two connected nRF9151 boards.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="btn btn-sm btn-outline"
+                phx-click="refresh-dect"
+                title="Reload DECT evidence"
+              >
+                <.icon name="hero-arrow-path" /> Refresh
+              </button>
+              <button
+                id="replay-dect-sensor"
+                class="btn btn-sm btn-warning"
+                phx-click="replay-dect-sensor"
+                disabled={!@nrf9151_evidence.available?}
+              >
+                <.icon name="hero-signal" /> Replay sensor alert
+              </button>
+              <button
+                id="dect-run-gemma"
+                class="btn btn-sm btn-primary"
+                phx-click="dect-run-gemma"
+                disabled={
+                  !@nrf9151_evidence.available? || @sagents_running? ||
+                    !@sagents_status.endpoint_configured?
+                }
+              >
+                <.icon
+                  name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
+                  class={if @sagents_running?, do: "animate-spin", else: nil}
+                />
+                {if @sagents_running?, do: "Running agents", else: "Run Gemma on simulator state"}
+              </button>
+            </div>
+          </div>
+
+          <div
+            :if={@nrf9151_evidence.available?}
+            class="mt-4 grid border-y border-base-300 md:grid-cols-[1fr_auto_1fr]"
+          >
+            <dl class="py-3 md:pr-4">
+              <div class="flex items-center justify-between gap-3">
+                <dt class="font-semibold">FT gateway</dt>
+                <dd class="badge badge-outline">sent + received</dd>
+              </div>
+              <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                <dt class="text-base-content/60">J-Link</dt>
+                <dd class="break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
+                <dt class="text-base-content/60">Serial</dt>
+                <dd class="break-all font-mono text-xs">{@nrf9151_evidence.ft.serial_port}</dd>
+              </div>
+            </dl>
+
+            <div class="flex items-center justify-center border-base-300 px-5 py-3 md:border-x">
+              <div class="text-center">
+                <.icon name="hero-arrows-right-left" class="mx-auto size-5 text-info" />
+                <p class="mt-1 whitespace-nowrap font-semibold">
+                  Sequence #{@nrf9151_evidence.sequence}
+                </p>
+                <p class="text-xs text-base-content/60">FT / PT bidirectional</p>
+              </div>
+            </div>
+
+            <dl class="py-3 md:pl-4">
+              <div class="flex items-center justify-between gap-3">
+                <dt class="font-semibold">PT tank edge</dt>
+                <dd class="badge badge-outline">sent + received</dd>
+              </div>
+              <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                <dt class="text-base-content/60">J-Link</dt>
+                <dd class="break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
+                <dt class="text-base-content/60">Serial</dt>
+                <dd class="break-all font-mono text-xs">{@nrf9151_evidence.pt.serial_port}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
+            Nordic hello_dect proves the physical radio link. Replaying it creates a simulated sensor
+            alert in the deterministic water-quality scenario; it is not chemical sensor telemetry.
+          </p>
+          <p :if={!@nrf9151_evidence.available?} class="mt-3 text-sm text-error">
+            Could not load the latest capture: {@nrf9151_evidence.error}
+          </p>
         </section>
 
         <section class="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">

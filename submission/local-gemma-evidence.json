@@ -1,0 +1,32 @@
+{
+  "action": {
+    "aeration_hours": 12,
+    "duckweed_harvest_kg": 1.5,
+    "feed_kg": 0.01,
+    "note": "Ammonia level is high (2.4 mg/L). Feed is low (4.0 kg buffer). Aeration and water exchange are set to manage the high ammonia.",
+    "water_exchange_fraction": 0.15
+  },
+  "checked_at": "2026-07-10T16:19:23.408571+00:00",
+  "checks": [
+    {
+      "detail": "1 model(s)",
+      "name": "models endpoint",
+      "ok": true
+    },
+    {
+      "detail": "google/gemma-4-E2B-it",
+      "name": "requested model advertised",
+      "ok": true
+    },
+    {
+      "detail": "valid ProteinLoop action",
+      "name": "chat action contract",
+      "ok": true
+    }
+  ],
+  "endpoint": "http://127.0.0.1:8001",
+  "model": "google/gemma-4-E2B-it",
+  "models": [
+    "google/gemma-4-E2B-it"
+  ]
+}

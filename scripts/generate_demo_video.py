@@ -152,14 +152,14 @@ def build_scenes(evidence: dict) -> list[Scene]:
             AMBER,
         ),
         Scene(
-            "AMD Gemma",
-            "Gemma 4 runs behind GEMMA_ENDPOINT",
+            "Local Gemma 4",
+            "Gemma 4 E2B runs offline behind GEMMA_ENDPOINT",
             [
                 "The app uses an OpenAI-compatible boundary for model proposals.",
-                "The AMD path serves Gemma 4 with vLLM on ROCm.",
-                "make gemma-check proves /v1/models and /v1/chat/completions before final submission.",
+                "The proven runtime uses llama.cpp and Metal with Google's smallest Gemma 4 model.",
+                "Local endpoint and real Sagents evidence prove models, chat, tools, verifier, and HITL.",
             ],
-            f"forecast risk after spike: {forecast['risk_level']}",
+            f"Gemma 4 E2B | forecast after spike: {forecast['risk_level']}",
             RED,
         ),
     ]

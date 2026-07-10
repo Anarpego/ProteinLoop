@@ -127,6 +127,10 @@ def check_web() -> list[Check]:
         "until_tool_success",
         "Spanish HITL approval",
         "Self-healing mesh",
+        "Physical DECT NR+ link",
+        "Sequence #100",
+        "1051223739",
+        "1051239227",
     ]
     producer_needles = [
         "Productor",
@@ -135,6 +139,9 @@ def check_web() -> list[Check]:
         "Rechazar",
         "Respaldo offline",
         "Mensaje WhatsApp/SMS",
+        "Ultimo enlace DECT NR+",
+        "Secuencia #100",
+        "radio real",
     ]
 
     checks = [

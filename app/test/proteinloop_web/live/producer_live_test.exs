@@ -8,7 +8,9 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
 
   setup do
     previous = Application.get_env(:proteinloop, :sagents_runtime)
+    previous_evidence = Application.get_env(:proteinloop, :nrf9151_evidence)
     Application.put_env(:proteinloop, :sagents_runtime, TestSagentsRuntime)
+    Application.put_env(:proteinloop, :nrf9151_evidence, ProteinLoop.TestNRF9151Evidence)
     ApprovalQueue.reset()
 
     on_exit(fn ->
@@ -18,10 +20,31 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
         Application.delete_env(:proteinloop, :sagents_runtime)
       end
 
+      if previous_evidence do
+        Application.put_env(:proteinloop, :nrf9151_evidence, previous_evidence)
+      else
+        Application.delete_env(:proteinloop, :nrf9151_evidence)
+      end
+
       ApprovalQueue.reset()
     end)
 
     :ok
+  end
+
+  test "shows the latest real DECT exchange without claiming physical sensor telemetry", %{
+    conn: conn
+  } do
+    {:ok, view, html} = live(conn, ~p"/producer")
+
+    assert has_element?(view, "#producer-dect-status")
+    assert html =~ "Ultimo enlace DECT NR+"
+    assert html =~ "Secuencia #100"
+    assert html =~ "1051223739"
+    assert html =~ "1051239227"
+    assert html =~ "radio real"
+    assert html =~ "telemetria de agua es simulada"
+    assert html =~ ~r/no una\s+lectura de sensores quimicos/
   end
 
   test "producer approval resumes the interrupted Sagents tool", %{conn: conn} do

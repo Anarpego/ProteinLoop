@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add an executable gate that proves an AMD-hosted or fallback OpenAI-compatible Gemma endpoint is usable by ProteinLoop before final submission.
+Add an executable gate that proves the selected local or remote OpenAI-compatible Gemma endpoint is usable by ProteinLoop before final submission. Spec 050 makes local evidence the selected final profile when hosted credentials are unavailable.
 
 ## User Value
 

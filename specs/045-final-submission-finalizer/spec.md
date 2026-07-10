@@ -6,7 +6,7 @@ Add one executable finalization command that runs the required generated-artifac
 
 ## User Value
 
-After the public repo, public demo URL, and Gemma endpoint evidence exist, the team can run one command that refreshes Docker smoke evidence, structured lablab form fields, the upload bundle, and the final readiness report in the correct order before validating final submission readiness.
+After the public repo, public demo URL, and selected local-or-remote Gemma evidence exist, the team can run one command that refreshes Docker smoke evidence, structured lablab form fields, the upload bundle, and the final readiness report in the correct order before validating final submission readiness.
 
 ## Functional Requirements
 

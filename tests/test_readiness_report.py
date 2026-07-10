@@ -11,6 +11,7 @@ from scripts.generate_readiness_report import (
     EVIDENCE_COMMANDS,
     docker_smoke_evidence,
     extract_blockers,
+    evidence_commands,
     horde_runtime_evidence,
     nrf9151_live_evidence,
     render_report,
@@ -21,7 +22,18 @@ from scripts.generate_readiness_report import (
 
 
 class ReadinessReportTests(unittest.TestCase):
-    def test_evidence_commands_cover_local_and_external_submission_gates(self):
+    def test_local_mode_omits_credit_and_remote_endpoint_gates(self):
+        names = [name for name, _command in evidence_commands("local")]
+
+        self.assertIn("Local Gemma endpoint evidence", names)
+        self.assertNotIn("Credit access", names)
+        self.assertNotIn("Gemma endpoint evidence", names)
+
+        remote_names = [name for name, _command in evidence_commands("remote")]
+        self.assertIn("Credit access", remote_names)
+        self.assertIn("Gemma endpoint evidence", remote_names)
+
+    def test_default_evidence_commands_cover_local_submission_gates(self):
         names = [name for name, _command in EVIDENCE_COMMANDS]
 
         for expected in [
@@ -31,9 +43,8 @@ class ReadinessReportTests(unittest.TestCase):
             "Real Sagents evidence",
             "Real Horde failover evidence",
             "Live nRF9151 DECT NR+ evidence",
-            "Credit access",
+            "Local Gemma endpoint evidence",
             "Public demo environment",
-            "Gemma endpoint evidence",
             "Final submission readiness",
             "GitHub CLI authentication",
         ]:
@@ -238,6 +249,7 @@ class ReadinessReportTests(unittest.TestCase):
                     "GEMMA_ENDPOINT or --endpoint is required",
                 ),
             ],
+            model_mode="remote",
         )
 
         self.assertIn("Commit: `abc1234`", report)

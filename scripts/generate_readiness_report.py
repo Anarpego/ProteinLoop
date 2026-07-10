@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import subprocess
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -16,6 +18,7 @@ DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
 SAGENTS_EVIDENCE = SUBMISSION / "sagents-evidence.json"
 HORDE_EVIDENCE = SUBMISSION / "horde-evidence.json"
 NRF9151_LIVE_EVIDENCE = SUBMISSION / "nrf9151-live-evidence.json"
+LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -23,7 +26,7 @@ GENERATED_ARTIFACT_PATHS = [
     "submission/proteinloop-lablab-upload.zip",
 ]
 
-EVIDENCE_COMMANDS = [
+COMMON_EVIDENCE_COMMANDS = [
     ("Unit tests", ["make", "test"]),
     ("Submission artifacts", ["make", "submission-check"]),
     ("Docker smoke", ["make", "docker-smoke"]),
@@ -32,12 +35,38 @@ EVIDENCE_COMMANDS = [
     ("Live nRF9151 DECT NR+ evidence", ["make", "nrf9151-live-evidence"]),
     ("CI workflow contract", ["make", "ci-check"]),
     ("Public deploy profile", ["make", "public-deploy-check"]),
+]
+
+REMOTE_MODEL_COMMANDS = [
     ("Credit access", ["make", "credit-check"]),
-    ("Public demo environment", ["make", "public-env-check"]),
     ("Gemma endpoint evidence", ["make", "gemma-check"]),
+]
+
+LOCAL_MODEL_COMMANDS = [
+    ("Local Gemma endpoint evidence", ["make", "local-gemma-submission-evidence"]),
+]
+
+FINAL_EVIDENCE_COMMANDS = [
+    ("Public demo environment", ["make", "public-env-check"]),
     ("Final submission readiness", ["make", "submission-ready-check"]),
     ("GitHub CLI authentication", ["gh", "auth", "status"]),
 ]
+
+
+def normalize_model_mode(value: str) -> str:
+    mode = value.strip().lower()
+    if mode not in {"local", "remote"}:
+        raise ValueError("SUBMISSION_GEMMA_MODE must be local or remote")
+    return mode
+
+
+def evidence_commands(model_mode: str = "local") -> list[tuple[str, list[str]]]:
+    mode = normalize_model_mode(model_mode)
+    model_commands = LOCAL_MODEL_COMMANDS if mode == "local" else REMOTE_MODEL_COMMANDS
+    return [*COMMON_EVIDENCE_COMMANDS, *model_commands, *FINAL_EVIDENCE_COMMANDS]
+
+
+EVIDENCE_COMMANDS = evidence_commands("local")
 
 
 @dataclass(frozen=True)
@@ -58,7 +87,8 @@ def main() -> int:
     commit = git_text(["rev-parse", "--short", "HEAD"]) or "unknown"
     working_tree = source_working_tree_status() or "clean"
 
-    evidence = collect_evidence()
+    model_mode = normalize_model_mode(os.environ.get("SUBMISSION_GEMMA_MODE", "local"))
+    evidence = collect_evidence(model_mode)
 
     OUTPUT.write_text(
         render_report(
@@ -66,6 +96,7 @@ def main() -> int:
             commit=commit,
             working_tree=working_tree,
             evidence=evidence,
+            model_mode=model_mode,
         ),
         encoding="utf-8",
     )
@@ -73,9 +104,9 @@ def main() -> int:
     return 0
 
 
-def collect_evidence() -> list[CommandEvidence]:
+def collect_evidence(model_mode: str = "local") -> list[CommandEvidence]:
     evidence: list[CommandEvidence] = []
-    for name, command in EVIDENCE_COMMANDS:
+    for name, command in evidence_commands(model_mode):
         if name == "Docker smoke":
             evidence.append(docker_smoke_evidence(DOCKER_SMOKE_EVIDENCE))
         elif name == "Real Sagents evidence":
@@ -84,6 +115,8 @@ def collect_evidence() -> list[CommandEvidence]:
             evidence.append(horde_runtime_evidence(HORDE_EVIDENCE))
         elif name == "Live nRF9151 DECT NR+ evidence":
             evidence.append(nrf9151_live_evidence(NRF9151_LIVE_EVIDENCE))
+        elif name == "Local Gemma endpoint evidence":
+            evidence.append(local_gemma_endpoint_evidence(LOCAL_GEMMA_EVIDENCE))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -200,6 +233,46 @@ def sagents_runtime_evidence(path: Path) -> CommandEvidence:
     )
     if ok:
         lines.append("real Sagents evidence OK")
+
+    return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def local_gemma_endpoint_evidence(path: Path) -> CommandEvidence:
+    name = "Local Gemma endpoint evidence"
+    command = ["make", "local-gemma-submission-evidence"]
+    path_label = display_path(path)
+    if not path.exists():
+        return CommandEvidence(name, command, 1, "", f"missing {path_label}")
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CommandEvidence(name, command, 1, "", f"invalid {path_label}: {exc}")
+
+    model = str(evidence.get("model", ""))
+    endpoint = urllib.parse.urlparse(str(evidence.get("endpoint", "")))
+    checks = evidence.get("checks", [])
+    lines = [
+        f"evidence: {path_label}",
+        f"model: {model or 'unknown'}",
+        f"endpoint scope: {endpoint.hostname or 'unknown'}",
+    ]
+    for check in checks:
+        if isinstance(check, dict):
+            lines.append(
+                f"[{'ok' if check.get('ok') else 'FAIL'}] {check.get('name', 'unnamed')}"
+            )
+
+    ok = (
+        model == "google/gemma-4-E2B-it"
+        and model in evidence.get("models", [])
+        and endpoint.hostname in {"127.0.0.1", "localhost", "::1"}
+        and isinstance(evidence.get("action"), dict)
+        and checks
+        and all(isinstance(check, dict) and check.get("ok") is True for check in checks)
+    )
+    if ok:
+        lines.append("local Gemma endpoint evidence OK")
 
     return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
 
@@ -390,7 +463,9 @@ def render_report(
     commit: str,
     working_tree: str,
     evidence: list[CommandEvidence],
+    model_mode: str = "local",
 ) -> str:
+    model_mode = normalize_model_mode(model_mode)
     blockers = extract_blockers(evidence)
     lines = [
         "# ProteinLoop Final Readiness Report",
@@ -398,6 +473,7 @@ def render_report(
         f"Generated: {generated_at}",
         f"Commit: `{commit}`",
         f"Working tree (source): `{working_tree}`",
+        f"Gemma evidence mode: `{model_mode}`",
         "",
         "## Command Evidence",
         "",
@@ -408,6 +484,29 @@ def render_report(
     for item in evidence:
         command = " ".join(item.command)
         lines.append(f"| {item.name} | `{command}` | {item.returncode} | {status_label(item)} |")
+
+    next_commands = [
+        "gh auth login -h github.com",
+        "make publish-repo GITHUB_REPOSITORY=Anarpego/ProteinLoop",
+        "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check",
+        "make set-demo-url DEMO_URL=https://your-public-demo-url",
+    ]
+    if model_mode == "local":
+        next_commands.extend(
+            [
+                "make local-gemma-check",
+                "make local-gemma-submission-evidence",
+                "make sagents-evidence",
+            ]
+        )
+    else:
+        next_commands.extend(
+            [
+                "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
+                "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it",
+            ]
+        )
+    next_commands.append(f"SUBMISSION_GEMMA_MODE={model_mode} make submission-finalize")
 
     lines.extend(
         [
@@ -427,13 +526,7 @@ def render_report(
             "## Next Commands",
             "",
             "```sh",
-            "gh auth login -h github.com",
-            "make publish-repo GITHUB_REPOSITORY=Anarpego/proteinloop",
-            "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check",
-            "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
-            "make set-demo-url DEMO_URL=https://your-public-demo-url",
-            "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it",
-            "make submission-finalize",
+            *next_commands,
             "```",
             "",
             "## Output Snippets",

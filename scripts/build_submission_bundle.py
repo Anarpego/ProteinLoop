@@ -34,6 +34,7 @@ BASE_BUNDLE_FILES = [
     SUBMISSION / "mesh-evidence.md",
     SUBMISSION / "sagents-evidence.json",
     SUBMISSION / "sagents-evidence.md",
+    SUBMISSION / "local-gemma-evidence.json",
     SUBMISSION / "horde-evidence.json",
     SUBMISSION / "horde-evidence.md",
     SUBMISSION / "nrf9151-live-evidence.json",

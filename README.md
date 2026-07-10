@@ -70,6 +70,8 @@ The mesh evidence packet adds `submission/mesh-evidence.json` and `.md`, generat
 
 The live nRF9151 evidence slice records read-only UART output from two physical DECT NR+ boards. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number; the artifact is marked `simulated: false`, and no flash or reset command was invoked.
 
+The DECT operator/producer slice loads that evidence directly into both LiveViews. The operator can replay sequence `#100` as an explicitly simulated sensor alert and then run the verified Gemma agents; the Spanish producer view shows the same real-radio status without presenting `hello_dect` as chemical sensor telemetry.
+
 The nRF9151 field plan maps PT to the tank edge node and FT to the community gateway/controller. Nordic's stock `hello_dect` firmware proves the physical radio link; it does not claim to carry ProteinLoop sensor telemetry yet.
 
 The nRF9151 telemetry bridge packet maps sample two-board JSONL readings into simulator and dashboard events, proving how a critical tank reading becomes an ammonia-spike request and how an offline edge node becomes a mesh failure hint.
@@ -117,6 +119,7 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/047-real-sagents-runtime/spec.md` defines the real Sagents, Gemma, verifier, and HITL runtime.
 - `specs/048-real-horde-failover/spec.md` defines the two-node Sagents/Horde failover proof.
 - `specs/049-live-nrf9151-evidence/spec.md` defines read-only physical two-board DECT NR+ evidence.
+- `specs/051-dect-operator-producer/spec.md` defines the live DECT evidence panels, simulated replay, and Gemma action.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -131,7 +134,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 145 tests
+Ran 155 tests
 
 OK
 ```
@@ -144,7 +147,7 @@ mix deps.get
 mix test
 ```
 
-Current expected result: `93 tests, 0 failures`.
+Current expected result: `101 tests, 0 failures`.
 
 Validate the GitHub Actions workflow contract before pushing:
 
@@ -172,11 +175,11 @@ Run the final submission readiness gate:
 make submission-ready-check
 ```
 
-This gate is expected to fail until `submission/lablab-submission.md` contains the real public GitHub repository URL and application URL, those URLs are reachable, `origin` points at that public repository, and `make gemma-check` has produced non-localhost Gemma 4 evidence in `submission/gemma-evidence.json`.
+The default local profile requires a reachable public GitHub repository and Application URL, matching `origin`, `submission/local-gemma-evidence.json`, and the real Sagents proof. Set `SUBMISSION_GEMMA_MODE=remote` only when validating an AMD-hosted or Fireworks endpoint; remote mode additionally requires non-loopback `submission/gemma-evidence.json`.
 
 The final Application URL must be public. Localhost, loopback, and private-network URLs are intentionally rejected by `make submission-ready-check`.
 
-After the external repo, demo URL, and Gemma evidence are available, run the finalizer so generated artifacts are rebuilt in the correct order:
+After the public demo URL and the selected Gemma evidence are available, run the finalizer so generated artifacts are rebuilt in the correct order:
 
 ```sh
 make submission-finalize
@@ -255,7 +258,7 @@ make local-gemma-start
 make local-gemma-check
 ```
 
-The first start downloads Google's official QAT Q4 GGUF weights (about 2.9 GB for E2B weights, plus its multimodal projection/cache metadata). After that, the model runs offline at `http://127.0.0.1:8001/v1`. Local evidence is written to `outputs/local-gemma-evidence.json`, separate from the non-local AMD evidence required for final submission. The managed server disables thinking for reliable low-latency JSON actions; the deterministic verifier still gates mutation. See `deploy/local-gemma.md` for lifecycle commands, memory assumptions, and the promotion path.
+The first start downloads Google's official QAT Q4 GGUF weights (about 2.9 GB for E2B weights, plus its multimodal projection/cache metadata). After that, the model runs offline at `http://127.0.0.1:8001/v1`. `make local-gemma-check` writes development evidence to `outputs/local-gemma-evidence.json`; `make local-gemma-submission-evidence` writes the strict local-profile artifact to `submission/local-gemma-evidence.json`. The managed server disables thinking for reliable low-latency JSON actions; the deterministic verifier still gates mutation. See `deploy/local-gemma.md` for lifecycle commands, memory assumptions, and the optional AMD promotion path.
 
 With Docker and local Gemma running, generate the real Sagents proof:
 
@@ -388,6 +391,8 @@ The dashboard includes `Subsystem agent topology` cards for fish tank, freshwate
 The dashboard includes a `Self-healing mesh` panel whose real Sagents/Horde status band shows distribution mode, participation membership, connected BEAM nodes, and managed-agent count. The `Simulate node loss` and `Recover node` controls remain a deterministic rehearsal; the actual service-stop proof is generated by `make horde-evidence`.
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
+
+The first panel below the dashboard metrics is `Physical DECT NR+ link`. It shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run Gemma on simulator state` starts the same verifier-gated Sagents cycle as the main Gemma control. `/producer` shows the compact `Ultimo enlace DECT NR+` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 
 Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records into the future sensor contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action. Those sample water-quality values are not attributed to the stock `hello_dect` logs.
 
@@ -562,13 +567,14 @@ Submission source artifacts live in `submission/`:
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `sagents-evidence.json` / `sagents-evidence.md`: live local Gemma evidence for real Sagents agents, custom safety mode, `until_tool_success`, and non-mutating HITL rejection.
+- `local-gemma-evidence.json`: live loopback proof that the local OpenAI-compatible endpoint advertises Gemma 4 E2B and returns a structured ProteinLoop action.
 - `horde-evidence.json` / `horde-evidence.md`: real two-node Sagents/Horde owner loss, state restoration, and node-rejoin evidence.
 - `nrf9151-live-evidence.json` / `nrf9151-live-evidence.md`: read-only, non-simulated bidirectional DECT NR+ evidence from the two physical nRF9151 DKs.
 - `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: exact FT/PT board inventory and ProteinLoop field-role mapping.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
-- `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
-- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, lablab form JSON, final readiness report, Docker smoke evidence when generated, and `gemma-evidence.json` when live endpoint evidence exists.
+- `gemma-evidence.json`: optional remote-profile artifact generated after `make gemma-check` succeeds against a non-loopback OpenAI-compatible endpoint.
+- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, local Gemma proof, lablab form JSON, final readiness report, Docker smoke evidence, and remote Gemma evidence when it exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
 - `final-readiness-report.md`: generated pass/fail handoff report for final external gates.
@@ -636,6 +642,8 @@ Capture fresh live evidence from both connected nRF9151 DKs:
 make nrf9151-live-evidence
 ```
 
+Reload `/` after capture, or press `Refresh` in the `Physical DECT NR+ link` panel. Docker mounts `submission/nrf9151-live-evidence.json` read-only at `/evidence/nrf9151-live-evidence.json`.
+
 Generate the nRF9151 two-board DECT NR+ field plan:
 
 ```sh
@@ -699,6 +707,7 @@ make readiness-report
 ├── specs/047-real-sagents-runtime/ # Real Sagents + Gemma + HITL runtime
 ├── specs/048-real-horde-failover/ # Real two-node Sagents/Horde migration
 ├── specs/049-live-nrf9151-evidence/ # Physical two-board DECT NR+ capture
+├── specs/051-dect-operator-producer/ # DECT UI, replay, and Gemma control
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
@@ -732,10 +741,10 @@ make readiness-report
 
 ## Remaining External Gates
 
-The local repo is prepared, but final submission readiness still needs:
+The public repository and local Gemma profile are prepared. Final submission readiness still needs:
 
-1. Publish the committed repo to public GitHub and set `origin`.
-2. Deploy the Docker app to a public URL and run `make live-demo-check`.
-3. Validate a live AMD-hosted or fallback Gemma endpoint with `make gemma-check`.
-4. Replace the TODO URLs in `submission/lablab-submission.md`.
-5. Run `make submission-finalize`.
+1. Deploy the Docker app to a public URL and run `make live-demo-check`.
+2. Replace the TODO Application URL in `submission/lablab-submission.md` with `make set-demo-url`.
+3. Run `SUBMISSION_GEMMA_MODE=local make submission-finalize`.
+
+AMD-hosted or Fireworks inference remains an optional remote profile. Use `SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and `make gemma-check` pass against that host.

@@ -12,10 +12,17 @@ from scripts.validate_gemma_endpoint import (
     normalize_endpoint,
     parse_chat_action,
     validate_action,
+    display_path,
 )
 
 
 class GemmaEndpointValidatorTests(unittest.TestCase):
+    def test_display_path_accepts_relative_submission_path(self):
+        self.assertEqual(
+            display_path(Path("submission/local-gemma-evidence.json")),
+            "submission/local-gemma-evidence.json",
+        )
+
     def test_normalize_endpoint_accepts_base_or_v1_url(self):
         self.assertEqual(normalize_endpoint(" https://gemma.example.com/ "), "https://gemma.example.com")
         self.assertEqual(normalize_endpoint("https://gemma.example.com/v1"), "https://gemma.example.com")

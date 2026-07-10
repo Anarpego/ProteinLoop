@@ -31,7 +31,7 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertEqual(result.detail, "")
 
     def test_marker_check_reports_missing_producer_markers(self):
-        html = "\n".join(PRODUCER_NEEDLES[:-1])
+        html = "\n".join(needle for needle in PRODUCER_NEEDLES if needle != "Mensaje WhatsApp/SMS")
         result = marker_check("producer", html, PRODUCER_NEEDLES)
 
         self.assertFalse(result.ok)
@@ -39,6 +39,12 @@ class LiveDemoValidatorTests(unittest.TestCase):
 
     def test_operator_markers_include_policy_search(self):
         self.assertIn("Policy search improvement", OPERATOR_NEEDLES)
+
+    def test_routes_require_the_physical_dect_capture(self):
+        self.assertIn("Physical DECT NR+ link", OPERATOR_NEEDLES)
+        self.assertIn("Sequence #100", OPERATOR_NEEDLES)
+        self.assertIn("Ultimo enlace DECT NR+", PRODUCER_NEEDLES)
+        self.assertIn("radio real", PRODUCER_NEEDLES)
 
 
 if __name__ == "__main__":

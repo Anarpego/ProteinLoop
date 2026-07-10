@@ -9,4 +9,4 @@
 - [x] Install and start Gemma 4 E2B locally.
 - [x] Verify live E2B model and ProteinLoop harness inference.
 - [x] Run regression and submission checks after the E2B switch.
-- [ ] Promote the verified model contract to AMD Developer Cloud.
+- [x] Keep AMD promotion as an optional documented path and finalize the selected local-evidence submission profile in spec 050.

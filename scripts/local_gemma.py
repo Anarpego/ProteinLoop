@@ -200,6 +200,7 @@ def build_check_command(
     *,
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
+    evidence_path: Path = LOCAL_EVIDENCE_PATH,
 ) -> list[str]:
     return [
         python,
@@ -211,7 +212,7 @@ def build_check_command(
         "--timeout",
         "120",
         "--evidence-file",
-        str(LOCAL_EVIDENCE_PATH),
+        str(evidence_path),
     ]
 
 
@@ -408,7 +409,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
     subparsers.add_parser("status", help="Check the managed server and model endpoint.")
     subparsers.add_parser("stop", help="Stop the managed local server.")
-    subparsers.add_parser("check", help="Validate live inference and write local evidence.")
+    check = subparsers.add_parser("check", help="Validate live inference and write local evidence.")
+    check.add_argument("--evidence-file", type=Path, default=LOCAL_EVIDENCE_PATH)
 
     command = subparsers.add_parser("print-command", help="Print the resolved server command.")
     command.add_argument("--context-size", type=int, default=DEFAULT_CONTEXT_SIZE)
@@ -427,7 +429,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "stop":
         return stop_server()
     if args.command == "check":
-        return subprocess.run(build_check_command(host=args.host, port=args.port), cwd=ROOT).returncode
+        return subprocess.run(
+            build_check_command(
+                host=args.host,
+                port=args.port,
+                evidence_path=args.evidence_file,
+            ),
+            cwd=ROOT,
+        ).returncode
     if args.command == "print-command":
         server = installed_server() or RUNTIME_ROOT / LLAMA_CPP_RELEASE / "llama-server"
         print(" ".join(build_server_command(server, host=args.host, port=args.port, context_size=args.context_size)))

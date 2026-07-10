@@ -5,8 +5,8 @@ const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
 const evidence = {
-  python_tests: 145,
-  phoenix_tests: 93,
+  python_tests: 155,
+  phoenix_tests: 101,
   reward_delta: 463,
   collapse_avoidance: "100%",
 };
@@ -19,7 +19,7 @@ await fs.writeFile(
     "task mode: create",
     "primary deck-profile: engineering-platform",
     "secondary gates: startup pitch, food security, hackathon submission",
-    "proof objects: system map, verifier pipeline, demo evidence, AMD deployment path",
+    "proof objects: system map, verifier pipeline, demo evidence, local Gemma runtime",
     "source assets: submission/slides.md, submission/lablab-submission.md, submission/cover.svg",
     "QA gates: readable labels, explicit architecture, metrics tied to system, physical DECT claims separated from sample telemetry",
     "",
@@ -31,7 +31,7 @@ await fs.writeFile(
     "ProteinLoop deck generated from repo-local submission sources.",
     `Test counts: make test (${evidence.python_tests}) and app mix test (${evidence.phoenix_tests}), verified July 10, 2026.`,
     "No third-party logos or identity assets are embedded.",
-    "AMD/Gemma/vLLM are named as technology references; no unofficial logos are drawn.",
+    "Gemma/llama.cpp/Metal are named as proven runtime references; ROCm/vLLM is labeled optional.",
     "Physical hardware proof: nRF9151 FT 1051223739 and PT 1051239227 show matching DECT NR+ sequences in both directions.",
     "",
   ].join("\n"),
@@ -47,7 +47,7 @@ await fs.writeFile(
     "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
     "slide 7: Real Sagents/Horde evidence proves state-preserving failover; two physical nRF9151 DKs prove bidirectional DECT NR+.",
     "slide 8: Spanish HITL is resumable control flow with approve, edit, and reject decisions.",
-    "slide 9: Real Sagents and local E2B already run; AMD-hosted vLLM is the promotion target.",
+    "slide 9: Real Sagents and local Gemma 4 E2B run through the same portable endpoint contract.",
     "slide 10: The startup ask is backed by code, Docker, evidence, and a platform path.",
     "",
   ].join("\n"),
@@ -123,7 +123,7 @@ export default async function slide01(presentation, ctx) {
   ctx.addText(s, { x: 104, y: 252, w: 680, h: 52, text: "An agentic loop that closes the protein cycle.", fontSize: 26, color: "#ccfbf1" });
   metric(ctx, s, { x: 104, y: 360, label: "core claim", value: "Verifier", note: "physics before mutation", fill: colors.tealSoft });
   metric(ctx, s, { x: 352, y: 360, label: "demo proof", value: "Recovery", note: "collapse avoided", fill: colors.greenSoft });
-  metric(ctx, s, { x: 600, y: 360, label: "platform path", value: "ROCm", note: "Gemma via vLLM", fill: colors.amberSoft });
+  metric(ctx, s, { x: 600, y: 360, label: "model proof", value: "E2B", note: "llama.cpp + Metal", fill: colors.amberSoft });
   ctx.addText(s, { x: 934, y: 166, w: 210, h: 250, text: "fish\\nprawns\\nduckweed\\nplants\\neggs", fontSize: 28, bold: true, color: "#ffffff", align: "center", valign: "mid" });
   footer(ctx, s, 1);
   return s;
@@ -223,15 +223,15 @@ export default async function slide08(presentation, ctx) {
 }`,
   `import { colors, slideBase, h1, sub, box, arrowText, footer } from "./common.mjs";
 export default async function slide09(presentation, ctx) {
-  const s = slideBase(presentation, ctx, "AMD Gemma");
-  h1(ctx, s, "Gemma already powers the real Sagents runtime");
-  sub(ctx, s, "Local E2B proves the loop offline; AMD-hosted Gemma uses the same GEMMA_ENDPOINT contract.");
+  const s = slideBase(presentation, ctx, "Gemma runtime");
+  h1(ctx, s, "Local Gemma 4 already powers the real Sagents runtime");
+  sub(ctx, s, "E2B proves the loop offline through the same portable GEMMA_ENDPOINT contract.");
   box(ctx, s, { x: 80, y: 256, w: 250, h: 142, title: "Sagents 0.9.0", body: "Five agents, custom safety mode, until_tool_success, and resumable HITL.", fill: colors.tealSoft, line: colors.teal });
   arrowText(ctx, s, 350, 306);
   box(ctx, s, { x: 420, y: 260, w: 280, h: 128, title: "GEMMA_ENDPOINT", body: "/v1/models and /v1/chat/completions; no code change for Fireworks or vLLM.", fill: colors.blueSoft, line: colors.blue });
   arrowText(ctx, s, 720, 306);
-  box(ctx, s, { x: 790, y: 260, w: 330, h: 128, title: "vLLM on ROCm", body: "docker-compose.gemma-rocm.yml uses vllm/vllm-openai-rocm:gemma4.", fill: colors.amberSoft, line: colors.amber });
-  box(ctx, s, { x: 220, y: 454, w: 780, h: 102, title: "Verifier remains in front", body: "Even AMD-hosted Gemma proposals cannot mutate state without passing simulator safety rules.", fill: "#ffffff", line: colors.teal });
+  box(ctx, s, { x: 790, y: 260, w: 330, h: 128, title: "llama.cpp + Metal", body: "The smallest Gemma 4 instruction model runs locally and offline after installation.", fill: colors.amberSoft, line: colors.amber });
+  box(ctx, s, { x: 220, y: 454, w: 780, h: 102, title: "Verifier remains in front", body: "Local Gemma proposals cannot mutate state without passing deterministic simulator safety rules.", fill: "#ffffff", line: colors.teal });
   footer(ctx, s, 9);
   return s;
 }`,
@@ -241,9 +241,9 @@ export default async function slide10(presentation, ctx) {
   h1(ctx, s, "ProteinLoop is a startup pitch with executable proof");
   sub(ctx, s, "A food-security product built as a verifier-gated, human-aware, fault-tolerant agentic system.");
   box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives that need low-cost, resilient protein production.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents/Horde failover, physical DECT NR+ proof, physics verifier, RLVR scoring, resumable HITL, and AMD Gemma path.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents/Horde failover, physical DECT NR+ proof, physics verifier, RLVR scoring, resumable HITL, and offline Gemma 4.", fill: colors.tealSoft, line: colors.teal });
   box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and validated software plus hardware evidence packets.", fill: colors.blueSoft, line: colors.blue });
-  ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn + Best AMD-Hosted Gemma", fontSize: 30, bold: true, color: colors.ink, align: "center" });
+  ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn", fontSize: 30, bold: true, color: colors.ink, align: "center" });
   footer(ctx, s, 10);
   return s;
 }`

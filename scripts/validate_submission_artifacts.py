@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import urllib.parse
 import zipfile
 from pathlib import Path
 
@@ -21,6 +22,7 @@ MESH_JSON = SUBMISSION / "mesh-evidence.json"
 MESH_MD = SUBMISSION / "mesh-evidence.md"
 SAGENTS_JSON = SUBMISSION / "sagents-evidence.json"
 SAGENTS_MD = SUBMISSION / "sagents-evidence.md"
+LOCAL_GEMMA_JSON = SUBMISSION / "local-gemma-evidence.json"
 HORDE_JSON = SUBMISSION / "horde-evidence.json"
 HORDE_MD = SUBMISSION / "horde-evidence.md"
 NRF9151_LIVE_JSON = SUBMISSION / "nrf9151-live-evidence.json"
@@ -46,6 +48,7 @@ REQUIRED_FILES = [
     MESH_MD,
     SAGENTS_JSON,
     SAGENTS_MD,
+    LOCAL_GEMMA_JSON,
     HORDE_JSON,
     HORDE_MD,
     NRF9151_LIVE_JSON,
@@ -148,6 +151,10 @@ def main() -> int:
         print("Sagents evidence packet is missing required runtime or HITL proof", file=sys.stderr)
         return 1
 
+    if not local_gemma_evidence_ok(LOCAL_GEMMA_JSON):
+        print("local Gemma evidence is missing a live loopback endpoint proof", file=sys.stderr)
+        return 1
+
     if not horde_evidence_ok(HORDE_JSON, HORDE_MD):
         print("Horde evidence packet is missing real state-preserving failover proof", file=sys.stderr)
         return 1
@@ -219,6 +226,7 @@ def bundle_ok(
         "submission/mesh-evidence.md",
         "submission/sagents-evidence.json",
         "submission/sagents-evidence.md",
+        "submission/local-gemma-evidence.json",
         "submission/horde-evidence.json",
         "submission/horde-evidence.md",
         "submission/nrf9151-live-evidence.json",
@@ -282,7 +290,7 @@ def report_ok(path: Path) -> bool:
         "## Remaining Blockers",
         "## Next Commands",
         "make submission-ready-check",
-        "GEMMA_MODEL=google/gemma-4-E2B-it",
+        "google/gemma-4-E2B-it",
     ]
     return all(fragment in text for fragment in required_fragments)
 
@@ -394,6 +402,53 @@ def sagents_evidence_ok(json_path: Path, md_path: Path) -> bool:
         and all(checks.get(name) is True for name in required_checks)
         and "ProteinLoop Real Sagents Evidence" in markdown
         and "No mutation before approval: true" in markdown
+    )
+
+
+def local_gemma_evidence_ok(path: Path) -> bool:
+    if not path.exists():
+        return False
+
+    try:
+        evidence = json_load(path)
+    except (OSError, ValueError):
+        return False
+
+    endpoint = urllib.parse.urlparse(str(evidence.get("endpoint", "")))
+    model = evidence.get("model")
+    models = evidence.get("models", [])
+    action = evidence.get("action", {})
+    checks = evidence.get("checks", [])
+    required_action_keys = {
+        "feed_kg",
+        "aeration_hours",
+        "water_exchange_fraction",
+        "duckweed_harvest_kg",
+    }
+    required_check_names = {
+        "models endpoint",
+        "requested model advertised",
+        "chat action contract",
+    }
+    check_by_name = {
+        check.get("name"): check.get("ok")
+        for check in checks
+        if isinstance(check, dict)
+    }
+
+    return (
+        endpoint.scheme == "http"
+        and endpoint.hostname in {"127.0.0.1", "localhost", "::1"}
+        and model == "google/gemma-4-E2B-it"
+        and isinstance(models, list)
+        and model in models
+        and isinstance(action, dict)
+        and required_action_keys.issubset(action)
+        and required_check_names.issubset(check_by_name)
+        and all(check_by_name[name] is True for name in required_check_names)
+        and bool(evidence.get("checked_at"))
+        and "api_key" not in evidence
+        and "authorization" not in evidence
     )
 
 
