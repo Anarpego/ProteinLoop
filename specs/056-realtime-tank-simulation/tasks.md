@@ -9,4 +9,4 @@
 - [x] Update validators and documentation.
 - [x] Run application, Docker, route, and responsive layout-contract verification.
 - [ ] Capture desktop/mobile canvas pixels when browser automation is available.
-- [ ] Regenerate evidence and publish.
+- [x] Regenerate evidence and publish.

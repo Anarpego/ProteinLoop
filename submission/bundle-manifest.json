@@ -22,9 +22,9 @@
       "sha256": "9f9cdc66ba17f397b0bb49d1ec65f5e862571e39fc8f12616ac044e267a098a6"
     },
     {
-      "bytes": 7188,
+      "bytes": 6501,
       "path": "submission/final-readiness-report.md",
-      "sha256": "fca261a719a9173a141a202fff5e27eb7104d30c03dbe68c3be611b68698366b"
+      "sha256": "9368e1b69c2d02e8c33c3c924606834b309f3bc1ee7264fa4c6c169f5fba72a6"
     },
     {
       "bytes": 4434,
@@ -144,8 +144,8 @@
     {
       "bytes": 983,
       "path": "submission/docker-smoke-evidence.json",
-      "sha256": "0cfd7119439c01a93a23d1fa57412bbf5cf378f16b6c9337834aa39b00fdf909"
+      "sha256": "2b792475bf53fa62f70bf20077f957dc8e9aaa989cac13bc5e34648df686a38c"
     }
   ],
-  "generated_at": "2026-07-10T18:31:02.736815+00:00"
+  "generated_at": "2026-07-10T18:33:15.950323+00:00"
 }
