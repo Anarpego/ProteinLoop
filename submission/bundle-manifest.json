@@ -22,9 +22,9 @@
       "sha256": "74bf900c20dc081ec3aff41dfe7999215761618c84d1846c5aebb21832a62e9f"
     },
     {
-      "bytes": 6312,
+      "bytes": 5581,
       "path": "submission/final-readiness-report.md",
-      "sha256": "0c64abb2f3ed530b6705089c790e3dd668784142575363ff4d560d3ad491c6ad"
+      "sha256": "7728eb85c7827e17cbb3ef78d4abd4eab34c33b2bdf4f8eb29b8853e942cd7ed"
     },
     {
       "bytes": 2458,
@@ -112,5 +112,5 @@
       "sha256": "2742cbe78a15220dc3be6b9ed7baf2f65aa9e4cf5afe513a1911b859f94b53ef"
     }
   ],
-  "generated_at": "2026-07-10T04:49:22.281063+00:00"
+  "generated_at": "2026-07-10T04:50:24.699954+00:00"
 }

@@ -1,31 +1,8 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T04:49:31+00:00
-Commit: `35de74e`
-Working tree (source): `M .env.example
- M .gitignore
- M Makefile
- M README.md
- M app/config/runtime.exs
- M app/lib/proteinloop/agent/openai_compatible.ex
- M app/test/proteinloop/agent/openai_compatible_test.exs
- M deploy/amd-gemma-vllm.md
- M deploy/live-demo.md
- M docker-compose.gemma-rocm.yml
- M docker-compose.public.yml
- M goal.md
- M scripts/generate_readiness_report.py
- M scripts/validate_credit_access.py
- M scripts/validate_gemma_endpoint.py
- M scripts/validate_public_deploy.py
- M scripts/validate_submission_artifacts.py
- M tests/test_gemma_endpoint_validator.py
- M tests/test_readiness_report.py
- M tests/test_submission_readiness.py
-?? deploy/local-gemma.md
-?? scripts/local_gemma.py
-?? specs/046-local-gemma-inference/
-?? tests/test_local_gemma.py`
+Generated: 2026-07-10T04:50:20+00:00
+Commit: `edf361f`
+Working tree (source): `clean`
 
 ## Command Evidence
 
@@ -77,7 +54,7 @@ make submission-finalize
 python3 -m unittest discover -s tests
 ............................................................................................................................
 ----------------------------------------------------------------------
-Ran 124 tests in 0.122s
+Ran 124 tests in 0.127s
 
 OK
 ```
@@ -166,7 +143,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 35de74e912491e61c646048920b6a793429a1716
+[ok] local git commit - edf361f0c8f208bab935324de20c27ae64a72ad2
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
