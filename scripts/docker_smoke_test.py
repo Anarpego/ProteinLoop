@@ -116,6 +116,7 @@ def check_web() -> list[Check]:
     operator = get_text(f"{WEB}/")
     producer = get_text(f"{WEB}/producer")
     fish_model_size = head_content_length(f"{WEB}/models/barramundi-fish.glb")
+    prawn_texture_size = head_content_length(f"{WEB}/models/greasyback-shrimp.jpeg")
 
     operator_needles = [
         "ProteinLoop system control",
@@ -160,6 +161,11 @@ def check_web() -> list[Check]:
             "bundled PBR fish model",
             fish_model_size == 12_488_144,
             f"bytes={fish_model_size}",
+        ),
+        Check(
+            "bundled realistic prawn visual",
+            prawn_texture_size == 151_238,
+            f"bytes={prawn_texture_size}",
         ),
     ]
 

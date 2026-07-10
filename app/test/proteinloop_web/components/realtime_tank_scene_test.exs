@@ -18,6 +18,7 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ ~s(data-oxygen="6.8")
     assert html =~ ~s(data-health="stable")
     assert html =~ ~s(data-fish-model-url="/models/barramundi-fish.glb")
+    assert html =~ ~s(data-prawn-texture-url="/models/greasyback-shrimp.jpeg")
     assert html =~ ~s(data-tank-canvas)
     assert html =~ ~s(aria-label="Animated fish and freshwater prawn tank)
     assert html =~ "Live tank simulation"

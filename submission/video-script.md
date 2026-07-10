@@ -20,7 +20,7 @@ Press `Simulate water emergency`. Watch the water, bubbles, fish, and prawns cha
 
 Narration:
 
-The tank is not a looping video. A locally bundled PBR fish model, detailed prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. The producer scene is read-only. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
+The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. The producer scene is read-only. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
 
 ## Scene 3: RLVR Evidence
 

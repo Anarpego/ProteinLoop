@@ -126,6 +126,9 @@ def check_web(base_url: str, timeout: float) -> list[Check]:
     fish_model_size = head_content_length(
         join_url(base_url, "/models/barramundi-fish.glb"), timeout
     )
+    prawn_texture_size = head_content_length(
+        join_url(base_url, "/models/greasyback-shrimp.jpeg"), timeout
+    )
 
     return [
         marker_check("guided operator control route", operator, OPERATOR_NEEDLES),
@@ -134,6 +137,11 @@ def check_web(base_url: str, timeout: float) -> list[Check]:
             "bundled PBR fish model",
             fish_model_size == 12_488_144,
             f"bytes={fish_model_size}",
+        ),
+        Check(
+            "bundled realistic prawn visual",
+            prawn_texture_size == 151_238,
+            f"bytes={prawn_texture_size}",
         ),
     ]
 

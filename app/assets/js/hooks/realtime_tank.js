@@ -10,6 +10,7 @@ const DANGER_BACKGROUND = new THREE.Color(0xf4e4c4)
 const CLEAN_GLASS = new THREE.Color(0xe8fbfb)
 const DANGER_GLASS = new THREE.Color(0xf1d8ae)
 const FISH_MODEL_URL = "/models/barramundi-fish.glb"
+const PRAWN_TEXTURE_URL = "/models/greasyback-shrimp.jpeg"
 
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value))
 const mix = (from, to, amount) => from + (to - from) * amount
@@ -189,6 +190,74 @@ const loadPBRFish = async runtime => {
   }
 }
 
+const makePrawnVisualMaterial = texture => new THREE.ShaderMaterial({
+  uniforms: {
+    prawnMap: {value: texture},
+  },
+  vertexShader: `
+    varying vec2 vPrawnUv;
+
+    void main() {
+      vPrawnUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D prawnMap;
+    varying vec2 vPrawnUv;
+
+    void main() {
+      vec2 imageUv = vec2(
+        mix(0.035, 0.94, vPrawnUv.x),
+        mix(0.13, 0.9, vPrawnUv.y)
+      );
+      vec4 sampled = texture2D(prawnMap, imageUv);
+      float brightness = max(sampled.r, max(sampled.g, sampled.b));
+      float alpha = smoothstep(0.018, 0.09, brightness);
+      if (alpha < 0.02) discard;
+      gl_FragColor = vec4(sampled.rgb * 1.04, alpha * 0.96);
+    }
+  `,
+  transparent: true,
+  depthWrite: false,
+  side: THREE.DoubleSide,
+})
+
+const loadPrawnVisual = async runtime => {
+  try {
+    const texture = await new THREE.TextureLoader().loadAsync(
+      runtime.element.dataset.prawnTextureUrl || PRAWN_TEXTURE_URL,
+    )
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = Math.min(8, runtime.renderer.capabilities.getMaxAnisotropy())
+
+    if (runtime.disposed) {
+      texture.dispose()
+      return
+    }
+
+    const geometry = new THREE.PlaneGeometry(1.55, 0.68)
+    const visualMaterial = makePrawnVisualMaterial(texture)
+
+    runtime.prawns.forEach(prawn => {
+      const visual = new THREE.Mesh(geometry, visualMaterial)
+      visual.position.set(0, 0.2, 0.12)
+      visual.rotation.y = Math.PI
+      visual.renderOrder = 4
+      prawn.userData.fallback.visible = false
+      prawn.userData.photoVisual = visual
+      prawn.add(visual)
+    })
+
+    runtime.prawnTexture = texture
+    runtime.element.dataset.prawnVisualReady = "true"
+  } catch (error) {
+    if (runtime.disposed) return
+    runtime.element.dataset.prawnVisualError = "true"
+    console.warn("ProteinLoop realistic prawn visual could not load; using procedural prawns", error)
+  }
+}
+
 const lineFromPoints = (points, color, opacity = 1) => new THREE.Line(
   new THREE.BufferGeometry().setFromPoints(points),
   new THREE.LineBasicMaterial({color, transparent: opacity < 1, opacity}),
@@ -286,11 +355,16 @@ const makePrawn = index => {
     group.add(fan)
   }
 
+  const fallback = new THREE.Group()
+  for (const child of [...group.children]) fallback.add(child)
+  group.add(fallback)
+
   group.userData = {
     phase: index * 1.83,
     speed: 0.11 + seededRandom(index + 31) * 0.06,
-    depth: -0.9 + seededRandom(index + 41) * 1.55,
+    depth: 0.32 + seededRandom(index + 41) * 0.72,
     heading: 0,
+    fallback,
     shellMaterial,
   }
 
@@ -689,16 +763,21 @@ const updateAnimals = (runtime, time, oxygenFactor, ammoniaStress, collapsed) =>
     data.bodyMaterial.emissiveIntensity = distress * 0.17
   })
 
-  const prawnScale = clamp(0.65 + runtime.visual.prawnBiomass / 18, 0.72, 0.94)
+  const prawnScale = clamp(0.84 + runtime.visual.prawnBiomass / 16, 0.92, 1.12)
   runtime.prawns.forEach((prawn, index) => {
     const data = prawn.userData
     const phase = time * data.speed * (0.4 + oxygenFactor) + data.phase
     const direction = Math.cos(phase) >= 0 ? 1 : -1
-    const x = Math.sin(phase) * (2.8 - index * 0.2)
-    const scale = prawnScale * (0.9 + index * 0.04)
+    const x = Math.sin(phase) * (2.65 - index * 0.18)
+    const scale = prawnScale * (0.9 + index * 0.035)
     const targetHeading = direction > 0 ? 0 : Math.PI
     data.heading += angleDifference(data.heading, targetHeading) * 0.06
-    prawn.position.set(x, -1.82 + Math.sin(time * 1.2 + data.phase) * 0.018, data.depth)
+    const substrateLevel = -1.38 + (index % 2) * 0.08
+    prawn.position.set(
+      x,
+      substrateLevel + Math.sin(time * 1.2 + data.phase) * 0.018,
+      data.depth,
+    )
     prawn.scale.setScalar(scale)
     prawn.rotation.y = data.heading + Math.sin(time * 0.4 + data.phase) * 0.035
     data.shellMaterial.emissiveIntensity = distress * 0.12
@@ -778,6 +857,7 @@ const disposeRuntime = runtime => {
   runtime.element?.removeEventListener("pointerleave", runtime.handlePointerLeave)
 
   disposeObject3D(runtime.scene)
+  runtime.prawnTexture?.dispose()
   runtime.environmentTarget?.dispose()
   runtime.renderer?.dispose()
   runtime.renderer?.forceContextLoss()
@@ -816,6 +896,7 @@ const RealtimeTank = {
 
       buildTank(runtime)
       loadPBRFish(runtime)
+      loadPrawnVisual(runtime)
 
       runtime.resize = () => {
         const bounds = canvas.parentElement.getBoundingClientRect()

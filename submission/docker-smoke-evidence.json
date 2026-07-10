@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-07-10T19:26:46.586564+00:00",
+  "checked_at": "2026-07-10T19:38:00.438183+00:00",
   "checks": [
     {
       "detail": "",
@@ -49,6 +49,11 @@
     {
       "detail": "bytes=12488144",
       "name": "bundled PBR fish model",
+      "ok": true
+    },
+    {
+      "detail": "bytes=151238",
+      "name": "bundled realistic prawn visual",
       "ok": true
     }
   ],

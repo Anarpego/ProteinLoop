@@ -3,10 +3,11 @@
 1. Add tests for the local PBR asset, license metadata, loader registration, and route contract.
 2. Bundle the CC0 Barramundi Fish GLB and provenance record under Phoenix static assets.
 3. Load and clone the fish model once while preserving the procedural fallback.
-4. Refine fish and prawn scale, movement, materials, aquarium glass, water, substrate, lighting, and camera framing.
-5. Correct desktop/mobile overlay placement and clipping.
-6. Run full tests, production asset build, Docker smoke, live-route validation, and visual checks.
-7. Publish the implementation and refreshed evidence.
+4. Refine fish scale and movement, then add a licensed realistic prawn visual with a segmented 3D fallback.
+5. Keep prawns above the substrate line and in recognizable foreground positions.
+6. Correct desktop/mobile overlay placement and clipping.
+7. Run full tests, production asset build, Docker smoke, live-route validation, and visual checks.
+8. Publish the implementation and refreshed evidence.
 
 ## Guardrails
 

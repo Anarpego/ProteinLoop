@@ -44,6 +44,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       data-collapsed={Map.get(@state, "collapsed", false)}
       data-last-event={@last_event}
       data-fish-model-url={~p"/models/barramundi-fish.glb"}
+      data-prawn-texture-url={~p"/models/greasyback-shrimp.jpeg"}
     >
       <div
         class="realtime-tank__viewport"

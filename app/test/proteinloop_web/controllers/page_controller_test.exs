@@ -89,6 +89,27 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert tank_hook =~ "environmentTarget?.dispose()"
   end
 
+  test "bundles and loads the licensed realistic prawn visual" do
+    assets = Path.expand("../../../assets", __DIR__)
+    texture = Path.expand("../../../priv/static/models/greasyback-shrimp.jpeg", __DIR__)
+    license = Path.expand("../../../priv/static/models/GREASYBACK-SHRIMP-LICENSE.md", __DIR__)
+    tank_hook = assets |> Path.join("js/hooks/realtime_tank.js") |> File.read!()
+
+    assert File.stat!(texture).size == 151_238
+
+    assert texture
+           |> File.read!()
+           |> then(&:crypto.hash(:sha256, &1))
+           |> Base.encode16(case: :lower) ==
+             "14bfb1ef5226b1af5ae94a03f1cfd02958a246fcb608ff87b816a8dd0c25a92e"
+
+    assert File.read!(license) =~ "CC0 Public Domain"
+    assert tank_hook =~ "TextureLoader"
+    assert tank_hook =~ ~s("/models/greasyback-shrimp.jpeg")
+    assert tank_hook =~ "loadPrawnVisual"
+    assert tank_hook =~ "smoothstep"
+  end
+
   test "GET /producer renders the English HITL view", %{conn: conn} do
     conn = get(conn, ~p"/producer")
     html = html_response(conn, 200)
