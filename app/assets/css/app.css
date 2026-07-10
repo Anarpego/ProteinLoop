@@ -78,6 +78,7 @@ body {
   position: relative;
   height: min(66vh, 620px);
   min-height: 480px;
+  contain: layout paint;
   overflow: hidden;
   background: #e8f7f8;
 }
@@ -135,21 +136,21 @@ body {
 .realtime-tank__heading {
   position: absolute;
   z-index: 3;
-  top: 1.25rem;
-  left: 1.25rem;
-  max-width: min(34rem, calc(100% - 20rem));
-  border-left: 4px solid #0284c7;
-  background: rgb(255 255 255 / 92%);
-  padding: 0.75rem 1rem;
-  box-shadow: 0 8px 24px rgb(15 23 42 / 8%);
+  top: 1rem;
+  left: 1rem;
+  max-width: min(27rem, calc(100% - 18rem));
+  border-left: 3px solid #0284c7;
+  background: rgb(255 255 255 / 90%);
+  padding: 0.6rem 0.8rem;
+  box-shadow: 0 6px 20px rgb(15 23 42 / 7%);
   backdrop-filter: blur(8px);
 }
 
 .realtime-tank__commands {
   position: absolute;
   z-index: 4;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 1rem;
+  right: 1rem;
   display: flex;
   gap: 0.5rem;
 }
@@ -236,7 +237,7 @@ body {
   }
 
   .realtime-tank__commands {
-    top: 10.75rem;
+    top: 8.75rem;
     right: 0.75rem;
     left: 0.75rem;
     justify-content: flex-end;

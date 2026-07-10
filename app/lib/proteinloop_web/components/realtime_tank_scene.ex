@@ -43,6 +43,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
       data-health={@health.key}
       data-collapsed={Map.get(@state, "collapsed", false)}
       data-last-event={@last_event}
+      data-fish-model-url={~p"/models/barramundi-fish.glb"}
     >
       <div
         class="realtime-tank__viewport"
@@ -71,8 +72,10 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
             </p>
             <span class="text-xs text-base-content/55">Day {@day}</span>
           </div>
-          <h2 class="mt-1 text-xl font-semibold sm:text-2xl">Main fish & prawn tank</h2>
-          <p class="mt-1 max-w-xl text-sm font-medium text-base-content/75">{@health.heading}</p>
+          <h2 class="mt-1 text-lg font-semibold sm:text-xl">Main fish & prawn tank</h2>
+          <p class="mt-1 max-w-xl text-xs font-medium text-base-content/75 sm:text-sm">
+            {@health.heading}
+          </p>
         </div>
 
         <div :if={@controls} class="realtime-tank__commands">

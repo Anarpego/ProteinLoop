@@ -63,6 +63,32 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert tank_hook =~ "ResizeObserver"
   end
 
+  test "bundles and loads the licensed PBR fish without a runtime CDN" do
+    assets = Path.expand("../../../assets", __DIR__)
+    model = Path.expand("../../../priv/static/models/barramundi-fish.glb", __DIR__)
+    license = Path.expand("../../../priv/static/models/BARRAMUNDI-LICENSE.md", __DIR__)
+    tank_hook = assets |> Path.join("js/hooks/realtime_tank.js") |> File.read!()
+
+    assert "models" in ProteinLoopWeb.static_paths()
+    assert File.stat!(model).size == 12_488_144
+
+    assert model
+           |> File.read!()
+           |> then(&:crypto.hash(:sha256, &1))
+           |> Base.encode16(case: :lower) ==
+             "ecc3bafb6b00f2c8b810863c388e3768a7b7ea0d0335e8cb8c574c266e571f4a"
+
+    assert File.read!(license) =~ "CC0-1.0"
+    assert tank_hook =~ "GLTFLoader"
+    assert tank_hook =~ ~s("/models/barramundi-fish.glb")
+    assert tank_hook =~ "loadAsync"
+    assert tank_hook =~ "clone(true)"
+    assert tank_hook =~ "distanceForWidth"
+    assert tank_hook =~ "distanceForHeight"
+    assert tank_hook =~ "disposeObject3D(runtime.scene)"
+    assert tank_hook =~ "environmentTarget?.dispose()"
+  end
+
   test "GET /producer renders the English HITL view", %{conn: conn} do
     conn = get(conn, ~p"/producer")
     html = html_response(conn, 200)

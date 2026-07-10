@@ -14,7 +14,7 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
-| Real-time system understanding | Operator and producer routes share a Three.js tank that animates fish, prawns, bubbles, water quality, plants, and stress directly from the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) |
+| Real-time system understanding | Operator and producer routes share a Three.js aquarium with a local PBR fish model, detailed prawns, physical water and glass, bubbles, plants, and stress driven by the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) |
 | Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
@@ -27,7 +27,7 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 
 ## Run an Agentic Intervention
 
-1. Open `http://localhost:4001/` and watch `Live tank simulation`: fish and prawns move continuously while Phoenix applies simulator snapshots every second.
+1. Open `http://localhost:4001/` and watch `Live tank simulation`: PBR fish and detailed prawns move continuously while Phoenix applies simulator snapshots every second.
 2. Press `Simulate water emergency`. Water color, bubbles, and animal movement visibly transition to the deterministic ammonia-spike state.
 3. In `Ask the AI team to help`, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
 4. Press `Ask AI team for a safe plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor.
@@ -387,7 +387,7 @@ The advanced evidence includes a `Self-healing mesh` panel whose real Sagents/Ho
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
-The first operational view is `Live tank simulation`, built with pinned Three.js `0.185.1`. Its procedural WebGL scene contains fish, freshwater prawns, bubbles, substrate, plants, and water-loop piping. Phoenix patches simulator values every second without replacing the canvas. Ammonia changes water clarity and color; dissolved oxygen changes bubble activity, swimming speed, and whether fish move toward the surface. The operator route exposes `Simulate water emergency`; the producer route reuses the same animation in read-only mode. A light non-illustrated layer and readable HTML chemistry remain available if WebGL cannot start.
+The first operational view is `Live tank simulation`, built with pinned Three.js `0.185.1`. It loads the Khronos Barramundi Fish PBR glTF model from the local application, clones shared geometry and textures across the school, and falls back to a muted procedural fish if loading fails. The bundled model is CC0 and its provenance and checksum are recorded in [`BARRAMUNDI-LICENSE.md`](app/priv/static/models/BARRAMUNDI-LICENSE.md). Detailed freshwater prawns, bubbles, varied substrate, plants, physical water and glass, soft shadows, and water-loop piping complete the scene. Phoenix patches simulator values every second without replacing the canvas. Ammonia changes water clarity and color; dissolved oxygen changes bubble activity, swimming speed, and whether fish move toward the surface. The operator route exposes `Simulate water emergency`; the producer route reuses the same animation in read-only mode. A light non-illustrated layer and readable HTML chemistry remain available if WebGL cannot start.
 
 Inside advanced evidence, `Physical DECT NR+ link` shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary AI control. `/producer` shows the compact `Latest DECT NR+ link` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 

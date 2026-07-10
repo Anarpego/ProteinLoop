@@ -123,10 +123,18 @@ def check_live_demo(base_url: str, simulator_url: str | None, timeout: float) ->
 def check_web(base_url: str, timeout: float) -> list[Check]:
     operator = get_text(join_url(base_url, "/"), timeout)
     producer = get_text(join_url(base_url, "/producer"), timeout)
+    fish_model_size = head_content_length(
+        join_url(base_url, "/models/barramundi-fish.glb"), timeout
+    )
 
     return [
         marker_check("guided operator control route", operator, OPERATOR_NEEDLES),
         marker_check("producer English route", producer, PRODUCER_NEEDLES),
+        Check(
+            "bundled PBR fish model",
+            fish_model_size == 12_488_144,
+            f"bytes={fish_model_size}",
+        ),
     ]
 
 
@@ -183,6 +191,19 @@ def get_text(url: str, timeout: float) -> str:
         try:
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 return response.read().decode("utf-8")
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_error = exc
+            time.sleep(0.25)
+    raise RuntimeError(f"request failed: {url}: {last_error}")
+
+
+def head_content_length(url: str, timeout: float) -> int:
+    request = urllib.request.Request(url, method="HEAD")
+    last_error: Exception | None = None
+    for _attempt in range(RETRY_COUNT):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return int(response.headers.get("content-length", 0))
         except (urllib.error.URLError, TimeoutError) as exc:
             last_error = exc
             time.sleep(0.25)

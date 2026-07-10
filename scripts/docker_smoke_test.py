@@ -115,6 +115,7 @@ def check_simulator() -> list[Check]:
 def check_web() -> list[Check]:
     operator = get_text(f"{WEB}/")
     producer = get_text(f"{WEB}/producer")
+    fish_model_size = head_content_length(f"{WEB}/models/barramundi-fish.glb")
 
     operator_needles = [
         "ProteinLoop system control",
@@ -155,6 +156,11 @@ def check_web() -> list[Check]:
     checks = [
         Check("guided operator control route", all(needle in operator for needle in operator_needles)),
         Check("producer English route", all(needle in producer for needle in producer_needles)),
+        Check(
+            "bundled PBR fish model",
+            fish_model_size == 12_488_144,
+            f"bytes={fish_model_size}",
+        ),
     ]
 
     return checks
@@ -177,6 +183,19 @@ def post_json(url: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 def get_text(url: str) -> str:
     return open_url(urllib.request.Request(url, method="GET"))
+
+
+def head_content_length(url: str) -> int:
+    request = urllib.request.Request(url, method="HEAD")
+    last_error: Exception | None = None
+    for _attempt in range(10):
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:
+                return int(response.headers.get("content-length", 0))
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_error = exc
+            time.sleep(0.25)
+    raise RuntimeError(f"request failed: {request.full_url}: {last_error}")
 
 
 def open_url(request: urllib.request.Request) -> str:

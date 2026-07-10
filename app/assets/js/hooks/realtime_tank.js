@@ -1,13 +1,19 @@
 import * as THREE from "three"
+import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js"
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js"
 
 const CLEAN_WATER = new THREE.Color(0x63c9dc)
 const WARNING_WATER = new THREE.Color(0x72b7a4)
 const DANGER_WATER = new THREE.Color(0xb78242)
-const CLEAN_BACKGROUND = new THREE.Color(0xdff5f7)
+const CLEAN_BACKGROUND = new THREE.Color(0xd9ecec)
 const DANGER_BACKGROUND = new THREE.Color(0xf4e4c4)
+const CLEAN_GLASS = new THREE.Color(0xe8fbfb)
+const DANGER_GLASS = new THREE.Color(0xf1d8ae)
+const FISH_MODEL_URL = "/models/barramundi-fish.glb"
 
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value))
 const mix = (from, to, amount) => from + (to - from) * amount
+const angleDifference = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from))
 
 const seededRandom = seed => {
   const value = Math.sin(seed * 12.9898 + 78.233) * 43758.5453
@@ -39,61 +45,148 @@ const material = (color, options = {}) => new THREE.MeshStandardMaterial({
 
 const finGeometry = () => {
   const shape = new THREE.Shape()
-  shape.moveTo(0.05, 0)
-  shape.lineTo(-0.55, 0.42)
-  shape.lineTo(-0.5, -0.42)
+  shape.moveTo(0.08, 0)
+  shape.bezierCurveTo(-0.2, 0.08, -0.42, 0.38, -0.62, 0.4)
+  shape.bezierCurveTo(-0.52, 0.13, -0.52, -0.13, -0.62, -0.4)
+  shape.bezierCurveTo(-0.38, -0.34, -0.18, -0.08, 0.08, 0)
   shape.closePath()
   return new THREE.ShapeGeometry(shape)
 }
 
 const makeFish = (index, palette) => {
   const group = new THREE.Group()
-  const bodyMaterial = material(palette[index % palette.length], {
+  const fallback = new THREE.Group()
+  const bodyMaterial = new THREE.MeshPhysicalMaterial({
+    color: palette[index % palette.length],
+    roughness: 0.38,
+    metalness: 0.02,
+    clearcoat: 0.32,
+    clearcoatRoughness: 0.28,
     emissive: 0x102a32,
-    emissiveIntensity: 0.04,
+    emissiveIntensity: 0.02,
   })
-  const finMaterial = material(palette[index % palette.length], {
+  const finMaterial = new THREE.MeshPhysicalMaterial({
+    color: palette[index % palette.length],
+    roughness: 0.48,
+    clearcoat: 0.18,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.72,
     side: THREE.DoubleSide,
   })
 
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.48, 24, 16), bodyMaterial)
-  body.scale.set(1.5, 0.7, 0.52)
-  group.add(body)
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.38, 32, 20), bodyMaterial)
+  body.scale.set(1.55, 0.68, 0.42)
+  body.castShadow = true
+  fallback.add(body)
 
   const tail = new THREE.Mesh(finGeometry(), finMaterial)
-  tail.position.set(-0.64, 0, 0)
-  group.add(tail)
+  tail.scale.set(0.62, 0.62, 0.62)
+  tail.position.set(-0.56, 0, 0)
+  tail.castShadow = true
+  fallback.add(tail)
 
   const topFin = new THREE.Mesh(finGeometry(), finMaterial)
-  topFin.scale.set(0.48, 0.48, 0.48)
-  topFin.position.set(-0.05, 0.36, 0)
+  topFin.scale.set(0.3, 0.22, 0.3)
+  topFin.position.set(-0.08, 0.25, 0)
   topFin.rotation.z = -Math.PI / 2
-  group.add(topFin)
+  topFin.castShadow = true
+  fallback.add(topFin)
+
+  const pectoralFin = new THREE.Mesh(finGeometry(), finMaterial)
+  pectoralFin.scale.set(0.25, 0.18, 0.25)
+  pectoralFin.position.set(0.12, -0.05, 0.16)
+  pectoralFin.rotation.set(0.35, -0.2, -0.35)
+  fallback.add(pectoralFin)
 
   const eyeMaterial = new THREE.MeshBasicMaterial({color: 0x071b24})
   const eyeWhite = new THREE.Mesh(
-    new THREE.SphereGeometry(0.075, 12, 8),
-    new THREE.MeshBasicMaterial({color: 0xf8fafc}),
+    new THREE.SphereGeometry(0.045, 14, 10),
+    new THREE.MeshPhysicalMaterial({color: 0xdde7e3, roughness: 0.18, clearcoat: 0.8}),
   )
-  eyeWhite.position.set(0.43, 0.14, 0.39)
-  group.add(eyeWhite)
+  eyeWhite.position.set(0.39, 0.09, 0.15)
+  fallback.add(eyeWhite)
 
-  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), eyeMaterial)
-  eye.position.set(0.45, 0.14, 0.454)
-  group.add(eye)
+  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), eyeMaterial)
+  eye.position.set(0.407, 0.09, 0.188)
+  fallback.add(eye)
+
+  group.add(fallback)
 
   group.userData = {
     phase: index * 1.37,
-    speed: 0.42 + seededRandom(index + 4) * 0.22,
-    level: -1.15 + seededRandom(index + 13) * 2.45,
-    depth: -0.85 + seededRandom(index + 22) * 1.7,
+    speed: 0.32 + seededRandom(index + 4) * 0.16,
+    level: -0.95 + seededRandom(index + 13) * 2.05,
+    depth: -0.72 + seededRandom(index + 22) * 1.35,
+    heading: 0,
+    fallback,
     tail,
     bodyMaterial,
   }
 
   return group
+}
+
+const disposeObject3D = root => {
+  const geometries = new Set()
+  const materials = new Set()
+  const textures = new Set()
+
+  root?.traverse(object => {
+    if (object.geometry) geometries.add(object.geometry)
+    const objectMaterials = Array.isArray(object.material) ? object.material : [object.material]
+    objectMaterials.filter(Boolean).forEach(item => {
+      materials.add(item)
+      Object.values(item).forEach(value => {
+        if (value?.isTexture) textures.add(value)
+      })
+    })
+  })
+
+  geometries.forEach(geometry => geometry.dispose())
+  materials.forEach(item => item.dispose())
+  textures.forEach(texture => texture.dispose())
+}
+
+const loadPBRFish = async runtime => {
+  try {
+    const loader = new GLTFLoader()
+    const gltf = await loader.loadAsync(runtime.element.dataset.fishModelUrl || FISH_MODEL_URL)
+
+    if (runtime.disposed) {
+      disposeObject3D(gltf.scene)
+      return
+    }
+
+    const bounds = new THREE.Box3().setFromObject(gltf.scene)
+    const size = bounds.getSize(new THREE.Vector3())
+    const center = bounds.getCenter(new THREE.Vector3())
+    const modelScale = 1.5 / Math.max(size.x, size.y, size.z)
+
+    runtime.fish.forEach(fish => {
+      const model = gltf.scene.clone(true)
+      model.position.sub(center)
+      const visual = new THREE.Group()
+      visual.rotation.y = Math.PI / 2
+      visual.scale.setScalar(modelScale)
+      visual.add(model)
+      visual.traverse(object => {
+        if (!object.isMesh) return
+        object.castShadow = true
+        object.receiveShadow = true
+      })
+
+      fish.userData.fallback.visible = false
+      fish.userData.modelVisual = visual
+      fish.add(visual)
+    })
+
+    runtime.fishTemplate = gltf.scene
+    runtime.element.dataset.fishModelReady = "true"
+  } catch (error) {
+    if (runtime.disposed) return
+    runtime.element.dataset.fishModelError = "true"
+    console.warn("ProteinLoop PBR fish model could not load; using procedural fish", error)
+  }
 }
 
 const lineFromPoints = (points, color, opacity = 1) => new THREE.Line(
@@ -103,35 +196,67 @@ const lineFromPoints = (points, color, opacity = 1) => new THREE.Line(
 
 const makePrawn = index => {
   const group = new THREE.Group()
-  const shellMaterial = material(index % 2 === 0 ? 0xe8793e : 0xf19955, {
-    roughness: 0.42,
-    emissive: 0x3d1307,
-    emissiveIntensity: 0.04,
+  const shellMaterial = new THREE.MeshPhysicalMaterial({
+    color: index % 2 === 0 ? 0xa86745 : 0xb87850,
+    roughness: 0.36,
+    metalness: 0,
+    clearcoat: 0.45,
+    clearcoatRoughness: 0.22,
+    transparent: true,
+    opacity: 0.9,
+    transmission: 0.04,
+    thickness: 0.12,
+    emissive: 0x2d1008,
+    emissiveIntensity: 0.02,
   })
 
-  for (let segment = 0; segment < 6; segment += 1) {
-    const shell = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 10), shellMaterial)
-    shell.scale.set(1.2 - segment * 0.08, 0.78, 0.72)
-    shell.position.set(0.35 - segment * 0.2, 0.03 + Math.sin(segment * 0.65) * 0.06, 0)
+  for (let segment = 0; segment < 7; segment += 1) {
+    const shell = new THREE.Mesh(new THREE.SphereGeometry(0.12, 18, 12), shellMaterial)
+    shell.scale.set(1.25 - segment * 0.07, 0.72, 0.68)
+    shell.position.set(0.3 - segment * 0.145, 0.02 + Math.sin(segment * 0.55) * 0.045, 0)
+    shell.castShadow = true
     group.add(shell)
   }
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 18, 12), shellMaterial)
-  head.scale.set(1.15, 0.9, 0.82)
-  head.position.set(0.48, 0.09, 0)
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 14), shellMaterial)
+  head.scale.set(1.28, 0.84, 0.76)
+  head.position.set(0.44, 0.08, 0)
+  head.castShadow = true
   group.add(head)
+
+  const rostrum = new THREE.Mesh(
+    new THREE.ConeGeometry(0.045, 0.32, 10),
+    new THREE.MeshPhysicalMaterial({
+      color: 0xc08b68,
+      roughness: 0.3,
+      clearcoat: 0.35,
+      transparent: true,
+      opacity: 0.84,
+    }),
+  )
+  rostrum.rotation.z = -Math.PI / 2
+  rostrum.position.set(0.69, 0.11, 0)
+  group.add(rostrum)
 
   const eyeMaterial = new THREE.MeshBasicMaterial({color: 0x17202a})
   for (const z of [-0.12, 0.12]) {
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), eyeMaterial)
-    eye.position.set(0.62, 0.22, z)
+    const stalk = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.012, 0.016, 0.15, 8),
+      shellMaterial,
+    )
+    stalk.rotation.z = -0.35
+    stalk.position.set(0.54, 0.17, z * 0.72)
+    group.add(stalk)
+
+    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.027, 12, 8), eyeMaterial)
+    eye.position.set(0.57, 0.24, z * 0.78)
     group.add(eye)
 
     const antenna = lineFromPoints([
-      new THREE.Vector3(0.61, 0.2, z),
-      new THREE.Vector3(1.05, 0.42 + z * 0.4, z * 1.8),
-      new THREE.Vector3(1.4, 0.32 + z * 0.7, z * 2.4),
-    ], 0xb4532a, 0.9)
+      new THREE.Vector3(0.59, 0.2, z * 0.72),
+      new THREE.Vector3(1.0, 0.38 + z * 0.35, z * 1.5),
+      new THREE.Vector3(1.36, 0.27 + z * 0.5, z * 2.1),
+    ], 0x8f513a, 0.72)
     group.add(antenna)
   }
 
@@ -140,24 +265,32 @@ const makePrawn = index => {
     for (const z of [-0.09, 0.09]) {
       group.add(lineFromPoints([
         new THREE.Vector3(x, -0.06, z),
-        new THREE.Vector3(x + 0.06, -0.28, z * 2.2),
-      ], 0xc75f32, 0.85))
+        new THREE.Vector3(x + 0.05, -0.22, z * 2.0),
+      ], 0x97553c, 0.72))
     }
   }
 
-  const tailMaterial = material(0xf6a45e, {side: THREE.DoubleSide})
+  const tailMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xbc7951,
+    side: THREE.DoubleSide,
+    roughness: 0.42,
+    clearcoat: 0.25,
+    transparent: true,
+    opacity: 0.8,
+  })
   for (const rotation of [-0.45, 0, 0.45]) {
     const fan = new THREE.Mesh(finGeometry(), tailMaterial)
-    fan.scale.set(0.42, 0.28, 0.42)
-    fan.position.set(-0.78, 0.08, 0)
+    fan.scale.set(0.32, 0.2, 0.32)
+    fan.position.set(-0.66, 0.07, 0)
     fan.rotation.x = rotation
     group.add(fan)
   }
 
   group.userData = {
     phase: index * 1.83,
-    speed: 0.16 + seededRandom(index + 31) * 0.09,
-    depth: -0.95 + seededRandom(index + 41) * 1.7,
+    speed: 0.11 + seededRandom(index + 31) * 0.06,
+    depth: -0.9 + seededRandom(index + 41) * 1.55,
+    heading: 0,
     shellMaterial,
   }
 
@@ -170,6 +303,7 @@ const addPlant = (runtime, parent, x, y, z, scale, hue) => {
   const leafMaterial = material(hue, {side: THREE.DoubleSide})
   const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.055, 1.1, 8), stemMaterial)
   stem.position.y = 0.5
+  stem.castShadow = true
   plant.add(stem)
 
   for (let leafIndex = 0; leafIndex < 4; leafIndex += 1) {
@@ -177,6 +311,7 @@ const addPlant = (runtime, parent, x, y, z, scale, hue) => {
     leaf.scale.set(1.7, 0.45, 0.75)
     leaf.position.set((leafIndex % 2 === 0 ? -1 : 1) * 0.14, 0.35 + leafIndex * 0.22, 0)
     leaf.rotation.z = (leafIndex % 2 === 0 ? 1 : -1) * 0.48
+    leaf.castShadow = true
     plant.add(leaf)
   }
 
@@ -189,19 +324,42 @@ const addPlant = (runtime, parent, x, y, z, scale, hue) => {
 const buildTank = runtime => {
   runtime.scene = new THREE.Scene()
   runtime.scene.background = CLEAN_BACKGROUND.clone()
-  runtime.scene.fog = new THREE.Fog(CLEAN_BACKGROUND.clone(), 18, 42)
+  runtime.scene.fog = new THREE.Fog(CLEAN_BACKGROUND.clone(), 13, 32)
 
-  runtime.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 60)
-  runtime.camera.position.set(0, 0.65, 9.6)
-  runtime.camera.lookAt(0, -0.1, 0)
+  runtime.camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60)
+  runtime.camera.position.set(0, 0.35, 11)
+  runtime.camera.lookAt(0, 0.15, 0)
 
-  runtime.scene.add(new THREE.HemisphereLight(0xf7fdff, 0x356c73, 2.8))
-  const sunlight = new THREE.DirectionalLight(0xffffff, 3.1)
-  sunlight.position.set(-4, 7, 7)
+  const environmentScene = new RoomEnvironment()
+  const environmentGenerator = new THREE.PMREMGenerator(runtime.renderer)
+  runtime.environmentTarget = environmentGenerator.fromScene(environmentScene, 0.04)
+  runtime.scene.environment = runtime.environmentTarget.texture
+  environmentGenerator.dispose()
+  disposeObject3D(environmentScene)
+
+  runtime.scene.add(new THREE.HemisphereLight(0xf3fbfa, 0x365f63, 1.65))
+  const sunlight = new THREE.DirectionalLight(0xfff8e7, 2.8)
+  sunlight.position.set(-4.5, 7.5, 6.5)
+  sunlight.castShadow = true
+  sunlight.shadow.mapSize.set(1024, 1024)
+  sunlight.shadow.camera.left = -6
+  sunlight.shadow.camera.right = 6
+  sunlight.shadow.camera.top = 5
+  sunlight.shadow.camera.bottom = -4
+  sunlight.shadow.bias = -0.0004
   runtime.scene.add(sunlight)
-  const waterLight = new THREE.PointLight(0x7dd3fc, 18, 12, 2)
-  waterLight.position.set(3, 1, 3)
+  const waterLight = new THREE.RectAreaLight(0xb8f2f2, 8.5, 8, 3)
+  waterLight.position.set(0, 3.8, 2.8)
+  waterLight.lookAt(0, -0.5, 0)
   runtime.scene.add(waterLight)
+
+  const backdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(9.4, 5.1),
+    material(0xc8dcda, {roughness: 0.92}),
+  )
+  backdrop.position.set(0, -0.02, -1.78)
+  backdrop.receiveShadow = true
+  runtime.scene.add(backdrop)
 
   runtime.tank = new THREE.Group()
   runtime.scene.add(runtime.tank)
@@ -209,11 +367,14 @@ const buildTank = runtime => {
   runtime.waterMaterial = new THREE.MeshPhysicalMaterial({
     color: CLEAN_WATER.clone(),
     transparent: true,
-    opacity: 0.3,
-    roughness: 0.18,
+    opacity: 0.24,
+    roughness: 0.12,
     metalness: 0,
-    transmission: 0.14,
-    thickness: 0.8,
+    transmission: 0.24,
+    thickness: 1.2,
+    ior: 1.333,
+    attenuationColor: 0x7ccbd1,
+    attenuationDistance: 5.5,
     side: THREE.BackSide,
     depthWrite: false,
   })
@@ -221,45 +382,85 @@ const buildTank = runtime => {
   water.position.y = -0.02
   runtime.tank.add(water)
 
-  const glassGeometry = new THREE.BoxGeometry(8.55, 4.3, 3.3)
+  const glassGeometry = new THREE.BoxGeometry(8.58, 4.32, 3.32)
+  runtime.glassMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xe8fbfb,
+    roughness: 0.08,
+    metalness: 0,
+    transmission: 0.82,
+    thickness: 0.08,
+    ior: 1.45,
+    transparent: true,
+    opacity: 0.12,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  })
+  const glass = new THREE.Mesh(glassGeometry, runtime.glassMaterial)
+  glass.renderOrder = 7
+  runtime.tank.add(glass)
+
   const glassEdges = new THREE.LineSegments(
     new THREE.EdgesGeometry(glassGeometry),
-    new THREE.LineBasicMaterial({color: 0x8ac7d0, transparent: true, opacity: 0.72}),
+    new THREE.LineBasicMaterial({color: 0x52777b, transparent: true, opacity: 0.42}),
   )
+  glassEdges.renderOrder = 8
   runtime.tank.add(glassEdges)
 
   const floor = new THREE.Mesh(
     new THREE.BoxGeometry(8.5, 0.16, 3.2),
-    material(0x586b66, {roughness: 0.9}),
+    material(0x514b42, {roughness: 0.96}),
   )
   floor.position.y = -2.12
+  floor.receiveShadow = true
   runtime.tank.add(floor)
 
   const gravelGeometry = new THREE.DodecahedronGeometry(0.08, 0)
   const gravelMaterial = material(0x8c8070, {roughness: 1})
-  const gravel = new THREE.InstancedMesh(gravelGeometry, gravelMaterial, 110)
+  const gravel = new THREE.InstancedMesh(gravelGeometry, gravelMaterial, 190)
   const matrix = new THREE.Matrix4()
-  for (let index = 0; index < 110; index += 1) {
+  const gravelPalette = [0x71685c, 0x8f826e, 0x625d55, 0xa0927a, 0x4d5550]
+  for (let index = 0; index < 190; index += 1) {
     const x = -4 + seededRandom(index + 100) * 8
     const z = -1.4 + seededRandom(index + 200) * 2.8
-    const size = 0.55 + seededRandom(index + 300) * 0.9
+    const size = 0.45 + seededRandom(index + 300) * 1.15
     matrix.compose(
       new THREE.Vector3(x, -1.99 + seededRandom(index + 400) * 0.08, z),
       new THREE.Quaternion().setFromEuler(new THREE.Euler(0, seededRandom(index + 500) * Math.PI, 0)),
       new THREE.Vector3(size, size * 0.7, size),
     )
     gravel.setMatrixAt(index, matrix)
+    gravel.setColorAt(index, new THREE.Color(gravelPalette[index % gravelPalette.length]))
   }
   gravel.instanceMatrix.needsUpdate = true
+  gravel.instanceColor.needsUpdate = true
+  gravel.castShadow = true
+  gravel.receiveShadow = true
   runtime.tank.add(gravel)
 
+  const rockGeometry = new THREE.DodecahedronGeometry(0.22, 1)
+  for (let index = 0; index < 7; index += 1) {
+    const rock = new THREE.Mesh(
+      rockGeometry,
+      material(index % 2 === 0 ? 0x65706a : 0x777168, {roughness: 0.98}),
+    )
+    rock.position.set(-3.35 + index * 1.12, -1.82, -0.95 + (index % 3) * 0.7)
+    rock.scale.set(0.65 + seededRandom(index + 2100), 0.5 + seededRandom(index + 2200), 0.7)
+    rock.rotation.set(0, seededRandom(index + 2300) * Math.PI, 0)
+    rock.castShadow = true
+    rock.receiveShadow = true
+    runtime.tank.add(rock)
+  }
+
   runtime.surfaceGeometry = new THREE.PlaneGeometry(8.3, 3.05, 32, 12)
-  runtime.surfaceMaterial = new THREE.MeshPhongMaterial({
+  runtime.surfaceMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xa7ecf2,
     transparent: true,
-    opacity: 0.48,
+    opacity: 0.34,
+    transmission: 0.38,
+    roughness: 0.08,
+    clearcoat: 0.55,
+    clearcoatRoughness: 0.12,
     side: THREE.DoubleSide,
-    shininess: 110,
     depthWrite: false,
   })
   runtime.surface = new THREE.Mesh(runtime.surfaceGeometry, runtime.surfaceMaterial)
@@ -277,15 +478,23 @@ const buildTank = runtime => {
   ])
   const pipe = new THREE.Mesh(
     new THREE.TubeGeometry(pipeCurve, 72, 0.07, 10, false),
-    material(0x3a7e83, {roughness: 0.35}),
+    new THREE.MeshPhysicalMaterial({
+      color: 0x447b80,
+      roughness: 0.24,
+      metalness: 0.18,
+      clearcoat: 0.38,
+    }),
   )
+  pipe.castShadow = true
   runtime.scene.add(pipe)
 
   const growBed = new THREE.Mesh(
     new THREE.BoxGeometry(5.2, 0.32, 1.0),
-    material(0xdee8df, {roughness: 0.85}),
+    material(0xc9d2ce, {roughness: 0.82}),
   )
   growBed.position.set(-0.65, 2.74, -1.55)
+  growBed.castShadow = true
+  growBed.receiveShadow = true
   runtime.scene.add(growBed)
 
   runtime.plants = []
@@ -317,8 +526,8 @@ const buildTank = runtime => {
   runtime.tank.add(runtime.duckweedPatch)
 
   runtime.fish = []
-  const fishPalette = [0x0ea5a8, 0x2563a8, 0xe4a52d, 0xd95f59, 0x4f8d65, 0x6d70b3]
-  for (let index = 0; index < 7; index += 1) {
+  const fishPalette = [0x718a83, 0x6c858d, 0x7f8d78, 0x8a8474, 0x637c84]
+  for (let index = 0; index < 5; index += 1) {
     const fish = makeFish(index, fishPalette)
     runtime.fish.push(fish)
     runtime.tank.add(fish)
@@ -453,37 +662,45 @@ const updateParticles = (runtime, time, ammoniaStress) => {
 
 const updateAnimals = (runtime, time, oxygenFactor, ammoniaStress, collapsed) => {
   const distress = collapsed ? 1 : Math.max(ammoniaStress, 1 - oxygenFactor)
-  const fishScale = clamp(0.78 + runtime.visual.fishBiomass / 30, 0.82, 1.2)
+  const fishScale = clamp(0.82 + runtime.visual.fishBiomass / 55, 0.9, 1.12)
 
   runtime.fish.forEach((fish, index) => {
     const data = fish.userData
     const pace = data.speed * (0.35 + oxygenFactor * 0.8) * (1 - distress * 0.35)
     const phase = time * pace + data.phase
-    const x = Math.sin(phase) * (3.25 - (index % 3) * 0.18)
+    const x = Math.sin(phase) * (3.05 - (index % 3) * 0.2)
     const direction = Math.cos(phase) >= 0 ? 1 : -1
     const healthyLevel = data.level + Math.sin(time * 0.85 + data.phase) * 0.16
     const surfaceLevel = 1.48 + Math.sin(time * 1.4 + data.phase) * 0.09
     const y = mix(healthyLevel, surfaceLevel, clamp(distress * 0.9, 0, 1))
     const z = data.depth + Math.cos(time * 0.5 + data.phase) * 0.12
-    const scale = fishScale * (0.88 + (index % 3) * 0.07)
+    const scale = fishScale * (0.86 + (index % 3) * 0.06)
+    const targetHeading = direction > 0 ? 0 : Math.PI
+    data.heading += angleDifference(data.heading, targetHeading) * 0.08
 
     fish.position.set(x, collapsed ? mix(y, -1.4, 0.55) : y, z)
-    fish.scale.set(direction * scale, scale, scale)
+    fish.scale.setScalar(scale)
+    fish.rotation.y = data.heading
     fish.rotation.z = collapsed ? direction * 0.8 : Math.sin(time + data.phase) * 0.035
-    data.tail.rotation.y = Math.sin(time * 7 * pace + data.phase) * (0.18 + oxygenFactor * 0.2)
+    data.tail.rotation.y = Math.sin(time * 7 * pace + data.phase) * (0.12 + oxygenFactor * 0.16)
+    if (data.modelVisual) {
+      data.modelVisual.rotation.y = Math.PI / 2 + Math.sin(time * 5 * pace + data.phase) * 0.035
+    }
     data.bodyMaterial.emissiveIntensity = distress * 0.17
   })
 
-  const prawnScale = clamp(0.82 + runtime.visual.prawnBiomass / 12, 0.84, 1.18)
+  const prawnScale = clamp(0.65 + runtime.visual.prawnBiomass / 18, 0.72, 0.94)
   runtime.prawns.forEach((prawn, index) => {
     const data = prawn.userData
     const phase = time * data.speed * (0.4 + oxygenFactor) + data.phase
     const direction = Math.cos(phase) >= 0 ? 1 : -1
     const x = Math.sin(phase) * (2.8 - index * 0.2)
-    const scale = prawnScale * (0.84 + index * 0.06)
-    prawn.position.set(x, -1.78 + Math.sin(time * 1.2 + data.phase) * 0.025, data.depth)
-    prawn.scale.set(direction * scale, scale, scale)
-    prawn.rotation.y = Math.sin(time * 0.4 + data.phase) * 0.08
+    const scale = prawnScale * (0.9 + index * 0.04)
+    const targetHeading = direction > 0 ? 0 : Math.PI
+    data.heading += angleDifference(data.heading, targetHeading) * 0.06
+    prawn.position.set(x, -1.82 + Math.sin(time * 1.2 + data.phase) * 0.018, data.depth)
+    prawn.scale.setScalar(scale)
+    prawn.rotation.y = data.heading + Math.sin(time * 0.4 + data.phase) * 0.035
     data.shellMaterial.emissiveIntensity = distress * 0.12
   })
 }
@@ -520,8 +737,9 @@ const renderFrame = (runtime, timeMilliseconds) => {
     ? new THREE.Color().lerpColors(CLEAN_WATER, WARNING_WATER, waterMix / 0.55)
     : new THREE.Color().lerpColors(WARNING_WATER, DANGER_WATER, (waterMix - 0.55) / 0.45)
   runtime.waterMaterial.color.lerp(waterTarget, smoothing)
-  runtime.waterMaterial.opacity = 0.24 + ammoniaStress * 0.2
+  runtime.waterMaterial.opacity = 0.2 + ammoniaStress * 0.2
   runtime.surfaceMaterial.color.copy(runtime.waterMaterial.color).offsetHSL(0, 0.02, 0.12)
+  runtime.glassMaterial.color.lerp(ammoniaStress > 0.5 ? DANGER_GLASS : CLEAN_GLASS, smoothing)
   runtime.scene.background.lerpColors(CLEAN_BACKGROUND, DANGER_BACKGROUND, ammoniaStress * 0.7)
   runtime.scene.fog.color.copy(runtime.scene.background)
 
@@ -531,11 +749,11 @@ const renderFrame = (runtime, timeMilliseconds) => {
   updateAnimals(runtime, time, oxygenFactor, ammoniaStress, runtime.visual.collapsed)
   updatePlants(runtime, time)
 
-  const cameraX = runtime.pointer.x * 0.7
-  const cameraY = 0.65 + runtime.pointer.y * 0.35
+  const cameraX = runtime.pointer.x * 0.38
+  const cameraY = 0.35 + runtime.pointer.y * 0.2
   runtime.camera.position.x = mix(runtime.camera.position.x, cameraX, 0.035)
   runtime.camera.position.y = mix(runtime.camera.position.y, cameraY, 0.035)
-  runtime.camera.lookAt(0, -0.08, 0)
+  runtime.camera.lookAt(0, 0.15, 0)
 
   if (runtime.alertEnergy > 0.01) {
     runtime.alertRing.visible = true
@@ -552,21 +770,15 @@ const renderFrame = (runtime, timeMilliseconds) => {
 
 const disposeRuntime = runtime => {
   if (!runtime) return
+  runtime.disposed = true
   runtime.renderer?.setAnimationLoop(null)
   runtime.resizeObserver?.disconnect()
   runtime.mediaQuery?.removeEventListener?.("change", runtime.handleMotionChange)
   runtime.element?.removeEventListener("pointermove", runtime.handlePointerMove)
   runtime.element?.removeEventListener("pointerleave", runtime.handlePointerLeave)
 
-  const geometries = new Set()
-  const materials = new Set()
-  runtime.scene?.traverse(object => {
-    if (object.geometry) geometries.add(object.geometry)
-    if (Array.isArray(object.material)) object.material.forEach(item => materials.add(item))
-    else if (object.material) materials.add(object.material)
-  })
-  geometries.forEach(geometry => geometry.dispose())
-  materials.forEach(item => item.dispose())
+  disposeObject3D(runtime.scene)
+  runtime.environmentTarget?.dispose()
   runtime.renderer?.dispose()
   runtime.renderer?.forceContextLoss()
 }
@@ -586,6 +798,7 @@ const RealtimeTank = {
         pointer: {x: 0, y: 0},
         alertEnergy: 0,
         lastFrame: 0,
+        disposed: false,
       }
 
       runtime.renderer = new THREE.WebGLRenderer({
@@ -597,9 +810,12 @@ const RealtimeTank = {
       runtime.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
       runtime.renderer.outputColorSpace = THREE.SRGBColorSpace
       runtime.renderer.toneMapping = THREE.ACESFilmicToneMapping
-      runtime.renderer.toneMappingExposure = 1.08
+      runtime.renderer.toneMappingExposure = 1.02
+      runtime.renderer.shadowMap.enabled = true
+      runtime.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
       buildTank(runtime)
+      loadPBRFish(runtime)
 
       runtime.resize = () => {
         const bounds = canvas.parentElement.getBoundingClientRect()
@@ -607,10 +823,10 @@ const RealtimeTank = {
         const height = Math.max(1, Math.round(bounds.height))
         runtime.renderer.setSize(width, height, false)
         runtime.camera.aspect = width / height
-        const halfHorizontalScene = 4.65
         const verticalHalfAngle = THREE.MathUtils.degToRad(runtime.camera.fov * 0.5)
-        const distanceForWidth = halfHorizontalScene / Math.tan(verticalHalfAngle) / runtime.camera.aspect
-        runtime.camera.position.z = Math.max(9.6, distanceForWidth)
+        const distanceForWidth = 5.1 / Math.tan(verticalHalfAngle) / runtime.camera.aspect
+        const distanceForHeight = 3.5 / Math.tan(verticalHalfAngle)
+        runtime.camera.position.z = Math.max(10.8, distanceForWidth, distanceForHeight)
         runtime.camera.updateProjectionMatrix()
       }
       runtime.resizeObserver = new ResizeObserver(runtime.resize)
