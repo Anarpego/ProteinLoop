@@ -10,11 +10,17 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 
 [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Agentic development](#agentic-development-workflow) · [Evidence packet](#submission-packet)
 
+## Why ProteinLoop Focuses on Protein Outcomes
+
+[Aquaponics already integrates aquatic animals and hydroponic plants](https://www.nal.usda.gov/farms-and-agricultural-production-systems/aquaculture-and-aquaponics); ProteinLoop does not claim otherwise. It treats plant growth as one connected output, not the whole result. The live control shows the fish-and-prawn biomass at risk, the plants cleaning the water, the duckweed feed reserve, and the chickens and eggs supported downstream.
+
+That changes the promise from "monitor an aquaponic garden" to "protect every food output in a closed protein loop." When water chemistry fails, the operator sees what animal biomass depends on recovery. Gemma proposes a plan, ecosystem rules verify it, and the producer retains control of irreversible actions. The product claim and UX acceptance contract are documented in the [protein-first judge-story spec](specs/059-protein-first-judge-story/spec.md).
+
 ## What Runs Today
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
-| Real-time system understanding | Operator and producer routes share a full-screen-capable Three.js aquarium with a local PBR fish model, a licensed realistic prawn visual, physical water and glass, bubbles, plants, and stress driven by the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) · [Immersive control spec](specs/058-immersive-agentic-tank/spec.md) |
+| Real-time system understanding | Operator and producer routes share a full-screen-capable Three.js aquarium with a local PBR fish model, a licensed realistic prawn visual, physical water and glass, bubbles, plants, live protein-loop quantities, and stress driven by the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) · [Protein-first UX spec](specs/059-protein-first-judge-story/spec.md) |
 | Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
@@ -28,10 +34,10 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 ## Run an Agentic Intervention
 
 1. Open `http://localhost:4001/`, then use the expand icon in `Live tank simulation` to enter the immersive tank.
-2. Press `Simulate water emergency`. Water color, bubbles, and animal movement visibly transition to the deterministic ammonia-spike state.
-3. In the full-screen `Agentic AI control`, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
-4. Press `Run agent team`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor; the panel keeps the safety verifier and human-approval boundaries visible.
-5. Exit with the collapse icon or `Escape`, inspect the `Intelligence receipt`, and watch the verified state change update the same tank scene.
+2. Press `Inject demo water emergency`. Water color, bubbles, animal movement, and the quantified fish-and-prawn risk visibly transition to the deterministic ammonia-spike state.
+3. In the full-screen `Verified recovery` control, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
+4. Press `Create safe recovery plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor; the panel keeps the ecosystem safety check and producer-control boundaries visible.
+5. Read the in-scene `Recovery verified` result, then exit with the collapse icon or `Escape` to inspect the detailed `Verified recovery receipt` and measured before/after chemistry.
 6. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
 7. Open `http://localhost:4001/producer` to use the same full-screen live tank as a read-only viewer, without operator-only emergency, reset, or agent commands.
 
@@ -49,13 +55,13 @@ flowchart LR
         Replay --> Simulator["Deterministic simulator<br/>current ecosystem state"]
         Simulator --> Agents["4 Gemma / Sagents<br/>domain agents"]
         Agents --> Supervisor["Parent supervisor<br/>structured proposal"]
-        Supervisor --> Verifier{"Safety verifier"}
+        Supervisor --> Verifier{"Ecosystem safety verifier"}
         Verifier -- "unsafe" --> Reject["Reject + RLVR trace"]
         Verifier -- "safe routine" --> Apply["Apply simulator step"]
         Verifier -- "safe but risky" --> HITL["Producer approval"]
         HITL -- "approve or edit" --> Apply
         HITL -- "reject" --> Reject
-        Apply --> Receipt["Intelligence receipt<br/>briefs + plan + state delta"]
+        Apply --> Receipt["Verified recovery receipt<br/>briefs + plan + state delta"]
         Reject --> Receipt
         Apply --> Simulator
     end
@@ -395,7 +401,7 @@ Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records in
 
 The advanced evidence includes a `Human approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the English producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
-`Ask the AI team to help` is the primary Gemma workflow. The operator selects a concrete goal, and `Ask AI team for a safe plan` sends it to four subsystem agents concurrently. A fifth parent supervisor resolves their resource requests into one bounded action. The `Intelligence receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
+`Create a verified recovery` is the primary Gemma workflow. The operator selects a concrete food-system goal, and `Create safe recovery plan` sends it to four subsystem agents concurrently. A fifth parent supervisor resolves their resource requests into one bounded action. The `Verified recovery receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
 
 The advanced evidence includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 

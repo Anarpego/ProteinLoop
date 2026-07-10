@@ -8,7 +8,7 @@ Show the title and closed-loop diagram.
 
 Narration:
 
-ProteinLoop is an agentic aquaponic system for rural protein security. Aquaponics usually gives families vegetables and a little fish. ProteinLoop closes the protein cycle with fish, prawns, duckweed, hydroponic plants, and eggs.
+ProteinLoop is an agentic aquaponic system for rural protein security. Aquaponics already joins fish and plants. ProteinLoop makes that animal-protein outcome measurable and recoverable, then extends the managed loop to prawns, duckweed feed, and eggs.
 
 ## Scene 2: Collapse Versus Recovery
 
@@ -16,7 +16,7 @@ Open `http://localhost:4001/`.
 
 Action:
 
-Use the tank's expand icon, press `Simulate water emergency`, and watch the water, bubbles, fish, and prawns change. In the full-screen `Agentic AI control`, choose `Recover water quality` and press `Run agent team`. Exit with `Escape`, then open `Advanced evidence and controls` and press `Run demo cascade` for the baseline comparison.
+Use the tank's expand icon, press `Inject demo water emergency`, and watch the water, bubbles, fish, prawns, and quantified biomass risk change. In the full-screen `Verified recovery` control, choose `Recover water quality` and press `Create safe recovery plan`. Read the before/after recovery receipt, exit with `Escape`, then open `Advanced evidence and controls` and press `Run demo cascade` for the baseline comparison.
 
 Narration:
 
@@ -64,7 +64,7 @@ Risky water exchange and harvest actions pause for the producer. The English dec
 
 Action:
 
-Select `Protect protein yield`, press `Ask AI team for a safe plan`, and inspect the completed `Intelligence receipt`.
+Select `Protect protein yield`, press `Create safe recovery plan`, and inspect the completed `Verified recovery receipt`.
 
 Narration:
 

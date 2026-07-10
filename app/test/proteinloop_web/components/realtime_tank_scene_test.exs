@@ -16,6 +16,7 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ ~s(phx-hook="RealtimeTank")
     assert html =~ ~s(data-ammonia="0.4")
     assert html =~ ~s(data-oxygen="6.8")
+    assert html =~ ~s(data-aquatic-biomass="14.5")
     assert html =~ ~s(data-health="stable")
     assert html =~ ~s(data-fish-model-url="/models/barramundi-fish.glb")
     assert html =~ ~s(data-prawn-texture-url="/models/greasyback-shrimp.jpeg")
@@ -26,9 +27,13 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ ~s(aria-labelledby="test-realtime-tank-description")
     assert html =~ "Animated fish and freshwater prawn tank"
     assert html =~ "Live tank simulation"
-    assert html =~ "Simulate water emergency"
+    assert html =~ "Demo mode"
+    assert html =~ "Inject demo water emergency"
     assert html =~ "Waste in water"
     assert html =~ "Breathing oxygen"
+    assert html =~ "Fish + prawn stock"
+    assert html =~ "14.5 kg"
+    assert html =~ "12.0 kg fish · 2.5 kg prawns"
     assert html =~ "Plant loop"
     assert html =~ "duckweed"
     refute html =~ "protein-loop-system.svg"
@@ -65,6 +70,7 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ ~s(data-oxygen="3.2")
     assert html =~ ~s(data-health="critical")
     assert html =~ "Tank animals are in danger"
+    assert html =~ "14.5 kg of fish and prawns depend on this recovery."
     assert html =~ "Dangerous waste"
     assert html =~ "Low oxygen"
   end

@@ -55,7 +55,21 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   } do
     {:ok, view, html} = live(conn, ~p"/")
 
-    assert html =~ "ProteinLoop system control"
+    assert html =~ "Protect every protein output in the loop"
+    assert html =~ "Aquaponics already links fish and plants."
+
+    assert html =~
+             ~r/ProteinLoop makes its animal-protein outcome\s+measurable and recoverable/
+
+    assert has_element?(view, "#protein-loop-story")
+    assert html =~ "Fish + prawns"
+    assert html =~ "14.5 kg live biomass"
+    assert html =~ "Plants clean the water"
+    assert html =~ "5.0 kg growing"
+    assert html =~ "Duckweed becomes feed"
+    assert html =~ "3.0 kg reserve"
+    assert html =~ "Chickens + eggs"
+    assert html =~ "6 hens · 0.0 eggs tracked"
     assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
     assert has_element?(view, "#operator-system-scene [data-tank-fullscreen]")
@@ -63,15 +77,20 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert has_element?(view, "#fullscreen-mission-select option[value='recover-water']")
     assert has_element?(view, "#fullscreen-run-agentic-mission[phx-click='run-agentic-mission']")
     assert html =~ "Live tank simulation"
-    assert html =~ "Agentic AI control"
-    assert html =~ "Safety verifier"
-    assert html =~ "Human approval"
+    assert html =~ "Verified recovery"
+    assert html =~ "Gemma 4 ready"
+    assert html =~ "Ecosystem safety check"
+    assert html =~ "Producer stays in control"
+
+    assert html =~
+             "Gemma proposes. Ecosystem rules verify. The producer controls irreversible actions."
+
     assert html =~ "Main fish &amp; prawn tank"
     assert html =~ "Waste in water"
     assert html =~ "Ammonia"
     assert html =~ "Breathing oxygen"
     assert html =~ "Dissolved oxygen"
-    assert html =~ "Simulate water emergency"
+    assert html =~ "Inject demo water emergency"
     assert has_element?(view, "#operator-system-scene [data-tank-fallback]")
     refute html =~ "protein-loop-system.svg"
   end
@@ -99,10 +118,12 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
 
     html = render_async(view, 1_000)
     assert has_element?(view, "#fullscreen-agent-result")
-    assert html =~ "Verified intervention applied"
-    assert html =~ "Reward 203.7"
-    assert html =~ "Ammonia 0.9 mg/L"
-    assert html =~ "Oxygen 6.4 mg/L"
+    assert html =~ "Recovery verified"
+    assert html =~ "Fish and prawns protected"
+    assert html =~ "3.8 → 0.9 mg/L"
+    assert html =~ "3.2 → 6.4 mg/L"
+    assert html =~ "Unsafe actions executed"
+    assert has_element?(view, "#fullscreen-agent-result .realtime-tank__safe-count strong", "0")
   end
 
   test "streams simulator snapshots into the animated tank", %{conn: conn} do
@@ -162,8 +183,8 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   test "keeps one AI workflow above closed advanced evidence", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 
-    assert html =~ "Ask the AI team to help"
-    assert html =~ "Ask AI team for a safe plan"
+    assert html =~ "Create a verified recovery"
+    assert html =~ "Create safe recovery plan"
     assert has_element?(view, "#advanced-evidence")
     refute has_element?(view, "#advanced-evidence[open]")
     assert html =~ "Advanced evidence and controls"
@@ -212,7 +233,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
     {:ok, view, html} = live(conn, ~p"/")
 
-    assert html =~ "Ask the AI team to help"
+    assert html =~ "Create a verified recovery"
     assert has_element?(view, "#agentic-mission")
     assert has_element?(view, "#mission-protect-protein")
 
@@ -231,7 +252,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     send(task, {:continue_test_sagents_runtime, :run})
 
     html = render_async(view, 1_000)
-    assert html =~ "Intelligence receipt"
+    assert html =~ "Verified recovery receipt"
     assert html =~ "4 specialist briefs"
     assert html =~ "Pause feed and maximize aeration."
     assert html =~ "Protect duckweed reserve until water stabilizes."
@@ -264,7 +285,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   test "runs the real-runtime UI path asynchronously", %{conn: conn} do
     Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
     {:ok, view, html} = live(conn, ~p"/")
-    assert html =~ "Ask the AI team to help"
+    assert html =~ "Create a verified recovery"
 
     view
     |> element("#run-agentic-mission")

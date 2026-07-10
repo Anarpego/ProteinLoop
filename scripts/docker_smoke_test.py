@@ -119,24 +119,31 @@ def check_web() -> list[Check]:
     prawn_texture_size = head_content_length(f"{WEB}/models/greasyback-shrimp.jpeg")
 
     operator_needles = [
-        "ProteinLoop system control",
+        "Protect every protein output in the loop",
+        "Aquaponics already links fish and plants",
+        "One water failure threatens the connected food loop",
+        "Fish + prawns",
+        "Duckweed becomes feed",
+        "Chickens + eggs",
         "Run demo cascade",
         "RLVR reward verifier",
         "Policy search improvement",
         "Anomaly forecast",
-        "Ask the AI team to help",
-        "Ask AI team for a safe plan",
+        "Create a verified recovery",
+        "Create safe recovery plan",
         "Advanced evidence and controls",
         "Sagents 0.9.0",
         "until_tool_success",
         "Human approval",
         "Live tank simulation",
         "Open tank full screen",
-        "Agentic AI control",
-        "Safety verifier",
-        "Run agent team",
-        "Simulate water emergency",
+        "Verified recovery",
+        "Ecosystem safety check",
+        "Producer stays in control",
+        "Gemma proposes. Ecosystem rules verify.",
+        "Inject demo water emergency",
         "Waste in water",
+        "Fish + prawn stock",
         "Self-healing mesh",
         "Physical DECT NR+ link",
         "Sequence #100",
@@ -159,7 +166,11 @@ def check_web() -> list[Check]:
         "Breathing oxygen",
     ]
 
-    producer_forbidden = ["tank-agent-console", "Simulate water emergency", "Run agent team"]
+    producer_forbidden = [
+        "tank-agent-console",
+        "Inject demo water emergency",
+        "Create safe recovery plan",
+    ]
     producer_leaks = [marker for marker in producer_forbidden if marker in producer]
 
     checks = [

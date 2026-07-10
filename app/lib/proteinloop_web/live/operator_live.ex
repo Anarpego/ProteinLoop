@@ -562,17 +562,39 @@ defmodule ProteinLoopWeb.OperatorLive do
   @impl true
   def render(assigns) do
     {badge_class, badge_text} = status_badge(assigns.snapshot)
-    assigns = assign(assigns, :badge_class, badge_class) |> assign(:badge_text, badge_text)
+    fish_biomass = rounded(metric(assigns.state, "fish_biomass_kg"))
+    prawn_biomass = rounded(metric(assigns.state, "prawn_biomass_kg"))
+
+    assigns =
+      assigns
+      |> assign(:badge_class, badge_class)
+      |> assign(:badge_text, badge_text)
+      |> assign(:fish_biomass, fish_biomass)
+      |> assign(:prawn_biomass, prawn_biomass)
+      |> assign(:aquatic_biomass, rounded(fish_biomass + prawn_biomass))
+      |> assign(:plant_biomass, rounded(metric(assigns.state, "plant_biomass_kg")))
+      |> assign(:duckweed, rounded(metric(assigns.state, "duckweed_kg")))
+      |> assign(:chickens, metric(assigns.state, "chicken_count"))
+      |> assign(:eggs, rounded(metric(assigns.state, "eggs_count")))
 
     ~H"""
     <main class="min-h-screen bg-base-200 text-base-content">
       <section class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <header class="flex flex-col gap-3 border-b border-base-300 pb-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p class="text-sm font-semibold uppercase tracking-wide text-secondary">ProteinLoop</p>
-            <h1 class="text-2xl font-semibold tracking-normal">ProteinLoop system control</h1>
+        <header class="flex flex-col gap-4 border-b border-base-300 pb-4 lg:flex-row lg:items-start lg:justify-between">
+          <div class="max-w-4xl">
+            <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
+              ProteinLoop · verified circular food production
+            </p>
+            <h1 class="mt-1 text-2xl font-semibold tracking-normal sm:text-3xl">
+              Protect every protein output in the loop
+            </h1>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/70">
+              Aquaponics already links fish and plants. ProteinLoop makes its animal-protein outcome
+              measurable and recoverable, then extends the loop to freshwater prawns, duckweed feed,
+              and eggs.
+            </p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex shrink-0 flex-wrap items-center gap-2">
             <span class={["badge", @badge_class]}>{@badge_text}</span>
             <.link navigate={~p"/producer"} class="btn btn-sm btn-outline">
               <.icon name="hero-language" /> Producer
@@ -583,22 +605,72 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </header>
 
+        <section
+          id="protein-loop-story"
+          class="protein-loop-story"
+          aria-labelledby="protein-loop-title"
+        >
+          <div class="protein-loop-story__intro">
+            <p class="text-xs font-semibold uppercase tracking-wide text-primary">Why it matters</p>
+            <h2 id="protein-loop-title" class="mt-1 text-base font-semibold">
+              One water failure threatens the connected food loop
+            </h2>
+            <p class="mt-1 text-xs leading-5 text-base-content/65">
+              Live simulator values show what the recovery is protecting now.
+            </p>
+          </div>
+          <ol class="protein-loop-story__steps" aria-label="Connected protein loop">
+            <li>
+              <.icon name="hero-scale" />
+              <div>
+                <p>Fish + prawns</p>
+                <strong>{@aquatic_biomass} kg live biomass</strong>
+              </div>
+            </li>
+            <li>
+              <.icon name="hero-arrow-path" />
+              <div>
+                <p>Plants clean the water</p>
+                <strong>{@plant_biomass} kg growing</strong>
+              </div>
+            </li>
+            <li>
+              <.icon name="hero-sparkles" />
+              <div>
+                <p>Duckweed becomes feed</p>
+                <strong>{@duckweed} kg reserve</strong>
+              </div>
+            </li>
+            <li>
+              <.icon name="hero-home-modern" />
+              <div>
+                <p>Chickens + eggs</p>
+                <strong>{@chickens} hens · {@eggs} eggs tracked</strong>
+              </div>
+            </li>
+          </ol>
+        </section>
+
         <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true}>
           <:agent_controls>
             <div class="realtime-tank__agent-header">
               <div>
                 <p class="text-xs font-semibold uppercase tracking-wide text-primary">
-                  Agentic AI control
+                  Verified recovery
                 </p>
-                <h3 class="mt-1 text-base font-semibold">Live recovery mission</h3>
+                <h3 class="mt-1 text-base font-semibold">
+                  {if @mission_phase == :completed,
+                    do: "Recovery complete",
+                    else: "Protect this protein loop"}
+                </h3>
               </div>
               <span class={[
                 "badge badge-sm",
                 if(@sagents_status.endpoint_configured?, do: "badge-success", else: "badge-warning")
               ]}>
                 {if @sagents_status.endpoint_configured?,
-                  do: "Gemma configured",
-                  else: "Gemma unavailable"}
+                  do: "Gemma 4 ready",
+                  else: "Gemma 4 unavailable"}
               </span>
             </div>
 
@@ -606,7 +678,7 @@ defmodule ProteinLoopWeb.OperatorLive do
               for="fullscreen-mission-select"
               class="mt-3 block text-xs font-semibold text-base-content/65"
             >
-              Mission
+              Recovery goal
             </label>
             <select
               id="fullscreen-mission-select"
@@ -634,17 +706,21 @@ defmodule ProteinLoopWeb.OperatorLive do
             <ol class="realtime-tank__agent-flow" aria-label="Agentic safety workflow">
               <li>
                 <.icon name="hero-user-group" />
-                <span>{@sagents_status.agent_count}-agent team</span>
+                <span>Protein-loop specialists</span>
               </li>
               <li>
                 <.icon name="hero-shield-check" />
-                <span>Safety verifier</span>
+                <span>Ecosystem safety check</span>
               </li>
               <li>
                 <.icon name="hero-hand-raised" />
-                <span>Human approval</span>
+                <span>Producer stays in control</span>
               </li>
             </ol>
+
+            <p class="realtime-tank__trust-line">
+              Gemma proposes. Ecosystem rules verify. The producer controls irreversible actions.
+            </p>
 
             <button
               id="fullscreen-run-agentic-mission"
@@ -657,7 +733,9 @@ defmodule ProteinLoopWeb.OperatorLive do
                 name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
                 class={if @sagents_running?, do: "animate-spin", else: nil}
               />
-              {if @sagents_running?, do: "Specialists deliberating", else: "Run agent team"}
+              {if @sagents_running?,
+                do: "Specialists deliberating",
+                else: "Create safe recovery plan"}
             </button>
 
             <div
@@ -666,7 +744,11 @@ defmodule ProteinLoopWeb.OperatorLive do
               class="mt-3 border-l-2 border-success bg-success/10 px-3 py-2"
             >
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <p class="text-sm font-semibold">Verified intervention applied</p>
+                <p class="text-sm font-semibold">
+                  {if get_in(@loop_result, [:verification, "ok"]),
+                    do: "Recovery verified",
+                    else: "Recovery rejected"}
+                </p>
                 <span class={[
                   "badge badge-sm",
                   if(get_in(@loop_result, [:verification, "ok"]),
@@ -675,14 +757,39 @@ defmodule ProteinLoopWeb.OperatorLive do
                   )
                 ]}>
                   {if get_in(@loop_result, [:verification, "ok"]),
-                    do: "Verifier accepted",
-                    else: "Verifier rejected"}
+                    do: "Ecosystem rules passed",
+                    else: "Ecosystem rules blocked it"}
                 </span>
               </div>
-              <p class="mt-1 text-xs font-semibold text-base-content/70">
-                Reward {rounded(@loop_result.reward)} · Ammonia {rounded(
-                  @loop_result.state["ammonia_mg_l"]
-                )} mg/L · Oxygen {rounded(@loop_result.state["dissolved_oxygen_mg_l"])} mg/L
+              <p class="mt-1 text-xs font-semibold text-success">
+                {if get_in(@loop_result, [:verification, "ok"]),
+                  do: "Fish and prawns protected",
+                  else: "No rejected action was executed"}
+              </p>
+              <dl class="realtime-tank__recovery-delta">
+                <div>
+                  <dt>Ammonia</dt>
+                  <dd>
+                    {rounded(@loop_result.before_state["ammonia_mg_l"])} → {rounded(
+                      @loop_result.state["ammonia_mg_l"]
+                    )} mg/L
+                  </dd>
+                </div>
+                <div>
+                  <dt>Oxygen</dt>
+                  <dd>
+                    {rounded(@loop_result.before_state["dissolved_oxygen_mg_l"])} → {rounded(
+                      @loop_result.state["dissolved_oxygen_mg_l"]
+                    )} mg/L
+                  </dd>
+                </div>
+              </dl>
+              <div class="realtime-tank__safe-count">
+                <span>Unsafe actions executed</span>
+                <strong>0</strong>
+              </div>
+              <p class="mt-1 text-[0.65rem] text-base-content/55">
+                Deterministic verifier reward {rounded(@loop_result.reward)}
               </p>
             </div>
 
@@ -703,23 +810,24 @@ defmodule ProteinLoopWeb.OperatorLive do
           <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-xl font-semibold">Ask the AI team to help</h2>
+                <h2 class="text-xl font-semibold">Create a verified recovery</h2>
                 <span class={[
                   "badge",
                   if(@sagents_status.endpoint_configured?, do: "badge-success", else: "badge-warning")
                 ]}>
                   {if @sagents_status.endpoint_configured?,
-                    do: "Local Gemma ready",
-                    else: "Local Gemma not ready"}
+                    do: "Gemma 4 ready",
+                    else: "Gemma 4 not ready"}
                 </span>
               </div>
               <p class="mt-1 max-w-3xl text-sm text-base-content/70">
-                Choose what matters now. Four AI specialists compare the whole loop, then a safety
-                check blocks any action that could harm the system.
+                Choose what food outcome matters now. Protein-loop specialists compare the living
+                system, ecosystem rules block unsafe actions, and irreversible changes still require
+                producer approval.
               </p>
             </div>
             <span class="text-sm font-semibold text-base-content/60">
-              {@sagents_status.agent_count} AI specialists
+              {@sagents_status.agent_count}-agent recovery team
             </span>
           </div>
 
@@ -761,19 +869,19 @@ defmodule ProteinLoopWeb.OperatorLive do
             >
               <li class="p-3 sm:border-r sm:border-base-300">
                 <.icon name="hero-eye" class="size-5 text-info" />
-                <p class="mt-1 text-sm font-semibold">Read the system</p>
+                <p class="mt-1 text-sm font-semibold">Read the live loop</p>
               </li>
               <li class="border-l border-base-300 p-3 sm:border-l-0 sm:border-r">
                 <.icon name="hero-user-group" class="size-5 text-secondary" />
-                <p class="mt-1 text-sm font-semibold">Compare advice</p>
+                <p class="mt-1 text-sm font-semibold">Compare specialist advice</p>
               </li>
               <li class="border-t border-base-300 p-3 sm:border-r sm:border-t-0">
                 <.icon name="hero-shield-check" class="size-5 text-success" />
-                <p class="mt-1 text-sm font-semibold">Check safety</p>
+                <p class="mt-1 text-sm font-semibold">Verify ecosystem safety</p>
               </li>
               <li class="border-l border-t border-base-300 p-3 sm:border-l-0 sm:border-t-0">
                 <.icon name="hero-check-circle" class="size-5 text-primary" />
-                <p class="mt-1 text-sm font-semibold">Act if safe</p>
+                <p class="mt-1 text-sm font-semibold">Execute only if safe</p>
               </li>
             </ol>
           </div>
@@ -788,7 +896,7 @@ defmodule ProteinLoopWeb.OperatorLive do
               name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
               class={if @sagents_running?, do: "animate-spin", else: nil}
             />
-            {if @sagents_running?, do: "Specialists deliberating", else: "Ask AI team for a safe plan"}
+            {if @sagents_running?, do: "Specialists deliberating", else: "Create safe recovery plan"}
           </button>
 
           <p
@@ -796,10 +904,10 @@ defmodule ProteinLoopWeb.OperatorLive do
             id="mission-deliberating"
             class="mt-2 text-sm font-semibold text-primary"
           >
-            Specialists deliberating
+            Specialists deliberating · ecosystem rules will verify the final plan
           </p>
           <p :if={!@sagents_status.endpoint_configured?} class="mt-2 text-sm text-error">
-            Local Gemma is not ready yet.
+            Gemma 4 is not ready yet.
           </p>
 
           <div class="mt-4">
@@ -1325,7 +1433,8 @@ defmodule ProteinLoopWeb.OperatorLive do
   def loop_result(%{result: nil} = assigns) do
     ~H"""
     <div class="border-t border-base-300 pt-3 text-sm text-base-content/60">
-      No intelligence receipt yet. Run the selected mission to produce a verified intervention.
+      No recovery receipt yet. Create a safe plan to compare the chemistry before and after a
+      verified intervention.
     </div>
     """
   end
@@ -1347,7 +1456,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-lg font-semibold">Intelligence receipt</h3>
+            <h3 class="text-lg font-semibold">Verified recovery receipt</h3>
             <span class={[
               "badge",
               if(@verified?, do: "badge-success", else: "badge-error")

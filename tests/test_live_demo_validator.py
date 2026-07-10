@@ -48,9 +48,11 @@ class LiveDemoValidatorTests(unittest.TestCase):
 
     def test_routes_require_the_immersive_agentic_tank(self):
         self.assertIn("Open tank full screen", OPERATOR_NEEDLES)
-        self.assertIn("Agentic AI control", OPERATOR_NEEDLES)
-        self.assertIn("Safety verifier", OPERATOR_NEEDLES)
-        self.assertIn("Run agent team", OPERATOR_NEEDLES)
+        self.assertIn("Protect every protein output in the loop", OPERATOR_NEEDLES)
+        self.assertIn("Verified recovery", OPERATOR_NEEDLES)
+        self.assertIn("Ecosystem safety check", OPERATOR_NEEDLES)
+        self.assertIn("Create safe recovery plan", OPERATOR_NEEDLES)
+        self.assertIn("Inject demo water emergency", OPERATOR_NEEDLES)
         self.assertIn("Open tank full screen", PRODUCER_NEEDLES)
 
 

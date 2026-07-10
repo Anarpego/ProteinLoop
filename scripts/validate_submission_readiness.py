@@ -339,7 +339,7 @@ def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:
             reachable_check(
                 "application control reachable",
                 app_base,
-                required_text="ProteinLoop system control",
+                required_text="Protect every protein output in the loop",
             )
         )
         checks.append(

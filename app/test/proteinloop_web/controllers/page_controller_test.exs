@@ -13,9 +13,9 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ ~r/<html[^>]*lang="en"[^>]*data-theme="light"/
     assert html_response(conn, 200) =~ ~s(<meta name="color-scheme" content="light")
     refute html_response(conn, 200) =~ "prefers-color-scheme"
-    assert html_response(conn, 200) =~ "ProteinLoop system control"
+    assert html_response(conn, 200) =~ "Protect every protein output in the loop"
     assert html_response(conn, 200) =~ "Live tank simulation"
-    assert html_response(conn, 200) =~ "Ask the AI team to help"
+    assert html_response(conn, 200) =~ "Create a verified recovery"
     assert html_response(conn, 200) =~ "Advanced evidence and controls"
     assert html_response(conn, 200) =~ "Agent harness"
     assert html_response(conn, 200) =~ "Unsafe proposal"
@@ -36,10 +36,10 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Simulate node loss"
     assert html_response(conn, 200) =~ "Human approval"
     assert html_response(conn, 200) =~ "Request producer approval"
-    assert html_response(conn, 200) =~ "Ask the AI team to help"
+    assert html_response(conn, 200) =~ "Create a verified recovery"
     assert html_response(conn, 200) =~ "Sagents 0.9.0"
     assert html_response(conn, 200) =~ "until_tool_success"
-    assert html_response(conn, 200) =~ "Ask AI team for a safe plan"
+    assert html_response(conn, 200) =~ "Create safe recovery plan"
     assert html_response(conn, 200) =~ "Anomaly forecast"
     assert html_response(conn, 200) =~ "Near-term risk"
   end
@@ -134,7 +134,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html =~ "Local action"
     assert html =~ "WhatsApp/SMS message"
     assert html =~ "Reply: APPROVE, HALF, or REJECT."
-    refute html =~ "Simulate water emergency"
+    refute html =~ "Inject demo water emergency"
     refute html =~ "protein-loop-system.svg"
   end
 
