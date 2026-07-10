@@ -6,14 +6,15 @@
 
 **Verifier-gated multi-agent control for a closed aquaponic protein loop.**
 
-ProteinLoop coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
+ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
 
-[Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Agentic development](#agentic-development-workflow) · [Evidence packet](#submission-packet)
+[Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Agentic development](#agentic-development-workflow) · [Evidence packet](#submission-packet)
 
 ## What Runs Today
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
+| Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
@@ -23,6 +24,15 @@ ProteinLoop coordinates fish, freshwater prawns, hydroponic plants, duckweed, an
 | Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
 | Reproducible application | Docker profiles start the simulator, operator dashboard, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
 
+## Run an Agentic Intervention
+
+1. Open `http://localhost:4001/` and use `Spike` or `Replay sensor alert` to create an explicit recovery scenario.
+2. In `Agentic intervention mission`, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
+3. Press `Run verified intervention`. Gemma 4 E2B delegates the selected objective to four Sagents specialists and a parent supervisor.
+4. Inspect the `Intelligence receipt`: specialist recommendations, requested resources, the supervisor action, verifier violations and warnings, reward, and before/after chemistry.
+
+This is an action workflow, not a generated dashboard summary. The selected mission reaches every model call, while `verify_ecosystem_safety` remains the only authority allowed to admit a simulator mutation.
+
 ## System Workflow
 
 ```mermaid
@@ -30,6 +40,7 @@ ProteinLoop coordinates fish, freshwater prawns, hydroponic plants, duckweed, an
 flowchart LR
     subgraph Canvas["ProteinLoop control loop"]
         direction LR
+        Mission["Operator mission<br/>recovery or production goal"] --> Agents
         Radio["Physical DECT NR+<br/>sequence #100"] --> Replay["Explicit simulated<br/>sensor replay"]
         Replay --> Simulator["Deterministic simulator<br/>current ecosystem state"]
         Simulator --> Agents["4 Gemma / Sagents<br/>domain agents"]
@@ -40,6 +51,8 @@ flowchart LR
         Verifier -- "safe but risky" --> HITL["Spanish producer HITL"]
         HITL -- "approve or edit" --> Apply
         HITL -- "reject" --> Reject
+        Apply --> Receipt["Intelligence receipt<br/>briefs + plan + state delta"]
+        Reject --> Receipt
         Apply --> Simulator
     end
     classDef physical fill:#e0f2fe,stroke:#0369a1,color:#0f172a
@@ -48,9 +61,9 @@ flowchart LR
     classDef action fill:#dcfce7,stroke:#15803d,color:#0f172a
     classDef rejected fill:#fee2e2,stroke:#b91c1c,color:#0f172a
     class Radio,Replay physical
-    class Agents,Supervisor agent
+    class Mission,Agents,Supervisor agent
     class Verifier,HITL decision
-    class Simulator,Apply action
+    class Simulator,Apply,Receipt action
     class Reject rejected
     style Canvas fill:#ffffff,stroke:#cbd5e1,stroke-width:1px,color:#0f172a
 ```
@@ -58,7 +71,7 @@ flowchart LR
 The boundaries are deliberate:
 
 - **Physical evidence:** Nordic `hello_dect` proves bidirectional radio transport. It is not presented as a chemical sensor reading.
-- **Agentic reasoning:** Gemma and Sagents produce structured recommendations, not authorization.
+- **Agentic intervention:** the operator's mission reaches all four specialists and the supervisor; the UI exposes structured recommendations and decisions, not hidden chain-of-thought.
 - **Safety authority:** the Python verifier is the source of truth for admissible actions and RLVR reward.
 - **Human authority:** irreversible or operationally risky actions remain paused until the producer decides in Spanish.
 
@@ -99,7 +112,7 @@ flowchart LR
 | Verify | Full tests, Docker smoke, and generated evidence | Claims are backed by commands and artifacts, not implementation intent. |
 | Ship | Git commit plus checksum manifest | Source, evidence, and documentation describe the same behavior. |
 
-Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), and this [README redesign](specs/052-agentic-readme-workflow/spec.md).
+Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [README redesign](specs/052-agentic-readme-workflow/spec.md), and the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md).
 
 ## Run Tests
 
@@ -125,7 +138,7 @@ mix deps.get
 mix test
 ```
 
-Current expected result: `101 tests, 0 failures`.
+Current expected result: `103 tests, 0 failures`.
 
 Validate the GitHub Actions workflow contract before pushing:
 
@@ -370,13 +383,13 @@ The dashboard includes a `Self-healing mesh` panel whose real Sagents/Horde stat
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
-The first panel below the dashboard metrics is `Physical DECT NR+ link`. It shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run Gemma on simulator state` starts the same verifier-gated Sagents cycle as the main Gemma control. `/producer` shows the compact `Ultimo enlace DECT NR+` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
+The first panel below the dashboard metrics is `Physical DECT NR+ link`. It shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary agent control. `/producer` shows the compact `Ultimo enlace DECT NR+` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 
 Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records into the future sensor contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action. Those sample water-quality values are not attributed to the stock `hello_dect` logs.
 
 The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
-The dashboard includes a `Real Sagents runtime` panel. `Run Gemma agents` runs four subsystem agents concurrently and passes their reports to a fifth parent supervisor. The custom `verify_ecosystem_safety` mode calls the simulator's non-mutating verifier before execution, and `until_tool_success` returns the accepted action, final state, reward, and verifier evidence.
+The `Agentic intervention mission` is the primary Gemma workflow. The operator selects a concrete objective, `Run verified intervention` sends it to four subsystem agents concurrently, and a fifth parent supervisor resolves their resource requests into one bounded action. The `Intelligence receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
 
 The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 

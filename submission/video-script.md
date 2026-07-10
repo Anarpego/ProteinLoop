@@ -60,15 +60,15 @@ Narration:
 
 Risky water exchange and harvest actions pause for the producer in Spanish. The producer can approve, reject, or edit the tool call. Even after approval, the simulator verifier remains the mutation boundary.
 
-## Scene 7: Real Sagents Runtime
+## Scene 7: Agentic Intervention Mission
 
 Action:
 
-Press `Run Gemma agents`.
+Select `Protect protein yield`, press `Run verified intervention`, and inspect the completed `Intelligence receipt`.
 
 Narration:
 
-Sagents 0.9.0 runs four Gemma subsystem agents in parallel, then a fifth parent supervisor calls `close_cycle`. The custom `verify_ecosystem_safety` mode checks the action before execution, and `until_tool_success` returns the accepted action, verifier result, and reward.
+The operator sets the objective instead of receiving a generic dashboard summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. The receipt shows specialist briefs, the supervisor plan, verifier warnings, reward, and the measured chemistry change. `verify_ecosystem_safety` remains the authority before execution.
 
 ## Scene 8: Local Gemma 4
 

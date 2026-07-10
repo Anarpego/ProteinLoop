@@ -25,6 +25,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
   @langchain_version "0.9.2"
   @until_tool "close_cycle"
   @hitl_tool "irreversible_cycle"
+  @default_mission "Balance water quality and protein yield for the next 24 hours."
 
   @subsystems [
     %{
@@ -101,11 +102,13 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
 
   def run(opts \\ []) do
     state_fun = Keyword.get(opts, :state_fun, &SimulatorClient.state/0)
+    mission = mission_text(opts)
+    mission_opts = Keyword.put(opts, :mission, mission)
 
     with {:ok, %{"state" => ecosystem_state}} <- state_fun.(),
-         {:ok, reports} <- run_subsystems(ecosystem_state, opts),
-         agent <- build_supervisor_agent(ecosystem_state, opts),
-         state <- supervisor_state(ecosystem_state, reports),
+         {:ok, reports} <- run_subsystems(ecosystem_state, mission_opts),
+         agent <- build_supervisor_agent(ecosystem_state, mission_opts),
+         state <- supervisor_state(ecosystem_state, reports, mission),
          {:ok, _final_state, tool_result} <-
            Agent.execute(agent, state, until_tool_success: @until_tool, max_runs: 3),
          {:ok, result} <- processed_result(tool_result) do
@@ -118,6 +121,8 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
          execution_mode: SafetyMode,
          termination: "until_tool_success",
          tool: tool_result.name,
+         mission: mission,
+         before_state: ecosystem_state,
          subagents: reports,
          action: result["action"],
          state: result["state"],
@@ -185,6 +190,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
 
   def build_supervisor_agent(ecosystem_state, opts \\ []) when is_map(ecosystem_state) do
     tool_name = Keyword.get(opts, :supervisor_tool, @until_tool)
+    mission = mission_text(opts)
     validate_supervisor_tool!(tool_name)
     model = model_factory(opts).(tool_name)
     verify_fun = Keyword.get(opts, :verify_fun, &SimulatorClient.verify/1)
@@ -195,7 +201,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
         agent_id: Keyword.get(opts, :agent_id, unique_agent_id("supervisor")),
         name: "ProteinLoop supervisor",
         model: model,
-        base_system_prompt: supervisor_prompt(ecosystem_state, tool_name),
+        base_system_prompt: supervisor_prompt(ecosystem_state, tool_name, mission),
         tools: [cycle_tool(tool_name, step_fun)],
         middleware: [
           {SubAgent,
@@ -271,6 +277,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
 
   defp run_subsystem(subsystem, ecosystem_state, opts) do
     model = model_factory(opts).("report_recommendation")
+    mission = mission_text(opts)
 
     agent =
       Agent.new!(
@@ -278,7 +285,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
           agent_id: unique_agent_id(subsystem.name),
           name: subsystem.name,
           model: model,
-          base_system_prompt: subsystem.prompt,
+          base_system_prompt: subsystem.prompt <> "\nOperator mission: #{mission}",
           tools: [report_tool()]
         },
         replace_default_middleware: true
@@ -288,7 +295,8 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
       SagentsSubAgent.new_from_compiled(
         parent_agent_id: unique_agent_id("cycle-parent"),
         instructions:
-          "Evaluate this ProteinLoop state and submit one recommendation: #{Jason.encode!(ecosystem_state)}",
+          "Operator mission: #{mission}\n" <>
+            "Evaluate this ProteinLoop state and submit one recommendation: #{Jason.encode!(ecosystem_state)}",
         compiled_agent: agent,
         until_tool: "report_recommendation",
         require_tool_success: true,
@@ -312,12 +320,13 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
   defp subsystem_configs(opts) do
     model = model_factory(opts).("report_recommendation")
     tool = report_tool()
+    mission = mission_text(opts)
 
     Enum.map(@subsystems, fn subsystem ->
       Config.new!(%{
         name: subsystem.name,
         description: subsystem.description,
-        system_prompt: subsystem.prompt,
+        system_prompt: subsystem.prompt <> "\nOperator mission: #{mission}",
         model: model,
         tools: [tool],
         until_tool_success: "report_recommendation",
@@ -326,24 +335,30 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     end)
   end
 
-  defp supervisor_state(ecosystem_state, reports) do
+  defp supervisor_state(ecosystem_state, reports, mission) do
     State.new!(%{
       messages: [
         Message.new_user!(
-          "Current state: #{Jason.encode!(ecosystem_state)}\n" <>
+          "Operator mission: #{mission}\n" <>
+            "Current state: #{Jason.encode!(ecosystem_state)}\n" <>
             "Subsystem reports: #{Jason.encode!(reports)}\n" <>
             "Call #{@until_tool} exactly once with a conservative verified action."
         )
       ],
-      metadata: %{"ecosystem_state" => ecosystem_state, "subsystem_reports" => reports}
+      metadata: %{
+        "mission" => mission,
+        "ecosystem_state" => ecosystem_state,
+        "subsystem_reports" => reports
+      }
     })
   end
 
-  defp supervisor_prompt(ecosystem_state, tool_name) do
+  defp supervisor_prompt(ecosystem_state, tool_name, mission) do
     duckweed_limit = max(number(ecosystem_state, "duckweed_kg") - 0.5, 0.0)
 
     """
     You are the ProteinLoop supervisor coordinating four subsystem agents.
+    Operator mission: #{mission}
     Call #{tool_name} exactly once and do not answer with prose.
     Hard bounds: feed_kg 0..0.25; use at most 0.08 when ammonia is at least 1.5,
     and 0 when collapsed. aeration_hours 0..24. water_exchange_fraction 0..0.30.
@@ -538,6 +553,19 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
   defp empty_key(nil), do: "local-no-key"
   defp empty_key(""), do: "local-no-key"
   defp empty_key(key), do: key
+
+  defp mission_text(opts) do
+    opts
+    |> Keyword.get(:mission, @default_mission)
+    |> normalize_mission()
+  end
+
+  defp normalize_mission(mission) when is_binary(mission) do
+    mission = mission |> String.replace(~r/\s+/, " ") |> String.trim() |> String.slice(0, 240)
+    if mission == "", do: @default_mission, else: mission
+  end
+
+  defp normalize_mission(_mission), do: @default_mission
 
   defp number(map, key) do
     case Map.get(map, key) do

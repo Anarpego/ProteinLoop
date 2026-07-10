@@ -82,6 +82,41 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "real Sagents cycle completed"
   end
 
+  test "runs a user-selected agentic mission and renders an intelligence receipt", %{conn: conn} do
+    Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert html =~ "Agentic intervention mission"
+    assert has_element?(view, "#agentic-mission")
+    assert has_element?(view, "#mission-protect-protein")
+
+    html = view |> element("#mission-protect-protein") |> render_click()
+    assert html =~ "Protect protein yield"
+
+    html = view |> element("#run-agentic-mission") |> render_click()
+    assert html =~ "Specialists deliberating"
+
+    assert_receive {:test_sagents_runtime_options, opts}
+    assert Keyword.fetch!(opts, :mission) =~ "Protect fish, prawns, and daily protein yield"
+    assert_receive {:test_sagents_runtime_started, :run, task}
+
+    render_click(view, "run-agentic-mission")
+    refute_receive {:test_sagents_runtime_started, :run, _duplicate}, 50
+    send(task, {:continue_test_sagents_runtime, :run})
+
+    html = render_async(view, 1_000)
+    assert html =~ "Intelligence receipt"
+    assert html =~ "4 specialist briefs"
+    assert html =~ "Pause feed and maximize aeration."
+    assert html =~ "Protect duckweed reserve until water stabilizes."
+    assert html =~ "Supervisor plan"
+    assert html =~ "Supervisor selected oxygen-first recovery."
+    assert html =~ "Verifier accepted"
+    assert html =~ "Continue oxygen monitoring during recovery."
+    assert html =~ "3.8 mg/L"
+    assert html =~ "0.9 mg/L"
+  end
+
   test "renders and refreshes the real Horde cluster status", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 
@@ -103,14 +138,14 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   test "runs the real-runtime UI path asynchronously", %{conn: conn} do
     Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
     {:ok, view, html} = live(conn, ~p"/")
-    assert html =~ "Real Sagents runtime"
+    assert html =~ "Agentic intervention mission"
 
     view
-    |> element("button[phx-click='run-verified-loop']")
+    |> element("#run-agentic-mission")
     |> render_click()
 
     assert_receive {:test_sagents_runtime_started, :run, task}
-    render_click(view, "run-verified-loop")
+    render_click(view, "run-agentic-mission")
     refute_receive {:test_sagents_runtime_started, :run, _duplicate}, 50
     send(task, {:continue_test_sagents_runtime, :run})
 

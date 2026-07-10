@@ -13,6 +13,27 @@ defmodule ProteinLoopWeb.OperatorLive do
   alias ProteinLoop.SimulatorClient
   alias ProteinLoop.SimulatorPoller
 
+  @agentic_missions [
+    %{
+      id: "recover-water",
+      title: "Recover water quality",
+      objective:
+        "Reduce ammonia and restore dissolved oxygen while protecting fish and prawn survival."
+    },
+    %{
+      id: "protect-protein",
+      title: "Protect protein yield",
+      objective:
+        "Protect fish, prawns, and daily protein yield while keeping water chemistry inside safe bounds."
+    },
+    %{
+      id: "balance-24h",
+      title: "Balance next 24h",
+      objective:
+        "Balance feed, aeration, water exchange, plant uptake, and duckweed reserve for the next 24 hours."
+    }
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket) do
@@ -36,6 +57,9 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:loop_result, nil)
       |> assign(:sagents_status, sagents_runtime().status())
       |> assign(:sagents_running?, false)
+      |> assign(:agentic_missions, @agentic_missions)
+      |> assign(:selected_mission, hd(@agentic_missions))
+      |> assign(:mission_phase, :ready)
       |> assign(:hitl_running?, false)
       |> assign(:agent_provider, :stub_safe)
       |> assign(:horde_status, horde_runtime().cluster_status())
@@ -249,6 +273,29 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply, start_sagents_cycle(socket)}
   end
 
+  def handle_event("select-agentic-mission", %{"mission" => mission_id}, socket) do
+    mission = Enum.find(@agentic_missions, hd(@agentic_missions), &(&1.id == mission_id))
+
+    socket =
+      if socket.assigns.sagents_running? do
+        socket
+      else
+        socket
+        |> assign(:selected_mission, mission)
+        |> assign(:loop_result, nil)
+        |> assign(:mission_phase, :ready)
+        |> update(:action_log, fn log ->
+          Enum.take(["agentic mission selected: #{mission.title}" | log], 6)
+        end)
+      end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("run-agentic-mission", _params, socket) do
+    {:noreply, start_sagents_cycle(socket)}
+  end
+
   def handle_event("dect-run-gemma", _params, socket) do
     {:noreply, start_sagents_cycle(socket)}
   end
@@ -292,6 +339,7 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply,
      socket
      |> assign(:sagents_running?, false)
+     |> assign(:mission_phase, :completed)
      |> assign(:loop_result, result)
      |> assign_snapshot(snapshot, "real Sagents cycle completed")}
   end
@@ -300,6 +348,7 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply,
      socket
      |> assign(:sagents_running?, false)
+     |> assign(:mission_phase, :failed)
      |> put_flash(:error, "Sagents error: #{inspect(reason)}")}
   end
 
@@ -307,6 +356,7 @@ defmodule ProteinLoopWeb.OperatorLive do
     {:noreply,
      socket
      |> assign(:sagents_running?, false)
+     |> assign(:mission_phase, :failed)
      |> put_flash(:error, "Sagents task exited: #{inspect(reason)}")}
   end
 
@@ -362,10 +412,15 @@ defmodule ProteinLoopWeb.OperatorLive do
 
       socket.assigns.sagents_status.endpoint_configured? ->
         runtime = sagents_runtime()
+        mission = socket.assigns.selected_mission
 
         socket
         |> assign(:sagents_running?, true)
-        |> start_async(:sagents_cycle, fn -> runtime.run() end)
+        |> assign(:mission_phase, :deliberating)
+        |> update(:action_log, fn log ->
+          Enum.take(["agentic mission started: #{mission.title}" | log], 6)
+        end)
+        |> start_async(:sagents_cycle, fn -> runtime.run(mission: mission.objective) end)
 
       true ->
         put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents")
@@ -459,6 +514,29 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp parse_provider("openai_compatible"), do: :openai_compatible
   defp parse_provider(_provider), do: :stub_safe
 
+  defp specialist_name("fish-tank"), do: "Fish tank"
+  defp specialist_name("freshwater-prawn"), do: "Freshwater prawn"
+  defp specialist_name("hydroponia"), do: "Hydroponia"
+  defp specialist_name("duckweed-chickens"), do: "Duckweed + chickens"
+  defp specialist_name(name), do: name
+
+  defp specialist_status_badge("critical"), do: "badge-error"
+  defp specialist_status_badge("warning"), do: "badge-warning"
+  defp specialist_status_badge(_status), do: "badge-success"
+
+  defp verification_count(verification, key) do
+    verification
+    |> verification_messages(key)
+    |> length()
+  end
+
+  defp verification_messages(verification, key) do
+    case Map.get(verification, key, []) do
+      messages when is_list(messages) -> messages
+      _other -> []
+    end
+  end
+
   defp rounded(value, precision \\ 2)
   defp rounded(value, precision) when is_float(value), do: Float.round(value, precision)
   defp rounded(value, _precision), do: value
@@ -474,6 +552,10 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp risk_class(value, _warning, critical) when value >= critical, do: "text-error"
   defp risk_class(value, warning, _critical) when value >= warning, do: "text-warning"
   defp risk_class(_value, _warning, _critical), do: "text-success"
+
+  defp oxygen_class(value) when value < 3.5, do: "text-error"
+  defp oxygen_class(value) when value < 5.0, do: "text-warning"
+  defp oxygen_class(_value), do: "text-success"
 
   @impl true
   def render(assigns) do
@@ -569,7 +651,7 @@ defmodule ProteinLoopWeb.OperatorLive do
                   name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
                   class={if @sagents_running?, do: "animate-spin", else: nil}
                 />
-                {if @sagents_running?, do: "Running agents", else: "Run Gemma on simulator state"}
+                {if @sagents_running?, do: "Running agents", else: "Run selected mission"}
               </button>
             </div>
           </div>
@@ -734,51 +816,128 @@ defmodule ProteinLoopWeb.OperatorLive do
           <.approval_queue queue={@approval_queue} />
         </section>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <section
+          id="agentic-mission"
+          class="rounded-box border border-base-300 bg-base-100 p-4"
+        >
+          <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h2 class="text-lg font-semibold">Real Sagents runtime</h2>
-              <div class="mt-1 flex flex-wrap gap-2 text-sm text-base-content/60">
-                <span>Sagents {@sagents_status.framework_version}</span>
-                <span>LangChain {@sagents_status.langchain_version}</span>
-                <span>{@sagents_status.termination}</span>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-lg font-semibold">Agentic intervention mission</h2>
+                <span class="badge badge-success">real Gemma</span>
+                <span class="badge badge-outline">{@sagents_status.agent_count} agents</span>
               </div>
+              <p class="mt-1 max-w-3xl text-sm text-base-content/60">
+                Set an operational objective. Four specialists recommend bounded actions, a supervisor
+                resolves resource conflicts, and the deterministic verifier controls mutation.
+              </p>
             </div>
-            <button
-              class="btn btn-sm btn-primary"
-              phx-click="run-verified-loop"
-              disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
-            >
-              <.icon
-                name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
-                class={if @sagents_running?, do: "animate-spin", else: nil}
-              />
-              {if @sagents_running?, do: "Running agents", else: "Run Gemma agents"}
-            </button>
+            <div class="text-sm text-base-content/60 lg:text-right">
+              <p>
+                Sagents {@sagents_status.framework_version} / LangChain {@sagents_status.langchain_version}
+              </p>
+              <p>{@sagents_status.termination}</p>
+            </div>
           </div>
-          <dl class="mb-3 grid gap-3 border-y border-base-300 py-3 sm:grid-cols-2 xl:grid-cols-4">
+
+          <div class="mt-4 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
             <div>
-              <dt class="text-xs text-base-content/60">Execution mode</dt>
-              <dd class="mt-1 font-mono text-sm">verify_ecosystem_safety</dd>
+              <div class="join flex w-full" aria-label="Agentic mission">
+                <button
+                  :for={mission <- @agentic_missions}
+                  id={"mission-#{mission.id}"}
+                  type="button"
+                  class={[
+                    "btn join-item min-h-11 h-auto flex-1 whitespace-normal px-3 py-2 text-xs sm:text-sm",
+                    if(@selected_mission.id == mission.id, do: "btn-primary", else: "btn-outline")
+                  ]}
+                  phx-click="select-agentic-mission"
+                  phx-value-mission={mission.id}
+                  disabled={@sagents_running?}
+                >
+                  {mission.title}
+                </button>
+              </div>
+
+              <div class="mt-3 border-y border-base-300 py-3">
+                <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
+                  Selected objective
+                </p>
+                <p class="mt-1 font-semibold">{@selected_mission.title}</p>
+                <p class="mt-1 text-sm text-base-content/70">{@selected_mission.objective}</p>
+              </div>
+
+              <button
+                id="run-agentic-mission"
+                class="btn btn-primary mt-3 w-full"
+                phx-click="run-agentic-mission"
+                disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
+              >
+                <.icon
+                  name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
+                  class={if @sagents_running?, do: "animate-spin", else: nil}
+                />
+                {if @sagents_running?,
+                  do: "Specialists deliberating",
+                  else: "Run verified intervention"}
+              </button>
+
+              <p
+                :if={@mission_phase == :deliberating}
+                id="mission-deliberating"
+                class="mt-2 text-center text-sm font-semibold text-primary"
+              >
+                Specialists deliberating
+              </p>
+              <p
+                :if={!@sagents_status.endpoint_configured?}
+                class="mt-2 text-sm text-error"
+              >
+                GEMMA_ENDPOINT is not configured.
+              </p>
             </div>
+
             <div>
-              <dt class="text-xs text-base-content/60">Agents</dt>
-              <dd class="mt-1 text-sm font-semibold">
-                {@sagents_status.agent_count} real agents
-              </dd>
+              <ol class="grid grid-cols-2 border-y border-base-300 sm:grid-cols-4">
+                <li class="border-base-300 p-3 sm:border-r">
+                  <p class="text-xs text-base-content/50">01</p>
+                  <p class="text-sm font-semibold">Observe</p>
+                </li>
+                <li class="border-l border-base-300 p-3 sm:border-l-0 sm:border-r">
+                  <p class="text-xs text-base-content/50">02</p>
+                  <p class="text-sm font-semibold">Specialize</p>
+                </li>
+                <li class="border-t border-base-300 p-3 sm:border-r sm:border-t-0">
+                  <p class="text-xs text-base-content/50">03</p>
+                  <p class="text-sm font-semibold">Supervise</p>
+                </li>
+                <li class="border-l border-t border-base-300 p-3 sm:border-l-0 sm:border-t-0">
+                  <p class="text-xs text-base-content/50">04</p>
+                  <p class="text-sm font-semibold">Verify + act</p>
+                </li>
+              </ol>
+              <dl class="mt-3 grid gap-3 sm:grid-cols-3">
+                <div>
+                  <dt class="text-xs text-base-content/60">Execution</dt>
+                  <dd class="mt-1 font-mono text-xs">verify_ecosystem_safety</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-base-content/60">Distribution</dt>
+                  <dd class="mt-1 text-sm font-semibold">{@sagents_status.distribution}</dd>
+                </div>
+                <div>
+                  <dt class="text-xs text-base-content/60">Gemma endpoint</dt>
+                  <dd class="mt-1 text-sm font-semibold">
+                    {if @sagents_status.endpoint_configured?, do: "ready", else: "not configured"}
+                  </dd>
+                </div>
+              </dl>
             </div>
-            <div>
-              <dt class="text-xs text-base-content/60">Distribution</dt>
-              <dd class="mt-1 text-sm font-semibold">{@sagents_status.distribution}</dd>
-            </div>
-            <div>
-              <dt class="text-xs text-base-content/60">Gemma endpoint</dt>
-              <dd class="mt-1 text-sm font-semibold">
-                {if @sagents_status.endpoint_configured?, do: "ready", else: "not configured"}
-              </dd>
-            </div>
-          </dl>
-          <.loop_result result={@loop_result} />
+          </div>
+
+          <div class="mt-4">
+            <.loop_result result={@loop_result} />
+          </div>
         </section>
 
         <section class="rounded-box border border-base-300 bg-base-100 p-4">
@@ -1032,39 +1191,184 @@ defmodule ProteinLoopWeb.OperatorLive do
 
   def loop_result(%{result: nil} = assigns) do
     ~H"""
-    <div class="rounded-box bg-base-200 p-3 text-sm text-base-content/60">
-      The verified loop has not run yet.
+    <div class="border-t border-base-300 pt-3 text-sm text-base-content/60">
+      No intelligence receipt yet. Run the selected mission to produce a verified intervention.
     </div>
     """
   end
 
-  def loop_result(%{result: %{framework: "sagents"}} = assigns) do
+  def loop_result(%{result: %{framework: "sagents"} = result} = assigns) do
+    verification = Map.get(result, :verification, %{})
+
+    assigns =
+      assigns
+      |> assign(:before_state, Map.get(result, :before_state, %{}))
+      |> assign(:mission, Map.get(result, :mission, "Operator-directed ecosystem recovery"))
+      |> assign(:verification, verification)
+      |> assign(:verified?, Map.get(verification, "ok", false))
+      |> assign(:violations, verification_messages(verification, "violations"))
+      |> assign(:warnings, verification_messages(verification, "warnings"))
+
     ~H"""
-    <div class="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-      <div>
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="badge badge-success">verified</span>
-          <span class="badge badge-outline">{@result.tool}</span>
+    <div id="intelligence-receipt" class="border-t border-base-300 pt-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="text-lg font-semibold">Intelligence receipt</h3>
+            <span class={[
+              "badge",
+              if(@verified?, do: "badge-success", else: "badge-error")
+            ]}>
+              {if @verified?, do: "Verifier accepted", else: "Verifier rejected"}
+            </span>
+            <span class="badge badge-outline">{@result.tool}</span>
+          </div>
+          <p class="mt-1 max-w-3xl text-sm text-base-content/70">{@mission}</p>
         </div>
-        <p class="mt-2 text-lg font-semibold">
+        <p class="whitespace-nowrap text-sm font-semibold">
           Day {@result.state["day"]} / reward {@result.reward}
         </p>
-        <p class="mt-1 text-sm text-base-content/60">
-          feed={@result.action["feed_kg"]}kg aeration={@result.action["aeration_hours"]}h
-          water={@result.action["water_exchange_fraction"] * 100}% harvest={@result.action[
-            "duckweed_harvest_kg"
-          ]}kg
-        </p>
       </div>
-      <ol class="grid gap-2 sm:grid-cols-2">
-        <li
-          :for={subagent <- @result.subagents}
-          class="flex items-center justify-between gap-2 border-b border-base-300 py-2 text-sm"
-        >
-          <span class="font-mono">{subagent.name}</span>
-          <span class="badge badge-sm badge-outline">{subagent.report["status"]}</span>
-        </li>
-      </ol>
+
+      <section class="mt-4 border-y border-base-300 py-3" aria-label="State change">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h4 class="text-sm font-semibold">Observed outcome</h4>
+          <span class="text-xs text-base-content/60">before / after</span>
+        </div>
+        <dl class="grid gap-3 sm:grid-cols-3">
+          <div class="grid grid-cols-[1fr_auto] gap-x-3">
+            <dt class="col-span-2 text-xs text-base-content/60">Ammonia</dt>
+            <dd class="mt-1 text-sm line-through opacity-60">
+              {rounded(metric(@before_state, "ammonia_mg_l"))} mg/L
+            </dd>
+            <dd class={[
+              "mt-1 text-right font-semibold",
+              risk_class(metric(@result.state, "ammonia_mg_l"), 1.5, 3.0)
+            ]}>
+              {rounded(metric(@result.state, "ammonia_mg_l"))} mg/L
+            </dd>
+          </div>
+          <div class="grid grid-cols-[1fr_auto] gap-x-3">
+            <dt class="col-span-2 text-xs text-base-content/60">Dissolved oxygen</dt>
+            <dd class="mt-1 text-sm line-through opacity-60">
+              {rounded(metric(@before_state, "dissolved_oxygen_mg_l"))} mg/L
+            </dd>
+            <dd class={[
+              "mt-1 text-right font-semibold",
+              oxygen_class(metric(@result.state, "dissolved_oxygen_mg_l"))
+            ]}>
+              {rounded(metric(@result.state, "dissolved_oxygen_mg_l"))} mg/L
+            </dd>
+          </div>
+          <div class="grid grid-cols-[1fr_auto] gap-x-3">
+            <dt class="col-span-2 text-xs text-base-content/60">Simulation day</dt>
+            <dd class="mt-1 text-sm line-through opacity-60">
+              Day {metric(@before_state, "day")}
+            </dd>
+            <dd class="mt-1 text-right font-semibold">Day {metric(@result.state, "day")}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="mt-4" aria-label="Specialist recommendations">
+        <div class="mb-2 flex items-center justify-between gap-3">
+          <h4 class="text-sm font-semibold">4 specialist briefs</h4>
+          <span class="text-xs text-base-content/60">parallel recommendations</span>
+        </div>
+        <ol class="divide-y divide-base-300 border-y border-base-300">
+          <li
+            :for={subagent <- @result.subagents}
+            class="grid gap-2 py-3 md:grid-cols-[0.55fr_1.45fr_0.75fr] md:items-start md:gap-4"
+          >
+            <div class="flex items-center gap-2">
+              <span class={[
+                "badge badge-sm",
+                specialist_status_badge(subagent.report["status"])
+              ]}>
+                {subagent.report["status"]}
+              </span>
+              <div>
+                <p class="text-sm font-semibold">{specialist_name(subagent.name)}</p>
+                <p class="font-mono text-xs text-base-content/50">{subagent.name}</p>
+              </div>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Recommendation</p>
+              <p class="mt-1 text-sm font-medium">{subagent.report["recommendation"]}</p>
+            </div>
+            <div>
+              <p class="text-xs text-base-content/60">Resource request</p>
+              <p class="mt-1 text-sm">{subagent.report["resource_request"]}</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="mt-4 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+        <section class="border-l-4 border-primary pl-4" aria-label="Supervisor plan">
+          <h4 class="text-sm font-semibold">Supervisor plan</h4>
+          <p class="mt-1 text-base font-semibold">{@result.action["note"]}</p>
+          <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4">
+            <div>
+              <dt class="text-xs text-base-content/60">Feed</dt>
+              <dd class="font-mono text-sm">{@result.action["feed_kg"]} kg</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Aeration</dt>
+              <dd class="font-mono text-sm">{@result.action["aeration_hours"]} h</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Water exchange</dt>
+              <dd class="font-mono text-sm">
+                {@result.action["water_exchange_fraction"] * 100}%
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Duckweed harvest</dt>
+              <dd class="font-mono text-sm">{@result.action["duckweed_harvest_kg"]} kg</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="border-l border-base-300 pl-4" aria-label="Verifier receipt">
+          <div class="flex items-center gap-2">
+            <.icon
+              name={if @verified?, do: "hero-shield-check", else: "hero-x-circle"}
+              class={["size-5", if(@verified?, do: "text-success", else: "text-error")]}
+            />
+            <h4 class="text-sm font-semibold">
+              {if @verified?, do: "Verifier accepted", else: "Verifier rejected"}
+            </h4>
+          </div>
+          <dl class="mt-2 grid grid-cols-3 gap-2 text-sm">
+            <div>
+              <dt class="text-xs text-base-content/60">Violations</dt>
+              <dd class="font-semibold">{verification_count(@verification, "violations")}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Warnings</dt>
+              <dd class="font-semibold">{verification_count(@verification, "warnings")}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-base-content/60">Reward</dt>
+              <dd class="font-semibold">{@result.reward}</dd>
+            </div>
+          </dl>
+          <ul :if={@violations != []} class="mt-3 space-y-1 text-xs text-error">
+            <li :for={violation <- @violations} class="flex items-start gap-1.5">
+              <.icon name="hero-x-circle" class="mt-0.5 size-3.5 shrink-0" />
+              <span>{violation}</span>
+            </li>
+          </ul>
+          <ul :if={@warnings != []} class="mt-3 space-y-1 text-xs text-warning">
+            <li :for={warning <- @warnings} class="flex items-start gap-1.5">
+              <.icon name="hero-exclamation-triangle" class="mt-0.5 size-3.5 shrink-0" />
+              <span>{warning}</span>
+            </li>
+          </ul>
+          <p class="mt-2 font-mono text-xs text-base-content/60">{@result.tool}</p>
+        </section>
+      </div>
     </div>
     """
   end

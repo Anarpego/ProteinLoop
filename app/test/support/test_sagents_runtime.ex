@@ -15,9 +15,29 @@ defmodule ProteinLoop.TestSagentsRuntime do
     }
   end
 
-  def run do
+  def run(opts \\ []) do
+    notify_run_options(opts)
     maybe_pause(:run)
     action = action()
+    mission = Keyword.get(opts, :mission, "Balance the protein loop for the next 24 hours.")
+
+    before_state =
+      ProteinLoop.SimulatorClient.fallback_state()
+      |> Map.merge(%{
+        "day" => 0,
+        "ammonia_mg_l" => 3.8,
+        "dissolved_oxygen_mg_l" => 3.2,
+        "last_event" => "ammonia_spike"
+      })
+
+    after_state =
+      before_state
+      |> Map.merge(%{
+        "day" => 1,
+        "ammonia_mg_l" => 0.9,
+        "dissolved_oxygen_mg_l" => 6.4,
+        "last_event" => "agentic_recovery"
+      })
 
     {:ok,
      %{
@@ -28,15 +48,50 @@ defmodule ProteinLoop.TestSagentsRuntime do
        execution_mode: ProteinLoop.Agent.SafetyMode,
        termination: "until_tool_success",
        tool: "close_cycle",
+       mission: mission,
+       before_state: before_state,
        action: action,
-       state: Map.merge(ProteinLoop.SimulatorClient.fallback_state(), %{"day" => 1}),
+       state: after_state,
        reward: 203.7,
-       verification: %{"ok" => true, "violations" => [], "warnings" => []},
-       subagents:
-         Enum.map(
-           ["fish-tank", "freshwater-prawn", "hydroponia", "duckweed-chickens"],
-           &%{name: &1, report: %{"status" => "stable"}}
-         )
+       verification: %{
+         "ok" => true,
+         "violations" => [],
+         "warnings" => ["Continue oxygen monitoring during recovery."]
+       },
+       subagents: [
+         %{
+           name: "fish-tank",
+           report: %{
+             "status" => "critical",
+             "recommendation" => "Pause feed and maximize aeration.",
+             "resource_request" => "24h aeration"
+           }
+         },
+         %{
+           name: "freshwater-prawn",
+           report: %{
+             "status" => "warning",
+             "recommendation" => "Restore oxygen before normal feeding.",
+             "resource_request" => "oxygen priority"
+           }
+         },
+         %{
+           name: "hydroponia",
+           report: %{
+             "status" => "stable",
+             "recommendation" => "Preserve nitrate flow during recovery.",
+             "resource_request" => "bounded water exchange"
+           }
+         },
+         %{
+           name: "duckweed-chickens",
+           report: %{
+             "status" => "warning",
+             "recommendation" => "Protect duckweed reserve until water stabilizes.",
+             "resource_request" => "defer harvest"
+           }
+         }
+       ]
      }}
   end
 
@@ -89,7 +144,7 @@ defmodule ProteinLoop.TestSagentsRuntime do
       "aeration_hours" => 12.0,
       "water_exchange_fraction" => 0.15,
       "duckweed_harvest_kg" => 0.5,
-      "note" => "test Sagents action"
+      "note" => "Supervisor selected oxygen-first recovery."
     }
   end
 
@@ -106,6 +161,13 @@ defmodule ProteinLoop.TestSagentsRuntime do
 
       _other ->
         :ok
+    end
+  end
+
+  defp notify_run_options(opts) do
+    case Application.get_env(:proteinloop, :test_sagents_runtime_pause) do
+      {:run, owner} when is_pid(owner) -> send(owner, {:test_sagents_runtime_options, opts})
+      _other -> :ok
     end
   end
 end

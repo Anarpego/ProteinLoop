@@ -122,7 +122,7 @@ def check_web() -> list[Check]:
         "RLVR reward verifier",
         "Policy search improvement",
         "Anomaly forecast",
-        "Real Sagents runtime",
+        "Agentic intervention mission",
         "Sagents 0.9.0",
         "until_tool_success",
         "Spanish HITL approval",

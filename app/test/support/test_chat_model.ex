@@ -6,10 +6,14 @@ defmodule ProteinLoop.TestChatModel do
   alias LangChain.Message
   alias LangChain.Message.ToolCall
 
-  defstruct tool_name: nil, arguments: %{}, callbacks: [], error: nil
+  defstruct tool_name: nil, arguments: %{}, callbacks: [], error: nil, observer: nil
 
-  def new(tool_name, arguments) do
-    %__MODULE__{tool_name: tool_name, arguments: arguments}
+  def new(tool_name, arguments, opts \\ []) do
+    %__MODULE__{
+      tool_name: tool_name,
+      arguments: arguments,
+      observer: Keyword.get(opts, :observer)
+    }
   end
 
   def failing(message) do
@@ -24,7 +28,14 @@ defmodule ProteinLoop.TestChatModel do
   end
 
   @impl true
-  def call(%__MODULE__{} = model, _messages, _tools) do
+  def call(%__MODULE__{} = model, messages, _tools) do
+    if is_pid(model.observer) do
+      send(
+        model.observer,
+        {:test_chat_model_call, model.tool_name, Enum.map(messages, &Map.get(&1, :content))}
+      )
+    end
+
     tool_call =
       ToolCall.new!(%{
         status: :complete,

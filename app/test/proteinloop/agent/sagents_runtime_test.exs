@@ -90,6 +90,38 @@ defmodule ProteinLoop.Agent.SagentsRuntimeTest do
     assert Enum.all?(result.subagents, &(&1.runtime == Sagents.SubAgent))
   end
 
+  test "propagates the operator mission to every model and preserves the before state" do
+    mission = "Recover water quality while protecting fish and prawn survival."
+
+    assert {:ok, result} =
+             SagentsRuntime.run(
+               mission: mission,
+               state_fun: fn -> {:ok, %{"state" => initial_state()}} end,
+               model_factory: model_factory(observer: self()),
+               verify_fun: &safe_verify/1,
+               step_fun: &accepted_step/1
+             )
+
+    assert result.mission == mission
+    assert result.before_state == initial_state()
+
+    calls =
+      for _index <- 1..5 do
+        assert_receive {:test_chat_model_call, tool_name, messages}
+        {tool_name, messages}
+      end
+
+    assert Enum.count(calls, fn {tool_name, _messages} ->
+             tool_name == "report_recommendation"
+           end) == 4
+
+    assert Enum.count(calls, fn {tool_name, _messages} -> tool_name == "close_cycle" end) == 1
+
+    assert Enum.all?(calls, fn {_tool_name, messages} ->
+             inspect(messages) =~ mission
+           end)
+  end
+
   test "returns the named subsystem failure without crashing the orchestrator" do
     failing_factory = fn
       "report_recommendation" -> TestChatModel.failing("subsystem unavailable")
@@ -245,25 +277,35 @@ defmodule ProteinLoop.Agent.SagentsRuntimeTest do
     refute_receive {:mutated, _action}
   end
 
-  defp model_factory do
+  defp model_factory(opts \\ []) do
+    observer = Keyword.get(opts, :observer)
+
     fn
       "report_recommendation" ->
-        TestChatModel.new("report_recommendation", %{
-          "status" => "stable",
-          "recommendation" => "preserve oxygen and nutrient balance",
-          "resource_request" => "balanced"
-        })
+        TestChatModel.new(
+          "report_recommendation",
+          %{
+            "status" => "stable",
+            "recommendation" => "preserve oxygen and nutrient balance",
+            "resource_request" => "balanced"
+          },
+          observer: observer
+        )
 
       "close_cycle" ->
-        TestChatModel.new("close_cycle", safe_action())
+        TestChatModel.new("close_cycle", safe_action(), observer: observer)
 
       "irreversible_cycle" ->
-        TestChatModel.new("irreversible_cycle", %{
-          safe_action()
-          | "water_exchange_fraction" => 0.2,
-            "duckweed_harvest_kg" => 0.4,
-            "note" => "requires producer approval"
-        })
+        TestChatModel.new(
+          "irreversible_cycle",
+          %{
+            safe_action()
+            | "water_exchange_fraction" => 0.2,
+              "duckweed_harvest_kg" => 0.4,
+              "note" => "requires producer approval"
+          },
+          observer: observer
+        )
     end
   end
 

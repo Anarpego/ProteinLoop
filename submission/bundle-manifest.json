@@ -7,19 +7,19 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 32678,
+      "bytes": 34396,
       "path": "README.md",
-      "sha256": "97d9f384710c1179fefbb7a16e16b8777261ab539b5555c02a5a7cc9aba5560b"
+      "sha256": "9b1fd7d298d17b5902a66a636060b0bf891940fb9e9a52001d8f06e750ad9137"
     },
     {
-      "bytes": 4378,
+      "bytes": 4807,
       "path": "submission/lablab-submission.md",
-      "sha256": "5132d42f7b782e24b075bd2fa47c75b8fb759ebca60236c03be27535f36e5927"
+      "sha256": "ec53cf38d540d8be0f629de2bbe7c4d861baffe55906d045b5d72690010e8e81"
     },
     {
-      "bytes": 4815,
+      "bytes": 5248,
       "path": "submission/lablab-form.json",
-      "sha256": "b5e2d216381cfabe2dc1d0cdc5edb04b148661680511d11a39e2e463e8af679c"
+      "sha256": "c6e43509ede7c6a65e3b09642475d9f50c688651d8e541cbd539c0c567dbe18a"
     },
     {
       "bytes": 7778,
@@ -27,9 +27,9 @@
       "sha256": "bab350effdce7f0da71e390a3090310b821fae66707e6b9e597ed3a4fda48d27"
     },
     {
-      "bytes": 3655,
+      "bytes": 3924,
       "path": "submission/video-script.md",
-      "sha256": "ff694c4cdc24608f13e01cca07d736c73a56a9185ad94ff6b331d2c63f60609e"
+      "sha256": "95dd901fe5e95a890d8a5cabd0c80441e4aaa6e7c9420f9b6fac4f41d09fd2c7"
     },
     {
       "bytes": 3171,
@@ -87,9 +87,9 @@
       "sha256": "575c189c058486f02345c82b19aadec623c8c37b5501c719c13aca169737b11a"
     },
     {
-      "bytes": 4453,
+      "bytes": 5468,
       "path": "submission/sagents-evidence.json",
-      "sha256": "bdb244b47bbd9a07735e2406e76a34e33ee26b36fd82152062ee16b27117a302"
+      "sha256": "2cef181604d600fa7edfff8ef7b368eaed82a520a434d7bdd1b26d3703f6fda0"
     },
     {
       "bytes": 1010,
@@ -144,8 +144,8 @@
     {
       "bytes": 978,
       "path": "submission/docker-smoke-evidence.json",
-      "sha256": "f87693cd22ab78a3415ece112126cace7ad2298ddb315150ce83ff3fbcf60efe"
+      "sha256": "5888471cb229fd9b3e07f5a9ccdfc949ef5b8a2394c0b02c07f877f9c43c9812"
     }
   ],
-  "generated_at": "2026-07-10T16:53:12.342382+00:00"
+  "generated_at": "2026-07-10T17:13:53.582937+00:00"
 }

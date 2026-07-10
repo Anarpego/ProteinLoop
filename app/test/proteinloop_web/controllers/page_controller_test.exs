@@ -30,10 +30,10 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Simulate node loss"
     assert html_response(conn, 200) =~ "Spanish HITL approval"
     assert html_response(conn, 200) =~ "Request producer approval"
-    assert html_response(conn, 200) =~ "Real Sagents runtime"
+    assert html_response(conn, 200) =~ "Agentic intervention mission"
     assert html_response(conn, 200) =~ "Sagents 0.9.0"
     assert html_response(conn, 200) =~ "until_tool_success"
-    assert html_response(conn, 200) =~ "Run Gemma agents"
+    assert html_response(conn, 200) =~ "Run verified intervention"
     assert html_response(conn, 200) =~ "Anomaly forecast"
     assert html_response(conn, 200) =~ "Near-term risk"
   end
