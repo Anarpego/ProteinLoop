@@ -8,12 +8,14 @@ defmodule ProteinLoop.Agent.SagentsRuntimeTest do
   test "builds a real Sagents supervisor with SubAgent and HITL middleware" do
     agent =
       SagentsRuntime.build_supervisor_agent(initial_state(),
+        agent_id: "stable-supervisor-id",
         model_factory: model_factory(),
         verify_fun: &safe_verify/1,
         step_fun: &accepted_step/1
       )
 
     assert %Sagents.Agent{mode: SafetyMode} = agent
+    assert agent.agent_id == "stable-supervisor-id"
 
     status = SagentsRuntime.describe(agent)
     assert status.framework == "sagents"

@@ -35,12 +35,12 @@ Generated from the live local Gemma OpenAI-compatible endpoint and Docker simula
 
 ## Checks
 
-- real_sagents_runtime: true
-- four_subagents_completed: true
-- real_sagents_subagents: true
-- custom_safety_mode: true
-- until_tool_success: true
-- verification_accepted: true
 - action_preserved: true
+- custom_safety_mode: true
+- four_subagents_completed: true
 - hitl_interrupted_before_mutation: true
 - hitl_reject_resumed_without_mutation: true
+- real_sagents_runtime: true
+- real_sagents_subagents: true
+- until_tool_success: true
+- verification_accepted: true

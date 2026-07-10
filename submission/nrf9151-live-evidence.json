@@ -1,0 +1,95 @@
+{
+  "boards": [
+    {
+      "captured_line_count": 3,
+      "detected_role": "FT",
+      "evidence_lines": [
+        "+026.862s [00:50:29.817,596] <inf> hello_dect: Received 70 bytes from fe80::750b:4525:bb18:f0d7: Hello DECT NR+ from PT (name: dect-nr+-pt-device) device! Message #100",
+        "+026.870s [00:50:29.821,929] <inf> hello_dect: Sending to peer: fe80::750b:4525:bb18:f0d7",
+        "+026.880s [00:50:29.822,845] <inf> hello_dect: Sent: Hello DECT NR+ from FT (name: dect-nr+-ft-device) device! Message #100"
+      ],
+      "expected_role": "FT",
+      "field_role": "community gateway/controller",
+      "interface_up_observed": false,
+      "jlink_id": "1051223739",
+      "ok": true,
+      "peer_resolution_observed": true,
+      "peer_role": "PT",
+      "received_message_numbers": [
+        100
+      ],
+      "received_peer": true,
+      "role_matches": true,
+      "sent_local": true,
+      "sent_message_numbers": [
+        100
+      ],
+      "serial_port": "/dev/cu.usbmodem0010512237391"
+    },
+    {
+      "captured_line_count": 4,
+      "detected_role": "PT",
+      "evidence_lines": [
+        "+026.850s [00:51:10.048,431] <inf> hello_dect: Sending to peer: fe80::750b:4525:750b:4525",
+        "+026.861s [00:51:10.049,407] <inf> hello_dect: Sent: Hello DECT NR+ from PT (name: dect-nr+-pt-device) device! Message #100",
+        "+026.876s [00:51:10.959,716] <inf> hello_dect: Received 70 bytes from fe80::750b:4525:750b:4525: Hello DECT NR+ from FT (name: dect-nr+-ft-device) device! Message #100"
+      ],
+      "expected_role": "PT",
+      "field_role": "tank sensor edge node",
+      "interface_up_observed": false,
+      "jlink_id": "1051239227",
+      "ok": true,
+      "peer_resolution_observed": true,
+      "peer_role": "FT",
+      "received_message_numbers": [
+        100
+      ],
+      "received_peer": true,
+      "role_matches": true,
+      "sent_local": true,
+      "sent_message_numbers": [
+        100
+      ],
+      "serial_port": "/dev/cu.usbmodem0010512392271"
+    }
+  ],
+  "capture": {
+    "baud": 115200,
+    "duration_seconds": 35.0,
+    "flash_or_reset_invoked": false,
+    "mode": "read_only_posix_serial"
+  },
+  "capture_errors": {},
+  "checks": {
+    "bidirectional_peer_consistency": true,
+    "both_serial_ports_opened": true,
+    "both_serial_ports_present": true,
+    "ft_role_confirmed": true,
+    "ft_sent_and_received": true,
+    "live_serial_not_simulated": true,
+    "pt_role_confirmed": true,
+    "pt_sent_and_received": true
+  },
+  "firmware": {
+    "application": "Nordic hello_dect",
+    "dect_modem_firmware": "2.0.0",
+    "installed_ncs_version": "3.3.1",
+    "latest_researched_ncs_version": "3.4.0"
+  },
+  "generated_at": "2026-07-10T15:39:20.063217+00:00",
+  "ok": true,
+  "peer_exchanges": {
+    "ft_to_pt": [
+      100
+    ],
+    "pt_to_ft": [
+      100
+    ]
+  },
+  "port_presence": {
+    "1051223739": true,
+    "1051239227": true
+  },
+  "simulated": false,
+  "title": "ProteinLoop live two-board nRF9151 DECT NR+ evidence"
+}

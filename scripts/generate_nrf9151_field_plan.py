@@ -13,6 +13,7 @@ OUT_JSON = SUBMISSION / "nrf9151-field-plan.json"
 OUT_MD = SUBMISSION / "nrf9151-field-plan.md"
 
 NORDIC_NRF9151_SOURCE = "https://www.nordicsemi.com/Products/nRF9151"
+NORDIC_NCS_340_SOURCE = "https://github.com/nrfconnect/sdk-nrf/releases/tag/v3.4.0"
 
 
 def main() -> int:
@@ -27,11 +28,25 @@ def main() -> int:
 def build_plan() -> dict[str, Any]:
     return {
         "title": "ProteinLoop nRF9151 two-board DECT NR+ field plan",
-        "status": "hardware_available_not_required_for_submission",
+        "status": "live_bidirectional_dect_verified",
         "hardware_inventory": {
             "available_boards": 2,
-            "assumed_board_family": "Nordic nRF9151 DK or nRF9151 SMA DK",
-            "note": "User reported two DECT NR+ nRF9151 boards on 2026-07-07.",
+            "board_family": "Nordic nRF9151 DK PCA10171",
+            "note": "Both J-Link devices were enumerated and captured live on 2026-07-10.",
+        },
+        "sdk_research": {
+            "source": NORDIC_NCS_340_SOURCE,
+            "researched_at": "2026-07-10",
+            "installed_ncs_version": "3.3.1",
+            "latest_stable_ncs_version": "3.4.0",
+            "decision": "Preserve the known-good 3.3.1 board builds during read-only evidence capture; do not reflash solely for evidence.",
+        },
+        "live_evidence": {
+            "json": "submission/nrf9151-live-evidence.json",
+            "markdown": "submission/nrf9151-live-evidence.md",
+            "capture_mode": "read_only_posix_serial",
+            "simulated": False,
+            "flash_or_reset_invoked": False,
         },
         "official_capabilities": {
             "source": NORDIC_NRF9151_SOURCE,
@@ -45,6 +60,9 @@ def build_plan() -> dict[str, Any]:
         "boards": [
             {
                 "id": "nr9151-tank-edge-a",
+                "jlink_id": "1051239227",
+                "firmware_role": "PT",
+                "serial_port": "/dev/cu.usbmodem0010512392271",
                 "role": "tank sensor edge node",
                 "placement": "main fish/prawn tank",
                 "responsibilities": [
@@ -57,6 +75,9 @@ def build_plan() -> dict[str, Any]:
             },
             {
                 "id": "nr9151-community-gateway-b",
+                "jlink_id": "1051223739",
+                "firmware_role": "FT",
+                "serial_port": "/dev/cu.usbmodem0010512237391",
                 "role": "community gateway/controller",
                 "placement": "operator or shared village node",
                 "responsibilities": [
@@ -78,15 +99,15 @@ def build_plan() -> dict[str, Any]:
         },
         "demo_path": [
             "Keep the judged software demo Docker-runnable without hardware.",
-            "Use the two nRF9151 boards as optional bench props for the DECT NR+ scale story.",
-            "Show board A as tank edge node and board B as gateway/controller.",
+            "Show submission/nrf9151-live-evidence.md as physical bidirectional DECT NR+ proof.",
+            "Show PT 1051239227 as tank edge node and FT 1051223739 as gateway/controller.",
             "Run ProteinLoop dashboard self-healing mesh control to mirror board A loss and state-token migration.",
-            "If firmware time permits, stream board telemetry into the simulator API instead of manual spike injection.",
+            "Use the separate sample telemetry bridge to explain future sensor payload mapping without claiming stock hello_dect logs contain water-quality values.",
         ],
         "non_blocking_scope": [
             "No firmware dependency is required for lablab submission.",
-            "No live RF link is required for Docker smoke, CI, or final readiness checks.",
-            "The deterministic mesh evidence remains the authoritative software proof.",
+            "The recorded live RF artifact is validated in CI; connected hardware is not required for Docker smoke or replaying software tests.",
+            "The real Sagents/Horde evidence is the authoritative software failover proof; the dashboard mesh remains the deterministic rehearsal.",
         ],
     }
 
@@ -100,8 +121,22 @@ def render_markdown(plan: dict[str, Any]) -> str:
         "## Hardware Inventory",
         "",
         f"- Available boards: {plan['hardware_inventory']['available_boards']}.",
-        f"- Assumed family: {plan['hardware_inventory']['assumed_board_family']}.",
+        f"- Board family: {plan['hardware_inventory']['board_family']}.",
         f"- Note: {plan['hardware_inventory']['note']}",
+        "",
+        "## SDK Research",
+        "",
+        f"- Official release: {plan['sdk_research']['source']}",
+        f"- Installed NCS: {plan['sdk_research']['installed_ncs_version']}.",
+        f"- Latest stable NCS researched: {plan['sdk_research']['latest_stable_ncs_version']}.",
+        f"- Decision: {plan['sdk_research']['decision']}",
+        "",
+        "## Live Evidence",
+        "",
+        f"- Markdown: `{plan['live_evidence']['markdown']}`.",
+        f"- Capture mode: `{plan['live_evidence']['capture_mode']}`.",
+        f"- Simulated: {str(plan['live_evidence']['simulated']).lower()}.",
+        f"- Flash or reset invoked: {str(plan['live_evidence']['flash_or_reset_invoked']).lower()}.",
         "",
         "## Official Capability Basis",
         "",
@@ -117,6 +152,9 @@ def render_markdown(plan: dict[str, Any]) -> str:
                 f"### {board['id']}",
                 "",
                 f"- Role: {board['role']}.",
+                f"- J-Link: `{board['jlink_id']}`.",
+                f"- Firmware role: {board['firmware_role']}.",
+                f"- Serial port: `{board['serial_port']}`.",
                 f"- Placement: {board['placement']}.",
                 f"- ProteinLoop agent: {board['proteinloop_agent']}.",
                 f"- Telemetry: {', '.join(board['telemetry'])}.",

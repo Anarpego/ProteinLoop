@@ -7,7 +7,9 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
 
   setup do
     previous = Application.get_env(:proteinloop, :sagents_runtime)
+    previous_horde = Application.get_env(:proteinloop, :horde_runtime)
     Application.put_env(:proteinloop, :sagents_runtime, ProteinLoop.TestSagentsRuntime)
+    Application.put_env(:proteinloop, :horde_runtime, ProteinLoop.TestHordeRuntime)
     ApprovalQueue.reset()
 
     on_exit(fn ->
@@ -17,11 +19,35 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
         Application.delete_env(:proteinloop, :sagents_runtime)
       end
 
+      if previous_horde do
+        Application.put_env(:proteinloop, :horde_runtime, previous_horde)
+      else
+        Application.delete_env(:proteinloop, :horde_runtime)
+      end
+
       Application.delete_env(:proteinloop, :test_sagents_runtime_pause)
       ApprovalQueue.reset()
     end)
 
     :ok
+  end
+
+  test "renders and refreshes the real Horde cluster status", %{conn: conn} do
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert html =~ "Real Sagents/Horde cluster"
+    assert html =~ "proteinloop_web@web"
+    assert html =~ "proteinloop_peer@peer"
+    assert html =~ "participation"
+    assert html =~ "1 managed"
+    assert html =~ "Deterministic failover rehearsal"
+
+    html =
+      view
+      |> element("button[phx-click='refresh-horde']")
+      |> render_click()
+
+    assert html =~ "proteinloop_peer@peer"
   end
 
   test "runs the real-runtime UI path asynchronously", %{conn: conn} do

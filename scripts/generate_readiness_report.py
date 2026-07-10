@@ -14,6 +14,8 @@ SUBMISSION = ROOT / "submission"
 OUTPUT = SUBMISSION / "final-readiness-report.md"
 DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
 SAGENTS_EVIDENCE = SUBMISSION / "sagents-evidence.json"
+HORDE_EVIDENCE = SUBMISSION / "horde-evidence.json"
+NRF9151_LIVE_EVIDENCE = SUBMISSION / "nrf9151-live-evidence.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -26,6 +28,8 @@ EVIDENCE_COMMANDS = [
     ("Submission artifacts", ["make", "submission-check"]),
     ("Docker smoke", ["make", "docker-smoke"]),
     ("Real Sagents evidence", ["make", "sagents-evidence"]),
+    ("Real Horde failover evidence", ["make", "horde-evidence"]),
+    ("Live nRF9151 DECT NR+ evidence", ["make", "nrf9151-live-evidence"]),
     ("CI workflow contract", ["make", "ci-check"]),
     ("Public deploy profile", ["make", "public-deploy-check"]),
     ("Credit access", ["make", "credit-check"]),
@@ -76,6 +80,10 @@ def collect_evidence() -> list[CommandEvidence]:
             evidence.append(docker_smoke_evidence(DOCKER_SMOKE_EVIDENCE))
         elif name == "Real Sagents evidence":
             evidence.append(sagents_runtime_evidence(SAGENTS_EVIDENCE))
+        elif name == "Real Horde failover evidence":
+            evidence.append(horde_runtime_evidence(HORDE_EVIDENCE))
+        elif name == "Live nRF9151 DECT NR+ evidence":
+            evidence.append(nrf9151_live_evidence(NRF9151_LIVE_EVIDENCE))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -192,6 +200,120 @@ def sagents_runtime_evidence(path: Path) -> CommandEvidence:
     )
     if ok:
         lines.append("real Sagents evidence OK")
+
+    return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def horde_runtime_evidence(path: Path) -> CommandEvidence:
+    name = "Real Horde failover evidence"
+    command = ["make", "horde-evidence"]
+    path_label = display_path(path)
+    if not path.exists():
+        return CommandEvidence(name, command, 1, "", f"missing {path_label}; run make horde-evidence")
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CommandEvidence(name, command, 1, "", f"invalid {path_label}: {exc}")
+
+    checks = evidence.get("checks")
+    runtime = evidence.get("runtime", {})
+    if not isinstance(checks, dict):
+        return CommandEvidence(name, command, 1, "", f"{path_label} missing checks")
+
+    required_checks = {
+        "real_horde_distribution",
+        "two_nodes_connected_before",
+        "managed_agent_registered_before",
+        "managed_agent_identity_preserved",
+        "actual_owner_service_stopped",
+        "owner_node_changed",
+        "state_token_preserved",
+        "state_fingerprint_preserved",
+        "state_persisted_before_failover",
+        "state_restored_on_survivor",
+        "stopped_node_rejoined",
+    }
+    lines = [
+        f"evidence: {path_label}",
+        f"Sagents {runtime.get('framework_version', 'unknown')}",
+        f"Horde {runtime.get('horde_version', 'unknown')}",
+        f"membership: {runtime.get('membership', 'unknown')}",
+    ]
+    for check_name, passed in sorted(checks.items()):
+        lines.append(f"[{'ok' if passed else 'FAIL'}] {check_name}")
+
+    ok = (
+        evidence.get("ok") is True
+        and runtime.get("framework") == "sagents"
+        and runtime.get("framework_version") == "0.9.0"
+        and runtime.get("distribution") == "horde"
+        and runtime.get("horde_version") == "0.10.0"
+        and runtime.get("membership") == "participation"
+        and required_checks.issubset(checks)
+        and all(checks[name] is True for name in required_checks)
+    )
+    if ok:
+        lines.append("real Horde failover evidence OK")
+
+    return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def nrf9151_live_evidence(path: Path) -> CommandEvidence:
+    name = "Live nRF9151 DECT NR+ evidence"
+    command = ["make", "nrf9151-live-evidence"]
+    path_label = display_path(path)
+    if not path.exists():
+        return CommandEvidence(
+            name,
+            command,
+            1,
+            "",
+            f"missing {path_label}; connect both boards and run make nrf9151-live-evidence",
+        )
+
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return CommandEvidence(name, command, 1, "", f"invalid {path_label}: {exc}")
+
+    checks = evidence.get("checks")
+    boards = evidence.get("boards", [])
+    firmware = evidence.get("firmware", {})
+    if not isinstance(checks, dict):
+        return CommandEvidence(name, command, 1, "", f"{path_label} missing checks")
+
+    required_checks = {
+        "both_serial_ports_present",
+        "both_serial_ports_opened",
+        "ft_role_confirmed",
+        "pt_role_confirmed",
+        "ft_sent_and_received",
+        "pt_sent_and_received",
+        "bidirectional_peer_consistency",
+        "live_serial_not_simulated",
+    }
+    lines = [
+        f"evidence: {path_label}",
+        f"{len(boards)} physical boards",
+        f"installed NCS: {firmware.get('installed_ncs_version', 'unknown')}",
+        f"latest researched NCS: {firmware.get('latest_researched_ncs_version', 'unknown')}",
+    ]
+    for check_name, passed in sorted(checks.items()):
+        lines.append(f"[{'ok' if passed else 'FAIL'}] {check_name}")
+
+    board_ids = {board.get("jlink_id") for board in boards if isinstance(board, dict)}
+    ok = (
+        evidence.get("ok") is True
+        and evidence.get("simulated") is False
+        and evidence.get("capture", {}).get("flash_or_reset_invoked") is False
+        and board_ids == {"1051223739", "1051239227"}
+        and all(board.get("ok") is True for board in boards)
+        and required_checks.issubset(checks)
+        and all(checks[name] is True for name in required_checks)
+    )
+    if ok:
+        lines.append("live two-board DECT NR+ evidence OK")
 
     return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
 

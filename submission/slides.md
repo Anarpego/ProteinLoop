@@ -45,28 +45,32 @@ Four subsystem agents cover fish tank, freshwater prawn, hydroponia, and duckwee
 
 ## 9. Self-Healing Mesh
 
-Edge node failure migrates agents to healthy nodes while preserving identity and state tokens.
+Two real BEAM nodes run Sagents through Horde. Stopping the managed agent's actual owner restores it on the surviving peer while preserving identity, state token, and canonical state fingerprint.
 
-## 10. Spanish HITL
+## 10. Physical DECT NR+
+
+Two physical nRF9151 DKs exchange bidirectional DECT NR+ traffic. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number in a read-only, non-simulated capture with no flash or reset.
+
+## 11. Spanish HITL
 
 Risky water exchange and harvest actions pause for producer approval in Spanish: approve, edit, or reject.
 
-## 11. Real Sagents Runtime
+## 12. Real Sagents Runtime
 
 Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `close_cycle` through `verify_ecosystem_safety`, and terminates with `until_tool_success`.
 
-## 12. AMD Gemma Path
+## 13. AMD Gemma Path
 
 `GEMMA_ENDPOINT` points to AMD-hosted Gemma through vLLM/ROCm using `vllm/vllm-openai-rocm:gemma4`.
 
-## 13. Market
+## 14. Market
 
 Rural families and cooperatives in Latin America need low-cost, resilient protein production.
 
-## 14. Business Model
+## 15. Business Model
 
 Community mesh node plus shared cloud agent subscription; local producers use Spanish mobile-first approval flows.
 
-## 15. Ask
+## 16. Ask
 
 ProteinLoop turns aquaponics from a fragile expert system into a verifier-gated agentic protein platform.

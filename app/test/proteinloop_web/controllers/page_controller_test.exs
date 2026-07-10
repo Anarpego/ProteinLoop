@@ -25,6 +25,8 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Fish tank agent"
     assert html_response(conn, 200) =~ "Freshwater prawn agent"
     assert html_response(conn, 200) =~ "Self-healing mesh"
+    assert html_response(conn, 200) =~ "Real Sagents/Horde cluster"
+    assert html_response(conn, 200) =~ "Deterministic failover rehearsal"
     assert html_response(conn, 200) =~ "Simulate node loss"
     assert html_response(conn, 200) =~ "Spanish HITL approval"
     assert html_response(conn, 200) =~ "Request producer approval"

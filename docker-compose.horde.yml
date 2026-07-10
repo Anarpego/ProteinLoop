@@ -1,0 +1,44 @@
+services:
+  web:
+    environment:
+      ERL_AFLAGS: "-sname proteinloop_web@web -setcookie proteinloop_local_horde"
+      SAGENTS_DISTRIBUTION: "horde"
+      SAGENTS_HORDE_MEMBERS: "participation"
+      SAGENTS_HORDE_PARTITION: "proteinloop-local"
+      CLUSTER_PEERS: "proteinloop_peer@peer"
+      SAGENTS_STATE_DIR: "/app/priv/sagents-state"
+      HORDE_DEMO_TOKEN: ${HORDE_DEMO_TOKEN:-proteinloop-local-horde-token}
+    volumes:
+      - proteinloop_sagents_state:/app/priv/sagents-state
+
+  peer:
+    image: amd-web
+    depends_on:
+      - simulator
+    environment:
+      PHX_SERVER: "true"
+      PHX_HOST: "localhost"
+      PORT: "4000"
+      SIMULATOR_URL: "http://simulator:8000"
+      GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-http://host.docker.internal:8001}
+      GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E2B-it}
+      GEMMA_API_KEY: ${GEMMA_API_KEY:-}
+      GEMMA_RECEIVE_TIMEOUT_MS: ${GEMMA_RECEIVE_TIMEOUT_MS:-120000}
+      GEMMA_MAX_TOKENS: ${GEMMA_MAX_TOKENS:-1024}
+      SECRET_KEY_BASE: "proteinloop-horde-peer-secret-key-base-000000000000000000000000000000000000000000000000000000000000"
+      ERL_AFLAGS: "-sname proteinloop_peer@peer -setcookie proteinloop_local_horde"
+      SAGENTS_DISTRIBUTION: "horde"
+      SAGENTS_HORDE_MEMBERS: "participation"
+      SAGENTS_HORDE_PARTITION: "proteinloop-local"
+      CLUSTER_PEERS: "proteinloop_web@web"
+      SAGENTS_STATE_DIR: "/app/priv/sagents-state"
+      HORDE_DEMO_TOKEN: ${HORDE_DEMO_TOKEN:-proteinloop-local-horde-token}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "4012:4000"
+    volumes:
+      - proteinloop_sagents_state:/app/priv/sagents-state
+
+volumes:
+  proteinloop_sagents_state:

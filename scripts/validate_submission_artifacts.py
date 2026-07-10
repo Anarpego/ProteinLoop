@@ -21,6 +21,10 @@ MESH_JSON = SUBMISSION / "mesh-evidence.json"
 MESH_MD = SUBMISSION / "mesh-evidence.md"
 SAGENTS_JSON = SUBMISSION / "sagents-evidence.json"
 SAGENTS_MD = SUBMISSION / "sagents-evidence.md"
+HORDE_JSON = SUBMISSION / "horde-evidence.json"
+HORDE_MD = SUBMISSION / "horde-evidence.md"
+NRF9151_LIVE_JSON = SUBMISSION / "nrf9151-live-evidence.json"
+NRF9151_LIVE_MD = SUBMISSION / "nrf9151-live-evidence.md"
 NRF9151_JSON = SUBMISSION / "nrf9151-field-plan.json"
 NRF9151_MD = SUBMISSION / "nrf9151-field-plan.md"
 NRF9151_BRIDGE_JSON = SUBMISSION / "nrf9151-telemetry-bridge.json"
@@ -42,6 +46,10 @@ REQUIRED_FILES = [
     MESH_MD,
     SAGENTS_JSON,
     SAGENTS_MD,
+    HORDE_JSON,
+    HORDE_MD,
+    NRF9151_LIVE_JSON,
+    NRF9151_LIVE_MD,
     NRF9151_JSON,
     NRF9151_MD,
     NRF9151_BRIDGE_JSON,
@@ -140,6 +148,14 @@ def main() -> int:
         print("Sagents evidence packet is missing required runtime or HITL proof", file=sys.stderr)
         return 1
 
+    if not horde_evidence_ok(HORDE_JSON, HORDE_MD):
+        print("Horde evidence packet is missing real state-preserving failover proof", file=sys.stderr)
+        return 1
+
+    if not nrf9151_live_evidence_ok(NRF9151_LIVE_JSON, NRF9151_LIVE_MD):
+        print("nRF9151 live evidence is missing read-only bidirectional radio proof", file=sys.stderr)
+        return 1
+
     if not nrf9151_plan_ok(NRF9151_JSON, NRF9151_MD):
         print("nRF9151 field plan is missing required two-board DECT NR+ details", file=sys.stderr)
         return 1
@@ -203,6 +219,10 @@ def bundle_ok(
         "submission/mesh-evidence.md",
         "submission/sagents-evidence.json",
         "submission/sagents-evidence.md",
+        "submission/horde-evidence.json",
+        "submission/horde-evidence.md",
+        "submission/nrf9151-live-evidence.json",
+        "submission/nrf9151-live-evidence.md",
         "submission/nrf9151-field-plan.json",
         "submission/nrf9151-field-plan.md",
         "submission/nrf9151-telemetry-bridge.json",
@@ -377,11 +397,188 @@ def sagents_evidence_ok(json_path: Path, md_path: Path) -> bool:
     )
 
 
+def horde_evidence_ok(json_path: Path, md_path: Path) -> bool:
+    if not json_path.exists() or not md_path.exists():
+        return False
+
+    packet = json_load(json_path)
+    runtime = packet.get("runtime", {})
+    checks = packet.get("checks", {})
+    before = packet.get("before", {})
+    after = packet.get("after", {})
+    before_persistence = before.get("persistence", {})
+    after_persistence = after.get("persistence", {})
+    cluster_before = packet.get("cluster_before", {})
+    cluster_rejoined = packet.get("cluster_rejoined", {})
+    agent_id = packet.get("agent_id")
+    expected_nodes = {"proteinloop_web@web", "proteinloop_peer@peer"}
+    required_checks = {
+        "real_horde_distribution",
+        "two_nodes_connected_before",
+        "managed_agent_registered_before",
+        "managed_agent_identity_preserved",
+        "actual_owner_service_stopped",
+        "owner_node_changed",
+        "state_token_preserved",
+        "state_fingerprint_preserved",
+        "state_persisted_before_failover",
+        "state_restored_on_survivor",
+        "stopped_node_rejoined",
+    }
+    markdown = md_path.read_text(encoding="utf-8")
+
+    return (
+        packet.get("ok") is True
+        and runtime.get("framework") == "sagents"
+        and runtime.get("framework_version") == "0.9.0"
+        and runtime.get("distribution") == "horde"
+        and runtime.get("horde_version") == "0.10.0"
+        and runtime.get("membership") == "participation"
+        and required_checks.issubset(checks)
+        and all(checks.get(name) is True for name in required_checks)
+        and isinstance(agent_id, str)
+        and bool(agent_id)
+        and before.get("agent_id") == agent_id == after.get("agent_id")
+        and before.get("owner_node") != after.get("owner_node")
+        and {before.get("owner_node"), after.get("owner_node")} == expected_nodes
+        and bool(before.get("state_token"))
+        and before.get("state_token") == after.get("state_token")
+        and bool(before.get("state_fingerprint"))
+        and before.get("state_fingerprint") == after.get("state_fingerprint")
+        and before_persistence.get("persist_count", 0) >= 1
+        and after_persistence.get("restore_count", 0)
+        > before_persistence.get("restore_count", 0)
+        and after_persistence.get("last_restored_node") == after.get("owner_node")
+        and expected_nodes.issubset(set(cluster_before.get("connected_nodes", [])))
+        and agent_id in cluster_before.get("managed_agents", [])
+        and expected_nodes.issubset(set(cluster_rejoined.get("connected_nodes", [])))
+        and "ProteinLoop Real Sagents Horde Failover Evidence" in markdown
+        and "State token preserved: true" in markdown
+        and "State fingerprint preserved: true" in markdown
+    )
+
+
+def nrf9151_live_evidence_ok(json_path: Path, md_path: Path) -> bool:
+    if not json_path.exists() or not md_path.exists():
+        return False
+
+    packet = json_load(json_path)
+    capture = packet.get("capture", {})
+    firmware = packet.get("firmware", {})
+    checks = packet.get("checks", {})
+    exchanges = packet.get("peer_exchanges", {})
+    boards = packet.get("boards", [])
+    by_id = {board.get("jlink_id"): board for board in boards if isinstance(board, dict)}
+    required_checks = {
+        "both_serial_ports_present",
+        "both_serial_ports_opened",
+        "ft_role_confirmed",
+        "pt_role_confirmed",
+        "ft_sent_and_received",
+        "pt_sent_and_received",
+        "bidirectional_peer_consistency",
+        "live_serial_not_simulated",
+    }
+    expected = {
+        "1051223739": ("FT", "/dev/cu.usbmodem0010512237391"),
+        "1051239227": ("PT", "/dev/cu.usbmodem0010512392271"),
+    }
+    ft = by_id.get("1051223739", {})
+    pt = by_id.get("1051239227", {})
+    observed_ft_to_pt = sorted(
+        message_number_set(ft.get("sent_message_numbers"))
+        & message_number_set(pt.get("received_message_numbers"))
+    )
+    observed_pt_to_ft = sorted(
+        message_number_set(pt.get("sent_message_numbers"))
+        & message_number_set(ft.get("received_message_numbers"))
+    )
+    markdown = md_path.read_text(encoding="utf-8")
+
+    board_proof_ok = all(
+        board_id in by_id
+        and by_id[board_id].get("expected_role") == role
+        and by_id[board_id].get("detected_role") == role
+        and by_id[board_id].get("serial_port") == serial_port
+        and by_id[board_id].get("role_matches") is True
+        and by_id[board_id].get("sent_local") is True
+        and by_id[board_id].get("received_peer") is True
+        and by_id[board_id].get("sent_message_numbers")
+        and by_id[board_id].get("received_message_numbers")
+        and by_id[board_id].get("ok") is True
+        and any(
+            "Sent: Hello DECT NR+" in line and "Message #" in line
+            for line in by_id[board_id].get("evidence_lines", [])
+        )
+        and any(
+            "Received " in line and "Message #" in line
+            for line in by_id[board_id].get("evidence_lines", [])
+        )
+        for board_id, (role, serial_port) in expected.items()
+    )
+
+    return (
+        packet.get("ok") is True
+        and packet.get("simulated") is False
+        and packet.get("capture_errors") == {}
+        and capture.get("mode") == "read_only_posix_serial"
+        and capture.get("baud") == 115200
+        and capture.get("flash_or_reset_invoked") is False
+        and capture.get("duration_seconds", 0) > 0
+        and firmware.get("application") == "Nordic hello_dect"
+        and firmware.get("installed_ncs_version") == "3.3.1"
+        and firmware.get("latest_researched_ncs_version") == "3.4.0"
+        and required_checks.issubset(checks)
+        and all(checks.get(name) is True for name in required_checks)
+        and bool(observed_ft_to_pt)
+        and exchanges.get("ft_to_pt") == observed_ft_to_pt
+        and bool(observed_pt_to_ft)
+        and exchanges.get("pt_to_ft") == observed_pt_to_ft
+        and len(boards) == 2
+        and board_proof_ok
+        and "ProteinLoop Live nRF9151 DECT NR+ Evidence" in markdown
+        and "Read-only UART capture from two physical nRF9151 DKs" in markdown
+        and "Simulated: false" in markdown
+    )
+
+
+def message_number_set(value: Any) -> set[int]:
+    if not isinstance(value, list):
+        return set()
+    return {number for number in value if type(number) is int and number >= 0}
+
+
 def nrf9151_plan_ok(json_path: Path, md_path: Path) -> bool:
     plan = json_load(json_path)
     markdown = md_path.read_text(encoding="utf-8")
     mapping = plan.get("telemetry_mapping", {})
     boards = plan.get("boards", [])
+    sdk = plan.get("sdk_research", {})
+    live = plan.get("live_evidence", {})
+    actual_boards = {
+        (
+            board.get("jlink_id"),
+            board.get("firmware_role"),
+            board.get("serial_port"),
+            board.get("role"),
+        )
+        for board in boards
+        if isinstance(board, dict)
+    }
+    expected_boards = {
+        (
+            "1051223739",
+            "FT",
+            "/dev/cu.usbmodem0010512237391",
+            "community gateway/controller",
+        ),
+        (
+            "1051239227",
+            "PT",
+            "/dev/cu.usbmodem0010512392271",
+            "tank sensor edge node",
+        ),
+    }
     required_mapping = {
         "ammonia_mg_l",
         "dissolved_oxygen_mg_l",
@@ -389,13 +586,21 @@ def nrf9151_plan_ok(json_path: Path, md_path: Path) -> bool:
         "node_online",
     }
     return (
-        plan.get("hardware_inventory", {}).get("available_boards") == 2
+        plan.get("status") == "live_bidirectional_dect_verified"
+        and plan.get("hardware_inventory", {}).get("available_boards") == 2
         and len(boards) == 2
-        and {board.get("role") for board in boards}
-        == {"tank sensor edge node", "community gateway/controller"}
+        and actual_boards == expected_boards
+        and sdk.get("installed_ncs_version") == "3.3.1"
+        and sdk.get("latest_stable_ncs_version") == "3.4.0"
+        and sdk.get("source") == "https://github.com/nrfconnect/sdk-nrf/releases/tag/v3.4.0"
+        and live.get("markdown") == "submission/nrf9151-live-evidence.md"
+        and live.get("capture_mode") == "read_only_posix_serial"
+        and live.get("simulated") is False
+        and live.get("flash_or_reset_invoked") is False
         and required_mapping.issubset(mapping)
         and "DECT NR+" in markdown
         and "nRF9151" in markdown
+        and "Latest stable NCS researched: 3.4.0" in markdown
     )
 
 

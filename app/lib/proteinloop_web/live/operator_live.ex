@@ -4,6 +4,7 @@ defmodule ProteinLoopWeb.OperatorLive do
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Agent.DemoCascade
   alias ProteinLoop.Agent.Harness
+  alias ProteinLoop.Agent.HordeRuntime
   alias ProteinLoop.Agent.Mesh
   alias ProteinLoop.Agent.ModelStatus
   alias ProteinLoop.Agent.SagentsRuntime
@@ -37,6 +38,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:sagents_running?, false)
       |> assign(:hitl_running?, false)
       |> assign(:agent_provider, :stub_safe)
+      |> assign(:horde_status, horde_runtime().cluster_status())
       |> assign(:mesh, Mesh.initial())
       |> assign(:approval_queue, ApprovalQueue.snapshot())
       |> assign(:model_status, ModelStatus.snapshot())
@@ -68,7 +70,15 @@ defmodule ProteinLoopWeb.OperatorLive do
      |> assign(:rlvr_evaluation, rlvr_evaluation())
      |> assign(:rlvr_training, rlvr_training())
      |> assign(:anomaly_forecast, anomaly_forecast())
+     |> assign(:horde_status, horde_runtime().cluster_status())
      |> assign_snapshot(snapshot, "manual refresh")}
+  end
+
+  def handle_event("refresh-horde", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:horde_status, horde_runtime().cluster_status())
+     |> update(:action_log, fn log -> Enum.take(["Horde cluster status refreshed" | log], 6) end)}
   end
 
   def handle_event("spike", _params, socket) do
@@ -326,6 +336,10 @@ defmodule ProteinLoopWeb.OperatorLive do
     Application.get_env(:proteinloop, :sagents_runtime, SagentsRuntime)
   end
 
+  defp horde_runtime do
+    Application.get_env(:proteinloop, :horde_runtime, HordeRuntime)
+  end
+
   defp run_agent(socket, provider) do
     case Harness.run(provider: provider) do
       {:ok, result} ->
@@ -511,12 +525,22 @@ defmodule ProteinLoopWeb.OperatorLive do
         </section>
 
         <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-lg font-semibold">Self-healing mesh</h2>
+            <span class={[
+              "badge badge-sm",
+              if(horde_cluster_online?(@horde_status), do: "badge-success", else: "badge-warning")
+            ]}>
+              {if horde_cluster_online?(@horde_status), do: "Horde online", else: "local mode"}
+            </span>
+          </div>
+
+          <.horde_panel status={@horde_status} />
+
+          <div class="mb-3 mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 class="text-lg font-semibold">Self-healing mesh</h2>
-              <p class="text-sm text-base-content/60">
-                migration_count={@mesh.migration_count}
-              </p>
+              <h3 class="text-sm font-semibold">Deterministic failover rehearsal</h3>
+              <p class="text-sm text-base-content/60">migration_count={@mesh.migration_count}</p>
             </div>
             <div class="flex flex-wrap gap-2">
               <button class="btn btn-sm btn-error" phx-click="mesh-fail-node">
@@ -739,6 +763,67 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp topology_badge_class(:critical), do: "badge-error"
   defp topology_badge_class(:warning), do: "badge-warning"
   defp topology_badge_class(_status), do: "badge-success"
+
+  attr :status, :map, required: true
+
+  def horde_panel(assigns) do
+    assigns =
+      assigns
+      |> assign(:distribution, display_value(assigns.status.distribution))
+      |> assign(:membership, horde_membership(assigns.status))
+      |> assign(:node_count, length(assigns.status.connected_nodes))
+      |> assign(:agent_count, length(assigns.status.managed_agents))
+
+    ~H"""
+    <div id="horde-cluster-status" class="border-y border-base-300 py-3">
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <h3 class="text-sm font-semibold">Real Sagents/Horde cluster</h3>
+        <button class="btn btn-ghost btn-sm" phx-click="refresh-horde" title="Refresh Horde status">
+          <.icon name="hero-arrow-path" /> Refresh
+        </button>
+      </div>
+      <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div>
+          <dt class="text-xs text-base-content/60">Distribution</dt>
+          <dd class="mt-1 text-sm font-semibold">{@distribution}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-base-content/60">Membership</dt>
+          <dd class="mt-1 text-sm font-semibold">{@membership}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-base-content/60">BEAM nodes</dt>
+          <dd class="mt-1 text-sm font-semibold">{@node_count} connected</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-base-content/60">Managed agents</dt>
+          <dd class="mt-1 text-sm font-semibold">{@agent_count} managed</dd>
+        </div>
+      </dl>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <span
+          :for={node_name <- @status.connected_nodes}
+          class="badge badge-outline max-w-full break-all font-mono"
+        >
+          {node_name}
+        </span>
+      </div>
+    </div>
+    """
+  end
+
+  defp horde_cluster_online?(status) do
+    status.distribution in [:horde, "horde"] and length(status.connected_nodes) >= 2
+  end
+
+  defp horde_membership(status) do
+    status.horde
+    |> Map.get(:members, Map.get(status.horde, "members", :unconfigured))
+    |> display_value()
+  end
+
+  defp display_value(value) when is_atom(value), do: Atom.to_string(value)
+  defp display_value(value), do: to_string(value)
 
   attr :queue, :map, required: true
 

@@ -7,10 +7,14 @@ defmodule ProteinLoop.Application do
 
   @impl true
   def start(_type, _args) do
+    ProteinLoop.Agent.DistributionConfig.configure!()
+
     children = [
       ProteinLoopWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:proteinloop, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: ProteinLoop.PubSub},
+      {ProteinLoop.ClusterConnector,
+       peers: Application.get_env(:proteinloop, :cluster_peers, [])},
       Sagents.Supervisor,
       ProteinLoop.Agent.ApprovalQueue,
       ProteinLoop.SimulatorPoller,

@@ -5,8 +5,8 @@ const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
 const evidence = {
-  python_tests: 131,
-  phoenix_tests: 75,
+  python_tests: 145,
+  phoenix_tests: 93,
   reward_delta: 463,
   collapse_avoidance: "100%",
 };
@@ -21,7 +21,7 @@ await fs.writeFile(
     "secondary gates: startup pitch, food security, hackathon submission",
     "proof objects: system map, verifier pipeline, demo evidence, AMD deployment path",
     "source assets: submission/slides.md, submission/lablab-submission.md, submission/cover.svg",
-    "QA gates: readable labels, explicit architecture, metrics tied to system, no generic AI layer",
+    "QA gates: readable labels, explicit architecture, metrics tied to system, physical DECT claims separated from sample telemetry",
     "",
   ].join("\n"),
 );
@@ -32,6 +32,7 @@ await fs.writeFile(
     `Test counts: make test (${evidence.python_tests}) and app mix test (${evidence.phoenix_tests}), verified July 10, 2026.`,
     "No third-party logos or identity assets are embedded.",
     "AMD/Gemma/vLLM are named as technology references; no unofficial logos are drawn.",
+    "Physical hardware proof: nRF9151 FT 1051223739 and PT 1051239227 show matching DECT NR+ sequences in both directions.",
     "",
   ].join("\n"),
 );
@@ -44,7 +45,7 @@ await fs.writeFile(
     "slide 4: Deterministic physics, not the model, controls every mutation.",
     `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
     "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
-    "slide 7: Local mesh evidence demonstrates state-preserving failover without claiming Horde.",
+    "slide 7: Real Sagents/Horde evidence proves state-preserving failover; two physical nRF9151 DKs prove bidirectional DECT NR+.",
     "slide 8: Spanish HITL is resumable control flow with approve, edit, and reject decisions.",
     "slide 9: Real Sagents and local E2B already run; AMD-hosted vLLM is the promotion target.",
     "slide 10: The startup ask is backed by code, Docker, evidence, and a platform path.",
@@ -197,14 +198,15 @@ export default async function slide06(presentation, ctx) {
   `import { colors, slideBase, h1, sub, box, arrowText, footer } from "./common.mjs";
 export default async function slide07(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Self-healing");
-  h1(ctx, s, "The mesh keeps agents alive when an edge node fails");
-  sub(ctx, s, "Local deterministic mesh behavior demonstrates the Horde/Sagents migration story without requiring a real cluster.");
-  box(ctx, s, { x: 120, y: 240, w: 230, h: 112, title: "Edge tank A", body: "fish + hydroponia agents", fill: colors.redSoft, line: colors.red });
-  arrowText(ctx, s, 380, 284, "fail");
-  box(ctx, s, { x: 470, y: 240, w: 230, h: 112, title: "Edge tank B", body: "healthy backup node", fill: colors.greenSoft, line: colors.green });
-  arrowText(ctx, s, 730, 284);
-  box(ctx, s, { x: 820, y: 240, w: 230, h: 112, title: "Cloud loop", body: "supervisor remains online", fill: colors.blueSoft, line: colors.blue });
-  box(ctx, s, { x: 236, y: 430, w: 780, h: 98, title: "State preservation", body: "Agent identities and state tokens survive migration; dashboard shows node state, placement, migration count, and events.", fill: "#ffffff", line: colors.teal });
+  h1(ctx, s, "Real failover and real field radio have executable proof");
+  sub(ctx, s, "Horde preserves managed agent state across owner loss; two physical nRF9151 DKs prove the DECT NR+ link.");
+  box(ctx, s, { x: 104, y: 240, w: 270, h: 122, title: "proteinloop_web@web", body: "Initial owner persists the completed Gemma probe.", fill: colors.redSoft, line: colors.red });
+  arrowText(ctx, s, 392, 286, "stop");
+  box(ctx, s, { x: 468, y: 240, w: 270, h: 122, title: "Horde 0.10.0", body: "Participation membership transfers managed ownership.", fill: colors.tealSoft, line: colors.teal });
+  arrowText(ctx, s, 756, 286);
+  box(ctx, s, { x: 832, y: 240, w: 300, h: 122, title: "proteinloop_peer@peer", body: "Survivor restores the same Sagents AgentServer state.", fill: colors.greenSoft, line: colors.green });
+  box(ctx, s, { x: 104, y: 424, w: 520, h: 116, title: "Horde proof", body: "Identity, state token, and fingerprint stay unchanged; restore_count increases on the peer and both nodes rejoin.", fill: "#ffffff", line: colors.teal });
+  box(ctx, s, { x: 656, y: 424, w: 520, h: 116, title: "Physical DECT NR+ proof", body: "FT 1051223739 and PT 1051239227 show matching sequences in both directions. Read-only capture; no flash/reset; simulated: false.", fill: colors.greenSoft, line: colors.green });
   footer(ctx, s, 7);
   return s;
 }`,
@@ -239,8 +241,8 @@ export default async function slide10(presentation, ctx) {
   h1(ctx, s, "ProteinLoop is a startup pitch with executable proof");
   sub(ctx, s, "A food-security product built as a verifier-gated, human-aware, fault-tolerant agentic system.");
   box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives that need low-cost, resilient protein production.", fill: colors.greenSoft, line: colors.green });
-  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents, physics verifier, RLVR scoring, resumable HITL, mesh model, AMD Gemma path.", fill: colors.tealSoft, line: colors.teal });
-  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and evidence packets.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Real Sagents/Horde failover, physical DECT NR+ proof, physics verifier, RLVR scoring, resumable HITL, and AMD Gemma path.", fill: colors.tealSoft, line: colors.teal });
+  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and validated software plus hardware evidence packets.", fill: colors.blueSoft, line: colors.blue });
   ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn + Best AMD-Hosted Gemma", fontSize: 30, bold: true, color: colors.ink, align: "center" });
   footer(ctx, s, 10);
   return s;

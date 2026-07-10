@@ -1,7 +1,9 @@
 {
   "boards": [
     {
+      "firmware_role": "PT",
       "id": "nr9151-tank-edge-a",
+      "jlink_id": "1051239227",
       "placement": "main fish/prawn tank",
       "proteinloop_agent": "fish-tank",
       "responsibilities": [
@@ -10,6 +12,7 @@
         "act as the failure target for mesh migration storytelling"
       ],
       "role": "tank sensor edge node",
+      "serial_port": "/dev/cu.usbmodem0010512392271",
       "telemetry": [
         "ammonia_mg_l",
         "dissolved_oxygen_mg_l",
@@ -17,7 +20,9 @@
       ]
     },
     {
+      "firmware_role": "FT",
       "id": "nr9151-community-gateway-b",
+      "jlink_id": "1051223739",
       "placement": "operator or shared village node",
       "proteinloop_agent": "supervisor",
       "responsibilities": [
@@ -26,6 +31,7 @@
         "remain online when tank edge node is simulated as failed"
       ],
       "role": "community gateway/controller",
+      "serial_port": "/dev/cu.usbmodem0010512237391",
       "telemetry": [
         "node_online",
         "battery_mv",
@@ -35,20 +41,27 @@
   ],
   "demo_path": [
     "Keep the judged software demo Docker-runnable without hardware.",
-    "Use the two nRF9151 boards as optional bench props for the DECT NR+ scale story.",
-    "Show board A as tank edge node and board B as gateway/controller.",
+    "Show submission/nrf9151-live-evidence.md as physical bidirectional DECT NR+ proof.",
+    "Show PT 1051239227 as tank edge node and FT 1051223739 as gateway/controller.",
     "Run ProteinLoop dashboard self-healing mesh control to mirror board A loss and state-token migration.",
-    "If firmware time permits, stream board telemetry into the simulator API instead of manual spike injection."
+    "Use the separate sample telemetry bridge to explain future sensor payload mapping without claiming stock hello_dect logs contain water-quality values."
   ],
   "hardware_inventory": {
-    "assumed_board_family": "Nordic nRF9151 DK or nRF9151 SMA DK",
     "available_boards": 2,
-    "note": "User reported two DECT NR+ nRF9151 boards on 2026-07-07."
+    "board_family": "Nordic nRF9151 DK PCA10171",
+    "note": "Both J-Link devices were enumerated and captured live on 2026-07-10."
+  },
+  "live_evidence": {
+    "capture_mode": "read_only_posix_serial",
+    "flash_or_reset_invoked": false,
+    "json": "submission/nrf9151-live-evidence.json",
+    "markdown": "submission/nrf9151-live-evidence.md",
+    "simulated": false
   },
   "non_blocking_scope": [
     "No firmware dependency is required for lablab submission.",
-    "No live RF link is required for Docker smoke, CI, or final readiness checks.",
-    "The deterministic mesh evidence remains the authoritative software proof."
+    "The recorded live RF artifact is validated in CI; connected hardware is not required for Docker smoke or replaying software tests.",
+    "The real Sagents/Horde evidence is the authoritative software failover proof; the dashboard mesh remains the deterministic rehearsal."
   ],
   "official_capabilities": {
     "source": "https://www.nordicsemi.com/Products/nRF9151",
@@ -59,7 +72,14 @@
       "The application processor is an Arm Cortex-M33 with 1 MB flash and 256 KB RAM."
     ]
   },
-  "status": "hardware_available_not_required_for_submission",
+  "sdk_research": {
+    "decision": "Preserve the known-good 3.3.1 board builds during read-only evidence capture; do not reflash solely for evidence.",
+    "installed_ncs_version": "3.3.1",
+    "latest_stable_ncs_version": "3.4.0",
+    "researched_at": "2026-07-10",
+    "source": "https://github.com/nrfconnect/sdk-nrf/releases/tag/v3.4.0"
+  },
+  "status": "live_bidirectional_dect_verified",
   "telemetry_mapping": {
     "ammonia_mg_l": "sim/proteinloop_sim/state.py::EcosystemState.ammonia_mg_l",
     "battery_mv": "future dashboard sensor detail; not required for simulator mutation",

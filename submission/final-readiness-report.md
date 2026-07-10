@@ -1,8 +1,63 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T06:05:45+00:00
-Commit: `02c11e3`
-Working tree (source): `clean`
+Generated: 2026-07-10T15:41:18+00:00
+Commit: `5b75edf`
+Working tree (source): `M Makefile
+ M README.md
+ M app/lib/proteinloop/agent/sagents_runtime.ex
+ M app/lib/proteinloop/application.ex
+ M app/lib/proteinloop_web/live/operator_live.ex
+ M app/lib/proteinloop_web/router.ex
+ M app/mix.exs
+ M app/mix.lock
+ M app/test/proteinloop/agent/sagents_runtime_test.exs
+ M app/test/proteinloop_web/controllers/page_controller_test.exs
+ M app/test/proteinloop_web/live/operator_live_test.exs
+ M scripts/build_submission_bundle.py
+ M scripts/generate_demo_video.py
+ M scripts/generate_nrf9151_field_plan.py
+ M scripts/generate_readiness_report.py
+ M scripts/generate_submission_deck.mjs
+ M scripts/validate_submission_artifacts.py
+ M scripts/validate_submission_readiness.py
+ M submission/artifact-build-manifest.json
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M submission/nrf9151-field-plan.json
+ M submission/nrf9151-field-plan.md
+ M submission/proteinloop-demo-video.avi
+ M submission/proteinloop-hackathon-deck.pptx
+ M submission/sagents-evidence.json
+ M submission/sagents-evidence.md
+ M submission/slides.md
+ M submission/video-script.md
+ M tests/test_demo_video_generator.py
+ M tests/test_nrf9151_field_plan.py
+ M tests/test_readiness_report.py
+ M tests/test_submission_bundle.py
+ M tests/test_submission_readiness.py
+?? app/lib/proteinloop/agent/distribution_config.ex
+?? app/lib/proteinloop/agent/horde_persistence.ex
+?? app/lib/proteinloop/agent/horde_runtime.ex
+?? app/lib/proteinloop/cluster_connector.ex
+?? app/lib/proteinloop_web/controllers/horde_controller.ex
+?? app/test/proteinloop/agent/distribution_config_test.exs
+?? app/test/proteinloop/agent/horde_persistence_test.exs
+?? app/test/proteinloop/agent/horde_runtime_test.exs
+?? app/test/proteinloop/cluster_connector_test.exs
+?? app/test/proteinloop_web/controllers/horde_controller_test.exs
+?? app/test/support/test_horde_runtime.ex
+?? docker-compose.horde.yml
+?? scripts/horde_failover_test.py
+?? scripts/nrf9151_live_capture.py
+?? specs/048-real-horde-failover/
+?? specs/049-live-nrf9151-evidence/
+?? submission/horde-evidence.json
+?? submission/horde-evidence.md
+?? submission/nrf9151-live-evidence.json
+?? submission/nrf9151-live-evidence.md
+?? tests/test_horde_failover.py
+?? tests/test_nrf9151_live_capture.py`
 
 ## Command Evidence
 
@@ -12,13 +67,15 @@ Working tree (source): `clean`
 | Submission artifacts | `make submission-check` | 0 | PASS |
 | Docker smoke | `make docker-smoke` | 0 | PASS |
 | Real Sagents evidence | `make sagents-evidence` | 0 | PASS |
+| Real Horde failover evidence | `make horde-evidence` | 0 | PASS |
+| Live nRF9151 DECT NR+ evidence | `make nrf9151-live-evidence` | 0 | PASS |
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
 | Credit access | `make credit-check` | 2 | FAIL |
 | Public demo environment | `make public-env-check` | 2 | FAIL |
 | Gemma endpoint evidence | `make gemma-check` | 2 | FAIL |
 | Final submission readiness | `make submission-ready-check` | 2 | FAIL |
-| GitHub CLI authentication | `gh auth status` | 1 | FAIL |
+| GitHub CLI authentication | `gh auth status` | 0 | PASS |
 
 ## Remaining Blockers
 
@@ -33,7 +90,6 @@ Working tree (source): `clean`
 - Final submission readiness: [FAIL] application URL - missing or TODO
 - Final submission readiness: [FAIL] origin remote configured - git config --get remote.origin.url failed
 - Final submission readiness: [FAIL] origin matches lablab repository URL - missing repo URL or origin
-- GitHub CLI authentication: - The token in default is invalid.
 
 ## Next Commands
 
@@ -53,9 +109,9 @@ make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-...................................................................................................................................
+.................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 131 tests in 0.125s
+Ran 145 tests in 0.123s
 
 OK
 ```
@@ -72,7 +128,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T06:01:51.236578+00:00
+checked_at: 2026-07-10T15:41:00.985718+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -101,6 +157,45 @@ model: google/gemma-4-E2B-it
 [ok] until_tool_success
 [ok] verification_accepted
 real Sagents evidence OK
+```
+
+### Real Horde failover evidence
+
+```text
+evidence: submission/horde-evidence.json
+Sagents 0.9.0
+Horde 0.10.0
+membership: participation
+[ok] actual_owner_service_stopped
+[ok] managed_agent_identity_preserved
+[ok] managed_agent_registered_before
+[ok] owner_node_changed
+[ok] real_horde_distribution
+[ok] state_fingerprint_preserved
+[ok] state_persisted_before_failover
+[ok] state_restored_on_survivor
+[ok] state_token_preserved
+[ok] stopped_node_rejoined
+[ok] two_nodes_connected_before
+real Horde failover evidence OK
+```
+
+### Live nRF9151 DECT NR+ evidence
+
+```text
+evidence: submission/nrf9151-live-evidence.json
+2 physical boards
+installed NCS: 3.3.1
+latest researched NCS: 3.4.0
+[ok] bidirectional_peer_consistency
+[ok] both_serial_ports_opened
+[ok] both_serial_ports_present
+[ok] ft_role_confirmed
+[ok] ft_sent_and_received
+[ok] live_serial_not_simulated
+[ok] pt_role_confirmed
+[ok] pt_sent_and_received
+live two-board DECT NR+ evidence OK
 ```
 
 ### CI workflow contract
@@ -162,7 +257,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 02c11e3b579bee5b5bb2052f8155b844ecbf4532
+[ok] local git commit - 5b75edfbd4e681a5a8952cdb0a3a6e762b782d36
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
@@ -173,9 +268,9 @@ make[1]: *** [submission-ready-check] Error 1
 
 ```text
 github.com
-  X Failed to log in to github.com account Anarpego (default)
+  ✓ Logged in to github.com account Anarpego (keyring)
   - Active account: true
-  - The token in default is invalid.
-  - To re-authenticate, run: gh auth login -h github.com
-  - To forget about this account, run: gh auth logout -h github.com -u Anarpego
+  - Git operations protocol: ssh
+  - Token: gho_************************************
+  - Token scopes: 'gist', 'read:org', 'repo'
 ```

@@ -192,7 +192,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
 
     Agent.new!(
       %{
-        agent_id: unique_agent_id("supervisor"),
+        agent_id: Keyword.get(opts, :agent_id, unique_agent_id("supervisor")),
         name: "ProteinLoop supervisor",
         model: model,
         base_system_prompt: supervisor_prompt(ecosystem_state, tool_name),

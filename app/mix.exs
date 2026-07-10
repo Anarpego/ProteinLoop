@@ -41,6 +41,7 @@ defmodule ProteinLoop.MixProject do
   defp deps do
     [
       {:phoenix, "1.8.9"},
+      {:plug, "1.20.3"},
       {:phoenix_html, "4.3.0"},
       {:phoenix_live_reload, "1.6.2", only: :dev},
       {:phoenix_live_view, "1.2.6"},
@@ -61,6 +62,7 @@ defmodule ProteinLoop.MixProject do
       {:dns_cluster, "0.2.0"},
       {:bandit, "1.12.0"},
       {:sagents, "0.9.0"},
+      {:horde, "0.10.0"},
       {:langchain, "0.9.2"},
       {:req, "0.6.2"}
     ]

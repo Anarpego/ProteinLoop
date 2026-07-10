@@ -11,6 +11,8 @@ from scripts.generate_readiness_report import (
     EVIDENCE_COMMANDS,
     docker_smoke_evidence,
     extract_blockers,
+    horde_runtime_evidence,
+    nrf9151_live_evidence,
     render_report,
     sagents_runtime_evidence,
     status_label,
@@ -27,6 +29,8 @@ class ReadinessReportTests(unittest.TestCase):
             "Submission artifacts",
             "Docker smoke",
             "Real Sagents evidence",
+            "Real Horde failover evidence",
+            "Live nRF9151 DECT NR+ evidence",
             "Credit access",
             "Public demo environment",
             "Gemma endpoint evidence",
@@ -136,6 +140,88 @@ class ReadinessReportTests(unittest.TestCase):
             incomplete_evidence = sagents_runtime_evidence(path)
 
         self.assertNotEqual(incomplete_evidence.returncode, 0)
+
+    def test_horde_runtime_evidence_reads_passing_json(self):
+        checks = {
+            "real_horde_distribution": True,
+            "two_nodes_connected_before": True,
+            "managed_agent_registered_before": True,
+            "managed_agent_identity_preserved": True,
+            "actual_owner_service_stopped": True,
+            "owner_node_changed": True,
+            "state_token_preserved": True,
+            "state_fingerprint_preserved": True,
+            "state_persisted_before_failover": True,
+            "state_restored_on_survivor": True,
+            "stopped_node_rejoined": True,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "horde-evidence.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "runtime": {
+                            "framework": "sagents",
+                            "framework_version": "0.9.0",
+                            "distribution": "horde",
+                            "horde_version": "0.10.0",
+                            "membership": "participation",
+                        },
+                        "before": {"owner_node": "proteinloop_web@web"},
+                        "after": {"owner_node": "proteinloop_peer@peer"},
+                        "checks": checks,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            evidence = horde_runtime_evidence(path)
+
+        self.assertEqual(evidence.returncode, 0)
+        self.assertIn("Horde 0.10.0", evidence.stdout)
+        self.assertIn("[ok] state_restored_on_survivor", evidence.stdout)
+
+    def test_nrf9151_live_evidence_reads_passing_json(self):
+        checks = {
+            "both_serial_ports_present": True,
+            "both_serial_ports_opened": True,
+            "ft_role_confirmed": True,
+            "pt_role_confirmed": True,
+            "ft_sent_and_received": True,
+            "pt_sent_and_received": True,
+            "bidirectional_peer_consistency": True,
+            "live_serial_not_simulated": True,
+        }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "nrf9151-live-evidence.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "ok": True,
+                        "simulated": False,
+                        "capture": {"flash_or_reset_invoked": False},
+                        "firmware": {
+                            "installed_ncs_version": "3.3.1",
+                            "latest_researched_ncs_version": "3.4.0",
+                        },
+                        "boards": [
+                            {"jlink_id": "1051223739", "expected_role": "FT", "ok": True},
+                            {"jlink_id": "1051239227", "expected_role": "PT", "ok": True},
+                        ],
+                        "checks": checks,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            evidence = nrf9151_live_evidence(path)
+
+        self.assertEqual(evidence.returncode, 0)
+        self.assertIn("2 physical boards", evidence.stdout)
+        self.assertIn("[ok] bidirectional_peer_consistency", evidence.stdout)
 
     def test_render_report_includes_gemma4_next_command_and_failures(self):
         report = render_report(

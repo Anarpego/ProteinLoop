@@ -1,12 +1,26 @@
 # ProteinLoop nRF9151 Field Plan
 
-Status: `hardware_available_not_required_for_submission`
+Status: `live_bidirectional_dect_verified`
 
 ## Hardware Inventory
 
 - Available boards: 2.
-- Assumed family: Nordic nRF9151 DK or nRF9151 SMA DK.
-- Note: User reported two DECT NR+ nRF9151 boards on 2026-07-07.
+- Board family: Nordic nRF9151 DK PCA10171.
+- Note: Both J-Link devices were enumerated and captured live on 2026-07-10.
+
+## SDK Research
+
+- Official release: https://github.com/nrfconnect/sdk-nrf/releases/tag/v3.4.0
+- Installed NCS: 3.3.1.
+- Latest stable NCS researched: 3.4.0.
+- Decision: Preserve the known-good 3.3.1 board builds during read-only evidence capture; do not reflash solely for evidence.
+
+## Live Evidence
+
+- Markdown: `submission/nrf9151-live-evidence.md`.
+- Capture mode: `read_only_posix_serial`.
+- Simulated: false.
+- Flash or reset invoked: false.
 
 ## Official Capability Basis
 
@@ -21,6 +35,9 @@ Status: `hardware_available_not_required_for_submission`
 ### nr9151-tank-edge-a
 
 - Role: tank sensor edge node.
+- J-Link: `1051239227`.
+- Firmware role: PT.
+- Serial port: `/dev/cu.usbmodem0010512392271`.
 - Placement: main fish/prawn tank.
 - ProteinLoop agent: fish-tank.
 - Telemetry: ammonia_mg_l, dissolved_oxygen_mg_l, temperature_c.
@@ -32,6 +49,9 @@ Status: `hardware_available_not_required_for_submission`
 ### nr9151-community-gateway-b
 
 - Role: community gateway/controller.
+- J-Link: `1051223739`.
+- Firmware role: FT.
+- Serial port: `/dev/cu.usbmodem0010512237391`.
 - Placement: operator or shared village node.
 - ProteinLoop agent: supervisor.
 - Telemetry: node_online, battery_mv, link_quality.
@@ -52,13 +72,13 @@ Status: `hardware_available_not_required_for_submission`
 ## Demo Path
 
 1. Keep the judged software demo Docker-runnable without hardware.
-2. Use the two nRF9151 boards as optional bench props for the DECT NR+ scale story.
-3. Show board A as tank edge node and board B as gateway/controller.
+2. Show submission/nrf9151-live-evidence.md as physical bidirectional DECT NR+ proof.
+3. Show PT 1051239227 as tank edge node and FT 1051223739 as gateway/controller.
 4. Run ProteinLoop dashboard self-healing mesh control to mirror board A loss and state-token migration.
-5. If firmware time permits, stream board telemetry into the simulator API instead of manual spike injection.
+5. Use the separate sample telemetry bridge to explain future sensor payload mapping without claiming stock hello_dect logs contain water-quality values.
 
 ## Non-Blocking Scope
 
 - No firmware dependency is required for lablab submission.
-- No live RF link is required for Docker smoke, CI, or final readiness checks.
-- The deterministic mesh evidence remains the authoritative software proof.
+- The recorded live RF artifact is validated in CI; connected hardware is not required for Docker smoke or replaying software tests.
+- The real Sagents/Horde evidence is the authoritative software failover proof; the dashboard mesh remains the deterministic rehearsal.

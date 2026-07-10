@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence nrf9151-plan nrf9151-bridge readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
 
 LOCAL_GEMMA_HOST ?= 127.0.0.1
 LOCAL_GEMMA_PORT ?= 8001
@@ -61,11 +61,20 @@ mesh-evidence:
 sagents-evidence:
 	cd app && GEMMA_ENDPOINT="$${GEMMA_ENDPOINT:-http://127.0.0.1:8001}" GEMMA_MODEL="$${GEMMA_MODEL:-google/gemma-4-E2B-it}" mix run scripts/export_sagents_evidence.exs
 
+horde-up:
+	docker compose -f docker-compose.yml -f docker-compose.horde.yml up -d --build
+
+horde-evidence:
+	python3 scripts/horde_failover_test.py --write-evidence
+
 nrf9151-plan:
 	python3 scripts/generate_nrf9151_field_plan.py
 
 nrf9151-bridge:
 	python3 scripts/nrf9151_telemetry_bridge.py --sample --write-submission
+
+nrf9151-live-evidence:
+	python3 scripts/nrf9151_live_capture.py --write-submission
 
 readiness-report:
 	python3 scripts/generate_readiness_report.py

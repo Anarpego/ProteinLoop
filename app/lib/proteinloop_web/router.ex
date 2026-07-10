@@ -21,8 +21,12 @@ defmodule ProteinLoopWeb.Router do
     live "/producer", ProducerLive, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", ProteinLoopWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/horde", ProteinLoopWeb do
+    pipe_through :api
+
+    get "/status", HordeController, :status
+    post "/probes", HordeController, :create
+    get "/probes/:id", HordeController, :show
+    delete "/probes/:id", HordeController, :delete
+  end
 end

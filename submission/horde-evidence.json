@@ -1,0 +1,110 @@
+{
+  "after": {
+    "agent_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+    "connected_nodes": [
+      "proteinloop_web@web"
+    ],
+    "distribution": "horde",
+    "message_count": 4,
+    "observer_node": "proteinloop_web@web",
+    "owner_node": "proteinloop_web@web",
+    "persistence": {
+      "agent_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+      "conversation_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+      "fingerprint": "aa555e906db4280c84ad206091cfc292037a24cff5a0e2c3ad6e39f2aabaf965",
+      "interrupted": false,
+      "last_lifecycle": "on_shutdown",
+      "last_persisted_at": "2026-07-10T15:35:02.411Z",
+      "last_persisted_node": "proteinloop_peer@peer",
+      "last_restored_at": "2026-07-10T15:35:02.413Z",
+      "last_restored_node": "proteinloop_web@web",
+      "persist_count": 2,
+      "restore_count": 1
+    },
+    "state_fingerprint": "aa555e906db4280c84ad206091cfc292037a24cff5a0e2c3ad6e39f2aabaf965",
+    "state_token": "proteinloop-state-62493e3a5f3a496183c5b0b5475d6675",
+    "status": "idle"
+  },
+  "agent_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+  "before": {
+    "agent_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+    "connected_nodes": [
+      "proteinloop_peer@peer",
+      "proteinloop_web@web"
+    ],
+    "distribution": "horde",
+    "message_count": 4,
+    "observer_node": "proteinloop_web@web",
+    "owner_node": "proteinloop_peer@peer",
+    "persistence": {
+      "agent_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+      "conversation_id": "proteinloop-horde-proof-e3b3c1ef0ce6",
+      "fingerprint": "aa555e906db4280c84ad206091cfc292037a24cff5a0e2c3ad6e39f2aabaf965",
+      "interrupted": false,
+      "last_lifecycle": "on_completion",
+      "last_persisted_at": "2026-07-10T15:35:02.220Z",
+      "last_persisted_node": "proteinloop_peer@peer",
+      "last_restored_at": null,
+      "last_restored_node": null,
+      "persist_count": 1,
+      "restore_count": 0
+    },
+    "state_fingerprint": "aa555e906db4280c84ad206091cfc292037a24cff5a0e2c3ad6e39f2aabaf965",
+    "state_token": "proteinloop-state-62493e3a5f3a496183c5b0b5475d6675",
+    "status": "idle"
+  },
+  "checks": {
+    "actual_owner_service_stopped": true,
+    "managed_agent_identity_preserved": true,
+    "managed_agent_registered_before": true,
+    "owner_node_changed": true,
+    "real_horde_distribution": true,
+    "state_fingerprint_preserved": true,
+    "state_persisted_before_failover": true,
+    "state_restored_on_survivor": true,
+    "state_token_preserved": true,
+    "stopped_node_rejoined": true,
+    "two_nodes_connected_before": true
+  },
+  "cluster_before": {
+    "connected_nodes": [
+      "proteinloop_peer@peer",
+      "proteinloop_web@web"
+    ],
+    "distribution": "horde",
+    "horde": {
+      "members": "participation",
+      "partition": "proteinloop-local"
+    },
+    "managed_agents": [
+      "proteinloop-horde-proof-e3b3c1ef0ce6"
+    ],
+    "node": "proteinloop_web@web"
+  },
+  "cluster_rejoined": {
+    "connected_nodes": [
+      "proteinloop_peer@peer",
+      "proteinloop_web@web"
+    ],
+    "distribution": "horde",
+    "horde": {
+      "members": "participation",
+      "partition": "proteinloop-local"
+    },
+    "managed_agents": [
+      "proteinloop-horde-proof-e3b3c1ef0ce6"
+    ],
+    "node": "proteinloop_web@web"
+  },
+  "generated_at": "2026-07-10T15:35:04.286463+00:00",
+  "ok": true,
+  "runtime": {
+    "distribution": "horde",
+    "framework": "sagents",
+    "framework_version": "0.9.0",
+    "horde_version": "0.10.0",
+    "membership": "participation"
+  },
+  "stopped_service": "peer",
+  "title": "ProteinLoop real Sagents Horde failover evidence"
+}

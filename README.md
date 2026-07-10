@@ -68,11 +68,15 @@ The demo rehearsal packet adds `submission/demo-rehearsal.json` and `.md`, gener
 
 The mesh evidence packet adds `submission/mesh-evidence.json` and `.md`, generated from the Elixir mesh model to prove agent migration and state-token preservation.
 
-The nRF9151 field plan records the two available DECT NR+ boards as a non-blocking hardware extension: one tank edge node and one community gateway/controller.
+The live nRF9151 evidence slice records read-only UART output from two physical DECT NR+ boards. FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number; the artifact is marked `simulated: false`, and no flash or reset command was invoked.
+
+The nRF9151 field plan maps PT to the tank edge node and FT to the community gateway/controller. Nordic's stock `hello_dect` firmware proves the physical radio link; it does not claim to carry ProteinLoop sensor telemetry yet.
 
 The nRF9151 telemetry bridge packet maps sample two-board JSONL readings into simulator and dashboard events, proving how a critical tank reading becomes an ammonia-spike request and how an offline edge node becomes a mesh failure hint.
 
 The real Sagents runtime slice pins Sagents `0.9.0` and LangChain `0.9.2`, starts `Sagents.Supervisor` under OTP, runs four real `Sagents.SubAgent` workers with Gemma concurrently, inserts `verify_ecosystem_safety` before tool execution, terminates through `until_tool_success`, and preserves executable JSON/Markdown evidence at `submission/sagents-evidence.*`.
+
+The real Horde failover slice pins Horde `0.10.0`, runs two distributed BEAM nodes with participation membership, persists managed Sagents state atomically, stops the probe's actual owner service, restores the same agent on the survivor, and verifies identity, state token, and canonical fingerprint preservation in `submission/horde-evidence.*`.
 
 ## Workflow
 
@@ -111,6 +115,8 @@ This repo is set up for a Spec Kit-style flow:
 - `specs/037-nrf9151-field-plan/spec.md` defines the two-board DECT NR+ field extension plan.
 - `specs/038-nrf9151-telemetry-bridge/spec.md` defines the two-board telemetry bridge contract.
 - `specs/047-real-sagents-runtime/spec.md` defines the real Sagents, Gemma, verifier, and HITL runtime.
+- `specs/048-real-horde-failover/spec.md` defines the two-node Sagents/Horde failover proof.
+- `specs/049-live-nrf9151-evidence/spec.md` defines read-only physical two-board DECT NR+ evidence.
 
 `AGENTS.md` captures the Superpowers-style operating rules: spec first, tight tasks, TDD, review, and verification before completion.
 
@@ -125,7 +131,7 @@ python3 -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 131 tests
+Ran 145 tests
 
 OK
 ```
@@ -138,7 +144,7 @@ mix deps.get
 mix test
 ```
 
-Current expected result: `75 tests, 0 failures`.
+Current expected result: `93 tests, 0 failures`.
 
 Validate the GitHub Actions workflow contract before pushing:
 
@@ -259,6 +265,23 @@ make sagents-evidence
 
 The target defaults to local E2B at `http://127.0.0.1:8001` and the simulator at `http://127.0.0.1:8000`; explicit environment variables still override both for AMD deployment. It runs four subsystem agents, a verified supervisor cycle, a HumanInTheLoop interrupt, and a rejection resume with zero mutation. It writes `submission/sagents-evidence.json` and `.md`.
 
+Start the two-node Horde overlay and generate the state-preserving failover proof:
+
+```sh
+make horde-up
+make horde-evidence
+```
+
+The overlay runs `proteinloop_web@web` on port `4001` and `proteinloop_peer@peer` on port `4012`, sharing Sagents persistence through a Docker volume. The verifier runs a real Gemma cycle, stops whichever service owns the managed agent, observes restoration on the survivor, restarts the stopped node, and writes `submission/horde-evidence.json` and `.md`.
+
+With both nRF9151 DKs connected on their recorded VCOM0 ports, capture fresh physical DECT NR+ proof:
+
+```sh
+make nrf9151-live-evidence
+```
+
+The capture opens both ports read-only at 115200 baud, listens concurrently, and only replaces `submission/nrf9151-live-evidence.json` and `.md` when both FT and PT locally send and receive peer traffic. It never invokes a flash or reset command.
+
 Summarize harness traces:
 
 ```sh
@@ -362,11 +385,11 @@ The same panel includes a deterministic policy search curve from `GET /rlvr/trai
 
 The dashboard includes `Subsystem agent topology` cards for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and the parent supervisor. State mutation still goes through the harness and simulator verifier.
 
-The dashboard includes a `Self-healing mesh` panel. `Simulate node loss` marks an edge node offline and migrates its agents to healthy nodes while preserving agent identity/state tokens. `Recover node` brings the failed node back online.
+The dashboard includes a `Self-healing mesh` panel whose real Sagents/Horde status band shows distribution mode, participation membership, connected BEAM nodes, and managed-agent count. The `Simulate node loss` and `Recover node` controls remain a deterministic rehearsal; the actual service-stop proof is generated by `make horde-evidence`.
 
-The physical hardware extension uses two available Nordic nRF9151 DECT NR+ boards as an optional bench path: board A maps to the tank sensor edge node, and board B maps to the community gateway/controller. The Docker demo and submission checks do not require firmware or a live RF link.
+The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
-The stdlib telemetry bridge can also convert sample nRF9151 JSONL records into the demo contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action.
+Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records into the future sensor contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action. Those sample water-quality values are not attributed to the stock `hello_dect` logs.
 
 The dashboard includes a `Spanish HITL approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
@@ -539,7 +562,9 @@ Submission source artifacts live in `submission/`:
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and Spanish HITL copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `sagents-evidence.json` / `sagents-evidence.md`: live local Gemma evidence for real Sagents agents, custom safety mode, `until_tool_success`, and non-mutating HITL rejection.
-- `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: two-board DECT NR+ hardware extension plan.
+- `horde-evidence.json` / `horde-evidence.md`: real two-node Sagents/Horde owner loss, state restoration, and node-rejoin evidence.
+- `nrf9151-live-evidence.json` / `nrf9151-live-evidence.md`: read-only, non-simulated bidirectional DECT NR+ evidence from the two physical nRF9151 DKs.
+- `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: exact FT/PT board inventory and ProteinLoop field-role mapping.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
 - `gemma-evidence.json`: generated only after `make gemma-check` succeeds against a live OpenAI-compatible Gemma endpoint.
@@ -597,6 +622,18 @@ Generate the real Sagents and local Gemma evidence packet:
 
 ```sh
 make sagents-evidence
+```
+
+Generate the real two-node Horde failover evidence packet:
+
+```sh
+make horde-evidence
+```
+
+Capture fresh live evidence from both connected nRF9151 DKs:
+
+```sh
+make nrf9151-live-evidence
 ```
 
 Generate the nRF9151 two-board DECT NR+ field plan:
@@ -660,6 +697,8 @@ make readiness-report
 ├── specs/037-nrf9151-field-plan/ # Two-board nRF9151 field plan
 ├── specs/038-nrf9151-telemetry-bridge/ # Two-board nRF9151 bridge contract
 ├── specs/047-real-sagents-runtime/ # Real Sagents + Gemma + HITL runtime
+├── specs/048-real-horde-failover/ # Real two-node Sagents/Horde migration
+├── specs/049-live-nrf9151-evidence/ # Physical two-board DECT NR+ capture
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks

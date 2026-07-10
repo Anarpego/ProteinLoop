@@ -34,13 +34,23 @@ The reward function is programmatic: survival, water quality, biomass, and morta
 
 Action:
 
-Press `Simulate node loss`.
+Show the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`. Press `Simulate node loss` only as the repeatable dashboard rehearsal.
 
 Narration:
 
-The subsystem agents are modeled as an OTP-style mesh. When an edge node fails, the affected agents migrate to healthy nodes with their state tokens intact. This is the local demo version of the Horde/Sagents self-healing story.
+The executable failover proof runs two distributed BEAM nodes with Sagents 0.9.0 and Horde 0.10.0. It stops the managed agent's actual owner service, restores that agent on the surviving peer, and rejoins the stopped node. Identity, state token, and canonical state fingerprint remain unchanged. The dashboard controls provide a fast deterministic rehearsal of the same operator story.
 
-## Scene 5: Spanish HITL
+## Scene 5: Physical DECT NR+
+
+Action:
+
+Show both connected nRF9151 DKs and `submission/nrf9151-live-evidence.md`.
+
+Narration:
+
+The field link is physical, not simulated. FT board 1051223739 acts as the community gateway and PT board 1051239227 maps to the tank edge. Each board sent locally and received its peer's matching DECT NR+ sequence number. The evidence was captured from both UARTs read-only, with no flash or reset. Nordic's stock hello_dect proves the radio link; the separate sample bridge defines the future sensor payload.
+
+## Scene 6: Spanish HITL
 
 Action:
 
@@ -50,7 +60,7 @@ Narration:
 
 Risky water exchange and harvest actions pause for the producer in Spanish. The producer can approve, reject, or edit the tool call. Even after approval, the simulator verifier remains the mutation boundary.
 
-## Scene 6: Real Sagents Runtime
+## Scene 7: Real Sagents Runtime
 
 Action:
 
@@ -60,7 +70,7 @@ Narration:
 
 Sagents 0.9.0 runs four Gemma subsystem agents in parallel, then a fifth parent supervisor calls `close_cycle`. The custom `verify_ecosystem_safety` mode checks the action before execution, and `until_tool_success` returns the accepted action, verifier result, and reward.
 
-## Scene 7: AMD Gemma
+## Scene 8: AMD Gemma
 
 Show `deploy/amd-gemma-vllm.md` or the model status panel.
 

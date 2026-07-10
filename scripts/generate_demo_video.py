@@ -108,15 +108,26 @@ def build_scenes(evidence: dict) -> list[Scene]:
             GREEN,
         ),
         Scene(
-            "Self-healing mesh",
-            "Agents migrate when an edge node fails",
+            "Real Sagents + Horde",
+            "The managed agent survives owner loss",
             [
-                "Subsystem agents are modeled as an OTP-style local mesh.",
-                "When a node fails, affected agents move to healthy nodes with state tokens intact.",
-                "This demonstrates the self-healing story without requiring a multi-node cluster.",
+                "Two BEAM nodes run Sagents 0.9.0 with Horde 0.10.0 participation membership.",
+                "The proof stops the agent's actual owner and restores it on the surviving peer.",
+                "Agent identity, state token, and canonical state fingerprint remain unchanged.",
             ],
-            "node loss -> migration -> recovery",
+            "owner stopped -> state restored -> node rejoined",
             CYAN,
+        ),
+        Scene(
+            "Physical DECT NR+",
+            "Two nRF9151 DKs exchange live radio traffic",
+            [
+                "FT 1051223739 is the community gateway; PT 1051239227 is the tank edge node.",
+                "Each board sent locally and received its peer's matching DECT NR+ sequence number.",
+                "The evidence came from read-only UART capture with no flash or reset command.",
+            ],
+            "FT -> PT match | PT -> FT match | simulated: false",
+            GREEN,
         ),
         Scene(
             "Spanish HITL",
