@@ -8,11 +8,15 @@ defmodule ProteinLoopWeb.PageControllerTest do
     :ok
   end
 
-  test "GET / renders the operator dashboard", %{conn: conn} do
+  test "GET / renders the guided operator control", %{conn: conn} do
     conn = get(conn, ~p"/")
     assert html_response(conn, 200) =~ ~r/<html[^>]*lang="en"[^>]*data-theme="light"/
-    assert html_response(conn, 200) =~ "Operator dashboard"
+    assert html_response(conn, 200) =~ ~s(<meta name="color-scheme" content="light")
+    refute html_response(conn, 200) =~ "prefers-color-scheme"
+    assert html_response(conn, 200) =~ "ProteinLoop system control"
     assert html_response(conn, 200) =~ "Your protein loop at a glance"
+    assert html_response(conn, 200) =~ "Ask the AI team to help"
+    assert html_response(conn, 200) =~ "Advanced evidence and controls"
     assert html_response(conn, 200) =~ "Agent harness"
     assert html_response(conn, 200) =~ "Unsafe proposal"
     assert html_response(conn, 200) =~ "RLVR trace artifact"
@@ -32,12 +36,19 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ "Simulate node loss"
     assert html_response(conn, 200) =~ "Human approval"
     assert html_response(conn, 200) =~ "Request producer approval"
-    assert html_response(conn, 200) =~ "Agentic intervention mission"
+    assert html_response(conn, 200) =~ "Ask the AI team to help"
     assert html_response(conn, 200) =~ "Sagents 0.9.0"
     assert html_response(conn, 200) =~ "until_tool_success"
-    assert html_response(conn, 200) =~ "Run verified intervention"
+    assert html_response(conn, 200) =~ "Ask AI team for a safe plan"
     assert html_response(conn, 200) =~ "Anomaly forecast"
     assert html_response(conn, 200) =~ "Near-term risk"
+  end
+
+  test "CSS contains no dark theme definition" do
+    css = File.read!(Path.expand("../../../assets/css/app.css", __DIR__))
+
+    refute css =~ ~s(name: "dark")
+    refute css =~ "prefersdark: true"
   end
 
   test "GET /producer renders the English HITL view", %{conn: conn} do

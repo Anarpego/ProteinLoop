@@ -570,7 +570,7 @@ defmodule ProteinLoopWeb.OperatorLive do
         <header class="flex flex-col gap-3 border-b border-base-300 pb-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p class="text-sm font-semibold uppercase tracking-wide text-secondary">ProteinLoop</p>
-            <h1 class="text-2xl font-semibold tracking-normal">Operator dashboard</h1>
+            <h1 class="text-2xl font-semibold tracking-normal">ProteinLoop system control</h1>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class={["badge", @badge_class]}>{@badge_text}</span>
@@ -585,437 +585,455 @@ defmodule ProteinLoopWeb.OperatorLive do
 
         <.system_scene id="operator-system-scene" state={@state} />
 
-        <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <.metric_card
-            label="Day"
-            value={metric(@state, "day")}
-            detail={metric(@state, "last_event")}
-          />
-          <.metric_card
-            label="Waste in water"
-            value={"#{rounded(metric(@state, "ammonia_mg_l"))} mg/L"}
-            detail="Ammonia · safe below 1.5"
-            value_class={risk_class(metric(@state, "ammonia_mg_l"), 1.5, 3.0)}
-          />
-          <.metric_card
-            label="Breathing oxygen"
-            value={"#{rounded(metric(@state, "dissolved_oxygen_mg_l"))} mg/L"}
-            detail="Dissolved oxygen · comfortable above 5.0"
-            value_class={
-              if metric(@state, "dissolved_oxygen_mg_l") < 3.5, do: "text-error", else: "text-success"
-            }
-          />
-          <.metric_card
-            label="Reward"
-            value={@snapshot.reward || "pending"}
-            detail={@snapshot.source}
-          />
-        </section>
-
-        <section id="dect-live-evidence" class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-lg font-semibold">Physical DECT NR+ link</h2>
-                <span :if={@nrf9151_evidence.available?} class="badge badge-success">
-                  real radio capture
-                </span>
-                <span :if={!@nrf9151_evidence.available?} class="badge badge-error">unavailable</span>
-              </div>
-              <p class="mt-1 text-sm text-base-content/60">
-                Latest read-only exchange from the two connected nRF9151 boards.
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button
-                class="btn btn-sm btn-outline"
-                phx-click="refresh-dect"
-                title="Reload DECT evidence"
-              >
-                <.icon name="hero-arrow-path" /> Refresh
-              </button>
-              <button
-                id="replay-dect-sensor"
-                class="btn btn-sm btn-warning"
-                phx-click="replay-dect-sensor"
-                disabled={!@nrf9151_evidence.available?}
-              >
-                <.icon name="hero-signal" /> Replay sensor alert
-              </button>
-              <button
-                id="dect-run-gemma"
-                class="btn btn-sm btn-primary"
-                phx-click="dect-run-gemma"
-                disabled={
-                  !@nrf9151_evidence.available? || @sagents_running? ||
-                    !@sagents_status.endpoint_configured?
-                }
-              >
-                <.icon
-                  name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
-                  class={if @sagents_running?, do: "animate-spin", else: nil}
-                />
-                {if @sagents_running?, do: "Running agents", else: "Run selected mission"}
-              </button>
-            </div>
-          </div>
-
-          <div
-            :if={@nrf9151_evidence.available?}
-            class="mt-4 grid border-y border-base-300 md:grid-cols-[1fr_auto_1fr]"
-          >
-            <dl class="py-3 md:pr-4">
-              <div class="flex items-center justify-between gap-3">
-                <dt class="font-semibold">FT gateway</dt>
-                <dd class="badge badge-outline">sent + received</dd>
-              </div>
-              <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                <dt class="text-base-content/60">J-Link</dt>
-                <dd class="break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
-                <dt class="text-base-content/60">Serial</dt>
-                <dd class="break-all font-mono text-xs">{@nrf9151_evidence.ft.serial_port}</dd>
-              </div>
-            </dl>
-
-            <div class="flex items-center justify-center border-base-300 px-5 py-3 md:border-x">
-              <div class="text-center">
-                <.icon name="hero-arrows-right-left" class="mx-auto size-5 text-info" />
-                <p class="mt-1 whitespace-nowrap font-semibold">
-                  Sequence #{@nrf9151_evidence.sequence}
-                </p>
-                <p class="text-xs text-base-content/60">FT / PT bidirectional</p>
-              </div>
-            </div>
-
-            <dl class="py-3 md:pl-4">
-              <div class="flex items-center justify-between gap-3">
-                <dt class="font-semibold">PT tank edge</dt>
-                <dd class="badge badge-outline">sent + received</dd>
-              </div>
-              <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-                <dt class="text-base-content/60">J-Link</dt>
-                <dd class="break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
-                <dt class="text-base-content/60">Serial</dt>
-                <dd class="break-all font-mono text-xs">{@nrf9151_evidence.pt.serial_port}</dd>
-              </div>
-            </dl>
-          </div>
-
-          <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
-            Nordic hello_dect proves the physical radio link. Replaying it creates a simulated sensor
-            alert in the deterministic water-quality scenario; it is not chemical sensor telemetry.
-          </p>
-          <p :if={!@nrf9151_evidence.available?} class="mt-3 text-sm text-error">
-            Could not load the latest capture: {@nrf9151_evidence.error}
-          </p>
-        </section>
-
-        <section class="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-          <div class="rounded-box border border-base-300 bg-base-100 p-4">
-            <div class="mb-3 flex items-center justify-between gap-3">
-              <h2 class="text-lg font-semibold">Closed-loop state</h2>
-              <div class="join">
-                <button class="btn join-item btn-sm btn-error" phx-click="spike">
-                  <.icon name="hero-bolt" /> Spike
-                </button>
-                <button class="btn join-item btn-sm btn-success" phx-click="safety-step">
-                  <.icon name="hero-shield-check" /> Stabilize
-                </button>
-                <button class="btn join-item btn-sm" phx-click="reset">
-                  <.icon name="hero-arrow-uturn-left" /> Reset
-                </button>
-                <button class="btn join-item btn-sm btn-primary" phx-click="demo-cascade">
-                  <.icon name="hero-play" /> Run demo cascade
-                </button>
-              </div>
-            </div>
-
-            <div class="grid gap-3 md:grid-cols-3">
-              <.organism name="Fish" value={metric(@state, "fish_biomass_kg")} unit="kg" />
-              <.organism name="Prawn" value={metric(@state, "prawn_biomass_kg")} unit="kg" />
-              <.organism name="Plants" value={metric(@state, "plant_biomass_kg")} unit="kg" />
-              <.organism name="Duckweed" value={metric(@state, "duckweed_kg")} unit="kg" />
-              <.organism name="Eggs" value={metric(@state, "eggs_count")} unit="count" />
-              <.organism name="pH" value={metric(@state, "ph")} unit="" />
-            </div>
-          </div>
-
-          <aside class="rounded-box border border-base-300 bg-base-100 p-4">
-            <h2 class="mb-3 text-lg font-semibold">Event stream</h2>
-            <ol class="space-y-2">
-              <li :for={entry <- @action_log} class="flex items-start gap-2 text-sm">
-                <.icon name="hero-signal" class="mt-0.5 size-4 text-info" />
-                <span>{entry}</span>
-              </li>
-            </ol>
-            <p :if={!@snapshot.connected?} class="mt-4 rounded-box bg-error/10 p-3 text-sm text-error">
-              Simulator API unavailable: {@snapshot.error}
-            </p>
-          </aside>
-        </section>
-
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">Subsystem agent topology</h2>
-            <span class="badge badge-outline">{length(@topology)} agents</span>
-          </div>
-          <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <.topology_agent :for={agent <- @topology} agent={agent} />
-          </div>
-        </section>
-
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">Self-healing mesh</h2>
-            <span class={[
-              "badge badge-sm",
-              if(horde_cluster_online?(@horde_status), do: "badge-success", else: "badge-warning")
-            ]}>
-              {if horde_cluster_online?(@horde_status), do: "Horde online", else: "local mode"}
-            </span>
-          </div>
-
-          <.horde_panel status={@horde_status} />
-
-          <div class="mb-3 mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 class="text-sm font-semibold">Deterministic failover rehearsal</h3>
-              <p class="text-sm text-base-content/60">migration_count={@mesh.migration_count}</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button class="btn btn-sm btn-error" phx-click="mesh-fail-node">
-                <.icon name="hero-no-symbol" /> Simulate node loss
-              </button>
-              <button class="btn btn-sm btn-success" phx-click="mesh-recover-node">
-                <.icon name="hero-arrow-path" /> Recover node
-              </button>
-              <button class="btn btn-sm btn-outline" phx-click="mesh-reset">
-                <.icon name="hero-arrow-uturn-left" /> Reset mesh
-              </button>
-            </div>
-          </div>
-          <.mesh_panel mesh={@mesh} />
-        </section>
-
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 class="text-lg font-semibold">Human approval</h2>
-              <p class="text-sm text-base-content/60">
-                Risky water and harvest actions wait for producer decision.
-              </p>
-            </div>
-            <button
-              class="btn btn-sm btn-warning"
-              phx-click="request-hitl"
-              disabled={@hitl_running? || !@sagents_status.endpoint_configured?}
-            >
-              <.icon
-                name={if @hitl_running?, do: "hero-arrow-path", else: "hero-hand-raised"}
-                class={if @hitl_running?, do: "animate-spin", else: nil}
-              />
-              {if @hitl_running?, do: "Waiting for Gemma", else: "Request producer approval"}
-            </button>
-          </div>
-          <.approval_queue queue={@approval_queue} />
-        </section>
-
         <section
           id="agentic-mission"
-          class="rounded-box border border-base-300 bg-base-100 p-4"
+          class="rounded-box border-2 border-primary/30 bg-base-100 p-4 sm:p-5"
         >
           <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <h2 class="text-lg font-semibold">Agentic intervention mission</h2>
-                <span class="badge badge-success">real Gemma</span>
-                <span class="badge badge-outline">{@sagents_status.agent_count} agents</span>
+                <h2 class="text-xl font-semibold">Ask the AI team to help</h2>
+                <span class={[
+                  "badge",
+                  if(@sagents_status.endpoint_configured?, do: "badge-success", else: "badge-warning")
+                ]}>
+                  {if @sagents_status.endpoint_configured?,
+                    do: "Local Gemma ready",
+                    else: "Local Gemma not ready"}
+                </span>
               </div>
-              <p class="mt-1 max-w-3xl text-sm text-base-content/60">
-                Set an operational objective. Four specialists recommend bounded actions, a supervisor
-                resolves resource conflicts, and the deterministic verifier controls mutation.
+              <p class="mt-1 max-w-3xl text-sm text-base-content/70">
+                Choose what matters now. Four AI specialists compare the whole loop, then a safety
+                check blocks any action that could harm the system.
               </p>
             </div>
-            <div class="text-sm text-base-content/60 lg:text-right">
-              <p>
-                Sagents {@sagents_status.framework_version} / LangChain {@sagents_status.langchain_version}
-              </p>
-              <p>{@sagents_status.termination}</p>
-            </div>
+            <span class="text-sm font-semibold text-base-content/60">
+              {@sagents_status.agent_count} AI specialists
+            </span>
           </div>
 
-          <div class="mt-4 grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <div class="join flex w-full" aria-label="Agentic mission">
-                <button
-                  :for={mission <- @agentic_missions}
-                  id={"mission-#{mission.id}"}
-                  type="button"
-                  class={[
-                    "btn join-item min-h-11 h-auto flex-1 whitespace-normal px-3 py-2 text-xs sm:text-sm",
-                    if(@selected_mission.id == mission.id, do: "btn-primary", else: "btn-outline")
-                  ]}
-                  phx-click="select-agentic-mission"
-                  phx-value-mission={mission.id}
-                  disabled={@sagents_running?}
-                >
-                  {mission.title}
-                </button>
-              </div>
-
-              <div class="mt-3 border-y border-base-300 py-3">
-                <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
-                  Selected objective
-                </p>
-                <p class="mt-1 font-semibold">{@selected_mission.title}</p>
-                <p class="mt-1 text-sm text-base-content/70">{@selected_mission.objective}</p>
-              </div>
-
+          <div class="mt-4">
+            <p class="mb-2 text-sm font-semibold">What should the system protect?</p>
+            <div
+              class="grid overflow-hidden rounded-field border border-base-300 sm:grid-cols-3"
+              aria-label="AI goal"
+            >
               <button
-                id="run-agentic-mission"
-                class="btn btn-primary mt-3 w-full"
-                phx-click="run-agentic-mission"
-                disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
+                :for={mission <- @agentic_missions}
+                id={"mission-#{mission.id}"}
+                type="button"
+                class={[
+                  "btn min-h-14 h-auto rounded-none border-0 border-base-300 px-3 py-2 text-sm sm:border-r sm:last:border-r-0",
+                  if(@selected_mission.id == mission.id, do: "btn-primary", else: "btn-ghost")
+                ]}
+                phx-click="select-agentic-mission"
+                phx-value-mission={mission.id}
+                disabled={@sagents_running?}
               >
-                <.icon
-                  name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
-                  class={if @sagents_running?, do: "animate-spin", else: nil}
-                />
-                {if @sagents_running?,
-                  do: "Specialists deliberating",
-                  else: "Run verified intervention"}
+                {mission.title}
               </button>
-
-              <p
-                :if={@mission_phase == :deliberating}
-                id="mission-deliberating"
-                class="mt-2 text-center text-sm font-semibold text-primary"
-              >
-                Specialists deliberating
-              </p>
-              <p
-                :if={!@sagents_status.endpoint_configured?}
-                class="mt-2 text-sm text-error"
-              >
-                GEMMA_ENDPOINT is not configured.
-              </p>
-            </div>
-
-            <div>
-              <ol class="grid grid-cols-2 border-y border-base-300 sm:grid-cols-4">
-                <li class="border-base-300 p-3 sm:border-r">
-                  <p class="text-xs text-base-content/50">01</p>
-                  <p class="text-sm font-semibold">Observe</p>
-                </li>
-                <li class="border-l border-base-300 p-3 sm:border-l-0 sm:border-r">
-                  <p class="text-xs text-base-content/50">02</p>
-                  <p class="text-sm font-semibold">Specialize</p>
-                </li>
-                <li class="border-t border-base-300 p-3 sm:border-r sm:border-t-0">
-                  <p class="text-xs text-base-content/50">03</p>
-                  <p class="text-sm font-semibold">Supervise</p>
-                </li>
-                <li class="border-l border-t border-base-300 p-3 sm:border-l-0 sm:border-t-0">
-                  <p class="text-xs text-base-content/50">04</p>
-                  <p class="text-sm font-semibold">Verify + act</p>
-                </li>
-              </ol>
-              <dl class="mt-3 grid gap-3 sm:grid-cols-3">
-                <div>
-                  <dt class="text-xs text-base-content/60">Execution</dt>
-                  <dd class="mt-1 font-mono text-xs">verify_ecosystem_safety</dd>
-                </div>
-                <div>
-                  <dt class="text-xs text-base-content/60">Distribution</dt>
-                  <dd class="mt-1 text-sm font-semibold">{@sagents_status.distribution}</dd>
-                </div>
-                <div>
-                  <dt class="text-xs text-base-content/60">Gemma endpoint</dt>
-                  <dd class="mt-1 text-sm font-semibold">
-                    {if @sagents_status.endpoint_configured?, do: "ready", else: "not configured"}
-                  </dd>
-                </div>
-              </dl>
             </div>
           </div>
+
+          <div class="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch">
+            <div class="border-y border-base-300 py-3">
+              <p class="text-xs font-semibold uppercase tracking-wide text-secondary">
+                Selected goal
+              </p>
+              <p class="mt-1 font-semibold">{@selected_mission.title}</p>
+              <p class="mt-1 text-sm text-base-content/70">{@selected_mission.objective}</p>
+            </div>
+
+            <ol
+              class="grid grid-cols-2 border-y border-base-300 sm:grid-cols-4"
+              aria-label="AI safety workflow"
+            >
+              <li class="p-3 sm:border-r sm:border-base-300">
+                <.icon name="hero-eye" class="size-5 text-info" />
+                <p class="mt-1 text-sm font-semibold">Read the system</p>
+              </li>
+              <li class="border-l border-base-300 p-3 sm:border-l-0 sm:border-r">
+                <.icon name="hero-user-group" class="size-5 text-secondary" />
+                <p class="mt-1 text-sm font-semibold">Compare advice</p>
+              </li>
+              <li class="border-t border-base-300 p-3 sm:border-r sm:border-t-0">
+                <.icon name="hero-shield-check" class="size-5 text-success" />
+                <p class="mt-1 text-sm font-semibold">Check safety</p>
+              </li>
+              <li class="border-l border-t border-base-300 p-3 sm:border-l-0 sm:border-t-0">
+                <.icon name="hero-check-circle" class="size-5 text-primary" />
+                <p class="mt-1 text-sm font-semibold">Act if safe</p>
+              </li>
+            </ol>
+          </div>
+
+          <button
+            id="run-agentic-mission"
+            class="btn btn-primary mt-4 w-full sm:w-auto sm:min-w-80"
+            phx-click="run-agentic-mission"
+            disabled={@sagents_running? || !@sagents_status.endpoint_configured?}
+          >
+            <.icon
+              name={if @sagents_running?, do: "hero-arrow-path", else: "hero-sparkles"}
+              class={if @sagents_running?, do: "animate-spin", else: nil}
+            />
+            {if @sagents_running?, do: "Specialists deliberating", else: "Ask AI team for a safe plan"}
+          </button>
+
+          <p
+            :if={@mission_phase == :deliberating}
+            id="mission-deliberating"
+            class="mt-2 text-sm font-semibold text-primary"
+          >
+            Specialists deliberating
+          </p>
+          <p :if={!@sagents_status.endpoint_configured?} class="mt-2 text-sm text-error">
+            Local Gemma is not ready yet.
+          </p>
 
           <div class="mt-4">
             <.loop_result result={@loop_result} />
           </div>
         </section>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">Anomaly forecast</h2>
-            <span class={["badge", forecast_badge(@anomaly_forecast["risk_level"])]}>
-              {@anomaly_forecast["risk_level"]}
+        <details id="advanced-evidence" class="group rounded-box border border-base-300 bg-base-100">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-4 [&::-webkit-details-marker]:hidden">
+            <span>
+              <span class="block font-semibold">Advanced evidence and controls</span>
+              <span class="mt-1 block text-sm text-base-content/60">
+                DECT radios, simulator controls, agent details, safety evidence, and traces
+              </span>
             </span>
-          </div>
-          <.anomaly_forecast forecast={@anomaly_forecast} />
-        </section>
+            <.icon
+              name="hero-chevron-down"
+              class="size-5 shrink-0 transition-transform group-open:rotate-180"
+            />
+          </summary>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 class="text-lg font-semibold">Agent harness</h2>
-              <p class="text-sm text-base-content/60">
-                Proposals mutate state only after simulator verifier acceptance.
+          <div class="flex flex-col gap-4 border-t border-base-300 p-4">
+            <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <.metric_card
+                label="Day"
+                value={metric(@state, "day")}
+                detail={metric(@state, "last_event")}
+              />
+              <.metric_card
+                label="Waste in water"
+                value={"#{rounded(metric(@state, "ammonia_mg_l"))} mg/L"}
+                detail="Ammonia · safe below 1.5"
+                value_class={risk_class(metric(@state, "ammonia_mg_l"), 1.5, 3.0)}
+              />
+              <.metric_card
+                label="Breathing oxygen"
+                value={"#{rounded(metric(@state, "dissolved_oxygen_mg_l"))} mg/L"}
+                detail="Dissolved oxygen · comfortable above 5.0"
+                value_class={
+                  if metric(@state, "dissolved_oxygen_mg_l") < 3.5,
+                    do: "text-error",
+                    else: "text-success"
+                }
+              />
+              <.metric_card
+                label="Reward"
+                value={@snapshot.reward || "pending"}
+                detail={@snapshot.source}
+              />
+            </section>
+
+            <section
+              id="dect-live-evidence"
+              class="rounded-box border border-base-300 bg-base-100 p-4"
+            >
+              <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-lg font-semibold">Physical DECT NR+ link</h2>
+                    <span :if={@nrf9151_evidence.available?} class="badge badge-success">
+                      real radio capture
+                    </span>
+                    <span :if={!@nrf9151_evidence.available?} class="badge badge-error">unavailable</span>
+                  </div>
+                  <p class="mt-1 text-sm text-base-content/60">
+                    Latest read-only exchange from the two connected nRF9151 boards.
+                  </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    class="btn btn-sm btn-outline"
+                    phx-click="refresh-dect"
+                    title="Reload DECT evidence"
+                  >
+                    <.icon name="hero-arrow-path" /> Refresh
+                  </button>
+                  <button
+                    id="replay-dect-sensor"
+                    class="btn btn-sm btn-warning"
+                    phx-click="replay-dect-sensor"
+                    disabled={!@nrf9151_evidence.available?}
+                  >
+                    <.icon name="hero-signal" /> Replay sensor alert
+                  </button>
+                  <button
+                    id="dect-run-gemma"
+                    class="btn btn-sm btn-primary"
+                    phx-click="dect-run-gemma"
+                    disabled={
+                      !@nrf9151_evidence.available? || @sagents_running? ||
+                        !@sagents_status.endpoint_configured?
+                    }
+                  >
+                    <.icon
+                      name={if @sagents_running?, do: "hero-arrow-path", else: "hero-play"}
+                      class={if @sagents_running?, do: "animate-spin", else: nil}
+                    />
+                    {if @sagents_running?, do: "Running agents", else: "Run selected mission"}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                :if={@nrf9151_evidence.available?}
+                class="mt-4 grid border-y border-base-300 md:grid-cols-[1fr_auto_1fr]"
+              >
+                <dl class="py-3 md:pr-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <dt class="font-semibold">FT gateway</dt>
+                    <dd class="badge badge-outline">sent + received</dd>
+                  </div>
+                  <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                    <dt class="text-base-content/60">J-Link</dt>
+                    <dd class="break-all font-mono">{@nrf9151_evidence.ft.jlink_id}</dd>
+                    <dt class="text-base-content/60">Serial</dt>
+                    <dd class="break-all font-mono text-xs">{@nrf9151_evidence.ft.serial_port}</dd>
+                  </div>
+                </dl>
+
+                <div class="flex items-center justify-center border-base-300 px-5 py-3 md:border-x">
+                  <div class="text-center">
+                    <.icon name="hero-arrows-right-left" class="mx-auto size-5 text-info" />
+                    <p class="mt-1 whitespace-nowrap font-semibold">
+                      Sequence #{@nrf9151_evidence.sequence}
+                    </p>
+                    <p class="text-xs text-base-content/60">FT / PT bidirectional</p>
+                  </div>
+                </div>
+
+                <dl class="py-3 md:pl-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <dt class="font-semibold">PT tank edge</dt>
+                    <dd class="badge badge-outline">sent + received</dd>
+                  </div>
+                  <div class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+                    <dt class="text-base-content/60">J-Link</dt>
+                    <dd class="break-all font-mono">{@nrf9151_evidence.pt.jlink_id}</dd>
+                    <dt class="text-base-content/60">Serial</dt>
+                    <dd class="break-all font-mono text-xs">{@nrf9151_evidence.pt.serial_port}</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <p :if={@nrf9151_evidence.available?} class="mt-3 text-sm text-base-content/70">
+                Nordic hello_dect proves the physical radio link. Replaying it creates a simulated sensor
+                alert in the deterministic water-quality scenario; it is not chemical sensor telemetry.
               </p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-              <form id="agent-provider-form" phx-change="select-provider">
-                <select name="provider" class="select select-sm" aria-label="Agent provider">
-                  <option value="stub_safe" selected={@agent_provider == :stub_safe}>
-                    safe stub
-                  </option>
-                  <option value="stub_unsafe" selected={@agent_provider == :stub_unsafe}>
-                    unsafe stub
-                  </option>
-                  <option value="openai_compatible" selected={@agent_provider == :openai_compatible}>
-                    OpenAI-compatible
-                  </option>
-                </select>
-              </form>
-              <button class="btn btn-sm btn-success" phx-click="agent-selected">
-                <.icon name="hero-cpu-chip" /> Run selected
-              </button>
-              <button class="btn btn-sm btn-outline" phx-click="check-model">
-                <.icon name="hero-signal" /> Check model
-              </button>
-              <button class="btn join-item btn-sm btn-error" phx-click="agent-unsafe">
-                <.icon name="hero-no-symbol" /> Unsafe proposal
-              </button>
-            </div>
-          </div>
+              <p :if={!@nrf9151_evidence.available?} class="mt-3 text-sm text-error">
+                Could not load the latest capture: {@nrf9151_evidence.error}
+              </p>
+            </section>
 
-          <div class="grid gap-3 xl:grid-cols-[1.2fr_0.55fr_0.65fr]">
-            <.agent_result result={@agent_result} />
-            <.trace_status status={@trace_status} />
-            <.model_status status={@model_status} />
-          </div>
-          <.demo_result result={@demo_result} />
-        </section>
+            <section class="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
+              <div class="rounded-box border border-base-300 bg-base-100 p-4">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                  <h2 class="text-lg font-semibold">Closed-loop state</h2>
+                  <div class="join">
+                    <button class="btn join-item btn-sm btn-error" phx-click="spike">
+                      <.icon name="hero-bolt" /> Spike
+                    </button>
+                    <button class="btn join-item btn-sm btn-success" phx-click="safety-step">
+                      <.icon name="hero-shield-check" /> Stabilize
+                    </button>
+                    <button class="btn join-item btn-sm" phx-click="reset">
+                      <.icon name="hero-arrow-uturn-left" /> Reset
+                    </button>
+                    <button class="btn join-item btn-sm btn-primary" phx-click="demo-cascade">
+                      <.icon name="hero-play" /> Run demo cascade
+                    </button>
+                  </div>
+                </div>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">RLVR reward verifier</h2>
-            <span class={[
-              "badge",
-              if(@rlvr_evaluation["available"], do: "badge-success", else: "badge-error")
-            ]}>
-              {if @rlvr_evaluation["available"], do: "online", else: "offline"}
-            </span>
-          </div>
-          <.rlvr_panel evaluation={@rlvr_evaluation} training={@rlvr_training} />
-        </section>
+                <div class="grid gap-3 md:grid-cols-3">
+                  <.organism name="Fish" value={metric(@state, "fish_biomass_kg")} unit="kg" />
+                  <.organism name="Prawn" value={metric(@state, "prawn_biomass_kg")} unit="kg" />
+                  <.organism name="Plants" value={metric(@state, "plant_biomass_kg")} unit="kg" />
+                  <.organism name="Duckweed" value={metric(@state, "duckweed_kg")} unit="kg" />
+                  <.organism name="Eggs" value={metric(@state, "eggs_count")} unit="count" />
+                  <.organism name="pH" value={metric(@state, "ph")} unit="" />
+                </div>
+              </div>
 
-        <section class="rounded-box border border-base-300 bg-base-100 p-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-lg font-semibold">Trace timeline</h2>
-            <span class="badge badge-outline">{length(@trace_entries)} recent</span>
+              <aside class="rounded-box border border-base-300 bg-base-100 p-4">
+                <h2 class="mb-3 text-lg font-semibold">Event stream</h2>
+                <ol class="space-y-2">
+                  <li :for={entry <- @action_log} class="flex items-start gap-2 text-sm">
+                    <.icon name="hero-signal" class="mt-0.5 size-4 text-info" />
+                    <span>{entry}</span>
+                  </li>
+                </ol>
+                <p
+                  :if={!@snapshot.connected?}
+                  class="mt-4 rounded-box bg-error/10 p-3 text-sm text-error"
+                >
+                  Simulator API unavailable: {@snapshot.error}
+                </p>
+              </aside>
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Subsystem agent topology</h2>
+                <span class="badge badge-outline">{length(@topology)} agents</span>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <.topology_agent :for={agent <- @topology} agent={agent} />
+              </div>
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Self-healing mesh</h2>
+                <span class={[
+                  "badge badge-sm",
+                  if(horde_cluster_online?(@horde_status), do: "badge-success", else: "badge-warning")
+                ]}>
+                  {if horde_cluster_online?(@horde_status), do: "Horde online", else: "local mode"}
+                </span>
+              </div>
+
+              <.horde_panel status={@horde_status} />
+
+              <div class="mb-3 mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold">Deterministic failover rehearsal</h3>
+                  <p class="text-sm text-base-content/60">migration_count={@mesh.migration_count}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button class="btn btn-sm btn-error" phx-click="mesh-fail-node">
+                    <.icon name="hero-no-symbol" /> Simulate node loss
+                  </button>
+                  <button class="btn btn-sm btn-success" phx-click="mesh-recover-node">
+                    <.icon name="hero-arrow-path" /> Recover node
+                  </button>
+                  <button class="btn btn-sm btn-outline" phx-click="mesh-reset">
+                    <.icon name="hero-arrow-uturn-left" /> Reset mesh
+                  </button>
+                </div>
+              </div>
+              <.mesh_panel mesh={@mesh} />
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 class="text-lg font-semibold">Human approval</h2>
+                  <p class="text-sm text-base-content/60">
+                    Risky water and harvest actions wait for producer decision.
+                  </p>
+                </div>
+                <button
+                  class="btn btn-sm btn-warning"
+                  phx-click="request-hitl"
+                  disabled={@hitl_running? || !@sagents_status.endpoint_configured?}
+                >
+                  <.icon
+                    name={if @hitl_running?, do: "hero-arrow-path", else: "hero-hand-raised"}
+                    class={if @hitl_running?, do: "animate-spin", else: nil}
+                  />
+                  {if @hitl_running?, do: "Waiting for Gemma", else: "Request producer approval"}
+                </button>
+              </div>
+              <.approval_queue queue={@approval_queue} />
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Anomaly forecast</h2>
+                <span class={["badge", forecast_badge(@anomaly_forecast["risk_level"])]}>
+                  {@anomaly_forecast["risk_level"]}
+                </span>
+              </div>
+              <.anomaly_forecast forecast={@anomaly_forecast} />
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 class="text-lg font-semibold">Agent harness</h2>
+                  <p class="text-sm text-base-content/60">
+                    Proposals mutate state only after simulator verifier acceptance.
+                  </p>
+                  <p class="mt-1 text-xs text-base-content/50">
+                    Sagents {@sagents_status.framework_version} / LangChain {@sagents_status.langchain_version} / {@sagents_status.termination}
+                  </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <form id="agent-provider-form" phx-change="select-provider">
+                    <select name="provider" class="select select-sm" aria-label="Agent provider">
+                      <option value="stub_safe" selected={@agent_provider == :stub_safe}>
+                        safe stub
+                      </option>
+                      <option value="stub_unsafe" selected={@agent_provider == :stub_unsafe}>
+                        unsafe stub
+                      </option>
+                      <option
+                        value="openai_compatible"
+                        selected={@agent_provider == :openai_compatible}
+                      >
+                        OpenAI-compatible
+                      </option>
+                    </select>
+                  </form>
+                  <button class="btn btn-sm btn-success" phx-click="agent-selected">
+                    <.icon name="hero-cpu-chip" /> Run selected
+                  </button>
+                  <button class="btn btn-sm btn-outline" phx-click="check-model">
+                    <.icon name="hero-signal" /> Check model
+                  </button>
+                  <button class="btn join-item btn-sm btn-error" phx-click="agent-unsafe">
+                    <.icon name="hero-no-symbol" /> Unsafe proposal
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid gap-3 xl:grid-cols-[1.2fr_0.55fr_0.65fr]">
+                <.agent_result result={@agent_result} />
+                <.trace_status status={@trace_status} />
+                <.model_status status={@model_status} />
+              </div>
+              <.demo_result result={@demo_result} />
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">RLVR reward verifier</h2>
+                <span class={[
+                  "badge",
+                  if(@rlvr_evaluation["available"], do: "badge-success", else: "badge-error")
+                ]}>
+                  {if @rlvr_evaluation["available"], do: "online", else: "offline"}
+                </span>
+              </div>
+              <.rlvr_panel evaluation={@rlvr_evaluation} training={@rlvr_training} />
+            </section>
+
+            <section class="rounded-box border border-base-300 bg-base-100 p-4">
+              <div class="mb-3 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-semibold">Trace timeline</h2>
+                <span class="badge badge-outline">{length(@trace_entries)} recent</span>
+              </div>
+              <.trace_timeline entries={@trace_entries} />
+            </section>
           </div>
-          <.trace_timeline entries={@trace_entries} />
-        </section>
+        </details>
       </section>
     </main>
     """

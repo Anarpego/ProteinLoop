@@ -26,6 +26,10 @@ The producer-facing path must use direct English action language. It should ask 
 
 The primary interface must visually identify the tank, plants, duckweed, chickens, and resource flow. Plain-language health meaning appears before technical chemistry names or analytics.
 
+### VII. Simple by Default, Evidence on Demand
+
+The default operator view must present one condition, one recommended priority, and one primary AI action. Engineering telemetry and proof remain available behind an explicitly opened advanced section.
+
 ## Technical Constraints
 
 - Python owns simulator, verifier, scenarios, reward, and RLVR hooks.

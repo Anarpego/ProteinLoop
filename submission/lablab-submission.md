@@ -47,12 +47,12 @@ TODO
 ## Key Demo Path
 
 1. Open the operator route and inspect `Your protein loop at a glance`: the main tank, connected food outputs, waste level, breathing oxygen, and immediate priority.
-2. Press `Run demo cascade` to show ammonia spike, unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
-3. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable dashboard rehearsal.
-4. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
-5. Press `Request producer approval`, then use the English `/producer` route to approve, apply half, or reject and inspect the WhatsApp/SMS handoff message.
-6. In `Agentic intervention mission`, select `Protect protein yield` and press `Run verified intervention`.
-7. Inspect the `Intelligence receipt`: four specialist briefs, resource conflicts, the supervisor plan, deterministic verifier warnings, reward, and before/after ammonia and oxygen.
+2. In `Ask the AI team to help`, select `Protect protein yield` and press `Ask AI team for a safe plan`.
+3. Inspect the `Intelligence receipt`: four specialist briefs, resource conflicts, the supervisor plan, deterministic verifier warnings, reward, and before/after ammonia and oxygen.
+4. Open `Advanced evidence and controls`, then press `Run demo cascade` to show ammonia spike, unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
+5. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
+6. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
+7. Press `Request producer approval`, then use the English `/producer` route to approve, apply half, or reject and inspect the WhatsApp/SMS handoff message.
 8. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
 
 ## Judging Notes

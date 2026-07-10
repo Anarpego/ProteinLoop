@@ -53,6 +53,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   test "shows the living system and explains tank chemistry in plain language", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 
+    assert html =~ "ProteinLoop system control"
     assert has_element?(view, "#operator-system-scene")
     assert html =~ "Your protein loop at a glance"
     assert html =~ "Main fish &amp; prawn tank"
@@ -64,6 +65,23 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Duckweed reserve"
     assert html =~ "Chicken &amp; egg output"
     assert has_element?(view, "img[alt*='fish and prawn tank']")
+  end
+
+  test "keeps one AI workflow above closed advanced evidence", %{conn: conn} do
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert html =~ "Ask the AI team to help"
+    assert html =~ "Ask AI team for a safe plan"
+    assert has_element?(view, "#advanced-evidence")
+    refute has_element?(view, "#advanced-evidence[open]")
+    assert html =~ "Advanced evidence and controls"
+
+    {scene_position, _length} = :binary.match(html, ~s(id="operator-system-scene"))
+    {mission_position, _length} = :binary.match(html, ~s(id="agentic-mission"))
+    {advanced_position, _length} = :binary.match(html, ~s(id="advanced-evidence"))
+
+    assert scene_position < mission_position
+    assert mission_position < advanced_position
   end
 
   test "shows and replays the latest physical DECT capture as simulated telemetry", %{conn: conn} do
@@ -102,7 +120,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
     {:ok, view, html} = live(conn, ~p"/")
 
-    assert html =~ "Agentic intervention mission"
+    assert html =~ "Ask the AI team to help"
     assert has_element?(view, "#agentic-mission")
     assert has_element?(view, "#mission-protect-protein")
 
@@ -154,7 +172,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
   test "runs the real-runtime UI path asynchronously", %{conn: conn} do
     Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
     {:ok, view, html} = live(conn, ~p"/")
-    assert html =~ "Agentic intervention mission"
+    assert html =~ "Ask the AI team to help"
 
     view
     |> element("#run-agentic-mission")

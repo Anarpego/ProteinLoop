@@ -1,46 +1,21 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T17:41:22+00:00
-Commit: `cfcf391`
+Generated: 2026-07-10T17:54:26+00:00
+Commit: `45074ae`
 Working tree (source): `M .specify/memory/constitution.md
  M README.md
- M app/lib/proteinloop/agent/approval_queue.ex
- M app/lib/proteinloop/offline/emergency_rules.ex
- M app/lib/proteinloop/producer_message.ex
+ M app/assets/css/app.css
  M app/lib/proteinloop_web/components/layouts/root.html.heex
  M app/lib/proteinloop_web/live/operator_live.ex
- M app/lib/proteinloop_web/live/producer_live.ex
- M app/test/proteinloop/agent/approval_queue_test.exs
- M app/test/proteinloop/offline/emergency_rules_test.exs
- M app/test/proteinloop/producer_message_test.exs
  M app/test/proteinloop_web/controllers/page_controller_test.exs
  M app/test/proteinloop_web/live/operator_live_test.exs
- M app/test/proteinloop_web/live/producer_live_test.exs
  M scripts/docker_smoke_test.py
- M scripts/generate_demo_rehearsal.py
- M scripts/generate_demo_video.py
- M scripts/generate_submission_deck.mjs
  M scripts/validate_live_demo.py
- M scripts/validate_submission_artifacts.py
  M scripts/validate_submission_readiness.py
- M submission/artifact-build-manifest.json
- M submission/demo-rehearsal.json
- M submission/demo-rehearsal.md
  M submission/lablab-form.json
  M submission/lablab-submission.md
- M submission/proteinloop-demo-video.avi
- M submission/proteinloop-hackathon-deck.pptx
- M submission/slides.md
  M submission/video-script.md
- M tests/test_demo_rehearsal.py
- M tests/test_docker_smoke_evidence.py
- M tests/test_live_demo_validator.py
- M tests/test_readiness_report.py
- M tests/test_submission_readiness.py
-?? app/lib/proteinloop_web/components/system_scene.ex
-?? app/priv/static/images/protein-loop-system.svg
-?? app/test/proteinloop_web/components/
-?? specs/054-visual-plain-language-system/`
+?? specs/055-guided-light-operator/`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -106,7 +81,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T17:40:59.254595+00:00
+checked_at: 2026-07-10T17:53:11.610523+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -114,7 +89,7 @@ checked_at: 2026-07-10T17:40:59.254595+00:00
 [ok] reset endpoint
 [ok] ammonia spike endpoint
 [ok] safety recovery endpoint - reward=135.2741
-[ok] operator dashboard route
+[ok] guided operator control route
 [ok] producer English route
 docker smoke OK
 ```
@@ -230,7 +205,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [FAIL] application URL - missing or TODO
 [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - cfcf3911382b63a8cf801e74a40b1661da7868d2
+[ok] local git commit - 45074ae8f90354069f7f225b45c0a12ceef121d3
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 2 submission readiness check(s) failed

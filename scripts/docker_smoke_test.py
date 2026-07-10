@@ -117,12 +117,14 @@ def check_web() -> list[Check]:
     producer = get_text(f"{WEB}/producer")
 
     operator_needles = [
-        "Operator dashboard",
+        "ProteinLoop system control",
         "Run demo cascade",
         "RLVR reward verifier",
         "Policy search improvement",
         "Anomaly forecast",
-        "Agentic intervention mission",
+        "Ask the AI team to help",
+        "Ask AI team for a safe plan",
+        "Advanced evidence and controls",
         "Sagents 0.9.0",
         "until_tool_success",
         "Human approval",
@@ -148,7 +150,7 @@ def check_web() -> list[Check]:
     ]
 
     checks = [
-        Check("operator dashboard route", all(needle in operator for needle in operator_needles)),
+        Check("guided operator control route", all(needle in operator for needle in operator_needles)),
         Check("producer English route", all(needle in producer for needle in producer_needles)),
     ]
 

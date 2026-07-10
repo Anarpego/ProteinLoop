@@ -23,14 +23,15 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 | Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
 | Physical field link | Two nRF9151 boards exchange matching DECT NR+ sequence `#100` over a real radio link. | [DECT evidence](submission/nrf9151-live-evidence.md) |
-| Reproducible application | Docker profiles start the simulator, operator dashboard, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
+| Reproducible application | Docker profiles start the simulator, guided operator control, producer view, and two-node runtime. | [Docker smoke evidence](submission/docker-smoke-evidence.json) |
 
 ## Run an Agentic Intervention
 
-1. Open `http://localhost:4001/` and use `Spike` or `Replay sensor alert` to create an explicit recovery scenario.
-2. In `Agentic intervention mission`, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
-3. Press `Run verified intervention`. Gemma 4 E2B delegates the selected objective to four Sagents specialists and a parent supervisor.
-4. Inspect the `Intelligence receipt`: specialist recommendations, requested resources, the supervisor action, verifier violations and warnings, reward, and before/after chemistry.
+1. Open `http://localhost:4001/` and read `Your protein loop at a glance` for the current tank condition in plain language.
+2. In `Ask the AI team to help`, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
+3. Press `Ask AI team for a safe plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor.
+4. Inspect the `Intelligence receipt`: specialist recommendations, the supervisor action, safety result, reward, and before/after chemistry.
+5. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
 
 This is an action workflow, not a generated dashboard summary. The selected mission reaches every model call, while `verify_ecosystem_safety` remains the only authority allowed to admit a simulator mutation.
 
@@ -348,7 +349,7 @@ SIMULATOR_URL=http://127.0.0.1:8000 PORT=4001 mix phx.server
 
 Routes:
 
-- Operator dashboard: `http://localhost:4001/`
+- Guided operator control: `http://localhost:4001/`
 - Producer HITL and phone handoff: `http://localhost:4001/producer`
 
 If port `4000` is free, omit `PORT=4001`.
@@ -362,39 +363,39 @@ Local demo providers:
 - `:stub_safe`: emits a context-aware action that should pass the simulator verifier.
 - `:stub_unsafe`: emits an overfeeding action that should be rejected before mutation.
 
-The operator dashboard has buttons for both paths. Rejected proposals keep the prior simulator state and show verifier violations.
+The advanced agent harness has buttons for both paths. Rejected proposals keep the prior simulator state and show verifier violations.
 
-The operator dashboard also includes `Run demo cascade`, which executes the core pitch flow in one action: reset, ammonia spike, unsafe verifier rejection, safe recovery, and trace recording.
+`Advanced evidence and controls` includes `Run demo cascade`, which executes the core pitch flow in one action: reset, ammonia spike, unsafe verifier rejection, safe recovery, and trace recording.
 
-The dashboard also includes a provider selector:
+The advanced harness includes a provider selector:
 
 - safe stub;
 - unsafe stub;
 - OpenAI-compatible.
 
-The dashboard also includes model endpoint status. `Check model` probes `GEMMA_ENDPOINT/v1/models` and reports reachable, auth-required, unreachable, or not-configured status. This is the quick AMD-hosted Gemma or Fireworks fallback sanity check.
+The advanced evidence includes model endpoint status. `Check model` probes `GEMMA_ENDPOINT/v1/models` and reports reachable, auth-required, unreachable, or not-configured status. This is the quick AMD-hosted Gemma or Fireworks fallback sanity check.
 
-The dashboard includes an `RLVR reward verifier` panel. It compares the naive baseline against the safety candidate across repeatable simulator scenarios and shows average reward delta, recovered collapse scenarios, and collapse avoidance rate.
+The advanced evidence includes an `RLVR reward verifier` panel. It compares the naive baseline against the safety candidate across repeatable simulator scenarios and shows average reward delta, recovered collapse scenarios, and collapse avoidance rate.
 
-The same panel includes a deterministic policy search curve from `GET /rlvr/training`. Candidate policies are scored by `SafetyVerifier.reward`, and the dashboard shows best-so-far improvement without requiring any training framework.
+The same panel includes a deterministic policy search curve from `GET /rlvr/training`. Candidate policies are scored by `SafetyVerifier.reward`, and the control shows best-so-far improvement without requiring any training framework.
 
-The dashboard includes `Subsystem agent topology` cards for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and the parent supervisor. State mutation still goes through the harness and simulator verifier.
+The advanced evidence includes `Subsystem agent topology` for fish tank, freshwater prawn, hydroponia, duckweed/chickens, and the parent supervisor. State mutation still goes through the harness and simulator verifier.
 
-The dashboard includes a `Self-healing mesh` panel whose real Sagents/Horde status band shows distribution mode, participation membership, connected BEAM nodes, and managed-agent count. The `Simulate node loss` and `Recover node` controls remain a deterministic rehearsal; the actual service-stop proof is generated by `make horde-evidence`.
+The advanced evidence includes a `Self-healing mesh` panel whose real Sagents/Horde status band shows distribution mode, participation membership, connected BEAM nodes, and managed-agent count. The `Simulate node loss` and `Recover node` controls remain a deterministic rehearsal; the actual service-stop proof is generated by `make horde-evidence`.
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
 The first operational panel is `Your protein loop at a glance`. It visually identifies the main fish and prawn tank, hydroponic plants, duckweed reserve, and chicken output. It introduces ammonia as `Waste in the water` and dissolved oxygen as `Air the animals can breathe`, while retaining technical values and safe thresholds as secondary evidence.
 
-The `Physical DECT NR+ link` panel shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary agent control. `/producer` shows the compact `Latest DECT NR+ link` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
+Inside advanced evidence, `Physical DECT NR+ link` shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary AI control. `/producer` shows the compact `Latest DECT NR+ link` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 
 Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records into the future sensor contract: critical tank telemetry maps to `POST /scenario/ammonia_spike`, while an offline gateway report maps to the dashboard `mesh-fail-node` action. Those sample water-quality values are not attributed to the stock `hello_dect` logs.
 
-The dashboard includes a `Human approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the English producer route resumes that same Sagents call with approve, edit-to-half, or reject.
+The advanced evidence includes a `Human approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the English producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
-The `Agentic intervention mission` is the primary Gemma workflow. The operator selects a concrete objective, `Run verified intervention` sends it to four subsystem agents concurrently, and a fifth parent supervisor resolves their resource requests into one bounded action. The `Intelligence receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
+`Ask the AI team to help` is the primary Gemma workflow. The operator selects a concrete goal, and `Ask AI team for a safe plan` sends it to four subsystem agents concurrently. A fifth parent supervisor resolves their resource requests into one bounded action. The `Intelligence receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
 
-The dashboard includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
+The advanced evidence includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 
 The producer route includes an `Offline fallback` panel. It applies deterministic English emergency rules to the current readings, so a producer still gets clear local guidance when model/cloud services are unavailable.
 
@@ -440,10 +441,10 @@ docker compose up --build
 Routes:
 
 - Simulator API: `http://127.0.0.1:8000`
-- Operator dashboard: `http://localhost:4001/`
+- Guided operator control: `http://localhost:4001/`
 - Producer HITL: `http://localhost:4001/producer`
 
-Use `Run demo cascade` on the operator dashboard for the fastest end-to-end judge path.
+Open `Advanced evidence and controls`, then use `Run demo cascade` for the fastest end-to-end judge path.
 
 The web container talks to the simulator at `http://simulator:8000` inside the Compose network. RLVR trace output is persisted in the `proteinloop_traces` Docker volume.
 
@@ -503,7 +504,7 @@ DEMO_URL=https://your-demo-url make live-demo-check
 
 That check verifies the two judge-facing routes:
 
-- Operator dashboard: `/`
+- Guided operator control: `/`
 - English producer decision path: `/producer`
 
 For a public host, use:

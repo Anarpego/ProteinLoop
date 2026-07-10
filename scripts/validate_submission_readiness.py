@@ -337,9 +337,9 @@ def public_url_checks(repo_url: str | None, app_url: str | None) -> list[Check]:
         app_base = app_url.rstrip("/")
         checks.append(
             reachable_check(
-                "application dashboard reachable",
+                "application control reachable",
                 app_base,
-                required_text="Operator dashboard",
+                required_text="ProteinLoop system control",
             )
         )
         checks.append(

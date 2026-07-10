@@ -60,15 +60,15 @@ Narration:
 
 Risky water exchange and harvest actions pause for the producer. The English decision screen explains the tank in plain language and lets the producer approve, reject, or halve the irreversible parts of the tool call. Even after approval, the simulator verifier remains the mutation boundary.
 
-## Scene 7: Agentic Intervention Mission
+## Scene 7: Ask the AI Team
 
 Action:
 
-Select `Protect protein yield`, press `Run verified intervention`, and inspect the completed `Intelligence receipt`.
+Select `Protect protein yield`, press `Ask AI team for a safe plan`, and inspect the completed `Intelligence receipt`.
 
 Narration:
 
-The operator sets the objective instead of receiving a generic dashboard summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. The receipt shows specialist briefs, the supervisor plan, verifier warnings, reward, and the measured chemistry change. `verify_ecosystem_safety` remains the authority before execution.
+The operator sets a plain-language goal instead of receiving a generic summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. The receipt shows specialist briefs, the supervisor plan, verifier warnings, reward, and the measured chemistry change. `verify_ecosystem_safety` remains the authority before execution. Technical controls remain available in the closed `Advanced evidence and controls` section.
 
 ## Scene 8: Local Gemma 4
 

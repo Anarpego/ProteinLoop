@@ -18,12 +18,14 @@ DEFAULT_TIMEOUT_SECONDS = 5.0
 RETRY_COUNT = 10
 
 OPERATOR_NEEDLES = [
-    "Operator dashboard",
+    "ProteinLoop system control",
     "Run demo cascade",
     "RLVR reward verifier",
     "Policy search improvement",
     "Anomaly forecast",
-    "Agentic intervention mission",
+    "Ask the AI team to help",
+    "Ask AI team for a safe plan",
+    "Advanced evidence and controls",
     "Sagents 0.9.0",
     "until_tool_success",
     "Human approval",
@@ -120,7 +122,7 @@ def check_web(base_url: str, timeout: float) -> list[Check]:
     producer = get_text(join_url(base_url, "/producer"), timeout)
 
     return [
-        marker_check("operator dashboard route", operator, OPERATOR_NEEDLES),
+        marker_check("guided operator control route", operator, OPERATOR_NEEDLES),
         marker_check("producer English route", producer, PRODUCER_NEEDLES),
     ]
 
