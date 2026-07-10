@@ -637,6 +637,60 @@ defmodule ProteinLoopWeb.OperatorLive do
     end
   end
 
+  defp producer_link_state(%{pending: %{status: "processing"}}) do
+    %{
+      label: "Producer decision processing",
+      class: "btn-info",
+      aria_label: "Producer decision processing",
+      count: nil
+    }
+  end
+
+  defp producer_link_state(%{pending: pending}) when not is_nil(pending) do
+    %{
+      label: "Producer decision waiting",
+      class: "btn-warning",
+      aria_label: "Producer decision waiting, 1 request",
+      count: 1
+    }
+  end
+
+  defp producer_link_state(%{decisions: [%{status: "approved"} | _]}) do
+    %{
+      label: "Producer approved",
+      class: "btn-success",
+      aria_label: "Latest producer decision approved",
+      count: nil
+    }
+  end
+
+  defp producer_link_state(%{decisions: [%{status: "edited"} | _]}) do
+    %{
+      label: "Producer reduced",
+      class: "btn-info",
+      aria_label: "Latest producer decision reduced and approved",
+      count: nil
+    }
+  end
+
+  defp producer_link_state(%{decisions: [%{status: "rejected"} | _]}) do
+    %{
+      label: "Producer rejected",
+      class: "btn-error",
+      aria_label: "Latest producer decision rejected",
+      count: nil
+    }
+  end
+
+  defp producer_link_state(_approval_queue) do
+    %{
+      label: "Producer view",
+      class: "btn-outline",
+      aria_label: "Open producer view",
+      count: nil
+    }
+  end
+
   @impl true
   def render(assigns) do
     {badge_class, badge_text} = status_badge(assigns.snapshot)
@@ -652,6 +706,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:fish_biomass, fish_biomass)
       |> assign(:prawn_biomass, prawn_biomass)
       |> assign(:aquatic_biomass, aquatic_biomass)
+      |> assign(:producer_link, producer_link_state(assigns.approval_queue))
       |> assign(:plant_biomass, rounded(metric(assigns.state, "plant_biomass_kg")))
       |> assign(:duckweed, rounded(metric(assigns.state, "duckweed_kg")))
       |> assign(:chickens, metric(assigns.state, "chicken_count"))
@@ -700,8 +755,21 @@ defmodule ProteinLoopWeb.OperatorLive do
             >
               <.icon name="hero-play" /> Run one-click verifier proof
             </button>
-            <.link navigate={~p"/producer"} class="btn btn-sm btn-outline">
-              <.icon name="hero-language" /> Producer
+            <.link
+              id="producer-decision-link"
+              navigate={~p"/producer"}
+              class={["btn btn-sm", @producer_link.class]}
+              aria-label={@producer_link.aria_label}
+            >
+              <.icon name="hero-hand-raised" />
+              {@producer_link.label}
+              <span
+                :if={@producer_link.count}
+                data-approval-count
+                class="badge badge-sm border-warning-content/20 bg-warning-content text-warning"
+              >
+                {@producer_link.count}
+              </span>
             </.link>
             <button class="btn btn-sm btn-outline" phx-click="refresh">
               <.icon name="hero-arrow-path" /> Refresh

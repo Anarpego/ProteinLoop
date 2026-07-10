@@ -47,8 +47,9 @@ The one-click proof is intentionally deterministic and does not claim to call Ge
 3. In the full-screen `Verified recovery` control, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
 4. Press `Create safe recovery plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor; the panel keeps the ecosystem safety check and producer-control boundaries visible.
 5. Read the in-scene `Recovery verified` result, then exit with the collapse icon or `Escape` to inspect the detailed `Verified recovery receipt` and measured before/after chemistry.
-6. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
-7. Open `http://localhost:4001/producer` to use the same full-screen live tank as a read-only viewer, without operator-only emergency, reset, or agent commands.
+6. When an irreversible proposal pauses for approval, the header link changes from `Producer view` to `Producer decision waiting`. For a deliberate judge rehearsal, open `Advanced evidence and controls` and use `Request producer approval` in `Human approval`.
+7. Click the highlighted producer link. The proposed action and Approve, Apply half, and Reject controls appear before the tank. A choice is replaced in place by a decision receipt with mutation status, current chemistry, verifier reward, and a direct link back to the operator tank.
+8. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
 
 This is an action workflow, not a generated dashboard summary. The selected mission reaches every model call, while `verify_ecosystem_safety` remains the only authority allowed to admit a simulator mutation.
 

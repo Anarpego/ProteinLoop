@@ -31,6 +31,7 @@ OPERATOR_NEEDLES = [
     "Deterministic verifier",
     "2-board DECT NR+ capture",
     "Producer approval",
+    "Producer view",
     "AMD ROCm + vLLM profile",
     "Portable path · current demo is local",
     "Run demo cascade",
@@ -61,6 +62,9 @@ OPERATOR_NEEDLES = [
 
 PRODUCER_NEEDLES = [
     "Producer decisions",
+    "Proposed action",
+    "Producer choice",
+    "Make the final call",
     "Approve",
     "Apply half",
     "Reject",

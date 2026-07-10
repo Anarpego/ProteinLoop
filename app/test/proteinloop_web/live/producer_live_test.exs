@@ -44,6 +44,14 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     refute has_element?(view, "#producer-system-scene button[phx-click='spike']")
     refute has_element?(view, "#producer-system-scene button[phx-click='reset']")
     assert html =~ "Producer decisions"
+    assert has_element?(view, "#producer-decision-workspace")
+    assert has_element?(view, "#producer-approve[phx-click='approve']")
+    assert has_element?(view, "#producer-half[phx-click='half']")
+    assert has_element?(view, "#producer-reject[phx-click='reject']")
+
+    {workspace_position, _length} = :binary.match(html, ~s(id="producer-decision-workspace"))
+    {tank_position, _length} = :binary.match(html, ~s(id="producer-system-scene"))
+    assert workspace_position < tank_position
     assert html =~ "Live tank simulation"
     assert html =~ "Main fish &amp; prawn tank"
     assert html =~ "Waste in water"
@@ -74,8 +82,34 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
 
     assert_receive {:sagents_resumed, :approve, nil}
     assert html =~ "Action approved"
+
+    assert has_element?(
+             view,
+             "#producer-decision-result[role='status'][aria-live='polite']"
+           )
+
+    assert html =~ "Decision applied safely"
+    assert html =~ "Simulator mutation"
+    assert html =~ "Applied after verification"
+    assert html =~ "Current ammonia"
+    assert html =~ "0.35 mg/L"
+    assert html =~ "Current oxygen"
+    assert html =~ "6.8 mg/L"
+    assert html =~ "Reward 201.5"
+    assert has_element?(view, "#producer-decision-result a[href='/']", "See recovered tank")
+    refute has_element?(view, "#producer-approve")
     assert ApprovalQueue.snapshot().pending == nil
     assert hd(ApprovalQueue.snapshot().decisions).status == "approved"
+
+    {:ok, reopened_view, reopened_html} = live(conn, ~p"/producer")
+    assert has_element?(reopened_view, "#producer-decision-result", "Decision applied safely")
+    assert reopened_html =~ "Reward 201.5"
+    assert reopened_html =~ "15.0%"
+    refute has_element?(reopened_view, "#producer-approve")
+
+    request_sagents_hitl(self())
+    assert has_element?(view, "#producer-approve[phx-click='approve']")
+    refute has_element?(view, "#producer-decision-result")
   end
 
   test "producer edit resumes Sagents with the halved action", %{conn: conn} do
@@ -88,6 +122,8 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
     assert edited["water_exchange_fraction"] == 0.075
     assert edited["duckweed_harvest_kg"] == 0.25
     assert html =~ "Action reduced and approved"
+    assert html =~ "Reduced action applied safely"
+    assert html =~ "Applied after verification"
     assert hd(ApprovalQueue.snapshot().decisions).status == "edited"
   end
 
@@ -99,6 +135,10 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
 
     assert_receive {:sagents_resumed, :reject, nil}
     assert html =~ "Action rejected"
+    assert html =~ "Decision recorded without changing the system"
+    assert html =~ "No simulator mutation"
+    assert html =~ "Reward not applicable"
+    assert has_element?(view, "#producer-decision-result a[href='/']", "Return to operator")
     assert hd(ApprovalQueue.snapshot().decisions).status == "rejected"
   end
 

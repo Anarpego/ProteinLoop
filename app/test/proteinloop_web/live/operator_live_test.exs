@@ -94,6 +94,7 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "AMD ROCm + vLLM profile"
     assert html =~ "Portable path · current demo is local"
     assert has_element?(view, "#run-judge-proof[phx-click='demo-cascade']")
+    assert has_element?(view, "#producer-decision-link", "Producer view")
     assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
     assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
     assert has_element?(view, "#operator-system-scene [data-tank-fullscreen]")
@@ -117,6 +118,60 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Inject demo water emergency"
     assert has_element?(view, "#operator-system-scene [data-tank-fallback]")
     refute html =~ "protein-loop-system.svg"
+  end
+
+  test "makes producer handoff and latest decision visible in the operator header", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+    action = ProteinLoop.TestSagentsRuntime.action()
+
+    send(view.pid, {
+      :approval_queue,
+      %{
+        pending: %{
+          status: "pending",
+          prompt: "Approve the verified recovery?",
+          rationale: "Water exchange requires a producer decision.",
+          action: action
+        },
+        decisions: []
+      }
+    })
+
+    assert has_element?(
+             view,
+             "#producer-decision-link.btn-warning[aria-label='Producer decision waiting, 1 request']",
+             "Producer decision waiting"
+           )
+
+    assert has_element?(view, "#producer-decision-link [data-approval-count]", "1")
+
+    send(view.pid, {
+      :approval_queue,
+      %{
+        pending: %{
+          status: "processing",
+          prompt: "Approve the verified recovery?",
+          rationale: "Water exchange requires a producer decision.",
+          action: action
+        },
+        decisions: []
+      }
+    })
+
+    assert has_element?(view, "#producer-decision-link.btn-info", "Producer decision processing")
+
+    for {status, label, class} <- [
+          {"approved", "Producer approved", "btn-success"},
+          {"edited", "Producer reduced", "btn-info"},
+          {"rejected", "Producer rejected", "btn-error"}
+        ] do
+      send(view.pid, {
+        :approval_queue,
+        %{pending: nil, decisions: [%{status: status, action: action}]}
+      })
+
+      assert has_element?(view, "#producer-decision-link.#{class}", label)
+    end
   end
 
   test "fullscreen mission control reuses the operator mission state", %{conn: conn} do
