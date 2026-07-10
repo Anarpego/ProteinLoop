@@ -1,61 +1,8 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T06:04:47+00:00
-Commit: `7a7e8e6`
-Working tree (source): `M Makefile
- M README.md
- M app/config/config.exs
- M app/lib/proteinloop/agent/approval_queue.ex
- M app/lib/proteinloop/agent/loop_runner.ex
- M app/lib/proteinloop/agent/mesh.ex
- M app/lib/proteinloop/agent/topology.ex
- M app/lib/proteinloop/application.ex
- M app/lib/proteinloop/simulator_client.ex
- M app/lib/proteinloop_web/live/operator_live.ex
- M app/lib/proteinloop_web/live/producer_live.ex
- M app/mix.exs
- M app/mix.lock
- M app/test/proteinloop/agent/approval_queue_test.exs
- M app/test/proteinloop/agent/mesh_test.exs
- M app/test/proteinloop/agent/topology_test.exs
- M app/test/proteinloop_web/controllers/page_controller_test.exs
- M docker-compose.yml
- M scripts/build_submission_bundle.py
- M scripts/docker_smoke_test.py
- M scripts/generate_demo_video.py
- M scripts/generate_readiness_report.py
- M scripts/generate_submission_deck.mjs
- M scripts/validate_live_demo.py
- M scripts/validate_submission_artifacts.py
- M sim/proteinloop_sim/api.py
- M specs/013-sagents-loop-contract/plan.md
- M specs/013-sagents-loop-contract/spec.md
- M specs/013-sagents-loop-contract/tasks.md
- M submission/artifact-build-manifest.json
- M submission/lablab-form.json
- M submission/lablab-submission.md
- M submission/mesh-evidence.json
- M submission/proteinloop-demo-video.avi
- M submission/proteinloop-hackathon-deck.pptx
- M submission/slides.md
- M submission/video-script.md
- M tests/test_api.py
- M tests/test_readiness_report.py
- M tests/test_submission_bundle.py
-?? app/lib/proteinloop/agent/safety_mode.ex
-?? app/lib/proteinloop/agent/sagents_evidence.ex
-?? app/lib/proteinloop/agent/sagents_runtime.ex
-?? app/scripts/export_sagents_evidence.exs
-?? app/test/proteinloop/agent/safety_mode_test.exs
-?? app/test/proteinloop/agent/sagents_evidence_test.exs
-?? app/test/proteinloop/agent/sagents_runtime_test.exs
-?? app/test/proteinloop_web/live/
-?? app/test/support/test_chat_model.ex
-?? app/test/support/test_sagents_runtime.ex
-?? specs/047-real-sagents-runtime/
-?? submission/sagents-evidence.json
-?? submission/sagents-evidence.md
-?? tests/test_sagents_evidence.py`
+Generated: 2026-07-10T06:05:45+00:00
+Commit: `02c11e3`
+Working tree (source): `clean`
 
 ## Command Evidence
 
@@ -108,7 +55,7 @@ make submission-finalize
 python3 -m unittest discover -s tests
 ...................................................................................................................................
 ----------------------------------------------------------------------
-Ran 131 tests in 0.128s
+Ran 131 tests in 0.125s
 
 OK
 ```
@@ -215,7 +162,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 7a7e8e673904ae5dab8e1811b041d4686dcd58f7
+[ok] local git commit - 02c11e3b579bee5b5bb2052f8155b844ecbf4532
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
