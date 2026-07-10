@@ -14,7 +14,7 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
-| Real-time system understanding | A Three.js tank animates fish, prawns, bubbles, water quality, plants, and stress directly from the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) |
+| Real-time system understanding | Operator and producer routes share a Three.js tank that animates fish, prawns, bubbles, water quality, plants, and stress directly from the one-second simulator stream. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) |
 | Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
@@ -33,6 +33,7 @@ ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, fr
 4. Press `Ask AI team for a safe plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor.
 5. Inspect the `Intelligence receipt` and watch the verified state change update the same tank scene.
 6. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
+7. Open `http://localhost:4001/producer` to see the same live tank beside the approval workflow, without operator-only emergency or reset commands.
 
 This is an action workflow, not a generated dashboard summary. The selected mission reaches every model call, while `verify_ecosystem_safety` remains the only authority allowed to admit a simulator mutation.
 
@@ -386,7 +387,7 @@ The advanced evidence includes a `Self-healing mesh` panel whose real Sagents/Ho
 
 The physical hardware proof uses two Nordic nRF9151 DKs running Nordic `hello_dect`: PT `1051239227` maps to the tank sensor edge node and FT `1051223739` maps to the community gateway/controller. The committed evidence requires matching FT-to-PT and PT-to-FT sequence numbers from read-only serial capture. Connected boards are not required to replay Docker or CI; submission checks validate the captured artifact.
 
-The first operational view is `Live tank simulation`, built with pinned Three.js `0.185.1`. Its procedural WebGL scene contains fish, freshwater prawns, bubbles, substrate, plants, and water-loop piping. Phoenix patches simulator values every second without replacing the canvas. Ammonia changes water clarity and color; dissolved oxygen changes bubble activity, swimming speed, and whether fish move toward the surface. `Simulate water emergency` uses the real deterministic spike endpoint, while a static accessible illustration remains as the non-WebGL fallback.
+The first operational view is `Live tank simulation`, built with pinned Three.js `0.185.1`. Its procedural WebGL scene contains fish, freshwater prawns, bubbles, substrate, plants, and water-loop piping. Phoenix patches simulator values every second without replacing the canvas. Ammonia changes water clarity and color; dissolved oxygen changes bubble activity, swimming speed, and whether fish move toward the surface. The operator route exposes `Simulate water emergency`; the producer route reuses the same animation in read-only mode. A light non-illustrated layer and readable HTML chemistry remain available if WebGL cannot start.
 
 Inside advanced evidence, `Physical DECT NR+ link` shows the latest matching sequence and both board identities. `Replay sensor alert` maps that radio capture into the deterministic ammonia-spike simulator scenario, and `Run selected mission` starts the same verifier-gated Sagents cycle as the primary AI control. `/producer` shows the compact `Latest DECT NR+ link` status. Both views explicitly separate the physical radio proof from simulated water-quality values.
 

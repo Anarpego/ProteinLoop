@@ -2,7 +2,7 @@
 
 ## Goal
 
-Replace the static operator illustration with a living, game-like tank that makes the one-second simulator stream visible through motion and environmental change.
+Replace the static operator and producer illustrations with a living, game-like tank that makes the one-second simulator stream visible through motion and environmental change.
 
 ## User Value
 
@@ -10,7 +10,7 @@ A first-time user can see fish and prawns living inside the tank, recognize whet
 
 ## Functional Requirements
 
-1. The operator route shall render an animated WebGL tank as its primary system view.
+1. The operator and producer routes shall render the same animated WebGL tank as their primary system view.
 2. The tank shall contain visibly distinct fish, freshwater prawns, bubbles, water, substrate, plants, and connected loop infrastructure.
 3. The scene shall animate continuously and respond subtly to pointer movement without requiring instructions.
 4. Phoenix LiveView shall update scene inputs from the existing simulator snapshot stream every second.
@@ -23,18 +23,21 @@ A first-time user can see fish and prawns living inside the tank, recognize whet
 11. The primary AI mission shall remain directly after the tank, and its resulting state change shall update the same scene.
 12. The implementation shall pin Three.js `0.185.1`, the latest researched official package version for release `r185` on 2026-07-10.
 13. The hook shall resize responsively, cap device pixel ratio, respect reduced-motion preference, and dispose GPU resources when destroyed.
-14. A static visual fallback and accessible tank description shall remain available when WebGL or JavaScript is unavailable.
-15. The producer route and deterministic simulator/verifier boundary shall remain unchanged.
+14. A light, non-illustrated fallback and accessible tank description shall remain available when WebGL or JavaScript is unavailable; the legacy protein-loop SVG shall not appear in the real-time component.
+15. The producer route shall receive the same live scene inputs and readable metrics as the operator route.
+16. The producer scene shall be read-only: it shall not render the operator-only emergency or reset commands.
+17. The deterministic simulator/verifier boundary and producer approval behavior shall remain unchanged.
 
 ## Acceptance Criteria
 
-1. Component tests prove the canvas hook, fallback, readable metrics, and simulator data attributes are present.
+1. Component tests prove the canvas hook, non-illustrated fallback, readable metrics, simulator data attributes, and optional mutation controls are present.
 2. LiveView tests prove a simulator snapshot patches the tank ammonia, oxygen, day, and health inputs.
 3. Source tests prove Three.js is pinned and the hook is registered with LiveSocket.
-4. Existing mission, DECT, producer, HITL, verifier, and light-theme tests continue to pass.
-5. A production asset build includes the Three.js scene without external runtime CDN requests.
-6. Docker smoke and live-demo checks pass against the updated operator route.
-7. Desktop and mobile browser checks prove the canvas is nonblank, correctly framed, animated, and free of incoherent overlap.
+4. LiveView tests prove both operator and producer routes mount the animation, while only the operator exposes emergency and reset commands.
+5. Existing mission, DECT, producer, HITL, verifier, and light-theme tests continue to pass.
+6. A production asset build includes the Three.js scene without external runtime CDN requests.
+7. Docker smoke and live-demo checks pass against the updated operator and producer routes.
+8. Desktop and mobile browser checks prove the canvas is nonblank, correctly framed, animated, and free of incoherent overlap.
 
 ## Non-Goals
 

@@ -65,12 +65,17 @@ defmodule ProteinLoopWeb.PageControllerTest do
 
   test "GET /producer renders the English HITL view", %{conn: conn} do
     conn = get(conn, ~p"/producer")
-    assert html_response(conn, 200) =~ "Producer decisions"
-    assert html_response(conn, 200) =~ "Approve"
-    assert html_response(conn, 200) =~ "Offline fallback"
-    assert html_response(conn, 200) =~ "Local action"
-    assert html_response(conn, 200) =~ "WhatsApp/SMS message"
-    assert html_response(conn, 200) =~ "Reply: APPROVE, HALF, or REJECT."
+    html = html_response(conn, 200)
+
+    assert html =~ "Producer decisions"
+    assert html =~ "Live tank simulation"
+    assert html =~ "Approve"
+    assert html =~ "Offline fallback"
+    assert html =~ "Local action"
+    assert html =~ "WhatsApp/SMS message"
+    assert html =~ "Reply: APPROVE, HALF, or REJECT."
+    refute html =~ "Simulate water emergency"
+    refute html =~ "protein-loop-system.svg"
   end
 
   test "GET /producer renders a pending English HITL request", %{conn: conn} do

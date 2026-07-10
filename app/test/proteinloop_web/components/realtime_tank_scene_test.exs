@@ -9,7 +9,8 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     html =
       render_component(&RealtimeTankScene.realtime_tank_scene/1,
         id: "test-realtime-tank",
-        state: state()
+        state: state(),
+        controls: true
       )
 
     assert html =~ ~s(phx-hook="RealtimeTank")
@@ -24,6 +25,21 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ "Breathing oxygen"
     assert html =~ "Plant loop"
     assert html =~ "duckweed"
+    refute html =~ "protein-loop-system.svg"
+    refute html =~ "<img"
+  end
+
+  test "is read-only by default for producer reuse" do
+    html =
+      render_component(&RealtimeTankScene.realtime_tank_scene/1,
+        id: "test-read-only-tank",
+        state: state()
+      )
+
+    assert html =~ ~s(phx-hook="RealtimeTank")
+    assert html =~ ~s(data-tank-fallback)
+    refute html =~ ~s(phx-click="spike")
+    refute html =~ ~s(phx-click="reset")
   end
 
   test "encodes critical chemistry for the renderer and readable fallback" do

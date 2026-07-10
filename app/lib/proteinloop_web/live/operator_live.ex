@@ -583,7 +583,7 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </header>
 
-        <.realtime_tank_scene id="operator-system-scene" state={@state} />
+        <.realtime_tank_scene id="operator-system-scene" state={@state} controls={true} />
 
         <section
           id="agentic-mission"

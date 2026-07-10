@@ -1,7 +1,7 @@
 defmodule ProteinLoopWeb.ProducerLive do
   use ProteinLoopWeb, :live_view
 
-  import ProteinLoopWeb.SystemScene
+  import ProteinLoopWeb.RealtimeTankScene
 
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Offline.EmergencyRules
@@ -324,7 +324,7 @@ defmodule ProteinLoopWeb.ProducerLive do
   def render(assigns) do
     ~H"""
     <main class="min-h-screen bg-base-200 text-base-content">
-      <section class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <section class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <header class="flex items-center justify-between gap-3 border-b border-base-300 pb-4">
           <div>
             <p class="text-sm font-semibold uppercase tracking-wide text-secondary">ProteinLoop</p>
@@ -364,7 +364,7 @@ defmodule ProteinLoopWeb.ProducerLive do
           </div>
         </section>
 
-        <.system_scene id="producer-system-scene" state={@state} />
+        <.realtime_tank_scene id="producer-system-scene" state={@state} />
 
         <section class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div class="rounded-box border border-base-300 bg-base-100 p-4 sm:p-5">

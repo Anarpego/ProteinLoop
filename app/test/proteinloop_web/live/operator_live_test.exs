@@ -65,7 +65,8 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Breathing oxygen"
     assert html =~ "Dissolved oxygen"
     assert html =~ "Simulate water emergency"
-    assert has_element?(view, "img[alt*='fish and prawn tank']")
+    assert has_element?(view, "#operator-system-scene [data-tank-fallback]")
+    refute html =~ "protein-loop-system.svg"
   end
 
   test "streams simulator snapshots into the animated tank", %{conn: conn} do

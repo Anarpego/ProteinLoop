@@ -49,7 +49,9 @@ PRODUCER_NEEDLES = [
     "Latest DECT NR+ link",
     "Sequence #100",
     "real radio",
-    "Waste in the water",
+    "Live tank simulation",
+    "Waste in water",
+    "Breathing oxygen",
 ]
 
 

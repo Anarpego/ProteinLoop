@@ -7,6 +7,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
 
   attr :id, :string, required: true
   attr :state, :map, required: true
+  attr :controls, :boolean, default: false
 
   def realtime_tank_scene(assigns) do
     ammonia = number(assigns.state, "ammonia_mg_l")
@@ -51,12 +52,14 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
         }
       >
         <div id={"#{@id}-webgl"} phx-update="ignore" class="realtime-tank__render-layer">
-          <img
+          <div
             data-tank-fallback
-            src={~p"/images/protein-loop-system.svg"}
-            alt="Illustration fallback of the fish and prawn tank connected to the protein loop"
             class="realtime-tank__fallback"
-          />
+            aria-hidden="true"
+          >
+            <span class="realtime-tank__fallback-water"></span>
+            <span class="realtime-tank__fallback-floor"></span>
+          </div>
           <canvas data-tank-canvas class="realtime-tank__canvas" aria-hidden="true"></canvas>
         </div>
 
@@ -72,7 +75,7 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
           <p class="mt-1 max-w-xl text-sm font-medium text-base-content/75">{@health.heading}</p>
         </div>
 
-        <div class="realtime-tank__commands">
+        <div :if={@controls} class="realtime-tank__commands">
           <button class="btn btn-sm btn-error" phx-click="spike">
             <.icon name="hero-bolt" /> Simulate water emergency
           </button>

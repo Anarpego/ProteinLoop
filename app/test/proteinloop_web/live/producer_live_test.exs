@@ -37,14 +37,16 @@ defmodule ProteinLoopWeb.ProducerLiveTest do
   } do
     {:ok, view, html} = live(conn, ~p"/producer")
 
-    assert has_element?(view, "#producer-system-scene")
+    assert has_element?(view, "#producer-system-scene[phx-hook='RealtimeTank']")
+    assert has_element?(view, "#producer-system-scene canvas[data-tank-canvas]")
+    refute has_element?(view, "#producer-system-scene button[phx-click='spike']")
+    refute has_element?(view, "#producer-system-scene button[phx-click='reset']")
     assert html =~ "Producer decisions"
+    assert html =~ "Live tank simulation"
     assert html =~ "Main fish &amp; prawn tank"
-    assert html =~ "Waste in the water"
-    assert html =~ "Air the animals can breathe"
-    assert html =~ "Hydroponic plants"
-    assert html =~ "Duckweed reserve"
-    assert html =~ "Chicken &amp; egg output"
+    assert html =~ "Waste in water"
+    assert html =~ "Breathing oxygen"
+    assert html =~ "Plant loop"
     assert has_element?(view, "#producer-dect-status")
     assert html =~ "Latest DECT NR+ link"
     assert html =~ "Sequence #100"
