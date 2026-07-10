@@ -25,7 +25,7 @@
   ],
   "long_description": "ProteinLoop tackles a practical food security problem: aquaponics often produces vegetables plus a small amount of fish, but rural families need a reliable protein cycle. ProteinLoop models a closed loop with fish, freshwater prawns, duckweed, plants, and laying chickens, then wraps that system in an agent harness. The simulator is the verifier. Every proposed feed, aeration, water exchange, or harvest action is checked against deterministic ecosystem rules before state can mutate. The operator dashboard shows collapse-versus-recovery behavior, rejected unsafe proposals, RLVR reward comparison, verifier-guided policy search improvement, and a real Sagents 0.9.0 runtime with four concurrent `Sagents.SubAgent` workers plus a parent supervisor, a custom `verify_ecosystem_safety` mode, `until_tool_success`, and resumable Spanish HumanInTheLoop approval. A two-node Horde 0.10.0 cluster proves real owner loss and state restoration: the verifier stops the managed agent's actual owner, observes the same identity, state token, and fingerprint on the peer, then rejoins the node. A provider-free WhatsApp/SMS handoff supports low-bandwidth operation. Two physical nRF9151 DKs prove the field radio path: FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching DECT NR+ sequence number in a read-only UART capture marked `simulated: false`. The separate sample JSONL bridge documents the future water-quality payload contract without claiming Nordic's stock `hello_dect` logs contain sensor telemetry. The model boundary is OpenAI-compatible through `GEMMA_ENDPOINT`. The repo includes a ROCm/vLLM deployment profile for AMD Developer Cloud using `vllm/vllm-openai-rocm:gemma4`, while the local demo remains runnable with deterministic stubs for judges who do not have model credentials.",
   "project_title": "ProteinLoop",
-  "repository_url": "TODO",
+  "repository_url": "https://github.com/Anarpego/ProteinLoop",
   "short_description": "An agentic aquaponic protein loop that keeps fish, prawns, duckweed, hydroponic plants, and chickens stable through a deterministic verifier, Spanish HITL approvals, and an AMD-hosted Gemma deployment path.",
   "technology_tags": [
     "AMD Developer Cloud",
@@ -43,7 +43,6 @@
     "Food security"
   ],
   "unresolved_fields": [
-    "repository_url",
     "application_url"
   ]
 }

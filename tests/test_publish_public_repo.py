@@ -130,6 +130,11 @@ https://demo.example.com
 
             update_submission_repo_url(path, "https://github.com/Anarpego/proteinloop", form_path=form)
 
+            updated = path.read_text(encoding="utf-8")
+            self.assertIn(
+                "Public GitHub Repository: https://github.com/Anarpego/proteinloop\n\n## Application URL",
+                updated,
+            )
             self.assertIn('"repository_url": "https://github.com/Anarpego/proteinloop"', form.read_text())
 
 

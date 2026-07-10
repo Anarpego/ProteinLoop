@@ -34,7 +34,7 @@ The model boundary is OpenAI-compatible through `GEMMA_ENDPOINT`. The repo inclu
 
 ## Repository
 
-Public GitHub Repository: TODO
+Public GitHub Repository: https://github.com/Anarpego/ProteinLoop
 
 ## Demo Application Platform
 

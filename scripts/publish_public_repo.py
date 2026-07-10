@@ -169,7 +169,10 @@ def normalize_git_remote(url: str) -> str:
 
 def update_submission_repo_url(path: Path, repo_url: str, form_path: Path | None = None) -> None:
     text = path.read_text(encoding="utf-8")
-    pattern = re.compile(r"^Public GitHub Repository:\s*\S+\s*$", re.MULTILINE)
+    pattern = re.compile(
+        r"^Public GitHub Repository:[ \t]*\S+[ \t]*$",
+        re.MULTILINE,
+    )
     replacement = f"Public GitHub Repository: {repo_url}"
     if pattern.search(text):
         updated = pattern.sub(replacement, text)
