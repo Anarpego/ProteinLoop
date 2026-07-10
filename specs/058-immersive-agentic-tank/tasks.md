@@ -11,3 +11,4 @@
 - [x] Run application tests, production assets, Docker route checks, and live-demo validation.
 - [ ] Capture desktop and mobile browser screenshots when the embedded browser is available.
 - [x] Publish implementation and executable evidence.
+- [x] Preserve the initialized Three.js canvas across emergency and telemetry LiveView patches.

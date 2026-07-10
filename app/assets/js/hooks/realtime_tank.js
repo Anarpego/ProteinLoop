@@ -866,6 +866,13 @@ const disposeRuntime = runtime => {
   runtime.renderer?.forceContextLoss()
 }
 
+const syncRendererPresentation = runtime => {
+  runtime.canvas.classList.add("realtime-tank__canvas--ready")
+  runtime.fallback?.classList.add("realtime-tank__fallback--hidden")
+  runtime.element.dataset.rendererReady = "true"
+  runtime.element.dataset.renderer = `three-${THREE.REVISION}`
+}
+
 const RealtimeTank = {
   mounted() {
     const canvas = this.el.querySelector("[data-tank-canvas]")
@@ -876,6 +883,7 @@ const RealtimeTank = {
       const runtime = {
         element: this.el,
         canvas,
+        fallback: this.el.querySelector("[data-tank-fallback]"),
         target: {...initialState},
         visual: {...initialState},
         pointer: {x: 0, y: 0},
@@ -976,8 +984,7 @@ const RealtimeTank = {
       renderFrame(runtime, performance.now())
 
       this.runtime = runtime
-      this.el.dataset.rendererReady = "true"
-      this.el.dataset.renderer = `three-${THREE.REVISION}`
+      syncRendererPresentation(runtime)
     } catch (error) {
       this.el.dataset.rendererError = "true"
       console.error("ProteinLoop real-time tank could not start", error)
@@ -986,6 +993,8 @@ const RealtimeTank = {
 
   updated() {
     if (!this.runtime) return
+    syncRendererPresentation(this.runtime)
+
     const fullscreenButton = this.el.querySelector("[data-tank-fullscreen]")
     if (fullscreenButton !== this.runtime.fullscreenButton) {
       this.runtime.fullscreenButton?.removeEventListener("click", this.runtime.handleFullscreenClick)

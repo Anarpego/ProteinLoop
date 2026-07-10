@@ -124,11 +124,13 @@ body {
   background: #65766f;
 }
 
-.realtime-tank[data-renderer-ready="true"] .realtime-tank__canvas {
+.realtime-tank[data-renderer-ready="true"] .realtime-tank__canvas,
+.realtime-tank__canvas--ready {
   opacity: 1;
 }
 
-.realtime-tank[data-renderer-ready="true"] .realtime-tank__fallback {
+.realtime-tank[data-renderer-ready="true"] .realtime-tank__fallback,
+.realtime-tank__fallback--hidden {
   opacity: 0;
   pointer-events: none;
 }

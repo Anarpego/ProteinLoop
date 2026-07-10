@@ -131,6 +131,34 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Tank animals are in danger"
   end
 
+  test "keeps the Three.js render shell through an emergency snapshot patch", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    snapshot = %{
+      connected?: true,
+      source: "emergency-test",
+      reward: nil,
+      error: nil,
+      state:
+        ProteinLoop.SimulatorClient.fallback_state()
+        |> Map.put("ammonia_mg_l", 4.6)
+        |> Map.put("dissolved_oxygen_mg_l", 4.4)
+        |> Map.put("last_event", "ammonia_spike")
+    }
+
+    send(view.pid, {:simulator_snapshot, snapshot})
+    html = render(view)
+
+    assert has_element?(
+             view,
+             "#operator-system-scene[phx-hook='RealtimeTank'][data-health='critical']"
+           )
+
+    assert has_element?(view, "#operator-system-scene-webgl[phx-update='ignore']")
+    assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
+    assert html =~ "Tank animals are in danger"
+  end
+
   test "keeps one AI workflow above closed advanced evidence", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 

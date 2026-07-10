@@ -56,6 +56,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     package = assets |> Path.join("package.json") |> File.read!() |> Jason.decode!()
     app_js = assets |> Path.join("js/app.js") |> File.read!()
     tank_hook = assets |> Path.join("js/hooks/realtime_tank.js") |> File.read!()
+    css = assets |> Path.join("css/app.css") |> File.read!()
 
     assert package["dependencies"]["three"] == "0.185.1"
     assert app_js =~ "RealtimeTank"
@@ -66,6 +67,11 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert tank_hook =~ "fullscreenchange"
     assert tank_hook =~ ~s(setAttribute("aria-pressed",)
     assert tank_hook =~ ~s(removeEventListener("fullscreenchange",)
+    assert tank_hook =~ ~s|classList.add("realtime-tank__canvas--ready")|
+    assert tank_hook =~ ~s|classList.add("realtime-tank__fallback--hidden")|
+    assert tank_hook =~ "syncRendererPresentation(this.runtime)"
+    assert css =~ ".realtime-tank__canvas--ready"
+    assert css =~ ".realtime-tank__fallback--hidden"
   end
 
   test "bundles and loads the licensed PBR fish without a runtime CDN" do
