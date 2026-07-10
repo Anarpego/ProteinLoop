@@ -9,4 +9,4 @@
 - [x] Update video and slide narratives.
 - [x] Rebuild and visually verify the presentation deck.
 - [x] Run full application, Docker, and submission checks.
-- [ ] Publish implementation and evidence.
+- [x] Publish implementation and evidence.
