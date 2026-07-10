@@ -1,63 +1,8 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T15:41:18+00:00
-Commit: `5b75edf`
-Working tree (source): `M Makefile
- M README.md
- M app/lib/proteinloop/agent/sagents_runtime.ex
- M app/lib/proteinloop/application.ex
- M app/lib/proteinloop_web/live/operator_live.ex
- M app/lib/proteinloop_web/router.ex
- M app/mix.exs
- M app/mix.lock
- M app/test/proteinloop/agent/sagents_runtime_test.exs
- M app/test/proteinloop_web/controllers/page_controller_test.exs
- M app/test/proteinloop_web/live/operator_live_test.exs
- M scripts/build_submission_bundle.py
- M scripts/generate_demo_video.py
- M scripts/generate_nrf9151_field_plan.py
- M scripts/generate_readiness_report.py
- M scripts/generate_submission_deck.mjs
- M scripts/validate_submission_artifacts.py
- M scripts/validate_submission_readiness.py
- M submission/artifact-build-manifest.json
- M submission/lablab-form.json
- M submission/lablab-submission.md
- M submission/nrf9151-field-plan.json
- M submission/nrf9151-field-plan.md
- M submission/proteinloop-demo-video.avi
- M submission/proteinloop-hackathon-deck.pptx
- M submission/sagents-evidence.json
- M submission/sagents-evidence.md
- M submission/slides.md
- M submission/video-script.md
- M tests/test_demo_video_generator.py
- M tests/test_nrf9151_field_plan.py
- M tests/test_readiness_report.py
- M tests/test_submission_bundle.py
- M tests/test_submission_readiness.py
-?? app/lib/proteinloop/agent/distribution_config.ex
-?? app/lib/proteinloop/agent/horde_persistence.ex
-?? app/lib/proteinloop/agent/horde_runtime.ex
-?? app/lib/proteinloop/cluster_connector.ex
-?? app/lib/proteinloop_web/controllers/horde_controller.ex
-?? app/test/proteinloop/agent/distribution_config_test.exs
-?? app/test/proteinloop/agent/horde_persistence_test.exs
-?? app/test/proteinloop/agent/horde_runtime_test.exs
-?? app/test/proteinloop/cluster_connector_test.exs
-?? app/test/proteinloop_web/controllers/horde_controller_test.exs
-?? app/test/support/test_horde_runtime.ex
-?? docker-compose.horde.yml
-?? scripts/horde_failover_test.py
-?? scripts/nrf9151_live_capture.py
-?? specs/048-real-horde-failover/
-?? specs/049-live-nrf9151-evidence/
-?? submission/horde-evidence.json
-?? submission/horde-evidence.md
-?? submission/nrf9151-live-evidence.json
-?? submission/nrf9151-live-evidence.md
-?? tests/test_horde_failover.py
-?? tests/test_nrf9151_live_capture.py`
+Generated: 2026-07-10T15:44:48+00:00
+Commit: `43f352e`
+Working tree (source): `clean`
 
 ## Command Evidence
 
@@ -111,7 +56,7 @@ make submission-finalize
 python3 -m unittest discover -s tests
 .................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 145 tests in 0.123s
+Ran 145 tests in 0.124s
 
 OK
 ```
@@ -257,7 +202,7 @@ python3 scripts/validate_submission_readiness.py
 [FAIL] public GitHub repository URL - missing or TODO
 [FAIL] application URL - missing or TODO
 [ok] local git repository
-[ok] local git commit - 5b75edfbd4e681a5a8952cdb0a3a6e762b782d36
+[ok] local git commit - 43f352e858127e79b78f25f9f46304945de539a4
 [FAIL] origin remote configured - git config --get remote.origin.url failed
 [FAIL] origin matches lablab repository URL - missing repo URL or origin
 6 submission readiness check(s) failed
