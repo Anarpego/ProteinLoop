@@ -1,8 +1,28 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T17:56:51+00:00
-Commit: `af548c6`
-Working tree (source): `M specs/055-guided-light-operator/tasks.md`
+Generated: 2026-07-10T18:31:02+00:00
+Commit: `f5557b1`
+Working tree (source): `M .specify/memory/constitution.md
+ M README.md
+ M app/.dockerignore
+ M app/Dockerfile
+ M app/assets/css/app.css
+ M app/assets/js/app.js
+ M app/lib/proteinloop_web/live/operator_live.ex
+ M app/mix.exs
+ M app/test/proteinloop_web/controllers/page_controller_test.exs
+ M app/test/proteinloop_web/live/operator_live_test.exs
+ M scripts/docker_smoke_test.py
+ M scripts/validate_live_demo.py
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M submission/video-script.md
+?? app/assets/js/hooks/
+?? app/assets/package-lock.json
+?? app/assets/package.json
+?? app/lib/proteinloop_web/components/realtime_tank_scene.ex
+?? app/test/proteinloop_web/components/realtime_tank_scene_test.exs
+?? specs/056-realtime-tank-simulation/`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -51,7 +71,7 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 python3 -m unittest discover -s tests
 ...........................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 155 tests in 0.133s
+Ran 155 tests in 0.124s
 
 OK
 ```
@@ -68,7 +88,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T17:53:11.610523+00:00
+checked_at: 2026-07-10T18:29:49.444905+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -192,7 +212,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [FAIL] application URL - missing or TODO
 [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - af548c6a5bcdf20c8d943b640f5c1a73b7d1d1db
+[ok] local git commit - f5557b151ab0dc1d4310a5c4fd70a6e8a785fdea
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 2 submission readiness check(s) failed

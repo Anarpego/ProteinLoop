@@ -50,21 +50,48 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     :ok
   end
 
-  test "shows the living system and explains tank chemistry in plain language", %{conn: conn} do
+  test "shows the real-time living system and explains tank chemistry in plain language", %{
+    conn: conn
+  } do
     {:ok, view, html} = live(conn, ~p"/")
 
     assert html =~ "ProteinLoop system control"
-    assert has_element?(view, "#operator-system-scene")
-    assert html =~ "Your protein loop at a glance"
+    assert has_element?(view, "#operator-system-scene[phx-hook='RealtimeTank']")
+    assert has_element?(view, "#operator-system-scene canvas[data-tank-canvas]")
+    assert html =~ "Live tank simulation"
     assert html =~ "Main fish &amp; prawn tank"
-    assert html =~ "Waste in the water"
+    assert html =~ "Waste in water"
     assert html =~ "Ammonia"
-    assert html =~ "Air the animals can breathe"
+    assert html =~ "Breathing oxygen"
     assert html =~ "Dissolved oxygen"
-    assert html =~ "Hydroponic plants"
-    assert html =~ "Duckweed reserve"
-    assert html =~ "Chicken &amp; egg output"
+    assert html =~ "Simulate water emergency"
     assert has_element?(view, "img[alt*='fish and prawn tank']")
+  end
+
+  test "streams simulator snapshots into the animated tank", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    snapshot = %{
+      connected?: true,
+      source: "test-stream",
+      reward: nil,
+      error: nil,
+      state:
+        ProteinLoop.SimulatorClient.fallback_state()
+        |> Map.put("day", 4)
+        |> Map.put("ammonia_mg_l", 3.8)
+        |> Map.put("dissolved_oxygen_mg_l", 3.2)
+    }
+
+    send(view.pid, {:simulator_snapshot, snapshot})
+    html = render(view)
+
+    assert has_element?(
+             view,
+             "#operator-system-scene[data-day='4'][data-ammonia='3.8'][data-oxygen='3.2'][data-health='critical']"
+           )
+
+    assert html =~ "Tank animals are in danger"
   end
 
   test "keeps one AI workflow above closed advanced evidence", %{conn: conn} do

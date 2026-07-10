@@ -46,18 +46,19 @@ TODO
 
 ## Key Demo Path
 
-1. Open the operator route and inspect `Your protein loop at a glance`: the main tank, connected food outputs, waste level, breathing oxygen, and immediate priority.
-2. In `Ask the AI team to help`, select `Protect protein yield` and press `Ask AI team for a safe plan`.
-3. Inspect the `Intelligence receipt`: four specialist briefs, resource conflicts, the supervisor plan, deterministic verifier warnings, reward, and before/after ammonia and oxygen.
-4. Open `Advanced evidence and controls`, then press `Run demo cascade` to show ammonia spike, unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
-5. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
-6. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
-7. Press `Request producer approval`, then use the English `/producer` route to approve, apply half, or reject and inspect the WhatsApp/SMS handoff message.
-8. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
+1. Open the operator route and inspect `Live tank simulation`: moving fish and freshwater prawns, oxygen bubbles, water-loop plants, readable chemistry, and one-second Phoenix updates.
+2. Press `Simulate water emergency` and watch the deterministic ammonia spike change water color, bubble activity, and animal behavior.
+3. In `Ask the AI team to help`, select `Protect protein yield` and press `Ask AI team for a safe plan`.
+4. Inspect the `Intelligence receipt` and watch the verified before/after chemistry update the same animated tank.
+5. Open `Advanced evidence and controls`, then press `Run demo cascade` to show unsafe rejection, safe recovery, and RLVR policy-search improvement. The repo also includes `submission/demo-rehearsal.md` as executable rehearsal evidence for this path.
+6. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
+7. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Press `Replay sensor alert` to map the real radio event into an explicitly simulated ammonia alert.
+8. Press `Request producer approval`, then use the English `/producer` route to approve, apply half, or reject and inspect the WhatsApp/SMS handoff message.
+9. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
 
 ## Judging Notes
 
-- Creativity: visual plain-language tank understanding, operator-directed multi-agent interventions, closed protein loop, real state-preserving Horde failover, physical two-board DECT NR+ proof, verifier-gated human actions.
+- Creativity: a state-driven real-time Three.js protein tank, operator-directed multi-agent interventions, closed protein loop, real state-preserving Horde failover, physical two-board DECT NR+ proof, verifier-gated human actions.
 - Product potential: low-cost protein production for rural Latin America.
 - Completeness: simulator, dashboard, harness, traces, physical radio evidence, Docker, deployment profile, submission artifacts.
 - Model evidence: live local Gemma 4 E2B inference through llama.cpp/Metal; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim.

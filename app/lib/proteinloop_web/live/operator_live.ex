@@ -1,7 +1,7 @@
 defmodule ProteinLoopWeb.OperatorLive do
   use ProteinLoopWeb, :live_view
 
-  import ProteinLoopWeb.SystemScene
+  import ProteinLoopWeb.RealtimeTankScene
 
   alias ProteinLoop.Agent.ApprovalQueue
   alias ProteinLoop.Agent.DemoCascade
@@ -583,7 +583,7 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </header>
 
-        <.system_scene id="operator-system-scene" state={@state} />
+        <.realtime_tank_scene id="operator-system-scene" state={@state} />
 
         <section
           id="agentic-mission"

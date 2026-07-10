@@ -16,11 +16,11 @@ Open `http://localhost:4001/`.
 
 Action:
 
-Press `Run demo cascade`.
+Press `Simulate water emergency`. Watch the water, bubbles, fish, and prawns change, then ask the AI team for a safe recovery plan. Open `Advanced evidence and controls` and press `Run demo cascade` for the baseline comparison.
 
 Narration:
 
-The Python simulator is the source of truth. A naive action after an ammonia spike collapses the ecosystem. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the safe recovery action stabilizes the tank.
+The tank is not a looping video. Phoenix streams the Python simulator state every second into a Three.js scene. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. The agent harness proposes actions, but the verifier decides what can mutate state. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
 
 ## Scene 3: RLVR Evidence
 

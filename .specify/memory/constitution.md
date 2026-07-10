@@ -30,6 +30,10 @@ The primary interface must visually identify the tank, plants, duckweed, chicken
 
 The default operator view must present one condition, one recommended priority, and one primary AI action. Engineering telemetry and proof remain available behind an explicitly opened advanced section.
 
+### VIII. Motion Must Encode System Truth
+
+Real-time graphics must respond to simulator state rather than play as unrelated decoration. Water quality, animal behavior, oxygenation, and alerts must remain traceable to deterministic values, while the Python simulator remains the only source of ecosystem truth.
+
 ## Technical Constraints
 
 - Python owns simulator, verifier, scenarios, reward, and RLVR hooks.

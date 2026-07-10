@@ -69,3 +69,201 @@ body {
   color-scheme: light;
   background-color: #f5f7f7;
 }
+
+.realtime-tank {
+  background: #dff3f6;
+}
+
+.realtime-tank__viewport {
+  position: relative;
+  height: min(66vh, 620px);
+  min-height: 480px;
+  overflow: hidden;
+  background: #e8f7f8;
+}
+
+.realtime-tank__render-layer,
+.realtime-tank__canvas,
+.realtime-tank__fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.realtime-tank__canvas {
+  display: block;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  touch-action: pan-y;
+}
+
+.realtime-tank__fallback {
+  object-fit: contain;
+  padding: 4rem 1rem 8rem;
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+.realtime-tank[data-renderer-ready="true"] .realtime-tank__canvas {
+  opacity: 1;
+}
+
+.realtime-tank[data-renderer-ready="true"] .realtime-tank__fallback {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.realtime-tank__heading {
+  position: absolute;
+  z-index: 3;
+  top: 1.25rem;
+  left: 1.25rem;
+  max-width: min(34rem, calc(100% - 20rem));
+  border-left: 4px solid #0284c7;
+  background: rgb(255 255 255 / 92%);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 8%);
+  backdrop-filter: blur(8px);
+}
+
+.realtime-tank__commands {
+  position: absolute;
+  z-index: 4;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.realtime-tank__live-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+  border-radius: 999px;
+  background: #0d9488;
+  box-shadow: 0 0 0 0 rgb(13 148 136 / 35%);
+  animation: tank-live-pulse 1.8s ease-out infinite;
+}
+
+.realtime-tank__hud {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.7fr) minmax(0, 1.3fr);
+  border-top: 1px solid rgb(148 163 184 / 60%);
+  background: rgb(255 255 255 / 94%);
+  backdrop-filter: blur(10px);
+}
+
+.realtime-tank__condition {
+  min-width: 0;
+  border-right: 1px solid #d8e0e3;
+  padding: 1rem 1.25rem;
+}
+
+.realtime-tank__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.realtime-tank__metrics > div {
+  min-width: 0;
+  padding: 1rem 1.25rem;
+}
+
+.realtime-tank__metrics > div + div {
+  border-left: 1px solid #d8e0e3;
+}
+
+.realtime-tank__metrics dt,
+.realtime-tank__metrics p {
+  overflow: hidden;
+  color: rgb(31 41 55 / 65%);
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.realtime-tank__metrics dd {
+  margin-top: 0.2rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.7rem;
+}
+
+@keyframes tank-live-pulse {
+  70% {
+    box-shadow: 0 0 0 0.5rem rgb(13 148 136 / 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(13 148 136 / 0%);
+  }
+}
+
+@media (max-width: 767px) {
+  .realtime-tank__viewport {
+    height: 720px;
+    min-height: 720px;
+  }
+
+  .realtime-tank__heading {
+    top: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+
+  .realtime-tank__commands {
+    top: 10.75rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .realtime-tank__hud {
+    grid-template-columns: 1fr;
+  }
+
+  .realtime-tank__condition {
+    border-right: 0;
+    border-bottom: 1px solid #d8e0e3;
+    padding: 0.85rem 1rem;
+  }
+
+  .realtime-tank__metrics > div {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .realtime-tank__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .realtime-tank__metrics > div:nth-child(3) {
+    border-top: 1px solid #d8e0e3;
+    border-left: 0;
+  }
+
+  .realtime-tank__metrics > div:nth-child(4) {
+    border-top: 1px solid #d8e0e3;
+  }
+
+  .realtime-tank__metrics dd {
+    font-size: 1.05rem;
+    line-height: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .realtime-tank__live-dot {
+    animation: none;
+  }
+
+  .realtime-tank__canvas,
+  .realtime-tank__fallback {
+    transition: none;
+  }
+}

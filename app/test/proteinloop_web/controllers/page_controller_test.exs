@@ -14,7 +14,7 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert html_response(conn, 200) =~ ~s(<meta name="color-scheme" content="light")
     refute html_response(conn, 200) =~ "prefers-color-scheme"
     assert html_response(conn, 200) =~ "ProteinLoop system control"
-    assert html_response(conn, 200) =~ "Your protein loop at a glance"
+    assert html_response(conn, 200) =~ "Live tank simulation"
     assert html_response(conn, 200) =~ "Ask the AI team to help"
     assert html_response(conn, 200) =~ "Advanced evidence and controls"
     assert html_response(conn, 200) =~ "Agent harness"
@@ -49,6 +49,18 @@ defmodule ProteinLoopWeb.PageControllerTest do
 
     refute css =~ ~s(name: "dark")
     refute css =~ "prefersdark: true"
+  end
+
+  test "frontend pins and registers the real-time Three.js tank" do
+    assets = Path.expand("../../../assets", __DIR__)
+    package = assets |> Path.join("package.json") |> File.read!() |> Jason.decode!()
+    app_js = assets |> Path.join("js/app.js") |> File.read!()
+    tank_hook = assets |> Path.join("js/hooks/realtime_tank.js") |> File.read!()
+
+    assert package["dependencies"]["three"] == "0.185.1"
+    assert app_js =~ "RealtimeTank"
+    assert tank_hook =~ "setAnimationLoop"
+    assert tank_hook =~ "ResizeObserver"
   end
 
   test "GET /producer renders the English HITL view", %{conn: conn} do

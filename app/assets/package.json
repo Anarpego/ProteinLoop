@@ -1,0 +1,7 @@
+{
+  "name": "proteinloop-assets",
+  "private": true,
+  "dependencies": {
+    "three": "0.185.1"
+  }
+}
