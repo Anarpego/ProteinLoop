@@ -5,4 +5,4 @@
 - [x] Implement candidate evaluation and AMD endpoint runner.
 - [x] Add Make and bundle integration.
 - [x] Run regression checks.
-- [ ] Publish for AMD pod execution.
+- [x] Publish for AMD pod execution.
