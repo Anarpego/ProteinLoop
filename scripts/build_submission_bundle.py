@@ -59,6 +59,7 @@ OPTIONAL_BUNDLE_FILES = [
     SUBMISSION / "gemma-evidence.json",
     SUBMISSION / "amd-notebook-gemma-evidence.json",
     SUBMISSION / "amd-gemma-policy-search.json",
+    SUBMISSION / "amd-gemma-product-evaluation.json",
     SUBMISSION / "cpu-gemma-deployment-evidence.json",
     SUBMISSION / "public-deployment-evidence.json",
     SUBMISSION / "public-deployment-evidence.md",

@@ -82,6 +82,8 @@ services:
       GEMMA_RECEIVE_TIMEOUT_MS: ${GEMMA_RECEIVE_TIMEOUT_MS:-120000}
       GEMMA_MAX_TOKENS: ${GEMMA_MAX_TOKENS:-1024}
       NRF9151_EVIDENCE_PATH: "/evidence/nrf9151-live-evidence.json"
+      AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
+      AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
     ports:
       - "${PUBLIC_BIND_IP:-0.0.0.0}:${PUBLIC_PORT:-80}:4000"
     volumes:

@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check visual-evidence-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check amd-notebook-gemma-evidence amd-notebook-gemma-search local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check visual-evidence-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check amd-notebook-gemma-evidence amd-notebook-gemma-search amd-notebook-product-eval local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
 
 LOCAL_GEMMA_HOST ?= 127.0.0.1
 LOCAL_GEMMA_PORT ?= 8001
@@ -111,6 +111,9 @@ amd-notebook-gemma-evidence:
 
 amd-notebook-gemma-search:
 	PYTHONPATH=sim GEMMA_ENDPOINT="$(AMD_NOTEBOOK_GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" $(AMD_NOTEBOOK_PYTHON) scripts/run_amd_gemma_policy_search.py
+
+amd-notebook-product-eval:
+	PYTHONPATH=sim GEMMA_ENDPOINT="$(AMD_NOTEBOOK_GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" $(AMD_NOTEBOOK_PYTHON) scripts/run_amd_gemma_product_evaluation.py
 
 local-gemma-install:
 	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" install

@@ -282,6 +282,384 @@ body {
   color: #ea580c;
 }
 
+.amd-experiment {
+  overflow: hidden;
+  border-top: 2px solid #2563eb;
+  border-bottom: 1px solid #b8c7d1;
+  background: #ffffff;
+  box-shadow: 0 0.9rem 2rem rgb(15 23 42 / 8%);
+}
+
+.amd-experiment__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, auto);
+  align-items: start;
+  gap: 1.5rem;
+  padding: 1.15rem 1.25rem;
+  background: #f7fbff;
+}
+
+.amd-experiment__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #c2410c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.amd-experiment__eyebrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.amd-experiment__header h2 {
+  margin-top: 0.3rem;
+  color: #111827;
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.75rem;
+}
+
+.amd-experiment__header > div:first-child > p:last-child {
+  margin-top: 0.35rem;
+  color: rgb(31 41 55 / 68%);
+  font-size: 0.85rem;
+  line-height: 1.25rem;
+}
+
+.amd-experiment__provenance {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.28rem;
+  text-align: right;
+}
+
+.amd-experiment__provenance strong,
+.amd-experiment__provenance small {
+  max-width: 24rem;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__provenance strong {
+  color: #334155;
+  font-size: 0.72rem;
+  line-height: 1rem;
+}
+
+.amd-experiment__provenance small {
+  color: rgb(51 65 85 / 68%);
+  font-size: 0.68rem;
+  line-height: 0.95rem;
+}
+
+.amd-experiment__runtime {
+  display: grid;
+  grid-template-columns: 1.25fr 0.85fr 1.25fr 0.85fr;
+  border-top: 1px solid #d8e0e3;
+  border-bottom: 1px solid #d8e0e3;
+  background: #f8fafc;
+}
+
+.amd-experiment__runtime > span {
+  display: block;
+  min-width: 0;
+  min-height: 4rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.amd-experiment__runtime > span + span {
+  border-left: 1px solid #d8e0e3;
+}
+
+.amd-experiment__runtime small,
+.amd-experiment__runtime strong {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__runtime small {
+  color: #64748b;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 0.9rem;
+  text-transform: uppercase;
+}
+
+.amd-experiment__runtime strong {
+  margin-top: 0.18rem;
+  color: #1e293b;
+  font-size: 0.76rem;
+  line-height: 1.05rem;
+}
+
+.amd-experiment__flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.amd-experiment__flow li {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 5.5rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.amd-experiment__flow li + li {
+  border-left: 1px solid #d8e0e3;
+}
+
+.amd-experiment__flow li > span {
+  display: inline-flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.amd-experiment__flow li[data-selected-stage] {
+  background: #fff7ed;
+}
+
+.amd-experiment__flow li[data-selected-stage] > span {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.amd-experiment__flow small,
+.amd-experiment__flow strong {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__flow small {
+  color: #64748b;
+  font-size: 0.62rem;
+  line-height: 0.88rem;
+}
+
+.amd-experiment__flow strong {
+  margin-top: 0.16rem;
+  color: #111827;
+  font-size: 0.8rem;
+  line-height: 1.05rem;
+}
+
+.amd-experiment__selection {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.8fr) minmax(0, 1.2fr);
+  border-top: 1px solid #b7decf;
+  border-bottom: 1px solid #b7decf;
+  background: #f0fdf4;
+}
+
+.amd-experiment__selection-copy {
+  min-width: 0;
+  padding: 1rem 1.25rem;
+}
+
+.amd-experiment__selection-copy > p:first-child {
+  color: #047857;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.amd-experiment__selection-copy h3 {
+  margin-top: 0.2rem;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.35rem;
+}
+
+.amd-experiment__selection-copy > p:last-child {
+  margin-top: 0.35rem;
+  color: rgb(31 41 55 / 70%);
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+}
+
+.amd-experiment__action {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.amd-experiment__action > div {
+  min-width: 0;
+  padding: 1rem 0.85rem;
+  border-left: 1px solid #b7decf;
+}
+
+.amd-experiment__action dt {
+  color: #64748b;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 0.9rem;
+  text-transform: uppercase;
+}
+
+.amd-experiment__action dd {
+  margin-top: 0.18rem;
+  color: #111827;
+  font-size: 0.8rem;
+  font-weight: 750;
+  line-height: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__ledger > summary {
+  display: flex;
+  min-height: 3.75rem;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.25rem;
+}
+
+.amd-experiment__ledger > summary::-webkit-details-marker {
+  display: none;
+}
+
+.amd-experiment__ledger > summary strong,
+.amd-experiment__ledger > summary small {
+  display: block;
+}
+
+.amd-experiment__ledger > summary strong {
+  font-size: 0.82rem;
+  line-height: 1.1rem;
+}
+
+.amd-experiment__ledger > summary small {
+  margin-top: 0.15rem;
+  color: #64748b;
+  font-size: 0.66rem;
+  line-height: 0.95rem;
+}
+
+.amd-experiment__ledger > summary svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  transition: transform 180ms ease;
+}
+
+.amd-experiment__ledger[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.amd-experiment__ledger ol {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #d8e0e3;
+  list-style: none;
+}
+
+.amd-experiment__ledger li {
+  padding: 0.8rem 1.25rem;
+  background: #fbfdff;
+}
+
+.amd-experiment__ledger li + li {
+  border-top: 1px solid #d8e0e3;
+}
+
+.amd-experiment__ledger li[data-selected="true"] {
+  border-left: 3px solid #059669;
+  background: #f0fdf4;
+}
+
+.amd-experiment__ledger li[data-candidate-decision="rejected"] {
+  background: #fff8f8;
+}
+
+.amd-experiment__candidate-heading {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.amd-experiment__candidate-heading strong,
+.amd-experiment__candidate-heading small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__candidate-heading strong {
+  font-size: 0.78rem;
+  line-height: 1.05rem;
+}
+
+.amd-experiment__candidate-heading small,
+.amd-experiment__candidate-reward {
+  color: #64748b;
+  font-size: 0.62rem;
+  line-height: 0.9rem;
+}
+
+.amd-experiment__candidate-action,
+.amd-experiment__violation {
+  margin-top: 0.4rem;
+  font-size: 0.68rem;
+  line-height: 1rem;
+}
+
+.amd-experiment__candidate-action {
+  color: #475569;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.amd-experiment__violation {
+  color: #b91c1c;
+  font-weight: 650;
+}
+
+.amd-experiment__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.25rem;
+  border-top: 1px solid #d8e0e3;
+  background: #f8fafc;
+}
+
+.amd-experiment__footer p {
+  max-width: 49rem;
+  color: #475569;
+  font-size: 0.7rem;
+  line-height: 1.05rem;
+}
+
+.amd-experiment__footer strong {
+  color: #111827;
+}
+
 .off-grid-continuity {
   overflow: hidden;
   border-top: 1px solid #cbd7db;
@@ -1432,6 +1810,33 @@ body {
 }
 
 @media (max-width: 1023px) {
+  .amd-experiment__header,
+  .amd-experiment__selection {
+    grid-template-columns: 1fr;
+  }
+
+  .amd-experiment__provenance {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .amd-experiment__runtime {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .amd-experiment__runtime > span:nth-child(3) {
+    border-top: 1px solid #d8e0e3;
+    border-left: 0;
+  }
+
+  .amd-experiment__runtime > span:nth-child(4) {
+    border-top: 1px solid #d8e0e3;
+  }
+
+  .amd-experiment__action > div:first-child {
+    border-left: 0;
+  }
+
   .off-grid-continuity__header {
     flex-direction: column;
     gap: 0.5rem;
@@ -1485,6 +1890,59 @@ body {
 }
 
 @media (max-width: 767px) {
+  .amd-experiment__header {
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+
+  .amd-experiment__header h2 {
+    font-size: 1.1rem;
+    line-height: 1.45rem;
+  }
+
+  .amd-experiment__flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .amd-experiment__flow li:nth-child(3) {
+    border-top: 1px solid #d8e0e3;
+    border-left: 0;
+  }
+
+  .amd-experiment__flow li:nth-child(4) {
+    border-top: 1px solid #d8e0e3;
+  }
+
+  .amd-experiment__action {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .amd-experiment__action > div:nth-child(3) {
+    border-top: 1px solid #b7decf;
+    border-left: 0;
+  }
+
+  .amd-experiment__action > div:nth-child(4) {
+    border-top: 1px solid #b7decf;
+  }
+
+  .amd-experiment__candidate-heading {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .amd-experiment__candidate-reward {
+    grid-column: 2;
+  }
+
+  .amd-experiment__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .amd-experiment__footer .btn {
+    min-height: 2.75rem;
+  }
+
   .advanced-state__header {
     align-items: flex-start;
     flex-direction: column;
@@ -1748,6 +2206,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .amd-experiment__ledger > summary svg,
   .off-grid-continuity__chevron,
   .protein-loop-story__steps::after,
   .protein-loop-story__steps svg,

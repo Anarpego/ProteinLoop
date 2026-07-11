@@ -95,6 +95,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:agent_provider, :stub_safe)
       |> assign(:horde_status, horde_runtime().cluster_status())
       |> assign(:nrf9151_evidence, nrf9151_evidence().snapshot())
+      |> assign(:amd_experiment, amd_experiment_evidence().snapshot())
       |> assign(:mesh, Mesh.initial())
       |> assign(:approval_queue, ApprovalQueue.snapshot())
       |> assign(:model_status, ModelStatus.snapshot())
@@ -794,6 +795,14 @@ defmodule ProteinLoopWeb.OperatorLive do
     Application.get_env(:proteinloop, :nrf9151_evidence, ProteinLoop.NRF9151Evidence)
   end
 
+  defp amd_experiment_evidence do
+    Application.get_env(
+      :proteinloop,
+      :amd_experiment_evidence,
+      ProteinLoop.AMDExperimentEvidence
+    )
+  end
+
   defp dect_simulator_client do
     Application.get_env(:proteinloop, :dect_simulator_client, SimulatorClient)
   end
@@ -1206,7 +1215,20 @@ defmodule ProteinLoopWeb.OperatorLive do
                 <small>Risky actions pause</small>
               </span>
             </li>
-            <li title="Portable deployment profile included; the current local demo is not AMD-hosted.">
+            <li
+              :if={@amd_experiment.available?}
+              title="Captured on the Act-II AMD notebook; the public application remains on its durable CPU fallback."
+            >
+              <.icon name="hero-cpu-chip" />
+              <span>
+                <strong>AMD-hosted Gemma captured</strong>
+                <small>Public app remains on CPU fallback</small>
+              </span>
+            </li>
+            <li
+              :if={!@amd_experiment.available?}
+              title="Portable deployment profile included; the current local demo is not AMD-hosted."
+            >
               <.icon name="hero-cpu-chip" />
               <span>
                 <strong>AMD ROCm + vLLM profile</strong>
@@ -1215,6 +1237,11 @@ defmodule ProteinLoopWeb.OperatorLive do
             </li>
           </ul>
         </section>
+
+        <.amd_experiment_replay
+          :if={@amd_experiment.available?}
+          evidence={@amd_experiment}
+        />
 
         <details
           id="off-grid-continuity"
@@ -2670,6 +2697,198 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp model_badge_class(:auth_required), do: "badge-warning"
   defp model_badge_class(:not_checked), do: "badge-info"
   defp model_badge_class(_status), do: "badge-error"
+
+  attr :evidence, :map, required: true
+
+  def amd_experiment_replay(assigns) do
+    selected = assigns.evidence.search.selected
+
+    assigns =
+      assigns
+      |> assign(:selected, selected)
+      |> assign(:selected_action, selected.action)
+
+    ~H"""
+    <section
+      id="amd-experiment-replay"
+      class="amd-experiment"
+      data-evidence-state="captured"
+      aria-labelledby="amd-experiment-title"
+    >
+      <header class="amd-experiment__header">
+        <div>
+          <p class="amd-experiment__eyebrow">
+            <.icon name="hero-cpu-chip" /> Captured AMD experiment
+          </p>
+          <h2 id="amd-experiment-title">
+            Gemma explored {@evidence.search.generated_count} recovery plans on AMD
+          </h2>
+          <p>
+            The verifier admitted {@evidence.search.safe_count} and rejected {@evidence.search.rejected_count} before tank mutation.
+          </p>
+        </div>
+        <div class="amd-experiment__provenance">
+          <span class="badge badge-success">Verified artifacts</span>
+          <strong>Captured experiment · not a live notebook connection</strong>
+          <small>Public demo runtime: {@evidence.public_runtime}</small>
+        </div>
+      </header>
+
+      <div class="amd-experiment__runtime" aria-label="Captured AMD runtime">
+        <span>
+          <small>Model</small>
+          <strong>{@evidence.model}</strong>
+        </span>
+        <span>
+          <small>AMD software</small>
+          <strong>ROCm {@evidence.runtime.rocm_version}</strong>
+        </span>
+        <span>
+          <small>Serving engine</small>
+          <strong>vLLM {@evidence.runtime.vllm_version}</strong>
+        </span>
+        <span>
+          <small>GPU proof</small>
+          <strong>{@evidence.runtime.architecture} · {@evidence.runtime.gpu_memory_gib} GiB</strong>
+        </span>
+      </div>
+
+      <ol class="amd-experiment__flow" aria-label="AMD Gemma verifier-guided search">
+        <li>
+          <span>1</span>
+          <div>
+            <small>Gemma 4</small>
+            <strong>{@evidence.search.generated_count} different plans</strong>
+          </div>
+        </li>
+        <li>
+          <span>2</span>
+          <div>
+            <small>Safety boundary</small>
+            <strong>{@evidence.search.rejected_count} blocked</strong>
+          </div>
+        </li>
+        <li>
+          <span>3</span>
+          <div>
+            <small>Simulator ranking</small>
+            <strong>{@evidence.search.safe_count} safe plans scored</strong>
+          </div>
+        </li>
+        <li data-selected-stage>
+          <span>4</span>
+          <div>
+            <small>Best verified result</small>
+            <strong>+{@evidence.search.reward_delta} reward</strong>
+          </div>
+        </li>
+      </ol>
+
+      <div class="amd-experiment__selection">
+        <div class="amd-experiment__selection-copy">
+          <p>Selected safe recovery</p>
+          <h3>{@selected.strategy}</h3>
+          <p>{@selected_action["note"]}</p>
+        </div>
+        <dl class="amd-experiment__action">
+          <div>
+            <dt>Feed</dt>
+            <dd>{one_decimal(@selected_action["feed_kg"])} kg</dd>
+          </div>
+          <div>
+            <dt>Aeration</dt>
+            <dd>{one_decimal(@selected_action["aeration_hours"])} h aeration</dd>
+          </div>
+          <div>
+            <dt>Water</dt>
+            <dd>{one_decimal(@selected_action["water_exchange_fraction"] * 100)}% water exchange</dd>
+          </div>
+          <div>
+            <dt>Duckweed</dt>
+            <dd>{one_decimal(@selected_action["duckweed_harvest_kg"])} kg harvest</dd>
+          </div>
+        </dl>
+      </div>
+
+      <details class="amd-experiment__ledger">
+        <summary>
+          <span>
+            <strong>Inspect every verifier decision</strong>
+            <small>Structured actions and outcomes only · no private chain-of-thought</small>
+          </span>
+          <.icon name="hero-chevron-down" />
+        </summary>
+        <ol aria-label="Captured candidate decisions">
+          <li
+            :for={candidate <- @evidence.search.candidates}
+            data-candidate-index={candidate.index}
+            data-candidate-decision={if(candidate.accepted?, do: "accepted", else: "rejected")}
+            data-selected={to_string(candidate.selected?)}
+          >
+            <div class="amd-experiment__candidate-heading">
+              <span class={[
+                "badge badge-sm",
+                cond do
+                  candidate.selected? -> "badge-success"
+                  candidate.accepted? -> "badge-info"
+                  true -> "badge-error"
+                end
+              ]}>
+                {cond do
+                  candidate.selected? -> "Selected"
+                  candidate.accepted? -> "Safe"
+                  true -> "Blocked before mutation"
+                end}
+              </span>
+              <div>
+                <strong>{candidate.strategy}</strong>
+                <small>{candidate_source(candidate.source)}</small>
+              </div>
+              <span :if={candidate.reward} class="amd-experiment__candidate-reward">
+                reward {candidate.reward}
+              </span>
+            </div>
+            <p class="amd-experiment__candidate-action">
+              feed {candidate.action["feed_kg"]} kg · aeration {candidate.action["aeration_hours"]} h · water {one_decimal(
+                candidate.action["water_exchange_fraction"] * 100
+              )}% · duckweed {candidate.action["duckweed_harvest_kg"]} kg
+            </p>
+            <p :if={!candidate.accepted?} class="amd-experiment__violation">
+              {Enum.join(candidate.violations, "; ")}
+            </p>
+          </li>
+        </ol>
+      </details>
+
+      <footer class="amd-experiment__footer">
+        <p>
+          <strong>No model weights were updated.</strong>
+          This was verifier-guided inference-time search: Gemma explored; deterministic ecosystem
+          rules decided what was safe.
+        </p>
+        <button
+          id="amd-run-local-proof"
+          type="button"
+          class="btn btn-sm btn-outline"
+          phx-click="demo-cascade"
+          phx-disable-with="Running local proof..."
+        >
+          <.icon name="hero-play" /> Run the verifier locally
+        </button>
+      </footer>
+    </section>
+    """
+  end
+
+  defp one_decimal(value) when is_number(value) do
+    :erlang.float_to_binary(value * 1.0, decimals: 1)
+  end
+
+  defp one_decimal(_value), do: "—"
+
+  defp candidate_source("control_unsafe"), do: "Deliberate verifier challenge"
+  defp candidate_source("amd_hosted_gemma"), do: "AMD-hosted Gemma candidate"
+  defp candidate_source(source), do: source
 
   defp forecast_badge("stable"), do: "badge-success"
   defp forecast_badge("warning"), do: "badge-warning"

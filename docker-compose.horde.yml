@@ -9,6 +9,8 @@ services:
       SAGENTS_STATE_DIR: "/app/priv/sagents-state"
       HORDE_DEMO_TOKEN: ${HORDE_DEMO_TOKEN:-proteinloop-local-horde-token}
       NRF9151_EVIDENCE_PATH: "/evidence/nrf9151-live-evidence.json"
+      AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
+      AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
     volumes:
       - proteinloop_sagents_state:/app/priv/sagents-state
       - ./submission:/evidence:ro
@@ -28,6 +30,8 @@ services:
       GEMMA_RECEIVE_TIMEOUT_MS: ${GEMMA_RECEIVE_TIMEOUT_MS:-120000}
       GEMMA_MAX_TOKENS: ${GEMMA_MAX_TOKENS:-1024}
       NRF9151_EVIDENCE_PATH: "/evidence/nrf9151-live-evidence.json"
+      AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
+      AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
       SECRET_KEY_BASE: "proteinloop-horde-peer-secret-key-base-000000000000000000000000000000000000000000000000000000000000"
       ERL_AFLAGS: "-sname proteinloop_peer@peer -setcookie proteinloop_local_horde"
       SAGENTS_DISTRIBUTION: "horde"

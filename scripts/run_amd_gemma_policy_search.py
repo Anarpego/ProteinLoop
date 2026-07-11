@@ -123,7 +123,13 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def candidate_request(model: str, strategy: str, seed: int) -> dict[str, Any]:
+def candidate_request(
+    model: str,
+    strategy: str,
+    seed: int,
+    state: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    prompt_state = state or PROMPT_STATE
     return {
         "model": model,
         "temperature": 0.75,
@@ -144,7 +150,7 @@ def candidate_request(model: str, strategy: str, seed: int) -> dict[str, Any]:
                 "role": "user",
                 "content": (
                     f"Strategy objective: {strategy}. Current state: "
-                    f"{json.dumps(PROMPT_STATE, sort_keys=True)}. Propose one bounded daily action."
+                    f"{json.dumps(prompt_state, sort_keys=True)}. Propose one bounded daily action."
                 ),
             },
         ],

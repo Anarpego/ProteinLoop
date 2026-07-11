@@ -9,11 +9,19 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     previous = Application.get_env(:proteinloop, :sagents_runtime)
     previous_horde = Application.get_env(:proteinloop, :horde_runtime)
     previous_evidence = Application.get_env(:proteinloop, :nrf9151_evidence)
+    previous_amd_evidence = Application.get_env(:proteinloop, :amd_experiment_evidence)
     previous_dect_client = Application.get_env(:proteinloop, :dect_simulator_client)
     previous_demo_cascade = Application.get_env(:proteinloop, :demo_cascade)
     Application.put_env(:proteinloop, :sagents_runtime, ProteinLoop.TestSagentsRuntime)
     Application.put_env(:proteinloop, :horde_runtime, ProteinLoop.TestHordeRuntime)
     Application.put_env(:proteinloop, :nrf9151_evidence, ProteinLoop.TestNRF9151Evidence)
+
+    Application.put_env(
+      :proteinloop,
+      :amd_experiment_evidence,
+      ProteinLoop.TestAMDExperimentEvidence
+    )
+
     Application.put_env(:proteinloop, :dect_simulator_client, ProteinLoop.TestDectSimulatorClient)
     Application.put_env(:proteinloop, :demo_cascade, ProteinLoop.TestDemoCascade)
     Application.put_env(:proteinloop, :test_dect_owner, self())
@@ -36,6 +44,12 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
         Application.put_env(:proteinloop, :nrf9151_evidence, previous_evidence)
       else
         Application.delete_env(:proteinloop, :nrf9151_evidence)
+      end
+
+      if previous_amd_evidence do
+        Application.put_env(:proteinloop, :amd_experiment_evidence, previous_amd_evidence)
+      else
+        Application.delete_env(:proteinloop, :amd_experiment_evidence)
       end
 
       if previous_dect_client do
@@ -91,8 +105,8 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Deterministic verifier"
     assert html =~ "2-board DECT NR+ capture"
     assert html =~ "Producer approval"
-    assert html =~ "AMD ROCm + vLLM profile"
-    assert html =~ "Portable path · current demo is local"
+    assert html =~ "AMD-hosted Gemma captured"
+    assert html =~ "Public app remains on CPU fallback"
     assert has_element?(view, "#run-judge-proof[phx-click='demo-cascade']")
     assert has_element?(view, "#producer-decision-link", "Producer view")
 
@@ -157,6 +171,53 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Inject demo water emergency"
     assert has_element?(view, "#operator-system-scene [data-tank-fallback]")
     refute html =~ "protein-loop-system.svg"
+  end
+
+  test "replays the captured AMD Gemma search and verifier decisions", %{conn: conn} do
+    {:ok, view, html} = live(conn, ~p"/")
+
+    assert has_element?(
+             view,
+             "#amd-experiment-replay[data-evidence-state='captured'][aria-labelledby='amd-experiment-title']"
+           )
+
+    assert html =~ "Gemma explored 6 recovery plans on AMD"
+    assert html =~ "The verifier admitted 3 and rejected 4 before tank mutation."
+    assert html =~ "google/gemma-4-E2B-it"
+    assert html =~ "ROCm 7.2.53211"
+    assert html =~ "vLLM 0.20.2rc1.dev15+g321fa2d6d"
+    assert html =~ "gfx1100 · 47.98 GiB"
+    assert html =~ "+69.3611 reward"
+    assert html =~ "oxygen-first emergency recovery"
+    assert html =~ "18.0 h aeration"
+    assert html =~ "20.0% water exchange"
+    assert html =~ "deliberate verifier control"
+    assert html =~ "Blocked before mutation"
+    assert html =~ "aeration_hours must be at most 24"
+    assert html =~ "Captured experiment · not a live notebook connection"
+    assert html =~ "Public demo runtime: self-hosted CPU fallback"
+    assert html =~ "No model weights were updated"
+
+    assert has_element?(
+             view,
+             "#amd-run-local-proof[phx-click='demo-cascade']",
+             "Run the verifier locally"
+           )
+  end
+
+  test "falls back to portable AMD language without complete imported evidence", %{conn: conn} do
+    Application.put_env(
+      :proteinloop,
+      :amd_experiment_evidence,
+      ProteinLoop.TestUnavailableAMDExperimentEvidence
+    )
+
+    {:ok, view, html} = live(conn, ~p"/")
+
+    refute has_element?(view, "#amd-experiment-replay")
+    assert html =~ "AMD ROCm + vLLM profile"
+    assert html =~ "Portable path · current demo is local"
+    refute html =~ "AMD-hosted Gemma captured"
   end
 
   test "makes producer handoff and latest decision visible in the operator header", %{conn: conn} do
