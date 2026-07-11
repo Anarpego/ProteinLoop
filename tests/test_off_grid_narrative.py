@@ -38,6 +38,8 @@ class OffGridNarrativeTests(unittest.TestCase):
         self.assertIn("Physical probes and measured solar-plus-battery autonomy", video)
         self.assertIn("Private field radio keeps the food control loop local", deck)
         self.assertIn("Next measured field proof", deck)
+        self.assertIn("public 8 GB CPU host", deck)
+        self.assertIn("self-hosted CPU inference", video)
 
 
 if __name__ == "__main__":

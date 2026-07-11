@@ -63,7 +63,7 @@ Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `
 
 ## 13. Proven Gemma Runtime
 
-`google/gemma-4-E2B-it` runs on a separate local computer through llama.cpp/Metal behind `GEMMA_ENDPOINT`; the same boundary can later move to a solar-powered edge host or vLLM/ROCm without changing the agent code.
+`google/gemma-4-E2B-it` runs privately through llama.cpp on the public 8 GB CPU host, with separate Metal evidence for the full Sagents path. `GEMMA_ENDPOINT` can later move to a solar-powered edge host or vLLM/ROCm without changing agent or verifier code. No AMD/GPU inference is claimed.
 
 ## 14. Market
 

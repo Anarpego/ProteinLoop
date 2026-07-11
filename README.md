@@ -823,10 +823,13 @@ make readiness-report
 
 ## Remaining External Gates
 
-The public repository and local Gemma profile are prepared. Final submission readiness still needs:
+The public repository, HTTPS application, private CPU Gemma service, local Sagents evidence, two-board
+DECT NR+ capture, and upload bundle are prepared. The automated status is recorded in
+[`submission/final-readiness-report.md`](submission/final-readiness-report.md). The remaining work is
+manual submission handling:
 
-1. Deploy the Docker app to a public URL and run `make live-demo-check`.
-2. Replace the TODO Application URL in `submission/lablab-submission.md` with `make set-demo-url`.
-3. Run `SUBMISSION_GEMMA_MODE=local make submission-finalize`.
+1. Rehearse the judge path on `https://proteinloop.dev-vb.lat` and record the final live walkthrough.
+2. Upload the cover, deck, video, and `submission/proteinloop-lablab-upload.zip` to lablab.
+3. Paste the prepared fields from `submission/lablab-form.json`, verify the public links, and submit.
 
 AMD-hosted or Fireworks inference remains an optional remote profile. Use `SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and `make gemma-check` pass against that host.

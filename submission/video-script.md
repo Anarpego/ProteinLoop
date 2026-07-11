@@ -70,13 +70,13 @@ Narration:
 
 The operator sets a plain-language goal instead of receiving a generic summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. Progress comes from those actual runtime boundaries rather than a decorative timer. The interface shows role status, structured recommendations, tool calls, verifier outcomes, and measured chemistry without exposing private chain-of-thought. `verify_ecosystem_safety` remains the authority before execution. Technical controls remain available in the closed `Advanced evidence and controls` section.
 
-## Scene 8: Local Gemma 4
+## Scene 8: Self-hosted Gemma 4
 
-Show the model status panel and `submission/local-gemma-evidence.json`.
+Show the configured model status panel and `submission/cpu-gemma-deployment-evidence.json`.
 
 Narration:
 
-The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model, running on a separate local computer through llama.cpp and Metal. The radios transport field data; they do not run the model. The OpenAI-compatible `GEMMA_ENDPOINT` contract lets the same agents move to a solar-powered edge host or a future ROCm/vLLM deployment without changing their safety boundary. The ROCm/vLLM profile remains a portable future path, not an AMD-hosted claim in this submission.
+The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model. The judge demo serves its official QAT Q4 weights through a private llama.cpp service on our owned 8 GB CPU host, while a separate Metal run records the full Sagents and human-approval proof. The radios transport field data; they do not run the model. The OpenAI-compatible `GEMMA_ENDPOINT` contract lets the same agents move to a solar-powered edge host or a future ROCm/vLLM deployment without changing their safety boundary. The public runtime is self-hosted CPU inference, not an AMD-hosted or GPU claim.
 
 ## Closing
 
