@@ -340,12 +340,18 @@ ROCm, vLLM, tensor-execution, latency, model, and structured-action proof togeth
 git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
 cd /workspace/ProteinLoop
 make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
+make amd-notebook-gemma-search GEMMA_MODEL=google/gemma-4-E2B-it
 ```
 
 The target deliberately uses `/opt/venv/bin/python3.10`, the prepared notebook kernel, and writes
-`submission/amd-notebook-gemma-evidence.json`. It does not serialize `HF_TOKEN`, endpoint API keys,
-cookies, UUIDs, or hardware serial numbers. Download that JSON from Jupyter before the temporary
-allocation ends, add it to the local repository, and validate the AMD-hosted submission profile:
+`submission/amd-notebook-gemma-evidence.json`. The second target asks AMD-hosted Gemma for six
+diverse recovery plans, injects one explicit unsafe control, rejects unsafe actions before mutation,
+and ranks safe candidates with `SafetyVerifier.reward`. It writes
+`submission/amd-gemma-policy-search.json` and accurately labels the method as inference-time
+Best-of-N search with no model weight update. Neither target serializes `HF_TOKEN`, endpoint API
+keys, cookies, UUIDs, or hardware serial numbers. Download both JSON files from Jupyter before the
+temporary allocation ends, add them to the local repository, and validate the AMD-hosted submission
+profile:
 
 ```sh
 SUBMISSION_GEMMA_MODE=amd_notebook make submission-ready-check

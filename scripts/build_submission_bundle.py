@@ -58,6 +58,7 @@ OPTIONAL_BUNDLE_FILES = [
     SUBMISSION / "docker-smoke-evidence.json",
     SUBMISSION / "gemma-evidence.json",
     SUBMISSION / "amd-notebook-gemma-evidence.json",
+    SUBMISSION / "amd-gemma-policy-search.json",
     SUBMISSION / "cpu-gemma-deployment-evidence.json",
     SUBMISSION / "public-deployment-evidence.json",
     SUBMISSION / "public-deployment-evidence.md",

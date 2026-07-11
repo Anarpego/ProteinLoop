@@ -95,11 +95,16 @@ After the server reports ready, clone ProteinLoop and generate the credential-fr
 git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
 cd /workspace/ProteinLoop
 make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
+make amd-notebook-gemma-search GEMMA_MODEL=google/gemma-4-E2B-it
 ```
 
-Download `submission/amd-notebook-gemma-evidence.json` before the temporary allocation ends. The
-collector records only non-secret runtime facts and the bounded model action; it strips hardware
-serial identifiers by selecting an explicit safe field set from AMD SMI output.
+Download `submission/amd-notebook-gemma-evidence.json` and
+`submission/amd-gemma-policy-search.json` before the temporary allocation ends. The runtime
+collector records only non-secret facts and the bounded model action; it strips hardware serial
+identifiers by selecting an explicit safe field set from AMD SMI output. The policy-search artifact
+records six Gemma proposals, deterministic verifier outcomes, simulator rewards, the winning plan,
+and reward delta against a naive baseline. It explicitly records `weight_updates: false`; do not
+describe this inference-time search as RL fine-tuning.
 
 Validate the OpenAI-compatible server:
 
