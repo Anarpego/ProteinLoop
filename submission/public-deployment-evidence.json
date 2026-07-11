@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-07-11T04:55:53Z",
+  "commit": "c15a1c957c9a3889fe09608d73e9ecf4c2fee930",
+  "compose_project": "proteinloop",
+  "deployment": {
+    "application_url": "https://proteinloop.dev-vb.lat",
+    "host": "143.244.220.83",
+    "source": "/opt/proteinloop/source",
+    "web_bind": "127.0.0.1:4011",
+    "simulator_publicly_published": false,
+    "tls_proxy": "Caddy"
+  },
+  "gemma": {
+    "public_endpoint_configured": false,
+    "status_presented_by_ui": "Gemma 4 endpoint unavailable",
+    "evidence_profile": "local"
+  },
+  "checks": [
+    {
+      "name": "guided operator control route",
+      "ok": true
+    },
+    {
+      "name": "Gemma endpoint status is truthful",
+      "ok": true
+    },
+    {
+      "name": "producer English route",
+      "ok": true
+    },
+    {
+      "name": "bundled PBR fish model",
+      "ok": true,
+      "bytes": 12488144
+    },
+    {
+      "name": "bundled realistic prawn visual",
+      "ok": true,
+      "bytes": 151238
+    },
+    {
+      "name": "web exposed through loopback only",
+      "ok": true
+    },
+    {
+      "name": "simulator private on Compose network",
+      "ok": true
+    },
+    {
+      "name": "existing Kato containers preserved",
+      "ok": true,
+      "containers": [
+        "kato-api-1",
+        "kato-maptiles-maptiles-1",
+        "kato-osrm-osrm-1"
+      ]
+    },
+    {
+      "name": "Caddy active after reload",
+      "ok": true
+    }
+  ],
+  "ok": true
+}

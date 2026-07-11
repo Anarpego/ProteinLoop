@@ -5,7 +5,7 @@
 - [x] Add configurable loopback binding to the public Compose profile.
 - [x] Implement the idempotent DigitalOcean/Caddy deployment script.
 - [x] Run local deployment and regression checks.
-- [ ] Deploy the isolated remote Compose project.
-- [ ] Validate HTTPS operator and producer routes.
-- [ ] Update submission URL and readiness artifacts.
+- [x] Deploy the isolated remote Compose project.
+- [x] Validate HTTPS operator and producer routes.
+- [x] Update submission URL and readiness artifacts.
 - [ ] Publish implementation and deployment evidence.

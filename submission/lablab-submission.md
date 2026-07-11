@@ -47,8 +47,7 @@ Docker Compose
 
 ## Application URL
 
-TODO
-
+https://proteinloop.dev-vb.lat
 ## Key Demo Path
 
 1. Open the operator route and read the animated fish-to-eggs loop, executable proof ribbon, and `Off-grid continuity` band. The band explains no-Wi-Fi DECT NR+, no-cloud self-hosted Gemma, the planned solar-plus-battery power layer, and the proven-versus-planned acquisition path.
@@ -69,3 +68,4 @@ TODO
 - Product potential: resilient protein production for rural Latin America where farm Wi-Fi, cloud access, and grid electricity cannot be assumed; solar autonomy and physical chemistry probes remain measured deployment milestones.
 - Completeness: simulator, dashboard, harness, traces, physical radio evidence, Docker, deployment profile, submission artifacts.
 - Model evidence: live local Gemma 4 E2B inference through llama.cpp/Metal; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim.
+- Public deployment: the HTTPS judge demo runs Phoenix and the private simulator on an owned CPU DigitalOcean host. It reports Gemma unavailable there rather than implying GPU inference; the separate local evidence proves the self-hosted Gemma path.

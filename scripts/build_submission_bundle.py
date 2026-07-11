@@ -48,6 +48,8 @@ BASE_BUNDLE_FILES = [
 OPTIONAL_BUNDLE_FILES = [
     SUBMISSION / "docker-smoke-evidence.json",
     SUBMISSION / "gemma-evidence.json",
+    SUBMISSION / "public-deployment-evidence.json",
+    SUBMISSION / "public-deployment-evidence.md",
 ]
 
 

@@ -48,8 +48,8 @@ LOCAL_MODEL_COMMANDS = [
 
 FINAL_EVIDENCE_COMMANDS = [
     ("Public demo environment", ["make", "public-env-check"]),
+    ("Public live demo", ["make", "live-demo-check"]),
     ("Final submission readiness", ["make", "submission-ready-check"]),
-    ("GitHub CLI authentication", ["gh", "auth", "status"]),
 ]
 
 
@@ -486,9 +486,9 @@ def render_report(
         lines.append(f"| {item.name} | `{command}` | {item.returncode} | {status_label(item)} |")
 
     next_commands = [
-        "gh auth login -h github.com",
-        "make publish-repo GITHUB_REPOSITORY=Anarpego/ProteinLoop",
-        "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check",
+        "PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) "
+        "make public-env-check",
+        "DEMO_URL=https://your-public-demo-url make live-demo-check",
         "make set-demo-url DEMO_URL=https://your-public-demo-url",
     ]
     if model_mode == "local":

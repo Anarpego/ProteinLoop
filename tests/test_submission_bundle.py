@@ -7,11 +7,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.build_submission_bundle import bundle_files, build_manifest, sha256
+from scripts.build_submission_bundle import OPTIONAL_BUNDLE_FILES, bundle_files, build_manifest, sha256
 from scripts.validate_submission_artifacts import bundle_ok
 
 
 class SubmissionBundleTests(unittest.TestCase):
+    def test_optional_bundle_files_include_public_deployment_evidence(self):
+        names = {path.name for path in OPTIONAL_BUNDLE_FILES}
+
+        self.assertIn("public-deployment-evidence.json", names)
+        self.assertIn("public-deployment-evidence.md", names)
+
     def test_build_manifest_includes_size_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "artifact.txt"

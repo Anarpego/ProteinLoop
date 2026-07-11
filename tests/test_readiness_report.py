@@ -45,11 +45,13 @@ class ReadinessReportTests(unittest.TestCase):
             "Live nRF9151 DECT NR+ evidence",
             "Local Gemma endpoint evidence",
             "Public demo environment",
+            "Public live demo",
             "Final submission readiness",
-            "GitHub CLI authentication",
         ]:
             with self.subTest(expected=expected):
                 self.assertIn(expected, names)
+
+        self.assertNotIn("GitHub CLI authentication", names)
 
     def test_status_label_tracks_exit_code(self):
         self.assertEqual(status_label(CommandEvidence("ok", ["true"], 0, "", "")), "PASS")
