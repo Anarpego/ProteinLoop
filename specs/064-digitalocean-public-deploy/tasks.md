@@ -8,4 +8,4 @@
 - [x] Deploy the isolated remote Compose project.
 - [x] Validate HTTPS operator and producer routes.
 - [x] Update submission URL and readiness artifacts.
-- [ ] Publish implementation and deployment evidence.
+- [x] Publish implementation and deployment evidence.

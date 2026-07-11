@@ -1,8 +1,8 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-10T18:33:15+00:00
-Commit: `da15db6`
-Working tree (source): `M specs/056-realtime-tank-simulation/tasks.md`
+Generated: 2026-07-11T04:57:32+00:00
+Commit: `169e576`
+Working tree (source): `clean`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -18,24 +18,19 @@ Gemma evidence mode: `local`
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
 | Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
-| Public demo environment | `make public-env-check` | 2 | FAIL |
-| Final submission readiness | `make submission-ready-check` | 2 | FAIL |
-| GitHub CLI authentication | `gh auth status` | 1 | FAIL |
+| Public demo environment | `make public-env-check` | 0 | PASS |
+| Public live demo | `make live-demo-check` | 0 | PASS |
+| Final submission readiness | `make submission-ready-check` | 0 | PASS |
 
 ## Remaining Blockers
 
-- Public demo environment: [FAIL] PHX_HOST - set PHX_HOST to the public hostname
-- Public demo environment: [FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
-- Final submission readiness: [FAIL] application URL - missing or TODO
-- Final submission readiness: [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
-- GitHub CLI authentication: - The token in default is invalid.
+- None. Final readiness gates are passing.
 
 ## Next Commands
 
 ```sh
-gh auth login -h github.com
-make publish-repo GITHUB_REPOSITORY=Anarpego/ProteinLoop
 PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check
+DEMO_URL=https://your-public-demo-url make live-demo-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
 make local-gemma-check
 make local-gemma-submission-evidence
@@ -49,9 +44,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-...........................................................................................................................................................
+.........................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 155 tests in 0.125s
+Ran 169 tests in 0.156s
 
 OK
 ```
@@ -68,7 +63,7 @@ pptx slides: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-10T18:31:50.038860+00:00
+checked_at: 2026-07-11T04:57:32.199840+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -78,6 +73,9 @@ checked_at: 2026-07-10T18:31:50.038860+00:00
 [ok] safety recovery endpoint - reward=135.2741
 [ok] guided operator control route
 [ok] producer English route
+[ok] producer tank remains read-only
+[ok] bundled PBR fish model - bytes=12488144
+[ok] bundled realistic prawn visual - bytes=151238
 docker smoke OK
 ```
 
@@ -172,12 +170,23 @@ local Gemma endpoint evidence OK
 
 ```text
 python3 scripts/validate_public_env.py
-[FAIL] PHX_HOST - set PHX_HOST to the public hostname
-[FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
-[ok] PUBLIC_PORT - default 80
+[ok] PHX_HOST - proteinloop.dev-vb.lat
+[ok] SECRET_KEY_BASE - 128 characters
+[ok] PUBLIC_PORT - 4011
 [ok] SIMULATOR_URL - http://simulator:8000
-2 public environment check(s) failed
-make[1]: *** [public-env-check] Error 1
+public environment OK
+```
+
+### Public live demo
+
+```text
+DEMO_URL="https://proteinloop.dev-vb.lat" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
+[ok] guided operator control route
+[ok] Gemma endpoint status - Gemma 4 endpoint unavailable
+[ok] producer English route
+[ok] bundled PBR fish model - bytes=12488144
+[ok] bundled realistic prawn visual - bytes=151238
+live demo OK
 ```
 
 ### Final submission readiness
@@ -189,23 +198,13 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
 [ok] Local Gemma evidence - google/gemma-4-E2B-it via 127.0.0.1
 [ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
-[FAIL] application URL - missing or TODO
-[FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+[ok] application URL - https://proteinloop.dev-vb.lat
+[ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
+[ok] application control reachable - https://proteinloop.dev-vb.lat
+[ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - da15db6794989371f2a5641ca0b122be8af1325e
+[ok] local git commit - 169e576c963938172f6be72d878bb8c820164551
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
-2 submission readiness check(s) failed
-make[1]: *** [submission-ready-check] Error 1
-```
-
-### GitHub CLI authentication
-
-```text
-github.com
-  X Failed to log in to github.com account Anarpego (default)
-  - Active account: true
-  - The token in default is invalid.
-  - To re-authenticate, run: gh auth login -h github.com
-  - To forget about this account, run: gh auth logout -h github.com -u Anarpego
+submission readiness OK
 ```

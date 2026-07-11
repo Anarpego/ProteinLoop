@@ -7,24 +7,24 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 44653,
+      "bytes": 45232,
       "path": "README.md",
-      "sha256": "74b48272cd084b71ff2610cef5ea205a8463c2d11703e121b2373f893e181a2f"
+      "sha256": "7b5b4b18338621ebfafc216033c069a17b3ac68b0ce517f55008932133712b30"
     },
     {
-      "bytes": 7994,
+      "bytes": 8269,
       "path": "submission/lablab-submission.md",
-      "sha256": "e9bd6834b77852c3747b95921ca191e65981cc82f57340f47e0061b2a89af807"
+      "sha256": "1956dc6ada72d32c879969a2a432a37e2432ae78f4400c660782d543e7a15dfc"
     },
     {
-      "bytes": 8459,
+      "bytes": 8715,
       "path": "submission/lablab-form.json",
-      "sha256": "45f9a8be514627484c7658b86f89af68022516a8701d01cb1ef4377a57db9401"
+      "sha256": "dfa5bac6cb8b09e73c6e29c57b5ac8f75e3da9356176380b28159081abe7ec74"
     },
     {
-      "bytes": 6501,
+      "bytes": 6072,
       "path": "submission/final-readiness-report.md",
-      "sha256": "9368e1b69c2d02e8c33c3c924606834b309f3bc1ee7264fa4c6c169f5fba72a6"
+      "sha256": "e16494967994015d3ba5413b6778d45ce1432b1cc6df4e13740906ceba24e9f0"
     },
     {
       "bytes": 6092,
@@ -144,8 +144,18 @@
     {
       "bytes": 1296,
       "path": "submission/docker-smoke-evidence.json",
-      "sha256": "dfdf4e04028f1aa0d1da360420dd57c0de03895a1d25949e4a3c138671601ac8"
+      "sha256": "a516183206ea800df416a17e1a470251c48dfcbb182366319d3d6572f5402774"
+    },
+    {
+      "bytes": 1433,
+      "path": "submission/public-deployment-evidence.json",
+      "sha256": "cee7bd0e6bfca7591fe7e071cde6ff27103e6b161f3b540d50fee52f3f6f5e29"
+    },
+    {
+      "bytes": 761,
+      "path": "submission/public-deployment-evidence.md",
+      "sha256": "aa1ad5c4aec7865b748883524cb144be71c22081a6704ecfb8ca9b5e1611f1cf"
     }
   ],
-  "generated_at": "2026-07-11T04:20:30.786458+00:00"
+  "generated_at": "2026-07-11T04:57:36.582384+00:00"
 }
