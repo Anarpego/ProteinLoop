@@ -52,8 +52,10 @@ class CpuGemmaDeploySourceTests(unittest.TestCase):
         source = SCRIPT.read_text(encoding="utf-8")
 
         for marker in (
-            "8827aa12e1b1b82f55a4e41e2939dbcf7dc3895a15278c1a6b610b137ca0d83f",
+            "3646b4c147cd235a44d91df1546d3b7d8e29b547dbe4e1f80856419aa455e6fd",
             "3349514112",
+            "MEMORY_KIB < 7500000",
+            "partial_is_valid",
             "--profile gemma-cpu",
             "http://gemma:8001/v1/models",
             "http://gemma:8001/v1/chat/completions",

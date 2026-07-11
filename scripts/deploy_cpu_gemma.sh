@@ -12,7 +12,7 @@ PROTEINLOOP_REMOTE_ENV="${PROTEINLOOP_REMOTE_ENV:-/etc/proteinloop/public.env}"
 GEMMA_MODEL_DIR="${GEMMA_MODEL_DIR:-/opt/proteinloop/models}"
 GEMMA_MODEL_FILE="gemma-4-E2B_q4_0-it.gguf"
 GEMMA_MODEL_URL="${GEMMA_MODEL_URL:-https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/${GEMMA_MODEL_FILE}?download=true}"
-GEMMA_MODEL_SHA256="8827aa12e1b1b82f55a4e41e2939dbcf7dc3895a15278c1a6b610b137ca0d83f"
+GEMMA_MODEL_SHA256="3646b4c147cd235a44d91df1546d3b7d8e29b547dbe4e1f80856419aa455e6fd"
 GEMMA_MODEL_BYTES="3349514112"
 
 if [[ ! -f "${PROTEINLOOP_DEPLOY_KEY}" ]]; then
@@ -48,7 +48,7 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 MEMORY_KIB="$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)"
-if ((MEMORY_KIB < 7_500_000)); then
+if ((MEMORY_KIB < 7500000)); then
   echo "CPU Gemma deployment requires at least 7.5 GiB total RAM" >&2
   exit 3
 fi
@@ -73,10 +73,23 @@ model_is_valid() {
     echo "${GEMMA_MODEL_SHA256}  ${MODEL_PATH}" | sha256sum -c - >/dev/null
 }
 
+partial_is_valid() {
+  [[ -f "${PARTIAL_PATH}" ]] &&
+    [[ "$(stat -c %s "${PARTIAL_PATH}")" == "${GEMMA_MODEL_BYTES}" ]] &&
+    echo "${GEMMA_MODEL_SHA256}  ${PARTIAL_PATH}" | sha256sum -c - >/dev/null
+}
+
 if ! model_is_valid; then
-  rm -f "${PARTIAL_PATH}"
-  curl --fail --location --retry 5 --retry-delay 3 \
-    --output "${PARTIAL_PATH}" "${GEMMA_MODEL_URL}"
+  if ! partial_is_valid; then
+    if [[ -f "${PARTIAL_PATH}" ]]; then
+      PARTIAL_BYTES="$(stat -c %s "${PARTIAL_PATH}")"
+      if ((PARTIAL_BYTES >= GEMMA_MODEL_BYTES)); then
+        rm -f "${PARTIAL_PATH}"
+      fi
+    fi
+    curl --fail --location --retry 5 --retry-delay 3 --continue-at - \
+      --output "${PARTIAL_PATH}" "${GEMMA_MODEL_URL}"
+  fi
   test "$(stat -c %s "${PARTIAL_PATH}")" = "${GEMMA_MODEL_BYTES}"
   echo "${GEMMA_MODEL_SHA256}  ${PARTIAL_PATH}" | sha256sum -c -
   mv "${PARTIAL_PATH}" "${MODEL_PATH}"
