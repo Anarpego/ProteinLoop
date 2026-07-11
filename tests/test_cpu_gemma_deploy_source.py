@@ -67,6 +67,8 @@ class CpuGemmaDeploySourceTests(unittest.TestCase):
             "docker cp scripts/validate_gemma_endpoint.py",
             "--endpoint http://gemma:8001/v1",
             'test "${CONFIGURED_GEMMA_ENDPOINT}" = "${TARGET_GEMMA_ENDPOINT}"',
+            "cat > /tmp/proteinloop-deploy-cpu-gemma.sh",
+            "bash /tmp/proteinloop-deploy-cpu-gemma.sh",
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, source)
@@ -74,6 +76,7 @@ class CpuGemmaDeploySourceTests(unittest.TestCase):
         self.assertNotIn("docker system prune", source)
         self.assertNotIn("systemctl reload caddy", source)
         self.assertNotIn("docker exec -i proteinloop-simulator-1 python -", source)
+        self.assertNotIn("bash -s", source)
 
         validator = VALIDATOR.read_text(encoding="utf-8")
         self.assertIn('join_url(endpoint, "/v1/models")', validator)
