@@ -9,3 +9,5 @@
 - [x] Connect Phoenix only after private inference passes.
 - [x] Validate public UX, resources, Kato, and rollback metadata.
 - [x] Publish CPU Gemma evidence and final documentation.
+- [x] Normalize versioned OpenAI-compatible endpoint URLs and prove a live five-agent recovery on
+  the public CPU host without duplicate `/v1` paths.
