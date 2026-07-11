@@ -22,9 +22,9 @@
       "sha256": "1d0bfbc3b3b4604c43a17d921061d237661a0bb34258187766c269fead732a18"
     },
     {
-      "bytes": 7456,
+      "bytes": 6487,
       "path": "submission/final-readiness-report.md",
-      "sha256": "84772eb438faabafb9a11b7b4abc96f069d684c6e33c7e36d191701cc7fef75c"
+      "sha256": "8521d4ec7da9b33f25f8b5b722e3df0008b7b9036ef4706cc9e3bc7121944124"
     },
     {
       "bytes": 6227,
@@ -154,7 +154,7 @@
     {
       "bytes": 2379,
       "path": "submission/visual-evidence/report.json",
-      "sha256": "51e5b8c5fc524dd710b798e5d42959f78cc9201253b263a53ba02fd1bb4c7069"
+      "sha256": "c9fc42d7f41d62552d6ff1c7c4c6439ca416c23705c4bd4d26717a4d9294835b"
     },
     {
       "bytes": 331390,
@@ -182,9 +182,9 @@
       "sha256": "c3e09eee3bfff8e42b2dee9d5370ed335ae129bd25a0a25e4d6cc5fcb201251c"
     },
     {
-      "bytes": 78770,
+      "bytes": 87677,
       "path": "submission/visual-evidence/tank-fullscreen-mobile.png",
-      "sha256": "c3a7cb40f1c46f98d5aa701f29ecd3016c3d6f07e5582574aeb979f46537a7d9"
+      "sha256": "d810684afba44f9e7bff4719b8c82be70eddf6b0ba063279c88a720dce662cac"
     },
     {
       "bytes": 1296,
@@ -207,5 +207,5 @@
       "sha256": "be579e15fe2d63a60d3690ea83b8e33140fe28b987b76df60c475e2b5fab63a2"
     }
   ],
-  "generated_at": "2026-07-11T17:49:40.340645+00:00"
+  "generated_at": "2026-07-11T18:05:02.358389+00:00"
 }
