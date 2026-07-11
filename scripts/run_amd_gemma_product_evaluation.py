@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "sim"))
 from proteinloop_sim.gemma_search import evaluate_candidates  # noqa: E402
 from proteinloop_sim.product_evaluation import (  # noqa: E402
     build_scenario_record,
+    ensure_safe_selection,
     summarize_product_evaluation,
 )
 from proteinloop_sim.state import EcosystemState  # noqa: E402
@@ -148,14 +149,15 @@ def main(argv: list[str] | None = None) -> int:
                 )
             latencies.append(round((time.perf_counter() - started) * 1000, 3))
 
-        search = evaluate_candidates(state, candidates)
+        search = ensure_safe_selection(state, evaluate_candidates(state, candidates))
         records.append(
             build_scenario_record(scenario["name"], state_payload, search, latencies)
         )
         print(
             f"{scenario['name']}: safe={search['safe_count']} "
             f"rejected={search['rejected_count']} "
-            f"delta_naive={search['reward_delta_vs_naive']}"
+            f"delta_naive={search['reward_delta_vs_naive']} "
+            f"fallback={search['fallback_used']}"
         )
 
     summary = summarize_product_evaluation(records)

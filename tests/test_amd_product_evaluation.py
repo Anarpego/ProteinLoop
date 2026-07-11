@@ -8,8 +8,10 @@ sys.path.insert(0, str(ROOT / "sim"))
 
 from proteinloop_sim.product_evaluation import (
     build_scenario_record,
+    ensure_safe_selection,
     summarize_product_evaluation,
 )
+from proteinloop_sim.state import EcosystemState
 
 
 class AmdProductEvaluationTests(unittest.TestCase):
@@ -61,6 +63,45 @@ class AmdProductEvaluationTests(unittest.TestCase):
         self.assertEqual(summary["reward_comparison_count"], 0)
         self.assertIsNone(summary["mean_reward_delta_vs_first"])
         self.assertEqual(summary["search_rescue_count"], 1)
+
+    def test_uses_labeled_deterministic_fallback_when_all_model_plans_are_rejected(self):
+        state = EcosystemState(
+            ammonia_mg_l=3.4,
+            dissolved_oxygen_mg_l=3.6,
+            fish_biomass_kg=16.0,
+            prawn_biomass_kg=4.0,
+            duckweed_kg=6.0,
+        )
+        rejected = {
+            "index": 1,
+            "source": "amd_hosted_gemma",
+            "strategy": "unsafe model plan",
+            "accepted": False,
+            "reward": None,
+            "violations": ["unsafe"],
+            "action": {"note": "rejected"},
+            "final_state": None,
+        }
+        search = {
+            "baseline": {"accepted": True, "reward": 10.0},
+            "selected": None,
+            "candidates": [rejected],
+            "candidate_count": 1,
+            "safe_count": 0,
+            "rejected_count": 1,
+            "parse_error_count": 0,
+            "weight_updates": False,
+            "reward_delta_vs_naive": None,
+        }
+
+        recovered = ensure_safe_selection(state, search)
+
+        self.assertTrue(recovered["fallback_used"])
+        self.assertTrue(recovered["selected"]["accepted"])
+        self.assertEqual(recovered["selected"]["source"], "deterministic_fallback")
+        self.assertEqual(recovered["selected"]["strategy"], "verified emergency fallback")
+        self.assertEqual(recovered["safe_count"], 1)
+        self.assertIsNotNone(recovered["reward_delta_vs_naive"])
 
 
 def search_result(first_accepted, first_reward, selected_reward, baseline):

@@ -6,6 +6,47 @@ import math
 from statistics import mean
 from typing import Any
 
+from .gemma_search import evaluate_action
+from .policies import safety_policy
+from .state import EcosystemState
+
+
+def ensure_safe_selection(
+    state: EcosystemState,
+    search: dict[str, Any],
+) -> dict[str, Any]:
+    selected = search.get("selected")
+    if isinstance(selected, dict) and selected.get("accepted") is True:
+        return {
+            **search,
+            "fallback_used": False,
+            "model_safe_plan_available": True,
+        }
+
+    candidates = list(search.get("candidates") or [])
+    fallback = evaluate_action(state, safety_policy(state))
+    fallback.update(
+        {
+            "index": next_candidate_index(candidates),
+            "source": "deterministic_fallback",
+            "strategy": "verified emergency fallback",
+        }
+    )
+    fallback_accepted = fallback.get("accepted") is True
+    baseline_reward = numeric_reward(search.get("baseline"))
+    fallback_reward = numeric_reward(fallback) if fallback_accepted else None
+
+    return {
+        **search,
+        "candidates": [*candidates, fallback],
+        "candidate_count": int(search.get("candidate_count", len(candidates))) + 1,
+        "safe_count": int(search.get("safe_count", 0)) + (1 if fallback_accepted else 0),
+        "selected": fallback if fallback_accepted else None,
+        "reward_delta_vs_naive": reward_delta(fallback_reward, baseline_reward),
+        "fallback_used": fallback_accepted,
+        "model_safe_plan_available": False,
+    }
+
 
 def build_scenario_record(
     name: str,
@@ -66,6 +107,8 @@ def build_scenario_record(
         "rejected_count": search.get("rejected_count", 0),
         "parse_error_count": search.get("parse_error_count", 0),
         "weight_updates": search.get("weight_updates"),
+        "fallback_used": search.get("fallback_used") is True,
+        "model_safe_plan_available": search.get("model_safe_plan_available") is True,
         "first_proposal_safe": first_accepted,
         "selected_plan_safe": selected_accepted,
         "unsafe_control_rejected": bool(control and control.get("accepted") is False),
@@ -125,6 +168,12 @@ def summarize_product_evaluation(records: list[dict[str, Any]]) -> dict[str, Any
             1 for item in records if item.get("search_improved_first") is True
         ),
         "reward_comparison_count": len(first_deltas),
+        "deterministic_fallback_count": sum(
+            1 for item in records if item.get("fallback_used") is True
+        ),
+        "gemma_safe_scenario_count": sum(
+            1 for item in records if item.get("model_safe_plan_available") is True
+        ),
         "mean_reward_delta_vs_first": rounded_mean(first_deltas),
         "mean_reward_delta_vs_naive": rounded_mean(naive_deltas),
         "protected_aquatic_biomass_kg": round(
@@ -143,6 +192,17 @@ def reward_delta(selected_reward: float | None, comparison_reward: float | None)
     if selected_reward is None or comparison_reward is None:
         return None
     return round(selected_reward - comparison_reward, 4)
+
+
+def next_candidate_index(candidates: list[dict[str, Any]]) -> int:
+    indices = [
+        int(candidate["index"])
+        for candidate in candidates
+        if isinstance(candidate, dict)
+        and isinstance(candidate.get("index"), int)
+        and not isinstance(candidate.get("index"), bool)
+    ]
+    return max(indices, default=-1) + 1
 
 
 def numeric_reward(outcome: dict[str, Any] | None) -> float | None:
@@ -192,6 +252,8 @@ def empty_summary() -> dict[str, Any]:
         "search_rescue_count": 0,
         "search_improvement_count": 0,
         "reward_comparison_count": 0,
+        "deterministic_fallback_count": 0,
+        "gemma_safe_scenario_count": 0,
         "mean_reward_delta_vs_first": None,
         "mean_reward_delta_vs_naive": None,
         "protected_aquatic_biomass_kg": 0.0,

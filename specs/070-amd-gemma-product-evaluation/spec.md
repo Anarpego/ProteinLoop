@@ -23,18 +23,21 @@ ecosystem reward, and protects fish-and-prawn biomass across diverse operating c
 6. The artifact shall report first-answer safety, selected-plan safety, search rescues, reward delta
    versus the first answer and naive policy, protected aquatic biomass, request latency, and every
    scenario outcome.
-7. The artifact shall identify the provider, model, method, scenario definitions, and no-weight-
+7. When every model proposal is rejected, the evaluation shall admit the existing deterministic
+   emergency policy as an explicitly labeled fallback and report fallback frequency.
+8. The artifact shall identify the provider, model, method, scenario definitions, and no-weight-
    update claim without credentials or private chain-of-thought.
-8. A Make target shall execute the evaluation against the private notebook endpoint.
-9. The submission bundle and AMD replay shall include the evaluation when imported.
+9. A Make target shall execute the evaluation against the private notebook endpoint.
+10. The submission bundle and AMD replay shall include the evaluation when imported.
 
 ## Acceptance Criteria
 
 1. Unit tests prove summary rates, rescue counts, reward deltas, protected biomass, and latency
    percentiles from deterministic records.
 2. Unit tests prove rejected first answers are not assigned fabricated reward values.
-3. Existing policy-search, simulator, verifier, and submission tests remain green.
-4. The real AMD pod artifact is imported before any multi-scenario success claim is published.
+3. Unit tests prove all-model-rejected scenarios use a labeled, verified deterministic fallback.
+4. Existing policy-search, simulator, verifier, and submission tests remain green.
+5. The real AMD pod artifact is imported before any multi-scenario success claim is published.
 
 ## Non-Goals
 
