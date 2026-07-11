@@ -159,7 +159,8 @@ ENVIRONMENT_UPDATED=1
 "${COMPOSE[@]}" up -d --no-deps --force-recreate web
 
 for attempt in $(seq 1 60); do
-  if curl -fsS "https://${PROTEINLOOP_DOMAIN}/" | grep -Fq "Gemma 4 endpoint configured"; then
+  if PUBLIC_HOME="$(curl -fsS "https://${PROTEINLOOP_DOMAIN}/")" && \
+    [[ "${PUBLIC_HOME}" == *"Gemma 4 endpoint configured"* ]]; then
     break
   fi
   if [[ "${attempt}" == "60" ]]; then
@@ -193,5 +194,6 @@ scp "${SSH_OPTS[@]}" \
   "${REMOTE}:/tmp/proteinloop-cpu-gemma-evidence.json" \
   "${ROOT_DIR}/submission/cpu-gemma-deployment-evidence.json"
 
-curl -fsS "https://${PROTEINLOOP_DOMAIN}/" | grep -Fq "Gemma 4 endpoint configured"
+PUBLIC_HOME="$(curl -fsS "https://${PROTEINLOOP_DOMAIN}/")"
+[[ "${PUBLIC_HOME}" == *"Gemma 4 endpoint configured"* ]]
 DEMO_URL="https://${PROTEINLOOP_DOMAIN}" make -C "${ROOT_DIR}" live-demo-check

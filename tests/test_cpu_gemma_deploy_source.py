@@ -77,6 +77,7 @@ class CpuGemmaDeploySourceTests(unittest.TestCase):
         self.assertNotIn("systemctl reload caddy", source)
         self.assertNotIn("docker exec -i proteinloop-simulator-1 python -", source)
         self.assertNotIn("bash -s", source)
+        self.assertNotIn('| grep -Fq "Gemma 4 endpoint configured"', source)
 
         validator = VALIDATOR.read_text(encoding="utf-8")
         self.assertIn('join_url(endpoint, "/v1/models")', validator)
