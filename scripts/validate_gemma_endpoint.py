@@ -203,7 +203,8 @@ def parse_chat_action(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_action(action: dict[str, Any]) -> Check:
-    missing = [key for key in ACTION_KEYS if key not in action]
+    required_keys = [*ACTION_KEYS, "note"]
+    missing = [key for key in required_keys if key not in action]
     if missing:
         return Check("chat action contract", False, f"missing: {', '.join(missing)}")
 
@@ -211,7 +212,26 @@ def validate_action(action: dict[str, Any]) -> Check:
     if invalid:
         return Check("chat action contract", False, f"non-numeric: {', '.join(invalid)}")
 
-    return Check("chat action contract", True, "valid ProteinLoop action")
+    numeric = {key: float(coerce_float(action[key])) for key in ACTION_KEYS}
+    maximum_feed = 0.0 if PROMPT_STATE["collapsed"] else 0.08
+    safe_ranges = {
+        "feed_kg": (0.0, maximum_feed),
+        "aeration_hours": (0.0, 24.0),
+        "water_exchange_fraction": (0.0, 0.30),
+        "duckweed_harvest_kg": (0.0, float(PROMPT_STATE["duckweed_kg"]) - 0.50),
+    }
+    outside = [
+        key
+        for key, value in numeric.items()
+        if not safe_ranges[key][0] <= value <= safe_ranges[key][1]
+    ]
+    if outside:
+        return Check("chat action contract", False, f"outside safe range: {', '.join(outside)}")
+
+    if not isinstance(action["note"], str) or not action["note"].strip():
+        return Check("chat action contract", False, "note must be a non-empty string")
+
+    return Check("chat action contract", True, "valid action inside deterministic safety envelope")
 
 
 def coerce_float(value: Any) -> float | None:

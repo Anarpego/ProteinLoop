@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMPOSE = ROOT / "docker-compose.public.yml"
 DOCKERFILE = ROOT / "deploy" / "gemma-cpu.Dockerfile"
 SCRIPT = ROOT / "scripts" / "deploy_cpu_gemma.sh"
+VALIDATOR = ROOT / "scripts" / "validate_gemma_endpoint.py"
 
 
 class CpuGemmaDeploySourceTests(unittest.TestCase):
@@ -57,20 +58,26 @@ class CpuGemmaDeploySourceTests(unittest.TestCase):
             "MEMORY_KIB < 7500000",
             "partial_is_valid",
             "--profile gemma-cpu",
-            "http://gemma:8001/v1/models",
-            "http://gemma:8001/v1/chat/completions",
             "GEMMA_ENDPOINT=http://gemma:8001/v1",
             "ENV_BACKUP=",
             "restore_environment",
             "kato-api-1",
             "kato-maptiles-maptiles-1",
             "kato-osrm-osrm-1",
+            "docker cp scripts/validate_gemma_endpoint.py",
+            "--endpoint http://gemma:8001/v1",
+            'test "${CONFIGURED_GEMMA_ENDPOINT}" = "${TARGET_GEMMA_ENDPOINT}"',
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, source)
 
         self.assertNotIn("docker system prune", source)
         self.assertNotIn("systemctl reload caddy", source)
+        self.assertNotIn("docker exec -i proteinloop-simulator-1 python -", source)
+
+        validator = VALIDATOR.read_text(encoding="utf-8")
+        self.assertIn('join_url(endpoint, "/v1/models")', validator)
+        self.assertIn('join_url(endpoint, "/v1/chat/completions")', validator)
 
 
 if __name__ == "__main__":

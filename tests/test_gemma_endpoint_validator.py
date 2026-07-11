@@ -53,7 +53,7 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
             "choices": [
                 {
                     "message": {
-                        "content": '```json\n{"feed_kg":0.1,"aeration_hours":12,"water_exchange_fraction":0.1,"duckweed_harvest_kg":1,"note":"ok"}\n```'
+                        "content": '```json\n{"feed_kg":0.08,"aeration_hours":12,"water_exchange_fraction":0.1,"duckweed_harvest_kg":1,"note":"ok"}\n```'
                     }
                 }
             ]
@@ -72,6 +72,7 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
                 "aeration_hours": "many",
                 "water_exchange_fraction": 0.1,
                 "duckweed_harvest_kg": 1,
+                "note": "recover",
             }
         )
 
@@ -79,6 +80,34 @@ class GemmaEndpointValidatorTests(unittest.TestCase):
         self.assertIn("missing", missing.detail)
         self.assertFalse(invalid.ok)
         self.assertIn("non-numeric", invalid.detail)
+
+    def test_validate_action_enforces_the_high_ammonia_safety_envelope(self):
+        safe = {
+            "feed_kg": 0.08,
+            "aeration_hours": 24,
+            "water_exchange_fraction": 0.30,
+            "duckweed_harvest_kg": 11.5,
+            "note": "recover water quality",
+        }
+
+        self.assertTrue(validate_action(safe).ok)
+
+        unsafe_values = {
+            "feed_kg": 0.081,
+            "aeration_hours": 24.1,
+            "water_exchange_fraction": 0.301,
+            "duckweed_harvest_kg": 11.51,
+        }
+        for key, value in unsafe_values.items():
+            with self.subTest(key=key):
+                action = {**safe, key: value}
+                result = validate_action(action)
+                self.assertFalse(result.ok)
+                self.assertIn("outside safe range", result.detail)
+
+        missing_note = dict(safe)
+        del missing_note["note"]
+        self.assertFalse(validate_action(missing_note).ok)
 
     def test_chat_request_uses_model_and_requires_action_contract(self):
         request = chat_request("google/gemma-4-E2B-it")
