@@ -106,7 +106,10 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     mission_opts = Keyword.put(opts, :mission, mission)
 
     with {:ok, %{"state" => ecosystem_state}} <- state_fun.(),
+         :ok <- notify_progress(opts, {:state_observed, state_progress(ecosystem_state)}),
          {:ok, reports} <- run_subsystems(ecosystem_state, mission_opts),
+         :ok <-
+           notify_progress(opts, {:supervisor_started, %{specialist_count: length(reports)}}),
          agent <- build_supervisor_agent(ecosystem_state, mission_opts),
          state <- supervisor_state(ecosystem_state, reports, mission),
          {:ok, _final_state, tool_result} <-
@@ -193,8 +196,16 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     mission = mission_text(opts)
     validate_supervisor_tool!(tool_name)
     model = model_factory(opts).(tool_name)
-    verify_fun = Keyword.get(opts, :verify_fun, &SimulatorClient.verify/1)
-    step_fun = Keyword.get(opts, :step_fun, &SimulatorClient.step/1)
+
+    verify_fun =
+      opts
+      |> Keyword.get(:verify_fun, &SimulatorClient.verify/1)
+      |> with_verification_progress(opts)
+
+    step_fun =
+      opts
+      |> Keyword.get(:step_fun, &SimulatorClient.step/1)
+      |> with_application_progress(opts)
 
     Agent.new!(
       %{
@@ -246,7 +257,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     results =
       @subsystems
       |> Task.async_stream(
-        &run_subsystem(&1, ecosystem_state, opts),
+        &run_subsystem_with_progress(&1, ecosystem_state, opts),
         ordered: true,
         max_concurrency: length(@subsystems),
         timeout: timeout
@@ -273,6 +284,20 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     end
   rescue
     error -> {:error, {:subsystem_agent_failed, error}}
+  end
+
+  defp run_subsystem_with_progress(subsystem, ecosystem_state, opts) do
+    notify_progress(opts, {:specialist_started, subsystem.name})
+
+    case run_subsystem(subsystem, ecosystem_state, opts) do
+      {:ok, %{report: report} = result} ->
+        notify_progress(opts, {:specialist_completed, subsystem.name, report})
+        {:ok, result}
+
+      {:error, _reason} = error ->
+        notify_progress(opts, {:specialist_failed, subsystem.name})
+        error
+    end
   end
 
   defp run_subsystem(subsystem, ecosystem_state, opts) do
@@ -412,6 +437,75 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
   end
 
   defp processed_result(_tool_result), do: {:error, :missing_processed_tool_result}
+
+  defp with_verification_progress(verify_fun, opts) do
+    fn action ->
+      notify_progress(opts, {:verification_started, action})
+      result = verify_fun.(action)
+      notify_progress(opts, {:verification_completed, verification_progress(result)})
+      result
+    end
+  end
+
+  defp with_application_progress(step_fun, opts) do
+    fn action ->
+      notify_progress(opts, {:action_application_started, action})
+      result = step_fun.(action)
+      notify_progress(opts, {:action_application_completed, application_progress(result)})
+      result
+    end
+  end
+
+  defp verification_progress({:ok, %{"verification" => verification}})
+       when is_map(verification) do
+    %{
+      ok: Map.get(verification, "ok", false),
+      violations: Map.get(verification, "violations", []),
+      warnings: Map.get(verification, "warnings", [])
+    }
+  end
+
+  defp verification_progress({:error, reason}) do
+    %{ok: false, violations: [inspect(reason)], warnings: []}
+  end
+
+  defp verification_progress(other) do
+    %{ok: false, violations: ["Unexpected verifier response: #{inspect(other)}"], warnings: []}
+  end
+
+  defp application_progress({:ok, %{"state" => state} = result}) when is_map(state) do
+    state
+    |> state_progress()
+    |> Map.put(:reward, Map.get(result, "reward"))
+  end
+
+  defp application_progress({:error, _reason}), do: %{applied: false}
+  defp application_progress(_other), do: %{applied: false}
+
+  defp state_progress(state) do
+    %{
+      day: Map.get(state, "day"),
+      ammonia_mg_l: Map.get(state, "ammonia_mg_l"),
+      dissolved_oxygen_mg_l: Map.get(state, "dissolved_oxygen_mg_l")
+    }
+  end
+
+  defp notify_progress(opts, event) do
+    case Keyword.get(opts, :progress_fun) do
+      progress_fun when is_function(progress_fun, 1) ->
+        try do
+          progress_fun.(event)
+          :ok
+        rescue
+          _error -> :ok
+        catch
+          _kind, _reason -> :ok
+        end
+
+      _other ->
+        :ok
+    end
+  end
 
   defp resume_decision(pending, :approve, nil) do
     {:ok, %{type: :approve}, pending_action(pending)}

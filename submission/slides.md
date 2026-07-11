@@ -41,7 +41,7 @@ The simulator reward scores survival, biomass, water quality, and mortality. The
 
 ## 8. Multi-Agent Topology
 
-Four subsystem agents cover fish tank, freshwater prawn, hydroponia, and duckweed/chickens; a fifth parent supervisor closes the cycle.
+Four subsystem agents cover fish tank, freshwater prawn, hydroponia, and duckweed/chickens; a fifth parent supervisor closes the cycle. The first-viewport activity network shows each real start, structured brief, supervisor synthesis, deterministic safety decision, and measured outcome without exposing private chain-of-thought.
 
 ## 9. Self-Healing Mesh
 

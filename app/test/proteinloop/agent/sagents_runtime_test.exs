@@ -90,6 +90,66 @@ defmodule ProteinLoop.Agent.SagentsRuntimeTest do
     assert Enum.all?(result.subagents, &(&1.runtime == Sagents.SubAgent))
   end
 
+  test "emits progress from real observation, agent, verifier, and mutation boundaries" do
+    owner = self()
+    progress_fun = fn event -> send(owner, {:sagents_progress, event}) end
+
+    assert {:ok, _result} =
+             SagentsRuntime.run(
+               state_fun: fn -> {:ok, %{"state" => initial_state()}} end,
+               model_factory: model_factory(),
+               verify_fun: &safe_verify/1,
+               step_fun: &accepted_step/1,
+               progress_fun: progress_fun
+             )
+
+    assert_receive {:sagents_progress,
+                    {:state_observed,
+                     %{
+                       day: 0,
+                       ammonia_mg_l: 0.35,
+                       dissolved_oxygen_mg_l: 6.8
+                     }}}
+
+    specialist_events =
+      for _index <- 1..8 do
+        assert_receive {:sagents_progress, event}
+        event
+      end
+
+    assert MapSet.new(for {:specialist_started, name} <- specialist_events, do: name) ==
+             MapSet.new([
+               "fish-tank",
+               "freshwater-prawn",
+               "hydroponia",
+               "duckweed-chickens"
+             ])
+
+    completed =
+      for {:specialist_completed, name, report} <- specialist_events,
+          into: %{},
+          do: {name, report}
+
+    assert map_size(completed) == 4
+
+    assert completed["fish-tank"]["recommendation"] ==
+             "preserve oxygen and nutrient balance"
+
+    assert_receive {:sagents_progress, {:supervisor_started, %{specialist_count: 4}}}
+    assert_receive {:sagents_progress, {:verification_started, action}}
+    assert action == safe_action()
+
+    assert_receive {:sagents_progress,
+                    {:verification_completed, %{ok: true, violations: [], warnings: []}}}
+
+    assert_receive {:sagents_progress, {:action_application_started, action}}
+    assert action == safe_action()
+
+    assert_receive {:sagents_progress,
+                    {:action_application_completed,
+                     %{day: 1, ammonia_mg_l: 0.35, dissolved_oxygen_mg_l: 6.8, reward: 202.0}}}
+  end
+
   test "propagates the operator mission to every model and preserves the before state" do
     mission = "Recover water quality while protecting fish and prawn survival."
 

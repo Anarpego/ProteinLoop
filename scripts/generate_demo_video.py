@@ -142,13 +142,13 @@ def build_scenes(evidence: dict) -> list[Scene]:
         ),
         Scene(
             "Real Sagents + Gemma",
-            "4 subagents -> supervisor -> close_cycle",
+            "Live tank -> 4 specialists -> supervisor -> verifier",
             [
-                "Sagents 0.9.0 runs four Gemma subsystem agents and a supervisor.",
+                "The first viewport shows each real specialist start and structured brief as it arrives.",
+                "A fifth Gemma supervisor combines the briefs into one bounded proposal.",
                 "verify_ecosystem_safety gates tool execution through the simulator.",
-                "until_tool_success returns accepted action, reward, and verifier evidence.",
             ],
-            "Sagents 0.9.0 + until_tool_success",
+            "Structured live events, not private chain-of-thought",
             AMBER,
         ),
         Scene(

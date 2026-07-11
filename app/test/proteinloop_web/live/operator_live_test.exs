@@ -411,6 +411,82 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "0.9 mg/L"
   end
 
+  test "shows truthful incremental agent activity before the final receipt", %{conn: conn} do
+    Application.put_env(:proteinloop, :test_sagents_runtime_pause, {:run, self()})
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    assert has_element?(
+             view,
+             "#tank-agent-activity[role='status'][aria-live='polite'][data-phase='ready']"
+           )
+
+    assert has_element?(view, "#mission-agent-activity[data-phase='ready']")
+    assert render(view) =~ "5-agent team standing by"
+
+    view |> element("#run-agentic-mission") |> render_click()
+
+    assert_receive {:test_sagents_runtime_options, opts}
+    progress_fun = Keyword.fetch!(opts, :progress_fun)
+    assert_receive {:test_sagents_runtime_started, :run, task}
+
+    progress_fun.({
+      :state_observed,
+      %{day: 0, ammonia_mg_l: 3.8, dissolved_oxygen_mg_l: 3.2}
+    })
+
+    assert has_element?(view, "#tank-agent-activity[data-phase='observing']")
+    assert render(view) =~ "Reading live tank telemetry"
+    assert render(view) =~ "3.8 mg/L ammonia"
+
+    progress_fun.({:specialist_started, "fish-tank"})
+
+    assert has_element?(
+             view,
+             "#mission-agent-activity-specialist-fish-tank[data-status='running']"
+           )
+
+    assert render(view) =~ "Fish specialist is evaluating oxygen and feed"
+
+    progress_fun.({
+      :specialist_completed,
+      "fish-tank",
+      %{
+        "status" => "critical",
+        "recommendation" => "Pause feed and maximize aeration.",
+        "resource_request" => "24h aeration"
+      }
+    })
+
+    assert has_element?(
+             view,
+             "#mission-agent-activity-specialist-fish-tank[data-status='completed']"
+           )
+
+    assert render(view) =~ "Pause feed and maximize aeration."
+
+    progress_fun.({:supervisor_started, %{specialist_count: 4}})
+    assert has_element?(view, "#tank-agent-activity[data-phase='supervising']")
+    assert render(view) =~ "Supervisor comparing four specialist briefs"
+
+    progress_fun.({:verification_started, ProteinLoop.TestSagentsRuntime.action()})
+    assert has_element?(view, "#tank-agent-activity[data-phase='verifying']")
+    assert render(view) =~ "Deterministic safety rules checking the proposal"
+
+    send(task, {:continue_test_sagents_runtime, :run})
+    render_async(view, 1_000)
+
+    assert has_element?(view, "#tank-agent-activity[data-phase='completed']")
+    assert render(view) =~ "Verified recovery completed"
+
+    progress_fun.({:specialist_started, "freshwater-prawn"})
+    assert has_element?(view, "#tank-agent-activity[data-phase='completed']")
+
+    refute has_element?(
+             view,
+             "#mission-agent-activity-specialist-freshwater-prawn[data-status='running']"
+           )
+  end
+
   test "renders and refreshes the real Horde cluster status", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 

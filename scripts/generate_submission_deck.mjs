@@ -5,8 +5,8 @@ const root = path.resolve(".");
 const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
 const slidesDir = path.join(workspace, "slides");
 const evidence = {
-  python_tests: 160,
-  phoenix_tests: 120,
+  python_tests: 163,
+  phoenix_tests: 122,
   reward_delta: 463,
   collapse_avoidance: "100%",
 };
@@ -43,7 +43,7 @@ await fs.writeFile(
   [
     "slide 1: ProteinLoop closes the food-protein cycle through a verifier-gated agentic loop.",
     "slide 2: Aquaponics links fish and plants; ProteinLoop makes every protein output measurable and recoverable.",
-    "slide 3: The biological loop maps to a coordinated actor system.",
+    "slide 3: The biological loop maps to a coordinated actor system whose real activity is visible live.",
     "slide 4: Deterministic physics, not the model, controls every mutation.",
     `slide 5: ${evidence.python_tests} Python and ${evidence.phoenix_tests} Phoenix tests plus RLVR evidence make the demo executable.`,
     "slide 6: The simulator is both anomaly forecaster and RLVR verifier.",
@@ -153,7 +153,7 @@ export default async function slide03(presentation, ctx) {
   box(ctx, s, { x: 630, y: 246, w: 190, h: 104, title: "Plants", body: "Nitrate uptake", fill: colors.tealSoft, line: colors.teal });
   arrowText(ctx, s, 838, 286);
   box(ctx, s, { x: 900, y: 246, w: 190, h: 104, title: "Chickens", body: "Daily eggs", fill: colors.amberSoft, line: colors.amber });
-  box(ctx, s, { x: 360, y: 426, w: 460, h: 112, title: "Agent supervisor", body: "Balances feed, oxygen, water exchange, harvest, and risk across subsystem agents.", fill: "#ffffff", line: colors.teal });
+  box(ctx, s, { x: 360, y: 426, w: 460, h: 112, title: "Visible agent supervisor", body: "Live structured events show four briefs becoming one verifier-gated intervention.", fill: "#ffffff", line: colors.teal });
   footer(ctx, s, 3);
   return s;
 }`,
@@ -162,7 +162,7 @@ export default async function slide04(presentation, ctx) {
   const s = slideBase(presentation, ctx, "Harness");
   h1(ctx, s, "The simulator is the safety boundary");
   sub(ctx, s, "Models and humans can propose actions, but deterministic physics decides whether state can mutate.");
-  box(ctx, s, { x: 80, y: 248, w: 210, h: 136, title: "call_llm", body: "Four Gemma subagents report to a Sagents supervisor.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 80, y: 248, w: 210, h: 136, title: "call_llm", body: "Four Gemma specialists stream structured progress to the live operator view.", fill: colors.blueSoft, line: colors.blue });
   arrowText(ctx, s, 312, 296);
   box(ctx, s, { x: 360, y: 248, w: 260, h: 136, title: "verify_ecosystem_safety", body: "Checks feed, oxygen, water exchange, duckweed reserve, and collapse state.", fill: colors.redSoft, line: colors.red });
   arrowText(ctx, s, 642, 296);
@@ -246,7 +246,7 @@ export default async function slide10(presentation, ctx) {
   sub(ctx, s, "A food-security product built as a verifier-gated, human-aware, fault-tolerant agentic system.");
   box(ctx, s, { x: 78, y: 238, w: 345, h: 230, title: "Market wedge", body: "Rural families and cooperatives where farm Wi-Fi, cloud access, and grid electricity cannot be assumed.", fill: colors.greenSoft, line: colors.green });
   box(ctx, s, { x: 468, y: 238, w: 345, h: 230, title: "Technical moat", body: "Private DECT NR+ field transport, self-hosted Gemma, physics verifier, RLVR, resumable HITL, and real Sagents/Horde failover.", fill: colors.tealSoft, line: colors.teal });
-  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, local Gemma E2B, five-agent loop, producer approval, and proven radio evidence with honest solar/sensor milestones.", fill: colors.blueSoft, line: colors.blue });
+  box(ctx, s, { x: 858, y: 238, w: 345, h: 230, title: "What judges can run", body: "Docker app, live five-agent activity, local Gemma E2B, producer approval, and proven radio evidence with honest solar/sensor milestones.", fill: colors.blueSoft, line: colors.blue });
   ctx.addText(s, { x: 162, y: 552, w: 900, h: 44, text: "Ask: Best Unicorn", fontSize: 30, bold: true, color: colors.ink, align: "center" });
   footer(ctx, s, 10);
   return s;

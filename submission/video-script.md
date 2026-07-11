@@ -16,7 +16,7 @@ Open `http://localhost:4001/`.
 
 Action:
 
-Start with the animated fish-to-eggs flow, executable proof ribbon, and `Off-grid continuity` band. Trace water probes to PT, DECT NR+, FT, separate edge computer, and producer. Press `Run one-click verifier proof` and show the emergency, blocked unsafe proposal, admitted safe recovery, and zero unsafe actions executed. Then use the tank's expand icon, press `Inject demo water emergency`, and watch the water, bubbles, fish, prawns, animated food loop, and quantified biomass risk change. In the full-screen `Verified recovery` control, choose `Recover water quality` and press `Create safe recovery plan`. Read the separate live-Gemma before/after recovery receipt, then exit with `Escape`.
+Start with the animated fish-to-eggs flow, executable proof ribbon, `Off-grid continuity` band, and the visible `Live agent activity` network over the tank. Trace water probes to PT, DECT NR+, FT, separate edge computer, and producer. Press `Run one-click verifier proof` and show the emergency, blocked unsafe proposal, admitted safe recovery, and zero unsafe actions executed. Then press `Inject demo water emergency` and watch the water, bubbles, fish, prawns, animated food loop, and quantified biomass risk change. Choose `Recover water quality`, press `Create safe recovery plan`, and narrate the real-time transition from state observation to four specialist briefs, supervisor synthesis, deterministic verification, applied action, and measured recovery.
 
 Narration:
 
@@ -68,7 +68,7 @@ Select `Protect protein yield`, press `Create safe recovery plan`, and inspect t
 
 Narration:
 
-The operator sets a plain-language goal instead of receiving a generic summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. The receipt shows specialist briefs, the supervisor plan, verifier warnings, reward, and the measured chemistry change. `verify_ecosystem_safety` remains the authority before execution. Technical controls remain available in the closed `Advanced evidence and controls` section.
+The operator sets a plain-language goal instead of receiving a generic summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. Progress comes from those actual runtime boundaries rather than a decorative timer. The interface shows role status, structured recommendations, tool calls, verifier outcomes, and measured chemistry without exposing private chain-of-thought. `verify_ecosystem_safety` remains the authority before execution. Technical controls remain available in the closed `Advanced evidence and controls` section.
 
 ## Scene 8: Local Gemma 4
 

@@ -36,6 +36,33 @@ defmodule ProteinLoopWeb.OperatorLive do
     }
   ]
 
+  @activity_specialists [
+    %{
+      id: "fish-tank",
+      label: "Fish",
+      focus: "oxygen and feed",
+      icon: "hero-heart"
+    },
+    %{
+      id: "freshwater-prawn",
+      label: "Prawns",
+      focus: "oxygen and shelter",
+      icon: "hero-sparkles"
+    },
+    %{
+      id: "hydroponia",
+      label: "Plants",
+      focus: "nutrient uptake",
+      icon: "hero-sun"
+    },
+    %{
+      id: "duckweed-chickens",
+      label: "Feed loop",
+      focus: "duckweed and eggs",
+      icon: "hero-arrow-path"
+    }
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     if connected?(socket) do
@@ -62,6 +89,8 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:agentic_missions, @agentic_missions)
       |> assign(:selected_mission, hd(@agentic_missions))
       |> assign(:mission_phase, :ready)
+      |> assign(:agent_run_id, nil)
+      |> assign(:agent_activity, ready_agent_activity())
       |> assign(:hitl_running?, false)
       |> assign(:agent_provider, :stub_safe)
       |> assign(:horde_status, horde_runtime().cluster_status())
@@ -80,6 +109,19 @@ defmodule ProteinLoopWeb.OperatorLive do
   end
 
   @impl true
+  def handle_info({:sagents_progress, run_id, event}, socket) do
+    if socket.assigns.sagents_running? && socket.assigns.agent_run_id == run_id do
+      {:noreply,
+       assign(
+         socket,
+         :agent_activity,
+         update_agent_activity(socket.assigns.agent_activity, event)
+       )}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info({:simulator_snapshot, snapshot}, socket) do
     {:noreply, assign_snapshot(socket, snapshot, "telemetry update")}
   end
@@ -296,6 +338,8 @@ defmodule ProteinLoopWeb.OperatorLive do
         |> assign(:loop_result, nil)
         |> assign(:demo_result, nil)
         |> assign(:mission_phase, :ready)
+        |> assign(:agent_run_id, nil)
+        |> assign(:agent_activity, ready_agent_activity())
         |> update(:action_log, fn log ->
           Enum.take(["agentic mission selected: #{mission.title}" | log], 6)
         end)
@@ -328,6 +372,8 @@ defmodule ProteinLoopWeb.OperatorLive do
           |> assign(:demo_result, result)
           |> assign(:loop_result, nil)
           |> assign(:mission_phase, :ready)
+          |> assign(:agent_run_id, nil)
+          |> assign(:agent_activity, ready_agent_activity())
           |> assign(:agent_result, result.safe_result)
           |> assign(:trace_status, TraceStore.status())
           |> assign(:trace_entries, trace_entries())
@@ -354,6 +400,7 @@ defmodule ProteinLoopWeb.OperatorLive do
      socket
      |> assign(:sagents_running?, false)
      |> assign(:mission_phase, :completed)
+     |> assign(:agent_activity, completed_agent_activity(socket.assigns.agent_activity, result))
      |> assign(:loop_result, result)
      |> assign_snapshot(snapshot, "real Sagents cycle completed")}
   end
@@ -363,6 +410,7 @@ defmodule ProteinLoopWeb.OperatorLive do
      socket
      |> assign(:sagents_running?, false)
      |> assign(:mission_phase, :failed)
+     |> assign(:agent_activity, failed_agent_activity(socket.assigns.agent_activity))
      |> put_flash(:error, "Sagents error: #{inspect(reason)}")}
   end
 
@@ -371,6 +419,7 @@ defmodule ProteinLoopWeb.OperatorLive do
      socket
      |> assign(:sagents_running?, false)
      |> assign(:mission_phase, :failed)
+     |> assign(:agent_activity, failed_agent_activity(socket.assigns.agent_activity))
      |> put_flash(:error, "Sagents task exited: #{inspect(reason)}")}
   end
 
@@ -427,16 +476,23 @@ defmodule ProteinLoopWeb.OperatorLive do
       socket.assigns.sagents_status.endpoint_configured? ->
         runtime = sagents_runtime()
         mission = socket.assigns.selected_mission
+        run_id = make_ref()
+        live_view = self()
+        progress_fun = fn event -> send(live_view, {:sagents_progress, run_id, event}) end
 
         socket
         |> assign(:sagents_running?, true)
         |> assign(:demo_result, nil)
         |> assign(:loop_result, nil)
         |> assign(:mission_phase, :deliberating)
+        |> assign(:agent_run_id, run_id)
+        |> assign(:agent_activity, observing_agent_activity(mission, socket.assigns.state))
         |> update(:action_log, fn log ->
           Enum.take(["agentic mission started: #{mission.title}" | log], 6)
         end)
-        |> start_async(:sagents_cycle, fn -> runtime.run(mission: mission.objective) end)
+        |> start_async(:sagents_cycle, fn ->
+          runtime.run(mission: mission.objective, progress_fun: progress_fun)
+        end)
 
       true ->
         put_flash(socket, :error, "GEMMA_ENDPOINT is required for Sagents")
@@ -456,6 +512,264 @@ defmodule ProteinLoopWeb.OperatorLive do
     |> assign(:demo_result, nil)
     |> assign(:loop_result, nil)
     |> assign(:mission_phase, :ready)
+    |> assign(:agent_run_id, nil)
+    |> assign(:agent_activity, ready_agent_activity())
+  end
+
+  defp ready_agent_activity do
+    %{
+      phase: :ready,
+      title: "5-agent team standing by",
+      detail: "Choose a recovery goal to start live Gemma planning.",
+      specialists: activity_specialists(),
+      events: []
+    }
+  end
+
+  defp observing_agent_activity(mission, state) do
+    %{
+      phase: :observing,
+      title: "Reading live tank telemetry",
+      detail:
+        "#{activity_metric(state, "ammonia_mg_l")} mg/L ammonia · #{activity_metric(state, "dissolved_oxygen_mg_l")} mg/L oxygen",
+      specialists: activity_specialists(),
+      events: [
+        %{
+          title: "Mission accepted",
+          detail: mission.title,
+          status: :running
+        }
+      ]
+    }
+  end
+
+  defp completed_agent_activity(activity, result) do
+    reports = Map.new(result.subagents, &{&1.name, &1.report})
+
+    specialists =
+      Enum.map(activity.specialists, fn specialist ->
+        case Map.get(reports, specialist.id) do
+          nil -> specialist
+          report -> Map.merge(specialist, %{status: :completed, report: report})
+        end
+      end)
+
+    activity
+    |> Map.merge(%{
+      phase: :completed,
+      title: "Verified recovery completed",
+      detail:
+        "Ammonia #{activity_metric(result.state, "ammonia_mg_l")} mg/L · oxygen #{activity_metric(result.state, "dissolved_oxygen_mg_l")} mg/L · reward #{result.reward}",
+      specialists: specialists
+    })
+    |> add_activity_event(%{
+      title: "Measured outcome received",
+      detail: "Simulator state changed only after verifier acceptance.",
+      status: :completed
+    })
+  end
+
+  defp failed_agent_activity(activity) do
+    specialists =
+      Enum.map(activity.specialists, fn
+        %{status: :running} = specialist -> Map.put(specialist, :status, :failed)
+        specialist -> specialist
+      end)
+
+    activity
+    |> Map.merge(%{
+      phase: :failed,
+      title: "Mission stopped safely",
+      detail: "No rejected or failed proposal was applied to the ecosystem.",
+      specialists: specialists
+    })
+    |> add_activity_event(%{
+      title: "Run stopped",
+      detail: "Simulator mutation remained blocked.",
+      status: :failed
+    })
+  end
+
+  defp update_agent_activity(activity, {:state_observed, state}) do
+    activity
+    |> Map.merge(%{
+      phase: :observing,
+      title: "Reading live tank telemetry",
+      detail:
+        "#{activity_metric(state, :ammonia_mg_l)} mg/L ammonia · #{activity_metric(state, :dissolved_oxygen_mg_l)} mg/L oxygen · day #{activity_metric(state, :day)}"
+    })
+    |> add_activity_event(%{
+      title: "Live ecosystem state captured",
+      detail: "Gemma specialists received the same current tank snapshot.",
+      status: :completed
+    })
+  end
+
+  defp update_agent_activity(activity, {:specialist_started, id}) do
+    specialist = activity_specialist(id)
+
+    activity
+    |> Map.merge(%{
+      phase: :specialists,
+      title: "#{specialist.label} specialist is evaluating #{specialist.focus}",
+      detail: "Four Gemma specialists are producing structured briefs in parallel."
+    })
+    |> update_activity_specialist(id, %{status: :running})
+    |> add_activity_event(%{
+      title: "#{specialist.label} specialist started",
+      detail: specialist.focus,
+      status: :running
+    })
+  end
+
+  defp update_agent_activity(activity, {:specialist_completed, id, report}) do
+    specialist = activity_specialist(id)
+
+    activity
+    |> Map.merge(%{
+      phase: :specialists,
+      title: "#{specialist.label} structured brief received",
+      detail: Map.get(report, "recommendation", "Structured recommendation received.")
+    })
+    |> update_activity_specialist(id, %{status: :completed, report: report})
+    |> add_activity_event(%{
+      title: "#{specialist.label} brief received",
+      detail: Map.get(report, "recommendation", "Structured recommendation received."),
+      status: :completed
+    })
+  end
+
+  defp update_agent_activity(activity, {:specialist_failed, id}) do
+    specialist = activity_specialist(id)
+
+    activity
+    |> Map.merge(%{
+      phase: :failed,
+      title: "#{specialist.label} specialist stopped",
+      detail: "The mission will not apply an incomplete proposal."
+    })
+    |> update_activity_specialist(id, %{status: :failed})
+    |> add_activity_event(%{
+      title: "#{specialist.label} specialist failed",
+      detail: "No ecosystem action applied.",
+      status: :failed
+    })
+  end
+
+  defp update_agent_activity(activity, {:supervisor_started, %{specialist_count: count}}) do
+    activity
+    |> Map.merge(%{
+      phase: :supervising,
+      title: "Supervisor comparing four specialist briefs",
+      detail: "#{count} structured recommendations are being combined into one bounded action."
+    })
+    |> add_activity_event(%{
+      title: "Supervisor synthesis started",
+      detail: "Gemma is selecting one conservative action proposal.",
+      status: :running
+    })
+  end
+
+  defp update_agent_activity(activity, {:verification_started, _action}) do
+    activity
+    |> Map.merge(%{
+      phase: :verifying,
+      title: "Deterministic safety rules checking the proposal",
+      detail:
+        "Python verifies feed, aeration, water exchange, and duckweed limits before mutation."
+    })
+    |> add_activity_event(%{
+      title: "Verifier preflight started",
+      detail: "The model cannot bypass these ecosystem rules.",
+      status: :running
+    })
+  end
+
+  defp update_agent_activity(activity, {:verification_completed, verification}) do
+    accepted? = Map.get(verification, :ok, false)
+
+    activity
+    |> Map.merge(%{
+      phase: if(accepted?, do: :verified, else: :failed),
+      title:
+        if(accepted?,
+          do: "Safety verifier accepted the proposal",
+          else: "Safety verifier blocked the proposal"
+        ),
+      detail:
+        if(accepted?,
+          do: "No deterministic safety violations were found.",
+          else: "No rejected proposal will reach the simulator."
+        )
+    })
+    |> add_activity_event(%{
+      title: if(accepted?, do: "Verifier accepted", else: "Verifier rejected"),
+      detail:
+        "#{length(Map.get(verification, :violations, []))} violations · #{length(Map.get(verification, :warnings, []))} warnings",
+      status: if(accepted?, do: :completed, else: :failed)
+    })
+  end
+
+  defp update_agent_activity(activity, {:action_application_started, _action}) do
+    activity
+    |> Map.merge(%{
+      phase: :applying,
+      title: "Applying the verified intervention",
+      detail: "The simulator is executing only the action admitted by the safety verifier."
+    })
+    |> add_activity_event(%{
+      title: "Verified action admitted",
+      detail: "Simulator mutation started.",
+      status: :running
+    })
+  end
+
+  defp update_agent_activity(activity, {:action_application_completed, result}) do
+    activity
+    |> Map.merge(%{
+      phase: :measuring,
+      title: "Measuring the ecosystem response",
+      detail:
+        "Day #{activity_metric(result, :day)} · ammonia #{activity_metric(result, :ammonia_mg_l)} mg/L · oxygen #{activity_metric(result, :dissolved_oxygen_mg_l)} mg/L"
+    })
+    |> add_activity_event(%{
+      title: "New simulator state received",
+      detail: "Reward #{activity_metric(result, :reward)}",
+      status: :completed
+    })
+  end
+
+  defp update_agent_activity(activity, _event), do: activity
+
+  defp activity_specialists do
+    Enum.map(@activity_specialists, &Map.merge(&1, %{status: :waiting, report: nil}))
+  end
+
+  defp activity_specialist(id) do
+    Enum.find(@activity_specialists, hd(@activity_specialists), &(&1.id == id))
+  end
+
+  defp update_activity_specialist(activity, id, changes) do
+    specialists =
+      Enum.map(activity.specialists, fn specialist ->
+        if specialist.id == id, do: Map.merge(specialist, changes), else: specialist
+      end)
+
+    Map.put(activity, :specialists, specialists)
+  end
+
+  defp add_activity_event(activity, event) do
+    Map.update(activity, :events, [event], &Enum.take([event | &1], 6))
+  end
+
+  defp activity_metric(state, key) do
+    value = Map.get(state, key) || Map.get(state, to_string(key))
+
+    case value do
+      number when is_float(number) -> Float.round(number, 2)
+      nil -> "—"
+      other -> to_string(other)
+    end
   end
 
   defp sagents_runtime do
@@ -1023,6 +1337,12 @@ defmodule ProteinLoopWeb.OperatorLive do
               </span>
             </div>
 
+            <.agent_activity_monitor
+              id="tank-agent-activity"
+              activity={@agent_activity}
+              compact={true}
+            />
+
             <label
               for="fullscreen-mission-select"
               class="mt-3 block text-xs font-semibold text-base-content/65"
@@ -1051,21 +1371,6 @@ defmodule ProteinLoopWeb.OperatorLive do
                 {@selected_mission.objective}
               </p>
             </div>
-
-            <ol class="realtime-tank__agent-flow" aria-label="Agentic safety workflow">
-              <li>
-                <.icon name="hero-user-group" />
-                <span>Protein-loop specialists</span>
-              </li>
-              <li>
-                <.icon name="hero-shield-check" />
-                <span>Ecosystem safety check</span>
-              </li>
-              <li>
-                <.icon name="hero-hand-raised" />
-                <span>Producer stays in control</span>
-              </li>
-            </ol>
 
             <p class="realtime-tank__trust-line">
               Gemma proposes. Ecosystem rules verify. The producer controls irreversible actions.
@@ -1184,6 +1489,11 @@ defmodule ProteinLoopWeb.OperatorLive do
               {@sagents_status.agent_count}-agent recovery team
             </span>
           </div>
+
+          <.agent_activity_monitor
+            id="mission-agent-activity"
+            activity={@agent_activity}
+          />
 
           <div class="mt-4">
             <p class="mb-2 text-sm font-semibold">What should the system protect?</p>
@@ -1647,6 +1957,134 @@ defmodule ProteinLoopWeb.OperatorLive do
     """
   end
 
+  attr :id, :string, required: true
+  attr :activity, :map, required: true
+  attr :compact, :boolean, default: false
+
+  def agent_activity_monitor(assigns) do
+    assigns =
+      assigns
+      |> assign(:phase_label, activity_phase_label(assigns.activity.phase))
+      |> assign(:phase_icon, activity_phase_icon(assigns.activity.phase))
+
+    ~H"""
+    <section
+      id={@id}
+      class={["agent-live-monitor", @compact && "agent-live-monitor--compact"]}
+      data-phase={@activity.phase}
+      role={if @compact, do: "status", else: "region"}
+      aria-live={if @compact, do: "polite", else: "off"}
+      aria-atomic="false"
+    >
+      <header class="agent-live-monitor__header">
+        <div class="agent-live-monitor__live-label">
+          <span class="agent-live-monitor__signal" aria-hidden="true"></span>
+          <span>Live agent activity</span>
+        </div>
+        <span class="agent-live-monitor__phase">{@phase_label}</span>
+      </header>
+
+      <div class="agent-live-monitor__current">
+        <span class="agent-live-monitor__current-icon" aria-hidden="true">
+          <.icon name={@phase_icon} />
+        </span>
+        <div>
+          <h4>{@activity.title}</h4>
+          <p>{@activity.detail}</p>
+        </div>
+      </div>
+
+      <div class="agent-live-monitor__network" aria-label="Five-agent execution network">
+        <div class="agent-live-monitor__source">
+          <.icon name="hero-signal" />
+          <span>Live tank</span>
+        </div>
+        <span class="agent-live-monitor__link" aria-hidden="true"></span>
+        <ol class="agent-live-monitor__specialists" aria-label="Gemma specialists">
+          <li
+            :for={specialist <- @activity.specialists}
+            id={"#{@id}-specialist-#{specialist.id}"}
+            data-status={specialist.status}
+          >
+            <span class="agent-live-monitor__agent-icon" aria-hidden="true">
+              <.icon name={specialist.icon} />
+            </span>
+            <span>
+              <strong>{specialist.label}</strong>
+              <small>{activity_status_label(specialist.status)}</small>
+            </span>
+            <.icon
+              :if={specialist.status == :completed}
+              name="hero-check-circle"
+              class="agent-live-monitor__complete-icon"
+            />
+          </li>
+        </ol>
+        <span class="agent-live-monitor__link" aria-hidden="true"></span>
+        <div class="agent-live-monitor__decision-nodes">
+          <div data-active={
+            @activity.phase in [
+              :supervising,
+              :verifying,
+              :verified,
+              :applying,
+              :measuring,
+              :completed
+            ]
+          }>
+            <.icon name="hero-cpu-chip" />
+            <span>Supervisor</span>
+          </div>
+          <div data-active={
+            @activity.phase in [:verifying, :verified, :applying, :measuring, :completed]
+          }>
+            <.icon name="hero-shield-check" />
+            <span>Ecosystem safety check</span>
+          </div>
+        </div>
+      </div>
+
+      <div :if={!@compact} class="agent-live-monitor__details">
+        <section aria-label="Structured specialist updates">
+          <h5>Structured briefs arriving now</h5>
+          <ol>
+            <li
+              :for={specialist <- @activity.specialists}
+              data-status={specialist.status}
+            >
+              <span>{specialist.label}</span>
+              <p>
+                {if specialist.report,
+                  do: specialist.report["recommendation"],
+                  else: "Waiting for a structured recommendation."}
+              </p>
+            </li>
+          </ol>
+        </section>
+
+        <section aria-label="Agent event stream">
+          <h5>Execution events</h5>
+          <ol class="agent-live-monitor__events">
+            <li :if={@activity.events == []}>
+              <span>Ready</span>
+              <p>No model call is running yet.</p>
+            </li>
+            <li :for={event <- @activity.events} data-status={event.status}>
+              <span>{event.title}</span>
+              <p>{event.detail}</p>
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <p class="agent-live-monitor__disclosure">
+        AI activity is visible as structured events and tool outcomes, not private chain-of-thought.
+        Producer stays in control.
+      </p>
+    </section>
+    """
+  end
+
   attr :agent, :map, required: true
 
   def topology_agent(assigns) do
@@ -1676,6 +2114,36 @@ defmodule ProteinLoopWeb.OperatorLive do
   defp topology_badge_class(:critical), do: "badge-error"
   defp topology_badge_class(:warning), do: "badge-warning"
   defp topology_badge_class(_status), do: "badge-success"
+
+  defp activity_phase_label(:ready), do: "Ready"
+  defp activity_phase_label(:observing), do: "Observing"
+  defp activity_phase_label(:specialists), do: "4 agents working"
+  defp activity_phase_label(:supervising), do: "Synthesizing"
+  defp activity_phase_label(:verifying), do: "Safety check"
+  defp activity_phase_label(:verified), do: "Accepted"
+  defp activity_phase_label(:applying), do: "Applying"
+  defp activity_phase_label(:measuring), do: "Measuring"
+  defp activity_phase_label(:completed), do: "Complete"
+  defp activity_phase_label(:failed), do: "Stopped safely"
+  defp activity_phase_label(_phase), do: "Waiting"
+
+  defp activity_phase_icon(:ready), do: "hero-user-group"
+  defp activity_phase_icon(:observing), do: "hero-eye"
+  defp activity_phase_icon(:specialists), do: "hero-user-group"
+  defp activity_phase_icon(:supervising), do: "hero-cpu-chip"
+  defp activity_phase_icon(:verifying), do: "hero-shield-check"
+  defp activity_phase_icon(:verified), do: "hero-check-badge"
+  defp activity_phase_icon(:applying), do: "hero-wrench-screwdriver"
+  defp activity_phase_icon(:measuring), do: "hero-chart-bar"
+  defp activity_phase_icon(:completed), do: "hero-check-circle"
+  defp activity_phase_icon(:failed), do: "hero-no-symbol"
+  defp activity_phase_icon(_phase), do: "hero-clock"
+
+  defp activity_status_label(:waiting), do: "waiting"
+  defp activity_status_label(:running), do: "working"
+  defp activity_status_label(:completed), do: "brief ready"
+  defp activity_status_label(:failed), do: "stopped"
+  defp activity_status_label(_status), do: "waiting"
 
   attr :status, :map, required: true
 

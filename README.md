@@ -21,7 +21,7 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Capability | Executable behavior | Proof |
 | --- | --- | --- |
 | Real-time system understanding | Operator and producer routes share a full-screen-capable Three.js aquarium with a local PBR fish model, a licensed realistic prawn visual, physical water and glass, bubbles, plants, live protein-loop quantities, and an animated fish-to-eggs flow that changes with stable, risk, and recovery state. | [Real-time tank spec](specs/056-realtime-tank-simulation/spec.md) · [Realistic scene spec](specs/057-realistic-aquarium-scene/spec.md) · [Judge experience spec](specs/060-judge-winning-experience/spec.md) |
-| Operator-directed intelligence | The operator selects a recovery or production mission and receives four specialist briefs, one supervisor plan, a verifier receipt, and the measured state change. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) |
+| Operator-directed intelligence | The first-viewport tank console exposes live state observation, four parallel specialist statuses, supervisor synthesis, deterministic verification, action application, and measured recovery as they actually occur. | [Mission spec](specs/053-agentic-intervention-mission/spec.md) · [Live activity spec](specs/063-live-agent-activity/spec.md) |
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
@@ -75,18 +75,19 @@ The proof boundary is deliberate. The repository proves the bidirectional two-bo
 4. Confirm `0 unsafe actions executed`, the measured final ammonia and oxygen, and the state-driven loop changing to `Verifier proof complete`.
 5. Continue to `Create a verified recovery` for the separate live Gemma 4 path.
 
-The one-click proof is intentionally deterministic and does not claim to call Gemma. It demonstrates the simulator/verifier mutation boundary quickly. The model-backed workflow remains separate so judges can distinguish model reasoning, deterministic safety authority, and producer approval.
+The one-click proof is intentionally deterministic and does not claim to call Gemma. It demonstrates the simulator/verifier mutation boundary quickly. The model-backed workflow remains separate so judges can distinguish model proposals, deterministic safety authority, and producer approval.
 
 ## Run an Agentic Intervention
 
 1. Open `http://localhost:4001/`, then use the expand icon in `Live tank simulation` to enter the immersive tank.
 2. Press `Inject demo water emergency`. Water color, bubbles, animal movement, and the quantified fish-and-prawn risk visibly transition to the deterministic ammonia-spike state.
 3. In the full-screen `Verified recovery` control, choose `Recover water quality`, `Protect protein yield`, or `Balance next 24h`.
-4. Press `Create safe recovery plan`. Gemma 4 E2B delegates the selected goal to four Sagents specialists and a parent supervisor; the panel keeps the ecosystem safety check and producer-control boundaries visible.
-5. Read the in-scene `Recovery verified` result, then exit with the collapse icon or `Escape` to inspect the detailed `Verified recovery receipt` and measured before/after chemistry.
-6. When an irreversible proposal pauses for approval, the header link changes from `Producer view` to `Producer decision waiting`. For a deliberate judge rehearsal, open `Advanced evidence and controls` and use `Request producer approval` in `Human approval`.
-7. Click the highlighted producer link. The proposed action and Approve, Apply half, and Reject controls appear before the tank. A choice is replaced in place by a decision receipt with mutation status, current chemistry, verifier reward, and a direct link back to the operator tank.
-8. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
+4. Press `Create safe recovery plan`. The visible `Live agent activity` network advances from tank observation through four real parallel Sagents specialists, supervisor synthesis, deterministic verification, action application, and measured outcome.
+5. Read each structured brief as it arrives. The monitor exposes role status, recommendations, tool boundaries, and outcomes without claiming to expose private chain-of-thought.
+6. Read the in-scene `Recovery verified` result, then exit with the collapse icon or `Escape` to inspect the detailed `Verified recovery receipt` and measured before/after chemistry.
+7. When an irreversible proposal pauses for approval, the header link changes from `Producer view` to `Producer decision waiting`. For a deliberate judge rehearsal, open `Advanced evidence and controls` and use `Request producer approval` in `Human approval`.
+8. Click the highlighted producer link. The proposed action and Approve, Apply half, and Reject controls appear before the tank. A choice is replaced in place by a decision receipt with mutation status, current chemistry, verifier reward, and a direct link back to the operator tank.
+9. Open `Advanced evidence and controls` only when you need DECT capture, simulator controls, runtime details, RLVR, or traces.
 
 This is an action workflow, not a generated dashboard summary. The selected mission reaches every model call, while `verify_ecosystem_safety` remains the only authority allowed to admit a simulator mutation.
 
@@ -169,7 +170,7 @@ flowchart LR
 | Verify | Full tests, Docker smoke, and generated evidence | Claims are backed by commands and artifacts, not implementation intent. |
 | Ship | Git commit plus checksum manifest | Source, evidence, and documentation describe the same behavior. |
 
-Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md), the [visual plain-language system](specs/054-visual-plain-language-system/spec.md), and the [off-grid continuity story](specs/062-off-grid-continuity-story/spec.md).
+Every feature owns a `spec.md`, `plan.md`, and `tasks.md` under [`specs/`](specs). The current workflow is demonstrated by the [local Gemma submission profile](specs/050-local-gemma-submission/spec.md), the [DECT operator integration](specs/051-dect-operator-producer/spec.md), the [operator-directed intervention](specs/053-agentic-intervention-mission/spec.md), the [visual plain-language system](specs/054-visual-plain-language-system/spec.md), the [off-grid continuity story](specs/062-off-grid-continuity-story/spec.md), and the [live agent activity contract](specs/063-live-agent-activity/spec.md).
 
 ## Run Tests
 
@@ -448,7 +449,7 @@ Separately, the stdlib telemetry bridge converts sample nRF9151 JSONL records in
 
 The advanced evidence includes a `Human approval` panel. `Request producer approval` asks Gemma for an irreversible tool call, Sagents HumanInTheLoop pauses it before mutation, and the English producer route resumes that same Sagents call with approve, edit-to-half, or reject.
 
-`Create a verified recovery` is the primary Gemma workflow. The operator selects a concrete food-system goal, and `Create safe recovery plan` sends it to four subsystem agents concurrently. A fifth parent supervisor resolves their resource requests into one bounded action. The `Verified recovery receipt` exposes each specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. The custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
+`Create a verified recovery` is the primary Gemma workflow. The operator selects a concrete food-system goal, and `Create safe recovery plan` sends it to four subsystem agents concurrently. The tank overlay is visible on initial entry and reports actual runtime boundaries: state observed, specialist started/completed, supervisor started, verifier started/completed, action application, and measured result. A fifth parent supervisor resolves the structured resource requests into one bounded action. The `Verified recovery receipt` preserves every specialist brief, the supervisor note, deterministic verifier evidence, and before/after chemistry. Progress callbacks are run-scoped and non-authoritative; the custom `verify_ecosystem_safety` mode still checks every action before execution, and `until_tool_success` returns only an admitted result.
 
 The advanced evidence includes an `Anomaly forecast` panel. It forecasts near-term ammonia and oxygen risk under routine operation without mutating live simulator state, then recommends early intervention when chemistry is trending toward collapse.
 
@@ -759,6 +760,7 @@ make readiness-report
 ├── specs/049-live-nrf9151-evidence/ # Physical two-board DECT NR+ capture
 ├── specs/051-dect-operator-producer/ # DECT UI, replay, and Gemma control
 ├── specs/062-off-grid-continuity-story/ # No-Wi-Fi, no-cloud, solar-ready field path
+├── specs/063-live-agent-activity/ # Truthful real-time agent execution UX
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
