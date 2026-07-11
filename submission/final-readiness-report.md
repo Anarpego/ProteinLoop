@@ -1,7 +1,7 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-11T18:03:54+00:00
-Commit: `d68e0a9`
+Generated: 2026-07-11T18:32:14+00:00
+Commit: `d948de1`
 Working tree (source): `clean`
 Gemma evidence mode: `local`
 
@@ -44,9 +44,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-........................................................................................................................................................................................
+..........................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 184 tests in 0.391s
+Ran 186 tests in 0.179s
 
 OK
 ```
@@ -212,7 +212,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - d68e0a9202ed1bfc748ab2e2642f56b54eb269ed
+[ok] local git commit - d948de1cbf941f056d2380fd588c131b6471981e
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK
