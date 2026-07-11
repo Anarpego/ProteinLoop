@@ -803,7 +803,9 @@ body {
 }
 
 .realtime-tank:fullscreen .realtime-tank__agent-compact-status,
-.realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-status {
+.realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-status,
+.realtime-tank:fullscreen .realtime-tank__agent-compact-title,
+.realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-title {
   display: none;
 }
 
@@ -812,6 +814,22 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+}
+
+.realtime-tank__agent-header > div {
+  min-width: 0;
+}
+
+.realtime-tank__agent-header .badge {
+  width: max-content;
+  flex: none;
+  white-space: nowrap;
+}
+
+.realtime-tank__agent-compact-title {
+  display: inline;
+  font-size: 0.85rem;
+  line-height: 1.1rem;
 }
 
 .agent-live-monitor {

@@ -1332,9 +1332,12 @@ defmodule ProteinLoopWeb.OperatorLive do
                   Verified recovery
                 </p>
                 <h3 class="mt-1 text-base font-semibold">
-                  {if @mission_phase == :completed,
-                    do: "Recovery complete",
-                    else: "Protect this protein loop"}
+                  <span class="realtime-tank__agent-compact-title">AI recovery control</span>
+                  <span class="realtime-tank__agent-fullscreen-detail">
+                    {if @mission_phase == :completed,
+                      do: "Recovery complete",
+                      else: "Protect this protein loop"}
+                  </span>
                 </h3>
               </div>
               <span class={[
