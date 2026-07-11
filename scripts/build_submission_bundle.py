@@ -44,6 +44,14 @@ BASE_BUNDLE_FILES = [
     SUBMISSION / "nrf9151-field-plan.md",
     SUBMISSION / "nrf9151-telemetry-bridge.json",
     SUBMISSION / "nrf9151-telemetry-bridge.md",
+    SUBMISSION / "visual-evidence" / "README.md",
+    SUBMISSION / "visual-evidence" / "report.json",
+    SUBMISSION / "visual-evidence" / "operator-desktop.png",
+    SUBMISSION / "visual-evidence" / "operator-mobile.png",
+    SUBMISSION / "visual-evidence" / "producer-desktop.png",
+    SUBMISSION / "visual-evidence" / "producer-mobile.png",
+    SUBMISSION / "visual-evidence" / "tank-fullscreen-desktop.png",
+    SUBMISSION / "visual-evidence" / "tank-fullscreen-mobile.png",
 ]
 
 OPTIONAL_BUNDLE_FILES = [

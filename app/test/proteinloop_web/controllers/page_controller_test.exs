@@ -60,6 +60,18 @@ defmodule ProteinLoopWeb.PageControllerTest do
     assert mobile_css =~ "overflow-wrap: anywhere"
   end
 
+  test "mobile fullscreen keeps AI controls compact beside the animal scene" do
+    css = File.read!(Path.expand("../../../assets/css/app.css", __DIR__))
+    mobile_css = css |> String.split("@media (max-width: 767px)") |> List.last()
+
+    assert mobile_css =~ "width: min(15rem, calc(100% - 1.5rem))"
+    assert mobile_css =~ "bottom: 20.5rem"
+    assert mobile_css =~ "bottom: 21.25rem"
+    assert mobile_css =~ ".realtime-tank__emergency-label"
+    assert mobile_css =~ ".realtime-tank:fullscreen .realtime-tank__agent-fullscreen-detail"
+    assert mobile_css =~ ".realtime-tank:fullscreen .realtime-tank__agent-compact-status"
+  end
+
   test "frontend pins and registers the real-time Three.js tank" do
     assets = Path.expand("../../../assets", __DIR__)
     package = assets |> Path.join("package.json") |> File.read!() |> Jason.decode!()

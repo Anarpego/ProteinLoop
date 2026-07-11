@@ -101,7 +101,8 @@ defmodule ProteinLoopWeb.RealtimeTankScene do
         <div class="realtime-tank__commands">
           <span :if={@controls} class="realtime-tank__demo-badge">Demo mode</span>
           <button :if={@controls} class="btn btn-sm btn-error" phx-click="spike">
-            <.icon name="hero-bolt" /> Inject demo water emergency
+            <.icon name="hero-bolt" />
+            <span class="realtime-tank__emergency-label">Inject demo water emergency</span>
           </button>
           <button
             :if={@controls}

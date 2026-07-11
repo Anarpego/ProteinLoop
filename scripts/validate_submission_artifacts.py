@@ -42,6 +42,16 @@ DECK_ASSETS = [
     SUBMISSION / "deck-assets" / "operator-overview.png",
     SUBMISSION / "deck-assets" / "agent-recovery.png",
 ]
+VISUAL_EVIDENCE = [
+    SUBMISSION / "visual-evidence" / "README.md",
+    SUBMISSION / "visual-evidence" / "report.json",
+    SUBMISSION / "visual-evidence" / "operator-desktop.png",
+    SUBMISSION / "visual-evidence" / "operator-mobile.png",
+    SUBMISSION / "visual-evidence" / "producer-desktop.png",
+    SUBMISSION / "visual-evidence" / "producer-mobile.png",
+    SUBMISSION / "visual-evidence" / "tank-fullscreen-desktop.png",
+    SUBMISSION / "visual-evidence" / "tank-fullscreen-mobile.png",
+]
 
 
 REQUIRED_FILES = [
@@ -76,6 +86,7 @@ REQUIRED_FILES = [
     FORM,
     REPORT,
     *DECK_ASSETS,
+    *VISUAL_EVIDENCE,
 ]
 
 
@@ -259,6 +270,14 @@ def bundle_ok(
         "submission/nrf9151-field-plan.md",
         "submission/nrf9151-telemetry-bridge.json",
         "submission/nrf9151-telemetry-bridge.md",
+        "submission/visual-evidence/README.md",
+        "submission/visual-evidence/report.json",
+        "submission/visual-evidence/operator-desktop.png",
+        "submission/visual-evidence/operator-mobile.png",
+        "submission/visual-evidence/producer-desktop.png",
+        "submission/visual-evidence/producer-mobile.png",
+        "submission/visual-evidence/tank-fullscreen-desktop.png",
+        "submission/visual-evidence/tank-fullscreen-mobile.png",
         "submission/bundle-manifest.json",
     }
     if include_docker_smoke_evidence is None:

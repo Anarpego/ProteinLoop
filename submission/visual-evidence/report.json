@@ -1,0 +1,99 @@
+{
+  "captures": {
+    "operator-desktop.png": {
+      "path": "submission/visual-evidence/operator-desktop.png",
+      "pixel_check": {
+        "nonblank": true,
+        "region": [
+          105,
+          476,
+          1321,
+          956
+        ],
+        "sampled_colors": 1290,
+        "variance": 3156.613
+      },
+      "sha256": "ab283cfeb794498e058545c1116e977f8e15b56798aef05fcd3e79fdfae8f17b",
+      "size": [
+        1440,
+        1200
+      ]
+    },
+    "operator-mobile.png": {
+      "path": "submission/visual-evidence/operator-mobile.png",
+      "sha256": "0bc11cc5e8219f4579afd2feaa153c0ab8f32b8e7f925664cb216bc6a1e8e2df",
+      "size": [
+        390,
+        844
+      ]
+    },
+    "producer-desktop.png": {
+      "path": "submission/visual-evidence/producer-desktop.png",
+      "pixel_check": {
+        "nonblank": true,
+        "region": [
+          105,
+          530,
+          1321,
+          1010
+        ],
+        "sampled_colors": 1023,
+        "variance": 1450.814
+      },
+      "sha256": "ce6545f0a121e2bff8ba93b144dff65dc1957e059e8f9c8b36d3aeec59fca15b",
+      "size": [
+        1440,
+        1200
+      ]
+    },
+    "producer-mobile.png": {
+      "path": "submission/visual-evidence/producer-mobile.png",
+      "sha256": "c2f48bc8ae81ada5a45353a8d06a0b20e984b3be5106bbf435874c9e57d8d651",
+      "size": [
+        390,
+        844
+      ]
+    },
+    "tank-fullscreen-desktop.png": {
+      "path": "submission/visual-evidence/tank-fullscreen-desktop.png",
+      "pixel_check": {
+        "nonblank": true,
+        "region": [
+          20,
+          130,
+          1000,
+          1000
+        ],
+        "sampled_colors": 1317,
+        "variance": 3899.385
+      },
+      "sha256": "c3e09eee3bfff8e42b2dee9d5370ed335ae129bd25a0a25e4d6cc5fcb201251c",
+      "size": [
+        1440,
+        1200
+      ]
+    },
+    "tank-fullscreen-mobile.png": {
+      "path": "submission/visual-evidence/tank-fullscreen-mobile.png",
+      "pixel_check": {
+        "nonblank": true,
+        "region": [
+          16,
+          130,
+          374,
+          360
+        ],
+        "sampled_colors": 870,
+        "variance": 10268.91
+      },
+      "sha256": "c3a7cb40f1c46f98d5aa701f29ecd3016c3d6f07e5582574aeb979f46537a7d9",
+      "size": [
+        390,
+        844
+      ]
+    }
+  },
+  "errors": [],
+  "ok": true,
+  "source_url": "https://proteinloop.dev-vb.lat"
+}

@@ -103,6 +103,14 @@ class SubmissionBundleTests(unittest.TestCase):
                 "submission/nrf9151-field-plan.md",
                 "submission/nrf9151-telemetry-bridge.json",
                 "submission/nrf9151-telemetry-bridge.md",
+                "submission/visual-evidence/README.md",
+                "submission/visual-evidence/report.json",
+                "submission/visual-evidence/operator-desktop.png",
+                "submission/visual-evidence/operator-mobile.png",
+                "submission/visual-evidence/producer-desktop.png",
+                "submission/visual-evidence/producer-mobile.png",
+                "submission/visual-evidence/tank-fullscreen-desktop.png",
+                "submission/visual-evidence/tank-fullscreen-mobile.png",
                 "submission/bundle-manifest.json",
             ]
             with zipfile.ZipFile(bundle, "w") as archive:
@@ -187,6 +195,14 @@ class SubmissionBundleTests(unittest.TestCase):
                 "submission/nrf9151-field-plan.md",
                 "submission/nrf9151-telemetry-bridge.json",
                 "submission/nrf9151-telemetry-bridge.md",
+                "submission/visual-evidence/README.md",
+                "submission/visual-evidence/report.json",
+                "submission/visual-evidence/operator-desktop.png",
+                "submission/visual-evidence/operator-mobile.png",
+                "submission/visual-evidence/producer-desktop.png",
+                "submission/visual-evidence/producer-mobile.png",
+                "submission/visual-evidence/tank-fullscreen-desktop.png",
+                "submission/visual-evidence/tank-fullscreen-mobile.png",
                 "submission/bundle-manifest.json",
             ]
             with zipfile.ZipFile(bundle, "w") as archive:
@@ -249,6 +265,14 @@ class SubmissionBundleTests(unittest.TestCase):
                 "submission/nrf9151-field-plan.md",
                 "submission/nrf9151-telemetry-bridge.json",
                 "submission/nrf9151-telemetry-bridge.md",
+                "submission/visual-evidence/README.md",
+                "submission/visual-evidence/report.json",
+                "submission/visual-evidence/operator-desktop.png",
+                "submission/visual-evidence/operator-mobile.png",
+                "submission/visual-evidence/producer-desktop.png",
+                "submission/visual-evidence/producer-mobile.png",
+                "submission/visual-evidence/tank-fullscreen-desktop.png",
+                "submission/visual-evidence/tank-fullscreen-mobile.png",
                 "submission/bundle-manifest.json",
             ]
             with zipfile.ZipFile(bundle, "w") as archive:

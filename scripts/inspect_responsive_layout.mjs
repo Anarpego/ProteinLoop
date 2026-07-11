@@ -5,6 +5,7 @@ const emulatedWidth = Number(process.argv[3] ?? 390);
 const emulatedHeight = Number(process.argv[4] ?? 844);
 const screenshotPath = process.argv[5];
 const openAdvanced = process.argv.includes("--open-advanced");
+const enterFullscreen = process.argv.includes("--fullscreen");
 
 const targets = await fetch(endpoint).then((response) => {
   if (!response.ok) throw new Error(`DevTools target request failed: ${response.status}`);
@@ -43,12 +44,19 @@ await command("Emulation.setDeviceMetricsOverride", {
   width: emulatedWidth,
   height: emulatedHeight,
   deviceScaleFactor: 1,
-  mobile: true,
+  mobile: emulatedWidth <= 767,
 });
 if (openAdvanced) {
   await command("Runtime.evaluate", {
     expression: `document.querySelector("#advanced-evidence")?.setAttribute("open", "")`,
   });
+}
+if (enterFullscreen) {
+  await command("Runtime.evaluate", {
+    expression: `document.querySelector("[data-tank-fullscreen]")?.click()`,
+    userGesture: true,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 750));
 }
 const result = await command("Runtime.evaluate", {
   expression: `(() => {

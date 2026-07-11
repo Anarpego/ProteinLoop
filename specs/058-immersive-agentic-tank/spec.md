@@ -20,6 +20,8 @@ An operator can present and operate ProteinLoop from one immersive view: watch t
 8. Running a mission from full screen shall preserve all existing verifier, trace, and HITL behavior.
 9. The producer full-screen view shall remain read-only and shall not render emergency, reset, or agent mission controls.
 10. Full-screen mode shall remain light, responsive, and free of overlap on desktop and mobile viewports.
+11. Mobile full-screen mode shall use the compact live-agent status and primary recovery command in a narrow dock below the toolbar so the primary animal scene remains visible; desktop full-screen mode shall retain the complete agent network.
+12. Mobile full-screen mode shall reduce the emergency command to its familiar bolt icon, keep the heading and toolbar in separate top corners, and dock the compact agent control immediately above the HUD.
 11. Fullscreen event listeners shall be removed when the LiveView hook is destroyed.
 12. Simulator and emergency LiveView patches shall not hide or replace an initialized Three.js canvas; renderer presentation state shall live inside the ignored render subtree and client diagnostics shall be restored after each patch.
 13. The normal tank shall use a compact recovery dock that does not obscure the aquarium, while

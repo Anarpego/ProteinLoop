@@ -7,8 +7,8 @@ const slidesDir = path.join(workspace, "slides");
 const assetDir = path.join(root, "submission/deck-assets");
 
 const data = {
-  pythonTests: 182,
-  phoenixTests: 131,
+  pythonTests: 184,
+  phoenixTests: 132,
   rewardDelta: 463,
   collapseAvoidance: "100%",
   animalBiomass: "14.5 kg",
@@ -260,7 +260,7 @@ export default async function slide06(presentation, ctx) {
   ctx.addShape(s, { x: 52, y: 446, w: 1130, h: 112, fill: "#173f50", line: ctx.line("#315b6b", 1) });
   ctx.addText(s, { x: 82, y: 468, w: 260, h: 24, text: "ONE-CLICK JUDGE PROOF", fontSize: 12, bold: true, color: "#8ee7d5" });
   ctx.addText(s, { x: 82, y: 506, w: 1030, h: 30, text: "Inject emergency  ->  block unsafe proposal  ->  admit safe recovery  ->  inspect measured chemistry", fontSize: 18, bold: true, color: C.white });
-  footer(ctx, s, "Verified July 11, 2026: 182 Python and 131 Phoenix tests, zero failures.", true);
+  footer(ctx, s, "Verified July 11, 2026: 184 Python and 132 Phoenix tests, zero failures.", true);
   return s;
 }`,
 

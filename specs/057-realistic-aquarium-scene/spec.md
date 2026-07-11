@@ -19,6 +19,7 @@ A first-time user should immediately recognize a working aquaculture tank, livin
 7. The scene shall improve depth through realistic glass, water transmission, surface movement, substrate variation, soft shadows, and balanced aquarium lighting.
 8. The camera shall frame the complete tank and connected grow bed on wide and mobile viewports without clipping animals or infrastructure.
 9. The heading, commands, and live HUD shall remain inside their viewport bounds and shall not obscure the primary animal focal area.
+10. On mobile full-screen viewports, the WebGL render layer shall end above the stacked HUD so camera fitting uses the visible scene height rather than pixels hidden behind metrics.
 10. Ammonia, dissolved oxygen, biomass, collapse state, reduced-motion behavior, pointer response, and one-second LiveView updates shall preserve their existing deterministic behavior.
 11. GPU and loaded model and texture resources shall be released when the LiveView hook is destroyed.
 12. The pinned Three.js package shall remain `0.185.1`, the latest researched package for official release `r185` on 2026-07-10.

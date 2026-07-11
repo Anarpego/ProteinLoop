@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check visual-evidence-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
 
 LOCAL_GEMMA_HOST ?= 127.0.0.1
 LOCAL_GEMMA_PORT ?= 8001
@@ -39,11 +39,16 @@ submission-render:
 	node scripts/generate_submission_deck_v2.mjs
 	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
 	python3 scripts/export_slide_pdf.py
+	python3 scripts/validate_visual_evidence.py
 	python3 scripts/build_submission_bundle.py
 	SUBMISSION_GEMMA_MODE="$(SUBMISSION_GEMMA_MODE)" python3 scripts/generate_readiness_report.py
 
 submission-check:
+	python3 scripts/validate_visual_evidence.py
 	python3 scripts/validate_submission_artifacts.py
+
+visual-evidence-check:
+	python3 scripts/validate_visual_evidence.py
 
 submission-bundle:
 	python3 scripts/build_submission_bundle.py

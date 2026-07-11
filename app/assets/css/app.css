@@ -1662,11 +1662,36 @@ body {
 
   .realtime-tank:fullscreen .realtime-tank__commands,
   .realtime-tank[data-fullscreen="true"] .realtime-tank__commands {
-    top: 9.25rem;
+    top: 0.75rem;
+    right: 0.75rem;
+    left: auto;
   }
 
-  .realtime-tank:fullscreen .realtime-tank__agent-console,
-  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-console,
+  .realtime-tank:fullscreen .realtime-tank__heading,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__heading {
+    max-width: calc(100% - 11rem);
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__heading > p,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__heading > p,
+  .realtime-tank:fullscreen .realtime-tank__emergency-label,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__emergency-label {
+    display: none;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__commands > .btn-error,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__commands > .btn-error {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__render-layer,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__render-layer {
+    bottom: 20.5rem;
+    height: auto;
+  }
+
   .realtime-tank__agent-console {
     top: 12.5rem;
     right: 0.75rem;
@@ -1674,6 +1699,42 @@ body {
     width: auto;
     max-height: 13.5rem;
     padding: 0.75rem;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__agent-console,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-console {
+    top: auto;
+    right: 0.75rem;
+    bottom: 21.25rem;
+    left: auto;
+    width: min(15rem, calc(100% - 1.5rem));
+    max-height: 7.75rem;
+    padding: 0.5rem;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__agent-fullscreen-detail,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-fullscreen-detail {
+    display: none;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__agent-compact-status,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-status {
+    display: flex;
+    margin-top: 0;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__agent-compact-title,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-title {
+    display: inline;
+  }
+
+  .realtime-tank:fullscreen .realtime-tank__agent-header,
+  .realtime-tank[data-fullscreen="true"] .realtime-tank__agent-header,
+  .realtime-tank:fullscreen label[for="fullscreen-mission-select"],
+  .realtime-tank[data-fullscreen="true"] label[for="fullscreen-mission-select"],
+  .realtime-tank:fullscreen #fullscreen-mission-select,
+  .realtime-tank[data-fullscreen="true"] #fullscreen-mission-select {
+    display: none;
   }
 
   .agent-live-monitor__details {

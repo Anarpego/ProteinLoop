@@ -1,41 +1,27 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-11T17:08:06+00:00
-Commit: `802dc0a`
+Generated: 2026-07-11T17:49:40+00:00
+Commit: `ef4109e`
 Working tree (source): `M Makefile
  M README.md
  M app/assets/css/app.css
- M app/lib/proteinloop_web/live/operator_live.ex
+ M app/lib/proteinloop_web/components/realtime_tank_scene.ex
+ M app/test/proteinloop_web/components/realtime_tank_scene_test.exs
  M app/test/proteinloop_web/controllers/page_controller_test.exs
- M app/test/proteinloop_web/live/operator_live_test.exs
  M scripts/build_submission_bundle.py
- M scripts/export_lablab_form.py
- M scripts/generate_submission_deck.mjs
- M scripts/render_cover_png.py
+ M scripts/generate_submission_deck_v2.mjs
+ M scripts/inspect_responsive_layout.mjs
  M scripts/validate_submission_artifacts.py
  M scripts/validate_submission_readiness.py
- M specs/018-rendered-slide-deck/plan.md
- M specs/018-rendered-slide-deck/spec.md
- M specs/018-rendered-slide-deck/tasks.md
- M specs/030-lablab-form-export/spec.md
+ M specs/057-realistic-aquarium-scene/spec.md
+ M specs/058-immersive-agentic-tank/spec.md
  M submission/artifact-build-manifest.json
- M submission/cover.png
- M submission/lablab-form.json
- M submission/lablab-submission.md
- M submission/proteinloop-demo-video.avi
+ M submission/proteinloop-hackathon-deck.pdf
  M submission/proteinloop-hackathon-deck.pptx
- M submission/slides.md
- M tests/test_lablab_form_export.py
- M tests/test_off_grid_narrative.py
  M tests/test_submission_bundle.py
- M tests/test_submission_readiness.py
-?? scripts/export_slide_pdf.py
-?? scripts/generate_submission_deck_v2.mjs
-?? scripts/inspect_responsive_layout.mjs
-?? submission/cover-final.png
-?? submission/deck-assets/
-?? submission/proteinloop-hackathon-deck.pdf
-?? submission/visual-evidence/`
+?? scripts/validate_visual_evidence.py
+?? submission/visual-evidence/
+?? tests/test_visual_evidence.py`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -79,9 +65,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-......................................................................................................................................................................................
+........................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 182 tests in 0.225s
+Ran 184 tests in 0.351s
 
 OK
 ```
@@ -89,6 +75,14 @@ OK
 ### Submission artifacts
 
 ```text
+python3 scripts/validate_visual_evidence.py
+[ok] operator-desktop.png 1440x1200 variance=3156.613
+[ok] operator-mobile.png 390x844
+[ok] producer-desktop.png 1440x1200 variance=1450.814
+[ok] producer-mobile.png 390x844
+[ok] tank-fullscreen-desktop.png 1440x1200 variance=3899.385
+[ok] tank-fullscreen-mobile.png 390x844 variance=10268.91
+wrote submission/visual-evidence/report.json
 python3 scripts/validate_submission_artifacts.py
 submission artifacts OK
 pptx slides: 10
@@ -99,7 +93,7 @@ pdf pages: 10
 
 ```text
 evidence: submission/docker-smoke-evidence.json
-checked_at: 2026-07-11T04:57:32.199840+00:00
+checked_at: 2026-07-11T17:09:37.494355+00:00
 [ok] simulator health
 [ok] anomaly forecast endpoint
 [ok] rlvr endpoint
@@ -236,7 +230,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - 802dc0aa90aaa0ce356e8ee37b50652bc5ed5a6d
+[ok] local git commit - ef4109e2607f7a7bc68efec1a81fa407b83d3cfa
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK

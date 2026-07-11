@@ -642,6 +642,7 @@ Submission source artifacts live in `submission/`:
 - `cover-final.png`: canonical real-product cover composition.
 - `cover.png`: rendered 1600x900 upload-ready cover used by the README and lablab packet.
 - `deck-assets/`: tracked real-product captures used to regenerate the PDF and PPTX.
+- `visual-evidence/`: deployed desktop, mobile, producer, and actual full-screen captures with pixel checksums.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and human-approval copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
@@ -806,6 +807,7 @@ make readiness-report
 ├── docker-compose.gemma-rocm.yml
 ├── LICENSE
 ├── scripts/generate_submission_deck_v2.mjs
+├── scripts/validate_visual_evidence.py
 ├── scripts/generate_demo_video.py
 ├── scripts/build_submission_bundle.py
 ├── scripts/docker_smoke_test.py

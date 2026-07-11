@@ -29,6 +29,7 @@ defmodule ProteinLoopWeb.RealtimeTankSceneTest do
     assert html =~ "Live tank simulation"
     assert html =~ "Demo mode"
     assert html =~ "Inject demo water emergency"
+    assert html =~ ~s(class="realtime-tank__emergency-label")
     assert html =~ "Waste in water"
     assert html =~ "Breathing oxygen"
     assert html =~ "Fish + prawn stock"
