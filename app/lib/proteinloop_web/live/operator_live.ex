@@ -1347,11 +1347,30 @@ defmodule ProteinLoopWeb.OperatorLive do
               </span>
             </div>
 
-            <.agent_activity_monitor
-              id="tank-agent-activity"
-              activity={@agent_activity}
-              compact={true}
-            />
+            <div
+              class="realtime-tank__agent-compact-status"
+              role="status"
+              aria-live="polite"
+            >
+              <.icon
+                name={if @sagents_running?, do: "hero-arrow-path", else: "hero-user-group"}
+                class={if @sagents_running?, do: "animate-spin", else: nil}
+              />
+              <div>
+                <strong>{@agent_activity.title}</strong>
+                <span>
+                  {if @sagents_running?, do: "Gemma team working", else: "Ready for a safe plan"}
+                </span>
+              </div>
+            </div>
+
+            <div class="realtime-tank__agent-fullscreen-detail">
+              <.agent_activity_monitor
+                id="tank-agent-activity"
+                activity={@agent_activity}
+                compact={true}
+              />
+            </div>
 
             <label
               for="fullscreen-mission-select"
@@ -1375,14 +1394,14 @@ defmodule ProteinLoopWeb.OperatorLive do
               </option>
             </select>
 
-            <div class="mt-3 border-y border-base-300 py-3">
+            <div class="realtime-tank__agent-fullscreen-detail mt-3 border-y border-base-300 py-3">
               <p class="text-sm font-semibold">{@selected_mission.title}</p>
               <p class="mt-1 text-xs leading-5 text-base-content/65">
                 {@selected_mission.objective}
               </p>
             </div>
 
-            <p class="realtime-tank__trust-line">
+            <p class="realtime-tank__agent-fullscreen-detail realtime-tank__trust-line">
               Gemma proposes. Ecosystem rules verify. The producer controls irreversible actions.
             </p>
 
@@ -1405,7 +1424,7 @@ defmodule ProteinLoopWeb.OperatorLive do
             <div
               :if={@mission_phase == :completed && is_map(@loop_result)}
               id="fullscreen-agent-result"
-              class="mt-3 border-l-2 border-success bg-success/10 px-3 py-2"
+              class="realtime-tank__agent-fullscreen-detail mt-3 border-l-2 border-success bg-success/10 px-3 py-2"
               role="status"
               aria-live="polite"
               aria-atomic="true"

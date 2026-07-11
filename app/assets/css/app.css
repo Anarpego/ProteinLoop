@@ -709,7 +709,7 @@ body {
   top: 5.25rem;
   right: 1rem;
   display: block;
-  width: min(24rem, calc(100% - 2rem));
+  width: min(20rem, calc(100% - 2rem));
   max-height: calc(100% - 12.5rem);
   overflow-y: auto;
   border: 1px solid rgb(148 163 184 / 60%);
@@ -719,6 +719,45 @@ body {
   padding: 0.8rem 0.9rem;
   box-shadow: 0 12px 30px rgb(15 23 42 / 14%);
   backdrop-filter: blur(12px);
+}
+
+.realtime-tank__agent-compact-status {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid #dbe3e8;
+  border-bottom: 1px solid #dbe3e8;
+  background: #f0f9ff;
+  padding: 0.65rem 0.7rem;
+}
+
+.realtime-tank__agent-compact-status > svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  color: #2563eb;
+}
+
+.realtime-tank__agent-compact-status strong,
+.realtime-tank__agent-compact-status span {
+  display: block;
+}
+
+.realtime-tank__agent-compact-status strong {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.realtime-tank__agent-compact-status span {
+  margin-top: 0.1rem;
+  color: rgb(31 41 55 / 65%);
+  font-size: 0.65rem;
+  line-height: 0.9rem;
+}
+
+.realtime-tank__agent-fullscreen-detail {
+  display: none;
 }
 
 .realtime-tank:fullscreen,
@@ -756,6 +795,16 @@ body {
   width: min(25rem, calc(100% - 2rem));
   max-height: calc(100dvh - 15rem);
   padding: 0.9rem 1rem;
+}
+
+.realtime-tank:fullscreen .realtime-tank__agent-fullscreen-detail,
+.realtime-tank[data-fullscreen="true"] .realtime-tank__agent-fullscreen-detail {
+  display: block;
+}
+
+.realtime-tank:fullscreen .realtime-tank__agent-compact-status,
+.realtime-tank[data-fullscreen="true"] .realtime-tank__agent-compact-status {
+  display: none;
 }
 
 .realtime-tank__agent-header {

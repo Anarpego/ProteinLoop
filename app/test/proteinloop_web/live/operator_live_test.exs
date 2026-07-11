@@ -341,6 +341,23 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert mission_position < advanced_position
   end
 
+  test "renders a compact tank dock with detail reserved for full screen", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    assert has_element?(
+             view,
+             "#tank-agent-console .realtime-tank__agent-compact-status"
+           )
+
+    assert has_element?(
+             view,
+             "#tank-agent-console .realtime-tank__agent-fullscreen-detail #tank-agent-activity"
+           )
+
+    assert has_element?(view, "#tank-agent-console #fullscreen-mission-select")
+    assert has_element?(view, "#tank-agent-console #fullscreen-run-agentic-mission")
+  end
+
   test "keeps advanced evidence open across telemetry patches", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/")
 

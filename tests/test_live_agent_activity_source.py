@@ -43,6 +43,21 @@ class LiveAgentActivitySourceTests(unittest.TestCase):
         self.assertIn("@media (prefers-reduced-motion: reduce)", css)
         self.assertIn(".agent-live-monitor__signal", css.split("@media (prefers-reduced-motion: reduce)")[-1])
 
+    def test_tank_console_expands_detail_only_in_fullscreen(self) -> None:
+        source = OPERATOR.read_text()
+        css = CSS.read_text()
+
+        self.assertIn("realtime-tank__agent-compact-status", source)
+        self.assertIn("realtime-tank__agent-fullscreen-detail", source)
+        self.assertRegex(
+            css,
+            r"\.realtime-tank__agent-fullscreen-detail\s*\{[^}]*display:\s*none",
+        )
+        self.assertRegex(
+            css,
+            r"\.realtime-tank:fullscreen\s+\.realtime-tank__agent-fullscreen-detail",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

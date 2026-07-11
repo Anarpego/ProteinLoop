@@ -12,3 +12,4 @@
 - [ ] Capture desktop and mobile browser screenshots when the embedded browser is available.
 - [x] Publish implementation and executable evidence.
 - [x] Preserve the initialized Three.js canvas across emergency and telemetry LiveView patches.
+- [x] Separate the compact normal recovery dock from full-screen agent detail.

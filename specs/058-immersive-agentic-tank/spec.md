@@ -22,6 +22,9 @@ An operator can present and operate ProteinLoop from one immersive view: watch t
 10. Full-screen mode shall remain light, responsive, and free of overlap on desktop and mobile viewports.
 11. Fullscreen event listeners shall be removed when the LiveView hook is destroyed.
 12. Simulator and emergency LiveView patches shall not hide or replace an initialized Three.js canvas; renderer presentation state shall live inside the ignored render subtree and client diagnostics shall be restored after each patch.
+13. The normal tank shall use a compact recovery dock that does not obscure the aquarium, while
+    full-screen mode shall reveal the detailed agent network, mission explanation, and recovery
+    receipt.
 
 ## Acceptance Criteria
 
@@ -32,6 +35,8 @@ An operator can present and operate ProteinLoop from one immersive view: watch t
 5. Existing Phoenix and Python suites, production assets, Docker smoke, and live-demo validation pass.
 6. Desktop and mobile browser checks prove full-screen canvas pixels are nonblank, controls fit, and the agent console does not obscure critical metrics.
 7. Hook and LiveView regression tests prove an emergency state update retains the same render shell and restores the initialized canvas presentation state.
+8. Source and LiveView tests prove the compact dock and full-screen-only detail are both present and
+   the expanded presentation is scoped to the tank's full-screen state.
 
 ## Non-Goals
 
