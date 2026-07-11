@@ -61,6 +61,46 @@ If Docker is available:
 docker compose --env-file .env -f docker-compose.gemma-rocm.yml --profile amd-gemma up -d
 ```
 
+## Act-II Prepared Notebook Image
+
+The assigned pod image already provides ROCm, PyTorch, and vLLM in `/opt/venv`; its terminal's
+`/usr/bin/python` is only the base environment. Verify the prepared kernel before installing
+anything:
+
+```sh
+/opt/venv/bin/python3.10 -c 'import torch,vllm; print(torch.__version__, torch.version.hip, vllm.__version__, torch.cuda.is_available())'
+```
+
+Keep model weights and logs on the mounted workspace volume:
+
+```sh
+source /opt/venv/bin/activate
+mkdir -p /workspace/proteinloop-amd/{hf-cache,logs,evidence}
+export HF_HOME=/workspace/proteinloop-amd/hf-cache
+read -s -p "Hugging Face token: " HF_TOKEN
+export HF_TOKEN
+echo
+nohup vllm serve google/gemma-4-E2B-it \
+  --host 127.0.0.1 \
+  --port 8001 \
+  --max-model-len 8192 \
+  --gpu-memory-utilization 0.80 \
+  --limit-mm-per-prompt image=0,audio=0 \
+  > /workspace/proteinloop-amd/logs/vllm.log 2>&1 &
+```
+
+After the server reports ready, clone ProteinLoop and generate the credential-free artifact:
+
+```sh
+git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
+cd /workspace/ProteinLoop
+make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
+```
+
+Download `submission/amd-notebook-gemma-evidence.json` before the temporary allocation ends. The
+collector records only non-secret runtime facts and the bounded model action; it strips hardware
+serial identifiers by selecting an explicit safe field set from AMD SMI output.
+
 Validate the OpenAI-compatible server:
 
 ```sh

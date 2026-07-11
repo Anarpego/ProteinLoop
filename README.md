@@ -333,6 +333,24 @@ On success, the check writes `submission/gemma-evidence.json`.
 
 The evidence must show that `/v1/models` advertises the requested Gemma 4 model and that `/v1/chat/completions` returns a valid ProteinLoop action.
 
+For the Act-II AMD notebook, keep the vLLM endpoint private on pod loopback and collect hardware,
+ROCm, vLLM, tensor-execution, latency, model, and structured-action proof together:
+
+```sh
+git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
+cd /workspace/ProteinLoop
+make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
+```
+
+The target deliberately uses `/opt/venv/bin/python3.10`, the prepared notebook kernel, and writes
+`submission/amd-notebook-gemma-evidence.json`. It does not serialize `HF_TOKEN`, endpoint API keys,
+cookies, UUIDs, or hardware serial numbers. Download that JSON from Jupyter before the temporary
+allocation ends, add it to the local repository, and validate the AMD-hosted submission profile:
+
+```sh
+SUBMISSION_GEMMA_MODE=amd_notebook make submission-ready-check
+```
+
 Run the smallest Gemma 4 model, E2B IT, locally on Apple Silicon before using remote hackathon compute:
 
 ```sh
@@ -847,4 +865,5 @@ manual submission handling:
 AMD Hackathon notebook or Fireworks inference remains an optional remote profile. Use
 `SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and
 `make gemma-check` pass against that endpoint. The public CPU runtime remains the submitted proof
-until a remote run produces executable evidence.
+until a remote run produces executable evidence. Once the real pod artifact is imported, use
+`SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize` for the AMD-hosted Gemma profile.

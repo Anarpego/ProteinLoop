@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_submission_readiness import (
+    AMD_NOTEBOOK_GEMMA_EVIDENCE,
     BASE_REQUIRED_ARTIFACTS,
     LOCAL_GEMMA_EVIDENCE,
     REMOTE_GEMMA_EVIDENCE,
@@ -87,14 +88,18 @@ class SubmissionReadinessTests(unittest.TestCase):
             with self.subTest(artifact=artifact):
                 self.assertIn(artifact, required)
 
-    def test_model_mode_selects_local_or_remote_evidence(self):
+    def test_model_mode_selects_local_remote_or_amd_notebook_evidence(self):
         local = required_artifacts("local")
         remote = required_artifacts("remote")
+        amd_notebook = required_artifacts("amd_notebook")
 
         self.assertIn(LOCAL_GEMMA_EVIDENCE, local)
         self.assertNotIn(REMOTE_GEMMA_EVIDENCE, local)
         self.assertIn(REMOTE_GEMMA_EVIDENCE, remote)
         self.assertNotIn(LOCAL_GEMMA_EVIDENCE, remote)
+        self.assertIn(AMD_NOTEBOOK_GEMMA_EVIDENCE, amd_notebook)
+        self.assertNotIn(LOCAL_GEMMA_EVIDENCE, amd_notebook)
+        self.assertNotIn(REMOTE_GEMMA_EVIDENCE, amd_notebook)
         self.assertEqual(normalize_model_mode(None), "local")
         with self.assertRaises(ValueError):
             normalize_model_mode("unsupported")
@@ -305,6 +310,75 @@ https://demo.example.com
 
         self.assertTrue(result.ok)
         self.assertEqual(result.name, "Local Gemma evidence")
+
+    def test_amd_notebook_evidence_accepts_loopback_with_runtime_proof(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-notebook-gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "provider": "amd_hackathon_notebook",
+                  "endpoint": "http://127.0.0.1:8001",
+                  "model": "google/gemma-4-E2B-it",
+                  "models": ["google/gemma-4-E2B-it"],
+                  "action": {
+                    "feed_kg": 0.05,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.15,
+                    "duckweed_harvest_kg": 1.5
+                  },
+                  "runtime": {
+                    "pytorch_version": "2.9.1+rocm",
+                    "rocm_version": "7.2.1",
+                    "vllm_version": "0.16.1",
+                    "gpu_available": true,
+                    "gpu_count": 1,
+                    "gpu_memory_gib": 47.98,
+                    "gpu_tensor_test": true,
+                    "hardware": {"architecture": "gfx1100", "vram_mb": 49136}
+                  },
+                  "checks": [
+                    {"name": "models endpoint", "ok": true},
+                    {"name": "chat action contract", "ok": true},
+                    {"name": "ROCm runtime", "ok": true}
+                  ]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = gemma_evidence_check(path, mode="amd_notebook")
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.name, "AMD notebook Gemma evidence")
+
+    def test_amd_notebook_evidence_rejects_provider_assertion_without_runtime_proof(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-notebook-gemma-evidence.json"
+            path.write_text(
+                """
+                {
+                  "provider": "amd_hackathon_notebook",
+                  "endpoint": "http://127.0.0.1:8001",
+                  "model": "google/gemma-4-E2B-it",
+                  "models": ["google/gemma-4-E2B-it"],
+                  "action": {
+                    "feed_kg": 0.05,
+                    "aeration_hours": 12,
+                    "water_exchange_fraction": 0.15,
+                    "duckweed_harvest_kg": 1.5
+                  },
+                  "runtime": {},
+                  "checks": [{"name": "models endpoint", "ok": true}]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = gemma_evidence_check(path, mode="amd_notebook")
+
+        self.assertFalse(result.ok)
+        self.assertIn("runtime", result.detail.lower())
 
 
 if __name__ == "__main__":

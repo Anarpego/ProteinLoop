@@ -33,6 +33,11 @@ class ReadinessReportTests(unittest.TestCase):
         self.assertIn("Credit access", remote_names)
         self.assertIn("Gemma endpoint evidence", remote_names)
 
+        amd_names = [name for name, _command in evidence_commands("amd_notebook")]
+        self.assertIn("AMD notebook Gemma evidence", amd_names)
+        self.assertNotIn("Credit access", amd_names)
+        self.assertNotIn("Gemma endpoint evidence", amd_names)
+
     def test_default_evidence_commands_cover_local_submission_gates(self):
         names = [name for name, _command in EVIDENCE_COMMANDS]
 

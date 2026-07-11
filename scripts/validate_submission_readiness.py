@@ -25,6 +25,7 @@ from scripts.validate_submission_artifacts import BUNDLE, MANIFEST, bundle_ok  #
 
 LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
 REMOTE_GEMMA_EVIDENCE = SUBMISSION / "gemma-evidence.json"
+AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
 
 BASE_REQUIRED_ARTIFACTS = [
     ROOT / "README.md",
@@ -113,7 +114,7 @@ def run_checks(
     checks.append(Check("required local artifacts", not missing, ", ".join(missing)))
     checks.append(lablab_form_check(lablab_path, SUBMISSION / "lablab-form.json"))
     checks.append(submission_bundle_check(BUNDLE, MANIFEST))
-    evidence_path = LOCAL_GEMMA_EVIDENCE if model_mode == "local" else REMOTE_GEMMA_EVIDENCE
+    evidence_path = evidence_path_for_mode(model_mode)
     checks.append(gemma_evidence_check(evidence_path, mode=model_mode))
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
@@ -131,15 +132,23 @@ def run_checks(
 
 def normalize_model_mode(value: str | None) -> str:
     mode = (value or "local").strip().lower()
-    if mode not in {"local", "remote"}:
-        raise ValueError("SUBMISSION_GEMMA_MODE must be local or remote")
+    if mode not in {"local", "remote", "amd_notebook"}:
+        raise ValueError("SUBMISSION_GEMMA_MODE must be local, remote, or amd_notebook")
     return mode
 
 
 def required_artifacts(model_mode: str | None = None) -> list[Path]:
     mode = normalize_model_mode(model_mode)
-    evidence = LOCAL_GEMMA_EVIDENCE if mode == "local" else REMOTE_GEMMA_EVIDENCE
+    evidence = evidence_path_for_mode(mode)
     return [*BASE_REQUIRED_ARTIFACTS, evidence]
+
+
+def evidence_path_for_mode(mode: str) -> Path:
+    return {
+        "local": LOCAL_GEMMA_EVIDENCE,
+        "remote": REMOTE_GEMMA_EVIDENCE,
+        "amd_notebook": AMD_NOTEBOOK_GEMMA_EVIDENCE,
+    }[normalize_model_mode(mode)]
 
 
 def extract_labeled_url(text: str, label: str) -> str | None:
@@ -268,7 +277,11 @@ def is_public_http_url(url: str) -> bool:
 
 def gemma_evidence_check(path: Path, mode: str = "remote") -> Check:
     mode = normalize_model_mode(mode)
-    name = "Local Gemma evidence" if mode == "local" else "Gemma endpoint evidence"
+    name = {
+        "local": "Local Gemma evidence",
+        "remote": "Gemma endpoint evidence",
+        "amd_notebook": "AMD notebook Gemma evidence",
+    }[mode]
     if not path.exists():
         return Check(name, False, f"missing {display_path(path)}")
 
@@ -295,6 +308,11 @@ def gemma_evidence_check(path: Path, mode: str = "remote") -> Check:
     if mode == "local" and not loopback:
         return Check(name, False, "endpoint must be localhost for local submission mode")
 
+    if mode == "amd_notebook":
+        runtime_error = amd_notebook_runtime_error(evidence)
+        if runtime_error:
+            return Check(name, False, runtime_error)
+
     action = evidence.get("action")
     if not isinstance(action, dict):
         return Check(name, False, "missing action object")
@@ -317,7 +335,35 @@ def gemma_evidence_check(path: Path, mode: str = "remote") -> Check:
     if failed:
         return Check(name, False, f"failed checks: {', '.join(failed)}")
 
+    if mode == "amd_notebook":
+        runtime = evidence["runtime"]
+        architecture = runtime["hardware"]["architecture"]
+        return Check(name, True, f"{model} on ROCm {runtime['rocm_version']} / {architecture}")
     return Check(name, True, f"{model} via {parsed.hostname}")
+
+
+def amd_notebook_runtime_error(evidence: dict) -> str | None:
+    if evidence.get("provider") != "amd_hackathon_notebook":
+        return "AMD notebook runtime provider is not proven"
+    runtime = evidence.get("runtime")
+    if not isinstance(runtime, dict):
+        return "missing AMD notebook runtime object"
+    hardware = runtime.get("hardware")
+    if not isinstance(hardware, dict):
+        return "missing AMD notebook runtime hardware"
+    required_strings = ["pytorch_version", "rocm_version", "vllm_version"]
+    missing = [key for key in required_strings if not str(runtime.get(key, "")).strip()]
+    if missing:
+        return f"AMD notebook runtime missing: {', '.join(missing)}"
+    if runtime.get("gpu_available") is not True or int(runtime.get("gpu_count") or 0) < 1:
+        return "AMD notebook runtime has no available GPU"
+    if not str(hardware.get("architecture", "")).startswith("gfx"):
+        return "AMD notebook runtime missing gfx architecture"
+    if float(runtime.get("gpu_memory_gib") or 0.0) < 12.0:
+        return "AMD notebook runtime has insufficient proven GPU memory"
+    if runtime.get("gpu_tensor_test") is not True:
+        return "AMD notebook runtime missing passing GPU tensor execution"
+    return None
 
 
 def model_is_advertised(model: str, model_ids: list[str]) -> bool:

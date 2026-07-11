@@ -19,6 +19,7 @@ SAGENTS_EVIDENCE = SUBMISSION / "sagents-evidence.json"
 HORDE_EVIDENCE = SUBMISSION / "horde-evidence.json"
 NRF9151_LIVE_EVIDENCE = SUBMISSION / "nrf9151-live-evidence.json"
 LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
+AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -47,6 +48,10 @@ LOCAL_MODEL_COMMANDS = [
     ("Local Gemma endpoint evidence", ["make", "local-gemma-submission-evidence"]),
 ]
 
+AMD_NOTEBOOK_MODEL_COMMANDS = [
+    ("AMD notebook Gemma evidence", ["make", "amd-notebook-gemma-evidence"]),
+]
+
 FINAL_EVIDENCE_COMMANDS = [
     ("Public demo environment", ["make", "public-env-check"]),
     ("Public live demo", ["make", "live-demo-check"]),
@@ -56,14 +61,18 @@ FINAL_EVIDENCE_COMMANDS = [
 
 def normalize_model_mode(value: str) -> str:
     mode = value.strip().lower()
-    if mode not in {"local", "remote"}:
-        raise ValueError("SUBMISSION_GEMMA_MODE must be local or remote")
+    if mode not in {"local", "remote", "amd_notebook"}:
+        raise ValueError("SUBMISSION_GEMMA_MODE must be local, remote, or amd_notebook")
     return mode
 
 
 def evidence_commands(model_mode: str = "local") -> list[tuple[str, list[str]]]:
     mode = normalize_model_mode(model_mode)
-    model_commands = LOCAL_MODEL_COMMANDS if mode == "local" else REMOTE_MODEL_COMMANDS
+    model_commands = {
+        "local": LOCAL_MODEL_COMMANDS,
+        "remote": REMOTE_MODEL_COMMANDS,
+        "amd_notebook": AMD_NOTEBOOK_MODEL_COMMANDS,
+    }[mode]
     return [*COMMON_EVIDENCE_COMMANDS, *model_commands, *FINAL_EVIDENCE_COMMANDS]
 
 
@@ -118,6 +127,8 @@ def collect_evidence(model_mode: str = "local") -> list[CommandEvidence]:
             evidence.append(nrf9151_live_evidence(NRF9151_LIVE_EVIDENCE))
         elif name == "Local Gemma endpoint evidence":
             evidence.append(local_gemma_endpoint_evidence(LOCAL_GEMMA_EVIDENCE))
+        elif name == "AMD notebook Gemma evidence":
+            evidence.append(amd_notebook_endpoint_evidence(AMD_NOTEBOOK_GEMMA_EVIDENCE))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -276,6 +287,17 @@ def local_gemma_endpoint_evidence(path: Path) -> CommandEvidence:
         lines.append("local Gemma endpoint evidence OK")
 
     return CommandEvidence(name, command, 0 if ok else 1, "\n".join(lines), "")
+
+
+def amd_notebook_endpoint_evidence(path: Path) -> CommandEvidence:
+    from scripts.validate_submission_readiness import gemma_evidence_check
+
+    name = "AMD notebook Gemma evidence"
+    command = ["make", "amd-notebook-gemma-evidence"]
+    path_label = display_path(path)
+    result = gemma_evidence_check(path, mode="amd_notebook")
+    output = f"evidence: {path_label}\n[{'ok' if result.ok else 'FAIL'}] {result.detail}"
+    return CommandEvidence(name, command, 0 if result.ok else 1, output, "")
 
 
 def horde_runtime_evidence(path: Path) -> CommandEvidence:
@@ -500,12 +522,20 @@ def render_report(
                 "make sagents-evidence",
             ]
         )
-    else:
+    elif model_mode == "remote":
         next_commands.extend(
             [
                 "AMD_NOTEBOOK_STATUS=active make credit-check  # official team notebook path",
                 "FIREWORKS_API_KEY=your-fireworks-key make credit-check  # optional coupon path",
                 "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it",
+            ]
+        )
+    else:
+        next_commands.extend(
+            [
+                "AMD_NOTEBOOK_STATUS=active make credit-check",
+                "make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it",
+                "make sagents-evidence",
             ]
         )
     next_commands.append(f"SUBMISSION_GEMMA_MODE={model_mode} make submission-finalize")
