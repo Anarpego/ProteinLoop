@@ -9,5 +9,5 @@
 - [x] Integrate the read-only producer scene and remove the legacy SVG fallback.
 - [x] Update validators and documentation.
 - [x] Run application, Docker, route, and responsive layout-contract verification.
-- [ ] Capture desktop/mobile canvas pixels when browser automation is available.
+- [x] Capture desktop/mobile canvas pixels and validate nonblank deployed tank regions.
 - [x] Regenerate evidence and publish.

@@ -10,5 +10,5 @@
 - [x] Correct responsive camera and overlay framing.
 - [x] Update README and submission demo notes.
 - [x] Run application, Docker, and route verification.
-- [ ] Capture desktop/mobile PBR canvas pixels when browser automation is available.
+- [x] Capture desktop/mobile PBR canvas pixels and validate final framing.
 - [x] Publish the implementation and evidence.

@@ -24,6 +24,7 @@ GENERATED_ARTIFACT_PATHS = [
     "submission/docker-smoke-evidence.json",
     "submission/final-readiness-report.md",
     "submission/proteinloop-lablab-upload.zip",
+    "submission/visual-evidence/report.json",
 ]
 
 COMMON_EVIDENCE_COMMANDS = [
