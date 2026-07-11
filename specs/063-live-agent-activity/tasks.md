@@ -9,4 +9,4 @@
 - [x] Add responsive and reduced-motion-safe styling.
 - [x] Update README, demo validation, and submission narrative.
 - [x] Run full application, Docker, and submission checks.
-- [ ] Publish implementation and evidence.
+- [x] Publish implementation and evidence.
