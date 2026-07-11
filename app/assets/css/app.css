@@ -1417,6 +1417,11 @@ body {
   background: #fff7f7;
 }
 
+.advanced-evidence__content,
+.advanced-evidence__content > * {
+  min-width: 0;
+}
+
 @keyframes tank-live-pulse {
   70% {
     box-shadow: 0 0 0 0.5rem rgb(13 148 136 / 0%);
@@ -1480,6 +1485,24 @@ body {
 }
 
 @media (max-width: 767px) {
+  .advanced-state__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .advanced-state__commands {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .advanced-state__commands .btn {
+    width: 100%;
+    min-width: 0;
+    border-radius: var(--radius-field);
+  }
+
   .off-grid-continuity__modes,
   .off-grid-continuity__path {
     grid-template-columns: 1fr;
@@ -1507,6 +1530,14 @@ body {
 
   .protein-loop-story__steps li {
     min-height: 4.75rem;
+  }
+
+  .protein-loop-story__steps p,
+  .protein-loop-story__steps strong {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .protein-loop-story__steps li:nth-child(3) {

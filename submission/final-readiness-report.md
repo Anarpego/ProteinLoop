@@ -1,8 +1,41 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-11T06:01:36+00:00
-Commit: `d9c7627`
-Working tree (source): `clean`
+Generated: 2026-07-11T17:08:06+00:00
+Commit: `802dc0a`
+Working tree (source): `M Makefile
+ M README.md
+ M app/assets/css/app.css
+ M app/lib/proteinloop_web/live/operator_live.ex
+ M app/test/proteinloop_web/controllers/page_controller_test.exs
+ M app/test/proteinloop_web/live/operator_live_test.exs
+ M scripts/build_submission_bundle.py
+ M scripts/export_lablab_form.py
+ M scripts/generate_submission_deck.mjs
+ M scripts/render_cover_png.py
+ M scripts/validate_submission_artifacts.py
+ M scripts/validate_submission_readiness.py
+ M specs/018-rendered-slide-deck/plan.md
+ M specs/018-rendered-slide-deck/spec.md
+ M specs/018-rendered-slide-deck/tasks.md
+ M specs/030-lablab-form-export/spec.md
+ M submission/artifact-build-manifest.json
+ M submission/cover.png
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M submission/proteinloop-demo-video.avi
+ M submission/proteinloop-hackathon-deck.pptx
+ M submission/slides.md
+ M tests/test_lablab_form_export.py
+ M tests/test_off_grid_narrative.py
+ M tests/test_submission_bundle.py
+ M tests/test_submission_readiness.py
+?? scripts/export_slide_pdf.py
+?? scripts/generate_submission_deck_v2.mjs
+?? scripts/inspect_responsive_layout.mjs
+?? submission/cover-final.png
+?? submission/deck-assets/
+?? submission/proteinloop-hackathon-deck.pdf
+?? submission/visual-evidence/`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -18,13 +51,15 @@ Gemma evidence mode: `local`
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
 | Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
-| Public demo environment | `make public-env-check` | 0 | PASS |
-| Public live demo | `make live-demo-check` | 0 | PASS |
+| Public demo environment | `make public-env-check` | 2 | FAIL |
+| Public live demo | `make live-demo-check` | 2 | FAIL |
 | Final submission readiness | `make submission-ready-check` | 0 | PASS |
 
 ## Remaining Blockers
 
-- None. Final readiness gates are passing.
+- Public demo environment: [FAIL] PHX_HOST - set PHX_HOST to the public hostname
+- Public demo environment: [FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
+- Public live demo: exited 2
 
 ## Next Commands
 
@@ -44,9 +79,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-...................................................................................................................................................................................
+......................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 179 tests in 0.150s
+Ran 182 tests in 0.225s
 
 OK
 ```
@@ -57,6 +92,7 @@ OK
 python3 scripts/validate_submission_artifacts.py
 submission artifacts OK
 pptx slides: 10
+pdf pages: 10
 ```
 
 ### Docker smoke
@@ -170,23 +206,20 @@ local Gemma endpoint evidence OK
 
 ```text
 python3 scripts/validate_public_env.py
-[ok] PHX_HOST - proteinloop.dev-vb.lat
-[ok] SECRET_KEY_BASE - 64 characters
+[FAIL] PHX_HOST - set PHX_HOST to the public hostname
+[FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
 [ok] PUBLIC_PORT - default 80
 [ok] SIMULATOR_URL - http://simulator:8000
-public environment OK
+2 public environment check(s) failed
+make[1]: *** [public-env-check] Error 1
 ```
 
 ### Public live demo
 
 ```text
-DEMO_URL="https://proteinloop.dev-vb.lat" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
-[ok] guided operator control route
-[ok] Gemma endpoint status - Gemma 4 endpoint configured
-[ok] producer English route
-[ok] bundled PBR fish model - bytes=12488144
-[ok] bundled realistic prawn visual - bytes=151238
-live demo OK
+DEMO_URL="" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
+DEMO_URL or --base-url is required
+make[1]: *** [live-demo-check] Error 2
 ```
 
 ### Final submission readiness
@@ -203,7 +236,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - d9c7627557fa164aba521a2111bbe365ce201358
+[ok] local git commit - 802dc0aa90aaa0ce356e8ee37b50652bc5ed5a6d
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK

@@ -398,6 +398,27 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert has_element?(view, "#advanced-evidence > summary[aria-expanded='false']")
   end
 
+  test "keeps advanced simulator controls inside the mobile viewport", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    view
+    |> element("#advanced-evidence > summary")
+    |> render_click()
+
+    assert has_element?(view, "#advanced-evidence > .advanced-evidence__content")
+    assert has_element?(view, "#advanced-closed-loop-state")
+
+    assert has_element?(
+             view,
+             "#advanced-closed-loop-state .advanced-state__header"
+           )
+
+    assert has_element?(
+             view,
+             "#advanced-closed-loop-state .advanced-state__commands"
+           )
+  end
+
   test "shows and replays the latest physical DECT capture as simulated telemetry", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 

@@ -23,6 +23,7 @@ BASE_BUNDLE_FILES = [
     SUBMISSION / "video-script.md",
     SUBMISSION / "slides.md",
     SUBMISSION / "proteinloop-hackathon-deck.pptx",
+    SUBMISSION / "proteinloop-hackathon-deck.pdf",
     SUBMISSION / "proteinloop-demo-video.avi",
     SUBMISSION / "cover.svg",
     SUBMISSION / "cover.png",

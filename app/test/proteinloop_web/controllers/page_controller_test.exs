@@ -51,6 +51,15 @@ defmodule ProteinLoopWeb.PageControllerTest do
     refute css =~ "prefersdark: true"
   end
 
+  test "mobile protein outcomes wrap instead of clipping" do
+    css = File.read!(Path.expand("../../../assets/css/app.css", __DIR__))
+    mobile_css = css |> String.split("@media (max-width: 767px)") |> List.last()
+
+    assert mobile_css =~ ".protein-loop-story__steps p"
+    assert mobile_css =~ "white-space: normal"
+    assert mobile_css =~ "overflow-wrap: anywhere"
+  end
+
   test "frontend pins and registers the real-time Three.js tank" do
     assets = Path.expand("../../../assets", __DIR__)
     package = assets |> Path.join("package.json") |> File.read!() |> Jason.decode!()

@@ -637,9 +637,11 @@ Submission source artifacts live in `submission/`:
 - `video-script.md`: 2-3 minute demo recording script.
 - `slides.md`: pitch deck source.
 - `proteinloop-hackathon-deck.pptx`: editable PowerPoint deck.
+- `proteinloop-hackathon-deck.pdf`: upload-ready ten-page slide presentation.
 - `proteinloop-demo-video.avi`: generated storyboard video artifact.
-- `cover.svg`: cover image source.
-- `cover.png`: rendered upload-ready cover image.
+- `cover-final.png`: canonical real-product cover composition.
+- `cover.png`: rendered 1600x900 upload-ready cover used by the README and lablab packet.
+- `deck-assets/`: tracked real-product captures used to regenerate the PDF and PPTX.
 - `demo-evidence.json` / `demo-evidence.md`: generated simulator evidence for video and submission copy.
 - `demo-rehearsal.json` / `demo-rehearsal.md`: generated judge-path rehearsal with unsafe rejection, recovery, RLVR search, and human-approval copy.
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
@@ -803,7 +805,7 @@ make readiness-report
 ├── docker-compose.public.yml
 ├── docker-compose.gemma-rocm.yml
 ├── LICENSE
-├── scripts/generate_submission_deck.mjs
+├── scripts/generate_submission_deck_v2.mjs
 ├── scripts/generate_demo_video.py
 ├── scripts/build_submission_bundle.py
 ├── scripts/docker_smoke_test.py

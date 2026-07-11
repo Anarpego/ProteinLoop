@@ -5,12 +5,19 @@ from __future__ import annotations
 import sys
 import urllib.parse
 import zipfile
+import re
 from pathlib import Path
+
+try:
+    from scripts.export_lablab_form import field_length_errors
+except ModuleNotFoundError:  # Direct `python scripts/...` execution.
+    from export_lablab_form import field_length_errors
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SUBMISSION = ROOT / "submission"
 PPTX = SUBMISSION / "proteinloop-hackathon-deck.pptx"
+PDF = SUBMISSION / "proteinloop-hackathon-deck.pdf"
 VIDEO = SUBMISSION / "proteinloop-demo-video.avi"
 BUNDLE = SUBMISSION / "proteinloop-lablab-upload.zip"
 MANIFEST = SUBMISSION / "bundle-manifest.json"
@@ -31,6 +38,10 @@ NRF9151_JSON = SUBMISSION / "nrf9151-field-plan.json"
 NRF9151_MD = SUBMISSION / "nrf9151-field-plan.md"
 NRF9151_BRIDGE_JSON = SUBMISSION / "nrf9151-telemetry-bridge.json"
 NRF9151_BRIDGE_MD = SUBMISSION / "nrf9151-telemetry-bridge.md"
+DECK_ASSETS = [
+    SUBMISSION / "deck-assets" / "operator-overview.png",
+    SUBMISSION / "deck-assets" / "agent-recovery.png",
+]
 
 
 REQUIRED_FILES = [
@@ -59,10 +70,12 @@ REQUIRED_FILES = [
     NRF9151_BRIDGE_MD,
     VIDEO,
     PPTX,
+    PDF,
     BUNDLE,
     MANIFEST,
     FORM,
     REPORT,
+    *DECK_ASSETS,
 ]
 
 
@@ -81,6 +94,11 @@ def main() -> int:
     slide_count = pptx_slide_count(PPTX)
     if slide_count != 10:
         print(f"expected 10 PPTX slides, found {slide_count}", file=sys.stderr)
+        return 1
+
+    pdf_pages = pdf_page_count(PDF)
+    if pdf_pages != 10:
+        print(f"expected 10 PDF pages, found {pdf_pages}", file=sys.stderr)
         return 1
 
     if not bundle_ok(BUNDLE, MANIFEST):
@@ -173,6 +191,7 @@ def main() -> int:
 
     print("submission artifacts OK")
     print(f"pptx slides: {slide_count}")
+    print(f"pdf pages: {pdf_pages}")
     return 0
 
 
@@ -191,6 +210,10 @@ def pptx_slide_count(path: Path) -> int:
                 if name.startswith("ppt/slides/slide") and name.endswith(".xml")
             ]
         )
+
+
+def pdf_page_count(path: Path) -> int:
+    return len(re.findall(rb"/Type\s*/Page\b", path.read_bytes()))
 
 
 def looks_like_avi(path: Path) -> bool:
@@ -215,6 +238,7 @@ def bundle_ok(
         "submission/video-script.md",
         "submission/slides.md",
         "submission/proteinloop-hackathon-deck.pptx",
+        "submission/proteinloop-hackathon-deck.pdf",
         "submission/proteinloop-demo-video.avi",
         "submission/cover.svg",
         "submission/cover.png",
@@ -262,10 +286,13 @@ def form_ok(path: Path) -> bool:
         "project_title",
         "short_description",
         "long_description",
+        "categories",
         "technology_tags",
         "repository_url",
         "demo_application_platform",
         "application_url",
+        "docker_image",
+        "additional_information",
         "key_demo_path",
         "judging_notes",
         "artifacts",
@@ -279,7 +306,12 @@ def form_ok(path: Path) -> bool:
         "upload_bundle",
         "readme",
     }
-    return required_keys.issubset(form) and required_artifacts.issubset(artifacts)
+    return (
+        required_keys.issubset(form)
+        and required_artifacts.issubset(artifacts)
+        and artifacts.get("slide_presentation") == "submission/proteinloop-hackathon-deck.pdf"
+        and not field_length_errors(form)
+    )
 
 
 def report_ok(path: Path) -> bool:

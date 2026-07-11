@@ -16,20 +16,34 @@ OUTPUT = SUBMISSION / "lablab-form.json"
 ARTIFACTS = {
     "cover_image": "submission/cover.png",
     "video_presentation": "submission/proteinloop-demo-video.avi",
-    "slide_presentation": "submission/proteinloop-hackathon-deck.pptx",
+    "slide_presentation": "submission/proteinloop-hackathon-deck.pdf",
     "upload_bundle": "submission/proteinloop-lablab-upload.zip",
     "readme": "README.md",
+}
+FIELD_LIMITS = {
+    "project_title": (5, 50),
+    "short_description": (50, 255),
+    "long_description": (600, 2000),
 }
 
 
 def main() -> int:
-    output = write_form()
+    output = write_form(validate_lengths=True)
     print(f"wrote {output.relative_to(ROOT)}")
     return 0
 
 
-def write_form(source_path: Path = SOURCE, output_path: Path = OUTPUT) -> Path:
+def write_form(
+    source_path: Path = SOURCE,
+    output_path: Path = OUTPUT,
+    *,
+    validate_lengths: bool = False,
+) -> Path:
     form = export_form(source_path.read_text(encoding="utf-8"))
+    if validate_lengths:
+        errors = field_length_errors(form)
+        if errors:
+            raise ValueError("; ".join(errors))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(form, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return output_path
@@ -44,10 +58,13 @@ def export_form(markdown: str) -> dict[str, Any]:
         "project_title": plain_value(sections.get("Project Title", "")),
         "short_description": plain_value(sections.get("Short Description", "")),
         "long_description": plain_value(sections.get("Long Description", "")),
+        "categories": bullet_values(sections.get("Categories", "")),
         "technology_tags": bullet_values(sections.get("Technology Tags", "")),
         "repository_url": repository_url,
         "demo_application_platform": plain_value(sections.get("Demo Application Platform", "")),
         "application_url": application_url,
+        "docker_image": plain_value(sections.get("Docker Image", "")),
+        "additional_information": plain_value(sections.get("Additional Information", "")),
         "key_demo_path": numbered_values(sections.get("Key Demo Path", "")),
         "judging_notes": bullet_values(sections.get("Judging Notes", "")),
         "artifacts": ARTIFACTS,
@@ -101,6 +118,17 @@ def unresolved_fields(repository_url: str, application_url: str) -> list[str]:
     if not application_url or application_url.upper() == "TODO":
         unresolved.append("application_url")
     return unresolved
+
+
+def field_length_errors(form: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for field, (minimum, maximum) in FIELD_LIMITS.items():
+        length = len(form.get(field, ""))
+        if length < minimum or length > maximum:
+            errors.append(
+                f"{field} must be {minimum}-{maximum} characters (found {length})"
+            )
+    return errors
 
 
 if __name__ == "__main__":

@@ -1613,7 +1613,7 @@ defmodule ProteinLoopWeb.OperatorLive do
 
         <details
           id="advanced-evidence"
-          class="group rounded-box border border-base-300 bg-base-100"
+          class="group min-w-0 rounded-box border border-base-300 bg-base-100"
           open={@advanced_evidence_open?}
         >
           <summary
@@ -1633,7 +1633,7 @@ defmodule ProteinLoopWeb.OperatorLive do
             />
           </summary>
 
-          <div class="flex flex-col gap-4 border-t border-base-300 p-4">
+          <div class="advanced-evidence__content flex min-w-0 flex-col gap-4 border-t border-base-300 p-4">
             <section class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <.metric_card
                 label="Day"
@@ -1769,11 +1769,14 @@ defmodule ProteinLoopWeb.OperatorLive do
               </p>
             </section>
 
-            <section class="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-              <div class="rounded-box border border-base-300 bg-base-100 p-4">
-                <div class="mb-3 flex items-center justify-between gap-3">
+            <section class="grid min-w-0 gap-4 lg:grid-cols-[1.3fr_0.7fr]">
+              <div
+                id="advanced-closed-loop-state"
+                class="min-w-0 rounded-box border border-base-300 bg-base-100 p-4"
+              >
+                <div class="advanced-state__header mb-3 flex items-center justify-between gap-3">
                   <h2 class="text-lg font-semibold">Closed-loop state</h2>
-                  <div class="join">
+                  <div class="advanced-state__commands join">
                     <button class="btn join-item btn-sm btn-error" phx-click="spike">
                       <.icon name="hero-bolt" /> Spike
                     </button>

@@ -1,12 +1,13 @@
 # ProteinLoop Slide Source
 
-Rendered deck: `submission/proteinloop-hackathon-deck.pptx`
+Rendered decks: editable `submission/proteinloop-hackathon-deck.pptx` and upload-ready `submission/proteinloop-hackathon-deck.pdf`.
 
 Regenerate with:
 
 ```sh
-node scripts/generate_submission_deck.mjs
+node scripts/generate_submission_deck_v2.mjs
 node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
+python3 scripts/export_slide_pdf.py
 ```
 
 ## 1. ProteinLoop

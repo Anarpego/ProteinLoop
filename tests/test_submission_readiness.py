@@ -122,15 +122,18 @@ https://demo.example.com
             form.write_text(
                 """
 {
+  "additional_information": "",
   "application_url": "https://demo.example.com",
   "artifacts": {
     "cover_image": "submission/cover.png",
     "readme": "README.md",
-    "slide_presentation": "submission/proteinloop-hackathon-deck.pptx",
+    "slide_presentation": "submission/proteinloop-hackathon-deck.pdf",
     "upload_bundle": "submission/proteinloop-lablab-upload.zip",
     "video_presentation": "submission/proteinloop-demo-video.avi"
   },
+  "categories": [],
   "demo_application_platform": "",
+  "docker_image": "",
   "judging_notes": [],
   "key_demo_path": [],
   "long_description": "",

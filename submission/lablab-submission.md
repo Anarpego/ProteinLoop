@@ -10,13 +10,16 @@ An off-grid-ready protein loop using private DECT NR+, self-hosted Gemma 4, dete
 
 ## Long Description
 
-ProteinLoop tackles a practical food security problem: aquaponics already integrates aquatic animals and plants, but operating the connected animal-protein outcome safely remains difficult. ProteinLoop makes that outcome visible and recoverable, then extends the managed loop across fish, freshwater prawns, duckweed feed, plants, laying chickens, and eggs.
+ProteinLoop addresses a practical food-security gap: aquaponics connects aquatic animals and plants, but safely operating the full animal-protein outcome remains difficult. ProteinLoop makes fish and freshwater-prawn biomass measurable and recoverable, then extends the loop through plants that clean the water, duckweed that becomes feed, and laying chickens that produce eggs. The live interface explains ammonia as waste in the water and dissolved oxygen as air the animals can breathe, so a producer can understand the risk before reading technical values.
 
-The simulator is the verifier. The first screen quantifies the fish-and-prawn biomass at risk, the plants cleaning the water, the duckweed feed reserve, and the chickens and eggs supported downstream. A locally bundled PBR fish model, four recognizable foreground prawns from a licensed CC0 visual, physical water and glass, plants, substrate, and aeration make the main tank immediately recognizable. It explains ammonia as waste in the water and dissolved oxygen as air the animals can breathe before showing technical values. Every proposed feed, aeration, water exchange, or harvest action is checked against deterministic ecosystem rules before state can mutate. The operator chooses a recovery or production mission, and a real Sagents 0.9.0 runtime sends that objective to four concurrent `Sagents.SubAgent` specialists plus a parent supervisor. A first-viewport live activity network advances from actual state observation through each specialist start and structured brief, supervisor synthesis, verifier decision, admitted action, and measured outcome; it exposes auditable events without claiming private chain-of-thought. The resulting verified recovery receipt shows every structured recommendation and resource request, the supervisor's bounded action, verifier warnings, reward, and measured before/after chemistry. The same interface demonstrates collapse-versus-recovery behavior, rejected unsafe proposals, RLVR reward comparison, verifier-guided policy search improvement, the custom `verify_ecosystem_safety` mode, `until_tool_success`, and resumable English HumanInTheLoop approval. A two-node Horde 0.10.0 cluster proves real owner loss and state restoration: the verifier stops the managed agent's actual owner, observes the same identity, state token, and fingerprint on the peer, then rejoins the node. A provider-free WhatsApp/SMS handoff supports low-bandwidth operation. Two physical nRF9151 DKs prove the field radio path: FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching DECT NR+ sequence number in a read-only UART capture marked `simulated: false`. The separate sample JSONL bridge documents the future water-quality payload contract without claiming Nordic's stock `hello_dect` logs contain sensor telemetry.
+The simulator is the verifier. Four concurrent Sagents specialists evaluate fish, prawns, plants, and the feed loop; a supervisor synthesizes one bounded proposal. Gemma can recommend aeration, feed, water exchange, or harvest actions, but deterministic ecosystem rules are the only authority allowed to mutate state. Judges can inject an ammonia emergency, watch structured agent events in real time, see an unsafe proposal rejected before mutation, execute a verified recovery, and inspect measured chemistry before and after. The same Dockerized application includes RLVR policy comparison, anomaly forecasting, a real two-node Horde state-restoration proof, and producer approval that can approve, reduce, or reject risky actions.
 
-DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway. It lets the PT tank node reach the FT gateway without Wi-Fi, a SIM, or cloud access. The FT radio then hands data to a separate edge computer that runs self-hosted Gemma, Phoenix, and the deterministic verifier; Gemma does not run on either nRF9151 board. This makes internet access optional for local monitoring, AI proposals, safety checks, and producer decisions. The target power design adds a solar panel, charge controller, and battery so the same local control path can operate without the electrical grid. The current submission proves the physical two-board radio link and local Gemma runtime, but labels chemistry probes, solar autonomy, field range, and regional spectrum approval as the next measured field integrations.
+Two physical nRF9151 boards prove a bidirectional DECT NR+ field link between tank and gateway without Wi-Fi, a SIM, or cloud access. A separate edge computer runs the smallest Gemma 4 instruction model, `google/gemma-4-E2B-it`, through the OpenAI-compatible `GEMMA_ENDPOINT`; Gemma does not run on the radio boards. The public demo self-hosts llama.cpp on an owned 8 GB CPU server; Apple Metal evidence proves the full workflow. The repository includes a portable ROCm/vLLM deployment profile but does not claim current AMD-hosted GPU inference. Chemistry probes, measured solar autonomy, field range, and regional approval remain the next proofs.
 
-The proven model runtime is Google's smallest Gemma 4 instruction model, `google/gemma-4-E2B-it`, behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. The public judge demo now runs the official QAT Q4 GGUF through llama.cpp on the owned 8 GB DigitalOcean CPU host; a separate Apple Metal run records the full five-agent Sagents, verifier, and HITL evidence. The public deployment evidence records live `/v1/models`, structured chat, private network isolation, resource limits, and a proposal inside the deterministic safety envelope. The repo also includes an unclaimed ROCm/vLLM promotion profile for a future AMD host; none of this evidence is described as AMD-hosted or GPU inference.
+## Categories
+
+- Climate
+- Cloud Application
 
 ## Technology Tags
 
@@ -48,6 +51,19 @@ Docker Compose
 ## Application URL
 
 https://proteinloop.dev-vb.lat
+
+## Docker Image
+
+N/A
+
+## Additional Information
+
+ProteinLoop is a Track 3 Unicorn submission, so the Track 1/Track 2 Docker Image field is `N/A`. The project itself is fully Dockerized and reproducible with the public repository's Compose instructions. The live application runs at https://proteinloop.dev-vb.lat.
+
+The competition's AMD notebook service was unavailable and no AMD Developer Cloud or Fireworks credits were issued to this team before the deadline. The submitted demo therefore uses owned infrastructure: self-hosted Gemma 4 E2B through llama.cpp on an 8 GB DigitalOcean CPU host, plus separate Apple Metal evidence. The repository includes a tested AMD ROCm/vLLM deployment profile behind the same `GEMMA_ENDPOINT`, but does not misrepresent the current demo as AMD-hosted or GPU-backed.
+
+Physical evidence comes from two real nRF9151 boards exchanging bidirectional DECT NR+ sequence 100. This proves the private no-Wi-Fi field link; chemistry probes and measured solar autonomy remain explicit next deployment proofs. Deterministic ecosystem rules, not the LLM, retain mutation authority, and risky actions pause for producer approval.
+
 ## Key Demo Path
 
 1. Open the operator route and read the animated fish-to-eggs loop, executable proof ribbon, and `Off-grid continuity` band. The band explains no-Wi-Fi DECT NR+, no-cloud self-hosted Gemma, the planned solar-plus-battery power layer, and the proven-versus-planned acquisition path.
