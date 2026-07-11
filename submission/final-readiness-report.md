@@ -1,7 +1,7 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-11T04:57:32+00:00
-Commit: `169e576`
+Generated: 2026-07-11T06:01:36+00:00
+Commit: `d9c7627`
 Working tree (source): `clean`
 Gemma evidence mode: `local`
 
@@ -44,9 +44,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-.........................................................................................................................................................................
+...................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 169 tests in 0.156s
+Ran 179 tests in 0.150s
 
 OK
 ```
@@ -171,8 +171,8 @@ local Gemma endpoint evidence OK
 ```text
 python3 scripts/validate_public_env.py
 [ok] PHX_HOST - proteinloop.dev-vb.lat
-[ok] SECRET_KEY_BASE - 128 characters
-[ok] PUBLIC_PORT - 4011
+[ok] SECRET_KEY_BASE - 64 characters
+[ok] PUBLIC_PORT - default 80
 [ok] SIMULATOR_URL - http://simulator:8000
 public environment OK
 ```
@@ -182,7 +182,7 @@ public environment OK
 ```text
 DEMO_URL="https://proteinloop.dev-vb.lat" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
 [ok] guided operator control route
-[ok] Gemma endpoint status - Gemma 4 endpoint unavailable
+[ok] Gemma endpoint status - Gemma 4 endpoint configured
 [ok] producer English route
 [ok] bundled PBR fish model - bytes=12488144
 [ok] bundled realistic prawn visual - bytes=151238
@@ -203,7 +203,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - 169e576c963938172f6be72d878bb8c820164551
+[ok] local git commit - d9c7627557fa164aba521a2111bbe365ce201358
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK
