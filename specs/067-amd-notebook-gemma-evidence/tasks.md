@@ -7,4 +7,4 @@
 - [x] Include real evidence conditionally in the upload bundle.
 - [x] Document pod execution and artifact import.
 - [x] Run regression and submission checks.
-- [ ] Publish the collector for notebook execution.
+- [x] Publish the collector for notebook execution.
