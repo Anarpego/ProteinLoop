@@ -6,6 +6,16 @@ from scripts.validate_public_deploy import validate_profile
 
 
 class PublicDeployValidatorTests(unittest.TestCase):
+    def test_public_profile_supports_loopback_reverse_proxy_binding(self):
+        compose = Path(__file__).resolve().parents[1] / "docker-compose.public.yml"
+
+        text = compose.read_text(encoding="utf-8")
+
+        self.assertIn(
+            '${PUBLIC_BIND_IP:-0.0.0.0}:${PUBLIC_PORT:-80}:4000',
+            text,
+        )
+
     def test_validate_profile_rejects_missing_file(self):
         checks = validate_profile(Path("/tmp/does-not-exist-proteinloop-compose.yml"))
 

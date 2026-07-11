@@ -5,8 +5,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_live_demo import (
+    GEMMA_STATUS_NEEDLES,
     OPERATOR_NEEDLES,
     PRODUCER_NEEDLES,
+    any_marker_check,
     join_url,
     marker_check,
     normalize_base_url,
@@ -36,6 +38,15 @@ class LiveDemoValidatorTests(unittest.TestCase):
 
         self.assertFalse(result.ok)
         self.assertIn("WhatsApp/SMS message", result.detail)
+
+    def test_gemma_status_accepts_configured_or_truthfully_unavailable(self):
+        for status in GEMMA_STATUS_NEEDLES:
+            with self.subTest(status=status):
+                result = any_marker_check("Gemma endpoint status", status, GEMMA_STATUS_NEEDLES)
+                self.assertTrue(result.ok)
+
+        missing = any_marker_check("Gemma endpoint status", "", GEMMA_STATUS_NEEDLES)
+        self.assertFalse(missing.ok)
 
     def test_operator_markers_include_policy_search(self):
         self.assertIn("Policy search improvement", OPERATOR_NEEDLES)

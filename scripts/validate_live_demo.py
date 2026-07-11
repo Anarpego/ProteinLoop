@@ -26,7 +26,6 @@ OPERATOR_NEEDLES = [
     "Chickens + eggs",
     "Run one-click verifier proof",
     "Executable competition proof",
-    "Gemma 4 endpoint configured",
     "5-agent recovery team",
     "Deterministic verifier",
     "2-board DECT NR+ capture",
@@ -65,6 +64,11 @@ OPERATOR_NEEDLES = [
     "Sequence #100",
     "1051223739",
     "1051239227",
+]
+
+GEMMA_STATUS_NEEDLES = [
+    "Gemma 4 endpoint configured",
+    "Gemma 4 endpoint unavailable",
 ]
 
 PRODUCER_NEEDLES = [
@@ -165,6 +169,7 @@ def check_web(base_url: str, timeout: float) -> list[Check]:
 
     return [
         marker_check("guided operator control route", operator, OPERATOR_NEEDLES),
+        any_marker_check("Gemma endpoint status", operator, GEMMA_STATUS_NEEDLES),
         marker_check("producer English route", producer, PRODUCER_NEEDLES),
         Check(
             "bundled PBR fish model",
@@ -207,6 +212,12 @@ def check_simulator(simulator_url: str, timeout: float) -> list[Check]:
 def marker_check(name: str, text: str, needles: list[str]) -> Check:
     missing = [needle for needle in needles if needle not in text]
     return Check(name, not missing, f"missing: {', '.join(missing)}" if missing else "")
+
+
+def any_marker_check(name: str, text: str, needles: list[str]) -> Check:
+    found = [needle for needle in needles if needle in text]
+    detail = found[0] if found else f"expected one of: {', '.join(needles)}"
+    return Check(name, bool(found), detail)
 
 
 def normalize_base_url(url: str) -> str:

@@ -17,6 +17,8 @@ Use production values rather than the local defaults:
 PHX_HOST=proteinloop.example.com
 SECRET_KEY_BASE=replace-with-mix-phx-gen-secret-output
 SIMULATOR_URL=http://simulator:8000
+PUBLIC_BIND_IP=127.0.0.1
+PUBLIC_PORT=4011
 GEMMA_ENDPOINT=https://your-openai-compatible-endpoint
 GEMMA_MODEL=google/gemma-4-E2B-it
 GEMMA_API_KEY=optional
@@ -39,6 +41,28 @@ The public profile publishes only Phoenix on `${PUBLIC_PORT:-80}` and keeps the 
 
 - `https://your-demo-url/`
 - `https://your-demo-url/producer`
+
+### Existing DigitalOcean and Caddy host
+
+ProteinLoop can build directly from the public GitHub repository, so a container registry is not
+required. The checked-in deployment helper uses an isolated Compose project, binds Phoenix only to
+`127.0.0.1:4011`, keeps the simulator private, and adds a validated Caddy route without replacing
+existing sites:
+
+```sh
+./scripts/deploy_digitalocean_public.sh
+```
+
+The default deployment uses:
+
+- Source: `/opt/proteinloop/source`
+- Environment: `/etc/proteinloop/public.env` with mode `0600`
+- Compose project: `proteinloop`
+- Public URL: `https://proteinloop.dev-vb.lat`
+
+The helper generates `SECRET_KEY_BASE` on the server. It intentionally leaves `GEMMA_ENDPOINT`
+empty when the shared CPU host has no suitable accelerator; local Gemma evidence remains separate
+and the public UI must report that state truthfully.
 
 ## Verify
 
@@ -64,4 +88,4 @@ SIMULATOR_PUBLIC_URL=https://your-simulator-url \
 make live-demo-check
 ```
 
-The check proves the operator dashboard, the Spanish producer path, and optionally simulator health/forecast/RLVR endpoints are reachable from outside the deployment machine.
+The check proves the operator dashboard, the English producer path, and optionally simulator health/forecast/RLVR endpoints are reachable from outside the deployment machine.

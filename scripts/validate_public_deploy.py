@@ -20,7 +20,7 @@ REQUIRED_SNIPPETS = [
     'SIMULATOR_URL: "http://simulator:8000"',
     "GEMMA_ENDPOINT: ${GEMMA_ENDPOINT:-}",
     "GEMMA_MODEL: ${GEMMA_MODEL:-google/gemma-4-E2B-it}",
-    'ports:\n      - "${PUBLIC_PORT:-80}:4000"',
+    'ports:\n      - "${PUBLIC_BIND_IP:-0.0.0.0}:${PUBLIC_PORT:-80}:4000"',
     "proteinloop_traces:",
 ]
 

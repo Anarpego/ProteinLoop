@@ -268,6 +268,17 @@ Validate the public deployment Compose profile:
 make public-deploy-check
 ```
 
+Deploy to the existing DigitalOcean/Caddy host without a registry:
+
+```sh
+./scripts/deploy_digitalocean_public.sh
+```
+
+This builds the public repository on the host as the isolated `proteinloop` Compose project,
+publishes Phoenix only on `127.0.0.1:4011`, keeps the simulator private, and serves
+`https://proteinloop.dev-vb.lat` through Caddy. The script does not advertise AMD-hosted Gemma when
+the shared CPU host has no compatible accelerator.
+
 Validate public deployment environment values:
 
 ```sh
@@ -761,6 +772,7 @@ make readiness-report
 ├── specs/051-dect-operator-producer/ # DECT UI, replay, and Gemma control
 ├── specs/062-off-grid-continuity-story/ # No-Wi-Fi, no-cloud, solar-ready field path
 ├── specs/063-live-agent-activity/ # Truthful real-time agent execution UX
+├── specs/064-digitalocean-public-deploy/ # Isolated public HTTPS deployment
 ├── specs/045-final-submission-finalizer/ # Ordered final upload sequence
 ├── .github/workflows/ci.yml        # Public repository CI workflow
 ├── deploy/                          # Deployment runbooks
@@ -783,6 +795,7 @@ make readiness-report
 ├── scripts/validate_live_demo.py
 ├── scripts/validate_gemma_endpoint.py
 ├── scripts/validate_public_deploy.py
+├── scripts/deploy_digitalocean_public.sh
 ├── scripts/publish_public_repo.py
 ├── scripts/set_demo_url.py
 ├── scripts/export_lablab_form.py
