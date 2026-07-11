@@ -213,6 +213,18 @@ defmodule ProteinLoop.Agent.SagentsRuntimeTest do
     assert agent.model.parallel_tool_calls == false
   end
 
+  test "uses a versioned endpoint without duplicating the v1 path" do
+    agent =
+      SagentsRuntime.build_supervisor_agent(initial_state(),
+        endpoint: "http://gemma:8001/v1",
+        model: "google/gemma-4-E2B-it",
+        verify_fun: &safe_verify/1,
+        step_fun: &accepted_step/1
+      )
+
+    assert agent.model.endpoint == "http://gemma:8001/v1/chat/completions"
+  end
+
   test "irreversible requests expose no alternate simulator mutation tool" do
     agent =
       SagentsRuntime.build_supervisor_agent(initial_state(),

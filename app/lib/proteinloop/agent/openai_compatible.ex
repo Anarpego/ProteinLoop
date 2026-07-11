@@ -6,6 +6,8 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
   to return one JSON object matching the simulator action contract.
   """
 
+  alias ProteinLoop.Agent.EndpointUrl
+
   @system_prompt """
   You operate ProteinLoop, a small aquaponic protein loop.
   Return exactly one JSON object and no prose.
@@ -111,9 +113,7 @@ defmodule ProteinLoop.Agent.OpenAICompatible do
   end
 
   defp chat_url(endpoint) do
-    endpoint
-    |> String.trim_trailing("/")
-    |> Kernel.<>("/v1/chat/completions")
+    EndpointUrl.api_url(endpoint, "chat/completions")
   end
 
   defp normalize_action(action) do

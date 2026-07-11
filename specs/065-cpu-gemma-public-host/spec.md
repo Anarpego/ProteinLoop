@@ -23,6 +23,8 @@ connect it to ProteinLoop without exposing the model endpoint or disrupting Kato
 9. Existing Kato containers, local routes, Caddy, and the simulator shall not be changed.
 10. The final evidence shall record runtime/model versions, checksums, resource limits, endpoint
     privacy, inference output, memory use, and Kato post-checks.
+11. OpenAI-compatible endpoint configuration shall accept either a server base URL or a base URL
+    ending in `/v1` without generating duplicate `/v1/v1/...` request paths.
 
 ## Acceptance Criteria
 
@@ -32,4 +34,5 @@ connect it to ProteinLoop without exposing the model endpoint or disrupting Kato
 4. The public operator route reports `Gemma 4 endpoint configured`.
 5. Live model validation returns a valid bounded ProteinLoop action.
 6. All Kato containers remain running and the public demo validator passes.
-
+7. Endpoint URL tests prove model discovery and chat completion paths for both supported base URL
+   forms.

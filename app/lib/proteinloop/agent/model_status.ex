@@ -7,6 +7,8 @@ defmodule ProteinLoop.Agent.ModelStatus do
   blocking dashboard startup.
   """
 
+  alias ProteinLoop.Agent.EndpointUrl
+
   def snapshot(opts \\ []) do
     model = model(opts)
 
@@ -114,7 +116,7 @@ defmodule ProteinLoop.Agent.ModelStatus do
     end
   end
 
-  defp models_url(endpoint), do: endpoint <> "/v1/models"
+  defp models_url(endpoint), do: EndpointUrl.api_url(endpoint, "models")
 
   defp model_count(%{"data" => data}) when is_list(data), do: length(data)
   defp model_count(_body), do: nil

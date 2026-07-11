@@ -33,6 +33,20 @@ defmodule ProteinLoop.Agent.ModelStatusTest do
     assert status.model_count == 1
   end
 
+  test "check uses a versioned endpoint without duplicating the v1 path" do
+    caller = self()
+
+    request_fun = fn url, _options ->
+      send(caller, {:request_url, url})
+      {:ok, %{status: 200, body: %{"data" => []}}}
+    end
+
+    assert %{status: :ok} =
+             ModelStatus.check(endpoint: "http://gemma:8001/v1", request_fun: request_fun)
+
+    assert_receive {:request_url, "http://gemma:8001/v1/models"}
+  end
+
   test "check treats auth failures as reachable" do
     request_fun = fn _url, _opts -> {:ok, %{status: 401, body: %{"error" => "missing key"}}} end
 

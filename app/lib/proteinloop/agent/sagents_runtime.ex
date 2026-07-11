@@ -19,6 +19,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
   alias Sagents.SubAgent.Config
 
   alias ProteinLoop.Agent.SafetyMode
+  alias ProteinLoop.Agent.EndpointUrl
   alias ProteinLoop.SimulatorClient
 
   @sagents_version "0.9.0"
@@ -593,7 +594,7 @@ defmodule ProteinLoop.Agent.SagentsRuntime do
     api_key = Keyword.get(opts, :api_key, Application.get_env(:proteinloop, :gemma_api_key))
 
     ChatOpenAI.new!(%{
-      endpoint: String.trim_trailing(endpoint, "/") <> "/v1/chat/completions",
+      endpoint: EndpointUrl.api_url(endpoint, "chat/completions"),
       model: model,
       api_key: empty_key(api_key),
       temperature: Keyword.get(opts, :temperature, 0.0),

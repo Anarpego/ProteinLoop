@@ -84,4 +84,36 @@ defmodule ProteinLoop.Agent.OpenAICompatibleTest do
     assert system_prompt =~ "water_exchange_fraction must be between 0 and 0.30"
     assert system_prompt =~ "simulator verifier remains authoritative"
   end
+
+  test "uses a versioned endpoint without duplicating the v1 path" do
+    caller = self()
+
+    request_fun = fn url, _options ->
+      send(caller, {:request_url, url})
+
+      {:ok,
+       %{
+         status: 200,
+         body: %{
+           "choices" => [
+             %{
+               "message" => %{
+                 "content" =>
+                   ~s({"feed_kg":0,"aeration_hours":24,"water_exchange_fraction":0.3,"duckweed_harvest_kg":0,"note":"recovery"})
+               }
+             }
+           ]
+         }
+       }}
+    end
+
+    assert {:ok, _action, _metadata} =
+             OpenAICompatible.propose(
+               %{"ammonia_mg_l" => 2.75},
+               endpoint: "http://gemma:8001/v1",
+               request_fun: request_fun
+             )
+
+    assert_receive {:request_url, "http://gemma:8001/v1/chat/completions"}
+  end
 end
