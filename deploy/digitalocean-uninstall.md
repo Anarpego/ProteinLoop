@@ -10,11 +10,12 @@ Audited on 2026-07-11 UTC using read-only commands:
 
 | Resource | ProteinLoop ownership | Observed cost |
 | --- | --- | ---: |
-| Compose project | `proteinloop` | 2 running containers |
-| Web container | `proteinloop-web-1`, bound to `127.0.0.1:4011` | about 87 MiB RAM |
+| Compose project | `proteinloop` | 3 running containers |
+| Web container | `proteinloop-web-1`, bound to `127.0.0.1:4011` | about 83 MiB RAM |
 | Simulator container | `proteinloop-simulator-1`, no public port | about 30 MiB RAM |
-| Images | `proteinloop-web:latest`, `proteinloop-simulator:latest` | about 1.66 GB total |
-| Source | `/opt/proteinloop` | about 156 MB |
+| Gemma container | `proteinloop-gemma-1`, private port `8001/tcp` only | about 1.16 GiB idle, 5 GiB limit |
+| Images | `proteinloop-web:latest`, `proteinloop-simulator:latest`, `proteinloop-gemma:latest` | project-scoped tags |
+| Source and model | `/opt/proteinloop` | includes the 3,349,514,112-byte Q4 model |
 | Environment | `/etc/proteinloop/public.env` | 8 KB, contains secrets |
 | Trace volume | `proteinloop_proteinloop_traces` | 8 KB observed |
 | Caddy site | `proteinloop.dev-vb.lat` -> `127.0.0.1:4011` | shared Caddy process |
@@ -43,18 +44,21 @@ set -eu
 SOURCE_DIR=/opt/proteinloop
 COMPOSE_FILE=/opt/proteinloop/source/docker-compose.public.yml
 ENV_FILE=/etc/proteinloop/public.env
+MODEL_FILE=/opt/proteinloop/models/gemma-4-E2B_q4_0-it.gguf
 CADDYFILE=/etc/caddy/Caddyfile
 KATO_CONTAINERS="kato-api-1 kato-maptiles-maptiles-1 kato-osrm-osrm-1"
 
 test -d "${SOURCE_DIR}"
 test -f "${COMPOSE_FILE}"
 test -f "${ENV_FILE}"
+test -f "${MODEL_FILE}"
 test -f "${CADDYFILE}"
 
 docker compose \
   --project-name proteinloop \
   --env-file "${ENV_FILE}" \
   -f "${COMPOSE_FILE}" \
+  --profile gemma-cpu \
   ps
 
 for container in ${KATO_CONTAINERS}; do
@@ -127,7 +131,7 @@ curl -fsS 'http://127.0.0.1:5000/route/v1/driving/-90.5069,14.6146;-90.5269,14.6
 
 ## 3. Stop the Isolated Compose Project
 
-This removes only the two ProteinLoop containers and the `proteinloop_default` network. It keeps
+This removes only the three ProteinLoop containers and the `proteinloop_default` network. It keeps
 the trace volume and images so the operation is still reversible.
 
 ```sh
@@ -135,6 +139,7 @@ docker compose \
   --project-name proteinloop \
   --env-file "${ENV_FILE}" \
   -f "${COMPOSE_FILE}" \
+  --profile gemma-cpu \
   down --remove-orphans
 ```
 
@@ -151,7 +156,8 @@ docker compose ls
 ```
 
 At this point the application is disabled but can be restored with
-`./scripts/deploy_digitalocean_public.sh` from a trusted checkout.
+`./scripts/deploy_digitalocean_public.sh`, followed by `./scripts/deploy_cpu_gemma.sh`, from a
+trusted checkout.
 
 ## 4. Optional Permanent Cleanup
 
@@ -170,7 +176,7 @@ Delete only the exact ProteinLoop volume and image tags:
 
 ```sh
 docker volume rm proteinloop_proteinloop_traces
-docker image rm proteinloop-web:latest proteinloop-simulator:latest
+docker image rm proteinloop-web:latest proteinloop-simulator:latest proteinloop-gemma:latest
 ```
 
 Delete only the two exact ProteinLoop directories after path guards pass:
@@ -196,6 +202,8 @@ test -z "$(docker ps --all --quiet --filter name='^/proteinloop-')"
 ! docker volume inspect proteinloop_proteinloop_traces >/dev/null 2>&1
 ! docker image inspect proteinloop-web:latest >/dev/null 2>&1
 ! docker image inspect proteinloop-simulator:latest >/dev/null 2>&1
+! docker image inspect proteinloop-gemma:latest >/dev/null 2>&1
+test ! -e /opt/proteinloop/models/gemma-4-E2B_q4_0-it.gguf
 ! grep -Fq 'proteinloop.dev-vb.lat {' /etc/caddy/Caddyfile
 
 systemctl is-active --quiet caddy

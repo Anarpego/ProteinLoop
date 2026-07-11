@@ -1,0 +1,32 @@
+{
+  "action": {
+    "aeration_hours": 12,
+    "duckweed_harvest_kg": 1.5,
+    "feed_kg": 0.01,
+    "note": "Ammonia is high (2.4 mg/L), so feed is kept low (0.01 kg) and aeration is moderate. Duckweed harvest is set to ensure at least 0.50 kg remains.",
+    "water_exchange_fraction": 0.15
+  },
+  "checked_at": "2026-07-11T05:53:21.714808+00:00",
+  "checks": [
+    {
+      "detail": "1 model(s)",
+      "name": "models endpoint",
+      "ok": true
+    },
+    {
+      "detail": "google/gemma-4-E2B-it",
+      "name": "requested model advertised",
+      "ok": true
+    },
+    {
+      "detail": "valid action inside deterministic safety envelope",
+      "name": "chat action contract",
+      "ok": true
+    }
+  ],
+  "endpoint": "http://gemma:8001",
+  "model": "google/gemma-4-E2B-it",
+  "models": [
+    "google/gemma-4-E2B-it"
+  ]
+}

@@ -16,7 +16,7 @@ The simulator is the verifier. The first screen quantifies the fish-and-prawn bi
 
 DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway. It lets the PT tank node reach the FT gateway without Wi-Fi, a SIM, or cloud access. The FT radio then hands data to a separate edge computer that runs self-hosted Gemma, Phoenix, and the deterministic verifier; Gemma does not run on either nRF9151 board. This makes internet access optional for local monitoring, AI proposals, safety checks, and producer decisions. The target power design adds a solar panel, charge controller, and battery so the same local control path can operate without the electrical grid. The current submission proves the physical two-board radio link and local Gemma runtime, but labels chemistry probes, solar autonomy, field range, and regional spectrum approval as the next measured field integrations.
 
-The proven model runtime is Google's smallest Gemma 4 instruction model, `google/gemma-4-E2B-it`, served locally through llama.cpp/Metal behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. The evidence packet records live `/v1/models`, structured chat, five-agent Sagents, verifier, and HITL behavior. The repo also includes an unclaimed ROCm/vLLM promotion profile for a future AMD host; the submitted evidence does not describe local inference as AMD-hosted.
+The proven model runtime is Google's smallest Gemma 4 instruction model, `google/gemma-4-E2B-it`, behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. The public judge demo now runs the official QAT Q4 GGUF through llama.cpp on the owned 8 GB DigitalOcean CPU host; a separate Apple Metal run records the full five-agent Sagents, verifier, and HITL evidence. The public deployment evidence records live `/v1/models`, structured chat, private network isolation, resource limits, and a proposal inside the deterministic safety envelope. The repo also includes an unclaimed ROCm/vLLM promotion profile for a future AMD host; none of this evidence is described as AMD-hosted or GPU inference.
 
 ## Technology Tags
 
@@ -60,12 +60,12 @@ https://proteinloop.dev-vb.lat
 8. Inspect the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`, which records an actual owner-service stop, restored state on the peer, and node rejoin. Press `Simulate node loss` for the repeatable control rehearsal.
 9. In `Physical DECT NR+ link`, inspect sequence `#100` and both physical FT/PT identities. Explain that PT-to-FT transport is private non-cellular 5G and that a separate edge computer runs Gemma and the verifier. Press `Replay sensor alert` to map the proven radio event into an explicitly simulated ammonia alert.
 10. Press `Request producer approval`, then use the English `/producer` route to inspect the same animated tank in read-only mode, approve, apply half, or reject, and inspect the WhatsApp/SMS handoff message.
-11. Inspect `submission/local-gemma-evidence.json`, press `Check model`, select `OpenAI-compatible`, and run the harness against local Gemma 4 E2B.
+11. Inspect `submission/cpu-gemma-deployment-evidence.json`, press `Check model`, and create a safe recovery plan against the private Gemma 4 E2B service used by the public demo.
 
 ## Judging Notes
 
 - Creativity: a state-driven PBR Three.js protein tank, operator-directed multi-agent interventions, closed protein loop, real state-preserving Horde failover, private two-board DECT NR+ field transport, self-hosted Gemma, and verifier-gated human actions.
 - Product potential: resilient protein production for rural Latin America where farm Wi-Fi, cloud access, and grid electricity cannot be assumed; solar autonomy and physical chemistry probes remain measured deployment milestones.
 - Completeness: simulator, dashboard, harness, traces, physical radio evidence, Docker, deployment profile, submission artifacts.
-- Model evidence: live local Gemma 4 E2B inference through llama.cpp/Metal; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim.
-- Public deployment: the HTTPS judge demo runs Phoenix and the private simulator on an owned CPU DigitalOcean host. It reports Gemma unavailable there rather than implying GPU inference; the separate local evidence proves the self-hosted Gemma path.
+- Model evidence: live public CPU and local Metal Gemma 4 E2B inference through llama.cpp; the portable ROCm/vLLM profile is documented as an optional future host, not a submitted deployment claim.
+- Public deployment: the HTTPS judge demo runs Phoenix, the private simulator, and private Gemma 4 E2B on an owned 8 GB CPU DigitalOcean host. The model has no host port and every proposal still passes through the deterministic verifier; this is not presented as AMD/GPU inference.

@@ -279,6 +279,21 @@ publishes Phoenix only on `127.0.0.1:4011`, keeps the simulator private, and ser
 `https://proteinloop.dev-vb.lat` through Caddy. The script does not advertise AMD-hosted Gemma when
 the shared CPU host has no compatible accelerator.
 
+After resizing that host to at least 8 GB RAM, deploy the smallest Gemma 4 instruction model on CPU:
+
+```sh
+./scripts/deploy_cpu_gemma.sh
+```
+
+The helper checksum-verifies Google's official QAT Q4 GGUF, runs llama.cpp in the private
+`gemma-cpu` Compose profile, validates a real structured recovery action from the simulator network,
+and only then connects Phoenix to `http://gemma:8001/v1`. Gemma has no host port, is limited to 5
+GiB RAM and 3 CPU cores, and remains behind the deterministic verifier. This is self-hosted CPU
+inference on an owned DigitalOcean server, not AMD-hosted or GPU inference. Deployment proof is in
+[`submission/cpu-gemma-deployment-evidence.json`](submission/cpu-gemma-deployment-evidence.json),
+and project-scoped removal is documented in
+[`deploy/digitalocean-uninstall.md`](deploy/digitalocean-uninstall.md).
+
 Validate public deployment environment values:
 
 ```sh
@@ -630,13 +645,14 @@ Submission source artifacts live in `submission/`:
 - `mesh-evidence.json` / `mesh-evidence.md`: generated self-healing mesh migration and state-token evidence.
 - `sagents-evidence.json` / `sagents-evidence.md`: live local Gemma evidence for real Sagents agents, custom safety mode, `until_tool_success`, and non-mutating HITL rejection.
 - `local-gemma-evidence.json`: live loopback proof that the local OpenAI-compatible endpoint advertises Gemma 4 E2B and returns a structured ProteinLoop action.
+- `cpu-gemma-deployment-evidence.json`: live proof that the private public-host Gemma 4 E2B service advertises the model and returns an action inside the deterministic safety envelope.
 - `horde-evidence.json` / `horde-evidence.md`: real two-node Sagents/Horde owner loss, state restoration, and node-rejoin evidence.
 - `nrf9151-live-evidence.json` / `nrf9151-live-evidence.md`: read-only, non-simulated bidirectional DECT NR+ evidence from the two physical nRF9151 DKs.
 - `nrf9151-field-plan.json` / `nrf9151-field-plan.md`: exact FT/PT board inventory and ProteinLoop field-role mapping.
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
 - `gemma-evidence.json`: optional remote-profile artifact generated after `make gemma-check` succeeds against a non-loopback OpenAI-compatible endpoint.
-- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, local Gemma proof, lablab form JSON, final readiness report, Docker smoke evidence, and remote Gemma evidence when it exists.
+- `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, local and public-host CPU Gemma proof, lablab form JSON, final readiness report, Docker smoke evidence, and remote Gemma evidence when it exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
 - `final-readiness-report.md`: generated pass/fail handoff report for final external gates.

@@ -60,9 +60,19 @@ The default deployment uses:
 - Compose project: `proteinloop`
 - Public URL: `https://proteinloop.dev-vb.lat`
 
-The helper generates `SECRET_KEY_BASE` on the server. It intentionally leaves `GEMMA_ENDPOINT`
-empty when the shared CPU host has no suitable accelerator; local Gemma evidence remains separate
-and the public UI must report that state truthfully.
+The helper generates `SECRET_KEY_BASE` on the server. Its base deployment leaves `GEMMA_ENDPOINT`
+empty and the public UI reports that state truthfully. On the audited 8 GB host, the optional CPU
+profile can then be deployed transactionally:
+
+```sh
+./scripts/deploy_cpu_gemma.sh
+```
+
+That command downloads the checksum-pinned Gemma 4 E2B QAT Q4 model, starts a private and
+resource-bounded llama.cpp service, validates `/v1/models` and a safe structured action, and only
+then recreates Phoenix with `GEMMA_ENDPOINT=http://gemma:8001/v1`. It writes
+`submission/cpu-gemma-deployment-evidence.json`. The runtime is self-hosted CPU inference; it does
+not claim an AMD accelerator.
 
 Safe removal from this shared host is documented in `deploy/digitalocean-uninstall.md`. The runbook
 uses exact ProteinLoop project and resource names, preserves Kato, and forbids global Docker prune

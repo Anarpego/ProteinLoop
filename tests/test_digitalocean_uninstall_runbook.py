@@ -37,6 +37,9 @@ class DigitalOceanUninstallRunbookTests(unittest.TestCase):
             "proteinloop_proteinloop_traces",
             "proteinloop-web:latest",
             "proteinloop-simulator:latest",
+            "proteinloop-gemma:latest",
+            "/opt/proteinloop/models/gemma-4-E2B_q4_0-it.gguf",
+            "--profile gemma-cpu",
         ):
             with self.subTest(marker=marker):
                 self.assertIn(marker, text)

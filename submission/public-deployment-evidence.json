@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-07-11T04:55:53Z",
-  "commit": "c15a1c957c9a3889fe09608d73e9ecf4c2fee930",
+  "checked_at": "2026-07-11T05:53:21Z",
+  "commit": "4feca8f1549e0511aee9807a00409a20bf061d3c",
   "compose_project": "proteinloop",
   "deployment": {
     "application_url": "https://proteinloop.dev-vb.lat",
@@ -11,9 +11,24 @@
     "tls_proxy": "Caddy"
   },
   "gemma": {
-    "public_endpoint_configured": false,
-    "status_presented_by_ui": "Gemma 4 endpoint unavailable",
-    "evidence_profile": "local"
+    "public_endpoint_configured": true,
+    "status_presented_by_ui": "Gemma 4 endpoint configured",
+    "evidence_profile": "self_hosted_cpu",
+    "model": "google/gemma-4-E2B-it",
+    "runtime": "llama.cpp b9957",
+    "container_endpoint": "http://gemma:8001/v1",
+    "host_port_published": false,
+    "memory_limit_bytes": 5368709120,
+    "cpu_limit": 3.0,
+    "model_file_bytes": 3349514112,
+    "model_sha256": "3646b4c147cd235a44d91df1546d3b7d8e29b547dbe4e1f80856419aa455e6fd",
+    "inference_claim": "self-hosted CPU; not AMD-hosted or GPU inference",
+    "evidence": "submission/cpu-gemma-deployment-evidence.json"
+  },
+  "host_after_inference": {
+    "memory_total_gib": 7.8,
+    "memory_available_gib": 5.3,
+    "disk_available_gib": 138
   },
   "checks": [
     {
@@ -22,6 +37,19 @@
     },
     {
       "name": "Gemma endpoint status is truthful",
+      "ok": true
+    },
+    {
+      "name": "private Gemma model advertised",
+      "ok": true,
+      "model": "google/gemma-4-E2B-it"
+    },
+    {
+      "name": "Gemma action inside deterministic safety envelope",
+      "ok": true
+    },
+    {
+      "name": "Gemma has no host port",
       "ok": true
     },
     {
