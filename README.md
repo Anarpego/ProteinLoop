@@ -303,17 +303,25 @@ SECRET_KEY_BASE="$SECRET_KEY_BASE" \
 make public-env-check
 ```
 
-Verify hackathon credit access before deploying Gemma:
+Verify an official Act-II remote-compute path before deploying Gemma. The organizer-confirmed AMD
+offering is the team Jupyter pod at `https://notebooks.amd.com/hackathon`; AMD Developer Cloud is
+not part of the Act-II compute offering. Either a started notebook pod or working Fireworks access
+passes this preflight.
 
 ```sh
+# Notebook path: set active only after the assigned team pod starts.
+AMD_NOTEBOOK_STATUS=active make credit-check
+
+# Fireworks path: redeem the organizer coupon and create an API key first.
 FIREWORKS_API_KEY=your-fireworks-key \
-AMD_CLOUD_STATUS=active \
 make credit-check
 ```
 
-Set `AMD_CLOUD_STATUS=active` only after the AMD Cloud console shows active credits and GPU quota. The Fireworks check calls the OpenAI-compatible `/models` endpoint and fails clearly when the API key or credits are not usable.
+The Fireworks check calls the OpenAI-compatible `/models` endpoint and fails clearly when the API
+key or redeemed credits are not usable. Never commit the coupon, API key, notebook token, or session
+cookie.
 
-Validate an AMD-hosted or fallback OpenAI-compatible Gemma endpoint:
+Validate a notebook-hosted or Fireworks OpenAI-compatible Gemma endpoint:
 
 ```sh
 GEMMA_ENDPOINT=https://your-vllm-host \
@@ -325,7 +333,7 @@ On success, the check writes `submission/gemma-evidence.json`.
 
 The evidence must show that `/v1/models` advertises the requested Gemma 4 model and that `/v1/chat/completions` returns a valid ProteinLoop action.
 
-Run the smallest Gemma 4 model, E2B IT, locally on Apple Silicon before using AMD cloud credits:
+Run the smallest Gemma 4 model, E2B IT, locally on Apple Silicon before using remote hackathon compute:
 
 ```sh
 make local-gemma-install
@@ -836,4 +844,7 @@ manual submission handling:
 2. Upload the cover, deck, video, and `submission/proteinloop-lablab-upload.zip` to lablab.
 3. Paste the prepared fields from `submission/lablab-form.json`, verify the public links, and submit.
 
-AMD-hosted or Fireworks inference remains an optional remote profile. Use `SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and `make gemma-check` pass against that host.
+AMD Hackathon notebook or Fireworks inference remains an optional remote profile. Use
+`SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and
+`make gemma-check` pass against that endpoint. The public CPU runtime remains the submitted proof
+until a remote run produces executable evidence.

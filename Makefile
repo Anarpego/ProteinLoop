@@ -99,7 +99,7 @@ live-demo-check:
 	DEMO_URL="$(DEMO_URL)" SIMULATOR_PUBLIC_URL="$(SIMULATOR_PUBLIC_URL)" python3 scripts/validate_live_demo.py
 
 credit-check:
-	FIREWORKS_API_KEY="$(FIREWORKS_API_KEY)" FIREWORKS_BASE_URL="$(FIREWORKS_BASE_URL)" AMD_CLOUD_STATUS="$(AMD_CLOUD_STATUS)" python3 scripts/validate_credit_access.py
+	FIREWORKS_API_KEY="$(FIREWORKS_API_KEY)" FIREWORKS_BASE_URL="$(FIREWORKS_BASE_URL)" AMD_NOTEBOOK_STATUS="$(AMD_NOTEBOOK_STATUS)" python3 scripts/validate_credit_access.py
 
 gemma-check:
 	GEMMA_ENDPOINT="$(GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" python3 scripts/validate_gemma_endpoint.py

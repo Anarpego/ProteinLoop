@@ -1,5 +1,7 @@
 # Feature Spec: Credit Access Verification
 
+> Superseded for Act-II provider semantics by `specs/066-official-compute-correction/spec.md`.
+
 ## Goal
 
 Add an executable helper that verifies the hackathon credit prerequisites before attempting the final Gemma endpoint gate.

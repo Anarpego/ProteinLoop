@@ -1,6 +1,8 @@
 # Local Gemma 4 Inference
 
-ProteinLoop can run the current Gemma 4 instruction model locally before spending the AMD Developer Cloud credit window. The local server uses the same OpenAI-compatible contract as AMD-hosted vLLM.
+ProteinLoop can run the current Gemma 4 instruction model locally before using the temporary Act-II
+notebook pod or optional Fireworks coupon. The local server uses the same OpenAI-compatible contract
+as remote vLLM.
 
 ## Current Versions
 
@@ -87,9 +89,10 @@ make local-gemma-start \
 
 Inspect `.local-gemma/llama-server.log` if model download or startup fails. Set `HF_TOKEN` in the shell only if Hugging Face asks for authentication; never commit it.
 
-## Promote To AMD Developer Cloud
+## Promote To The AMD Hackathon Notebook
 
-Once local inference and the harness pass, follow `deploy/amd-gemma-vllm.md`. Keep:
+Once local inference and the harness pass, open `https://notebooks.amd.com/hackathon` with the
+registered team account and follow `deploy/amd-gemma-vllm.md`. Keep:
 
 ```sh
 GEMMA_MODEL=google/gemma-4-E2B-it

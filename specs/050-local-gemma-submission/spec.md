@@ -1,5 +1,8 @@
 # Feature Spec: Local Gemma Submission Profile
 
+> The original unavailable-credit assumption is superseded by
+> `specs/066-official-compute-correction/spec.md`; the local evidence contract remains active.
+
 ## Goal
 
 Finalize the public ProteinLoop submission with executable local Gemma 4 E2B evidence when AMD Developer Cloud and Fireworks credentials are unavailable, without claiming an AMD-hosted deployment.

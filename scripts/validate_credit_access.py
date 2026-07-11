@@ -1,4 +1,4 @@
-"""Validate hackathon credit access before Gemma endpoint deployment."""
+"""Validate an official Act-II notebook or Fireworks compute path."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIREWORKS_BASE_URL = "https://api.fireworks.ai/inference/v1"
+AMD_NOTEBOOK_URL = "https://notebooks.amd.com/hackathon"
 DEFAULT_REPORT_PATH = ROOT / "submission" / "credit-access-report.json"
 TIMEOUT_SECONDS = 15.0
 
@@ -34,18 +35,18 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     api_key = args.fireworks_api_key or os.environ.get("FIREWORKS_API_KEY", "")
     base_url = args.fireworks_base_url or os.environ.get("FIREWORKS_BASE_URL") or DEFAULT_FIREWORKS_BASE_URL
-    amd_status = args.amd_cloud_status or os.environ.get("AMD_CLOUD_STATUS", "")
+    notebook_status = args.amd_notebook_status or os.environ.get("AMD_NOTEBOOK_STATUS", "")
 
     try:
         fireworks_checks = validate_fireworks_access(api_key, base_url, get_models_json, args.timeout)
     except ValueError as exc:
         fireworks_checks = [Check("Fireworks base URL", False, str(exc))]
 
-    amd_check = validate_amd_cloud_status(amd_status)
-    report = build_report(fireworks_checks, amd_check)
+    notebook_check = validate_amd_notebook_status(notebook_status)
+    report = build_report(fireworks_checks, notebook_check)
 
     for check in report["checks"]:
-        mark = "ok" if check["ok"] else "FAIL"
+        mark = "ok" if check["ok"] else "not-ready"
         suffix = f" - {check['detail']}" if check["detail"] else ""
         print(f"[{mark}] {check['name']}{suffix}")
 
@@ -57,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
         print("credit access check failed", file=sys.stderr)
         return 1
 
-    print("credit access OK")
+    print(f"official compute access OK via {', '.join(report['ready_paths'])}")
     return 0
 
 
@@ -65,7 +66,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--fireworks-api-key", help="Defaults to FIREWORKS_API_KEY.")
     parser.add_argument("--fireworks-base-url", help=f"Defaults to {DEFAULT_FIREWORKS_BASE_URL}.")
-    parser.add_argument("--amd-cloud-status", help="Set to active after AMD Cloud console shows credits/quota.")
+    parser.add_argument(
+        "--amd-notebook-status",
+        help=f"Set to active after the team pod starts at {AMD_NOTEBOOK_URL}.",
+    )
     parser.add_argument("--timeout", type=float, default=TIMEOUT_SECONDS)
     parser.add_argument("--write-report", action="store_true", help="Write submission/credit-access-report.json.")
     parser.add_argument("--report-file", default=str(DEFAULT_REPORT_PATH))
@@ -99,43 +103,57 @@ def validate_fireworks_access(
     ]
 
 
-def validate_amd_cloud_status(status: str) -> Check:
+def validate_amd_notebook_status(status: str) -> Check:
     normalized = status.strip().lower()
     if normalized == "active":
-        return Check("AMD Cloud credits", True, "AMD_CLOUD_STATUS=active")
+        return Check("AMD Hackathon notebook", True, "AMD_NOTEBOOK_STATUS=active")
     if normalized:
-        return Check("AMD Cloud credits", False, f"status {normalized!r}; set AMD_CLOUD_STATUS=active after console verification")
+        return Check(
+            "AMD Hackathon notebook",
+            False,
+            f"status {normalized!r}; set AMD_NOTEBOOK_STATUS=active after the team pod starts",
+        )
     return Check(
-        "AMD Cloud credits",
+        "AMD Hackathon notebook",
         False,
-        "set AMD_CLOUD_STATUS=active after AMD Cloud console shows credits and GPU quota",
+        f"open {AMD_NOTEBOOK_URL} and set AMD_NOTEBOOK_STATUS=active after the team pod starts",
     )
 
 
-def build_report(fireworks_checks: list[Check], amd_check: Check) -> dict[str, Any]:
-    checks = [*fireworks_checks, amd_check]
+def build_report(fireworks_checks: list[Check], notebook_check: Check) -> dict[str, Any]:
+    checks = [*fireworks_checks, notebook_check]
+    fireworks_ready = bool(fireworks_checks) and all(check.ok for check in fireworks_checks)
+    ready_paths = [
+        path
+        for path, ready in (("amd_notebook", notebook_check.ok), ("fireworks", fireworks_ready))
+        if ready
+    ]
     return {
         "checked_at": datetime.now(timezone.utc).isoformat(),
-        "ok": all(check.ok for check in checks),
+        "ok": bool(ready_paths),
+        "ready_paths": ready_paths,
         "checks": [asdict(check) for check in checks],
-        "next_steps": next_steps(checks),
+        "next_steps": next_steps(checks, ready_paths),
     }
 
 
-def next_steps(checks: list[Check]) -> list[str]:
-    if all(check.ok for check in checks):
+def next_steps(checks: list[Check], ready_paths: list[str]) -> list[str]:
+    if ready_paths:
         return [
-            "Deploy or configure an OpenAI-compatible Gemma endpoint.",
+            f"Use the ready official compute path: {', '.join(ready_paths)}.",
+            "Deploy or configure an OpenAI-compatible Gemma endpoint without storing credentials in the repository.",
             "Run GEMMA_ENDPOINT=https://... GEMMA_MODEL=google/gemma-4-E2B-it make gemma-check.",
         ]
 
     steps: list[str] = []
     if any(check.name == "Fireworks API key" and not check.ok for check in checks):
-        steps.append("Create or copy a Fireworks API key from the Fireworks dashboard.")
+        steps.append("Find the organizer's Fireworks coupon email, redeem it, and create a Fireworks API key.")
     if any(check.name == "Fireworks models endpoint" and not check.ok for check in checks):
         steps.append("Confirm Fireworks credits are active and the API key has model-list access.")
-    if any(check.name == "AMD Cloud credits" and not check.ok for check in checks):
-        steps.append("Open the AMD Cloud console and confirm credits plus GPU quota, then set AMD_CLOUD_STATUS=active.")
+    if any(check.name == "AMD Hackathon notebook" and not check.ok for check in checks):
+        steps.append(
+            f"Open {AMD_NOTEBOOK_URL} with the registered team account and wait for pod capacity if startup is pending."
+        )
     return steps
 
 

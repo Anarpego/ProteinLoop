@@ -1,5 +1,8 @@
 # Feature Spec: Local Gemma 4 Inference
 
+> The AMD Developer Cloud promotion wording is superseded by the Act-II notebook contract in
+> `specs/066-official-compute-correction/spec.md`.
+
 ## Goal
 
 Run the smallest current Gemma 4 instruction model locally on the development Mac through the same OpenAI-compatible boundary used by AMD-hosted vLLM.

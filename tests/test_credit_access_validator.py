@@ -9,7 +9,7 @@ from scripts.validate_credit_access import (
     build_report,
     extract_model_ids,
     normalize_base_url,
-    validate_amd_cloud_status,
+    validate_amd_notebook_status,
     validate_fireworks_access,
 )
 
@@ -57,19 +57,42 @@ class CreditAccessValidatorTests(unittest.TestCase):
         self.assertTrue(all(check.ok for check in checks))
         self.assertIn("2 model", checks[-1].detail)
 
-    def test_amd_cloud_status_requires_active_marker(self):
-        self.assertFalse(validate_amd_cloud_status("").ok)
-        self.assertFalse(validate_amd_cloud_status("pending").ok)
-        self.assertTrue(validate_amd_cloud_status("active").ok)
+    def test_amd_notebook_status_requires_active_marker(self):
+        self.assertFalse(validate_amd_notebook_status("").ok)
+        self.assertFalse(validate_amd_notebook_status("pending").ok)
+        self.assertTrue(validate_amd_notebook_status("active").ok)
 
-    def test_build_report_aggregates_checks(self):
+    def test_build_report_accepts_notebook_only_readiness(self):
         report = build_report(
-            fireworks_checks=[Check("fireworks", True, "ok")],
-            amd_check=Check("amd", False, "pending"),
+            fireworks_checks=[Check("Fireworks API key", False, "not configured")],
+            notebook_check=Check("AMD Hackathon notebook", True, "active"),
         )
 
-        self.assertEqual(report["ok"], False)
+        self.assertEqual(report["ok"], True)
         self.assertEqual(len(report["checks"]), 2)
+
+    def test_build_report_accepts_fireworks_only_readiness(self):
+        report = build_report(
+            fireworks_checks=[
+                Check("Fireworks API key", True, "configured"),
+                Check("Fireworks models endpoint", True, "2 model(s) visible"),
+            ],
+            notebook_check=Check("AMD Hackathon notebook", False, "pending"),
+        )
+
+        self.assertTrue(report["ok"])
+        self.assertEqual(report["ready_paths"], ["fireworks"])
+
+    def test_build_report_fails_with_official_notebook_guidance_when_no_path_is_ready(self):
+        report = build_report(
+            fireworks_checks=[Check("Fireworks API key", False, "not configured")],
+            notebook_check=Check("AMD Hackathon notebook", False, "pending"),
+        )
+
+        self.assertFalse(report["ok"])
+        self.assertTrue(
+            any("https://notebooks.amd.com/hackathon" in step for step in report["next_steps"])
+        )
 
 
 if __name__ == "__main__":

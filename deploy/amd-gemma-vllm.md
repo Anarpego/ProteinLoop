@@ -1,6 +1,10 @@
 # AMD Gemma vLLM Deployment
 
-This profile prepares ProteinLoop for the `goal.md` AMD-hosted Gemma path. The local demo still runs without model credentials; this deployment runs Gemma behind the existing OpenAI-compatible `GEMMA_ENDPOINT` boundary.
+This profile prepares ProteinLoop for an AMD ROCm Gemma path. For Hackathon Act-II, the
+organizer-confirmed AMD compute offering is the assigned Jupyter pod at
+`https://notebooks.amd.com/hackathon`, not AMD Developer Cloud. The local demo still runs without
+remote credentials; this deployment keeps Gemma behind the existing OpenAI-compatible
+`GEMMA_ENDPOINT` boundary.
 
 ## Current References
 
@@ -12,7 +16,8 @@ Notes from the current vLLM recipe:
 
 - The historical Gemma 4 page points to `recipes.vllm.ai` for the freshest interactive commands.
 - The AMD image is `vllm/vllm-openai-rocm:gemma4`.
-- AMD Developer Cloud currently offers the vLLM 0.23.0 quick-start with Gemma 4 support.
+- The Act-II notebook image and installed packages must be inspected in the assigned pod before
+  selecting native Python or Docker-based vLLM startup commands.
 - The documented AMD Docker path uses `/dev/kfd`, `/dev/dri`, host IPC/networking, ROCm privileges, and a Hugging Face cache mount.
 - Gemma 4 models expose an OpenAI-compatible API through vLLM.
 - ProteinLoop uses Gemma 4 E2B IT, the smallest Gemma 4 model. The text-only profile disables image/audio profiling to preserve KV-cache capacity.
@@ -40,7 +45,17 @@ The app expects `GEMMA_ENDPOINT` without `/v1`; it appends `/v1/models` for stat
 
 ## Start Gemma on an AMD GPU Host
 
-Run this only on an AMD ROCm host such as AMD Developer Cloud:
+Run this only on an AMD ROCm host where Docker and `/dev/kfd` are available. Do not assume the
+Hackathon notebook pod permits nested Docker; check the pod first:
+
+```sh
+rocminfo | head -n 40
+amd-smi version || true
+python -c 'import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else "no accelerator")'
+docker version
+```
+
+If Docker is available:
 
 ```sh
 docker compose --env-file .env -f docker-compose.gemma-rocm.yml --profile amd-gemma up -d

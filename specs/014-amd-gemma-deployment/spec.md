@@ -1,5 +1,8 @@
 # Feature Spec: AMD Gemma vLLM Deployment Profile
 
+> The provider target is superseded by the Act-II notebook contract in
+> `specs/066-official-compute-correction/spec.md`; the ROCm/vLLM profile remains applicable.
+
 ## Goal
 
 Prepare the repo for AMD-hosted Gemma deployment through vLLM/ROCm while preserving the existing OpenAI-compatible `GEMMA_ENDPOINT` boundary.

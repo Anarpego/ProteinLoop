@@ -503,7 +503,8 @@ def render_report(
     else:
         next_commands.extend(
             [
-                "FIREWORKS_API_KEY=your-fireworks-key AMD_CLOUD_STATUS=active make credit-check",
+                "AMD_NOTEBOOK_STATUS=active make credit-check  # official team notebook path",
+                "FIREWORKS_API_KEY=your-fireworks-key make credit-check  # optional coupon path",
                 "make gemma-check GEMMA_ENDPOINT=https://your-gemma-endpoint GEMMA_MODEL=google/gemma-4-E2B-it",
             ]
         )
