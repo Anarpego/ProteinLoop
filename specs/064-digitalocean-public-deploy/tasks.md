@@ -9,3 +9,5 @@
 - [x] Validate HTTPS operator and producer routes.
 - [x] Update submission URL and readiness artifacts.
 - [x] Publish implementation and deployment evidence.
+- [x] Audit current ProteinLoop resource ownership without changing the server.
+- [x] Add a tested uninstall and cleanup runbook that preserves Kato and shared Caddy state.

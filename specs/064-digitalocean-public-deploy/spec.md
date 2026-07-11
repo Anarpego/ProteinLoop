@@ -25,6 +25,9 @@ remains reproducible from the public GitHub repository.
    printed.
 8. The deployment shall verify the local container route and public HTTPS operator/producer routes.
 9. The deployment shall not claim AMD-hosted inference when `GEMMA_ENDPOINT` is unavailable.
+10. A removal runbook shall uninstall only the isolated ProteinLoop Caddy route, Compose project,
+    volume, images, source, and environment while preserving all existing Kato services and shared
+    Caddy state.
 
 ## Acceptance Criteria
 
@@ -35,4 +38,5 @@ remains reproducible from the public GitHub repository.
 4. The remote Compose project reports healthy running services without changing Kato containers.
 5. `make live-demo-check` passes against the final HTTPS URL.
 6. The LabLab form and readiness artifacts contain the verified public URL.
-
+7. The removal runbook includes preflight evidence, Caddy rollback, explicit project-scoped
+   commands, Kato post-checks, and no global Docker prune command.

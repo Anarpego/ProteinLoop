@@ -64,6 +64,10 @@ The helper generates `SECRET_KEY_BASE` on the server. It intentionally leaves `G
 empty when the shared CPU host has no suitable accelerator; local Gemma evidence remains separate
 and the public UI must report that state truthfully.
 
+Safe removal from this shared host is documented in `deploy/digitalocean-uninstall.md`. The runbook
+uses exact ProteinLoop project and resource names, preserves Kato, and forbids global Docker prune
+operations.
+
 ## Verify
 
 Run the public URL check before pasting the URL into lablab:

@@ -6,4 +6,4 @@
 4. Build and start ProteinLoop as an isolated Compose project.
 5. Add the ProteinLoop Caddy site, obtain TLS, and validate public routes.
 6. Update submission URL artifacts and publish deployment evidence.
-
+7. Document a guarded, project-scoped uninstall procedure for the shared host.
