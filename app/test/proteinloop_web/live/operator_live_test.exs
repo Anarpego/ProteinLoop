@@ -341,6 +341,46 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert mission_position < advanced_position
   end
 
+  test "keeps advanced evidence open across telemetry patches", %{conn: conn} do
+    {:ok, view, _html} = live(conn, ~p"/")
+
+    assert has_element?(
+             view,
+             "#advanced-evidence > summary[phx-click='toggle-advanced-evidence'][aria-expanded='false']"
+           )
+
+    view
+    |> element("#advanced-evidence > summary")
+    |> render_click()
+
+    assert has_element?(view, "#advanced-evidence[open]")
+    assert has_element?(view, "#advanced-evidence > summary[aria-expanded='true']")
+
+    snapshot = %{
+      connected?: true,
+      source: "advanced-scroll-regression",
+      reward: nil,
+      error: nil,
+      state:
+        ProteinLoop.SimulatorClient.fallback_state()
+        |> Map.put("day", 3)
+        |> Map.put("ammonia_mg_l", 1.1)
+    }
+
+    send(view.pid, {:simulator_snapshot, snapshot})
+    render(view)
+
+    assert has_element?(view, "#advanced-evidence[open]")
+    assert has_element?(view, "#advanced-evidence > summary[aria-expanded='true']")
+
+    view
+    |> element("#advanced-evidence > summary")
+    |> render_click()
+
+    refute has_element?(view, "#advanced-evidence[open]")
+    assert has_element?(view, "#advanced-evidence > summary[aria-expanded='false']")
+  end
+
   test "shows and replays the latest physical DECT capture as simulated telemetry", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 

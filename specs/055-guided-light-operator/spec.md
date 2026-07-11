@@ -21,6 +21,8 @@ A first-time user sees what the living system is, whether the tank is healthy, w
 9. The dark DaisyUI theme definition and system-theme switching shall be removed.
 10. The root document shall declare a light color scheme and light theme.
 11. Producer behavior and the deterministic safety boundary shall remain unchanged.
+12. Once the operator opens advanced evidence, periodic telemetry patches shall preserve the
+    disclosure state so its content and the user's scroll position do not collapse upward.
 
 ## Acceptance Criteria
 
@@ -30,3 +32,5 @@ A first-time user sees what the living system is, whether the tank is healthy, w
 4. Source validation proves the dark DaisyUI theme is absent.
 5. Existing mission, DECT, producer, HITL, and verifier tests continue to pass.
 6. Docker smoke and live-demo checks pass against the simplified route.
+7. LiveView tests prove the advanced disclosure remains open across a simulator snapshot patch and
+   can still be closed explicitly.

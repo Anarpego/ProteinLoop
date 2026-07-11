@@ -103,6 +103,7 @@ defmodule ProteinLoopWeb.OperatorLive do
       |> assign(:anomaly_forecast, anomaly_forecast)
       |> assign(:trace_status, TraceStore.status())
       |> assign(:trace_entries, trace_entries())
+      |> assign(:advanced_evidence_open?, false)
       |> assign(:action_log, ["dashboard mounted"])
 
     {:ok, socket}
@@ -141,6 +142,15 @@ defmodule ProteinLoopWeb.OperatorLive do
      |> assign(:anomaly_forecast, anomaly_forecast())
      |> assign(:horde_status, horde_runtime().cluster_status())
      |> assign_snapshot(snapshot, "manual refresh")}
+  end
+
+  def handle_event("toggle-advanced-evidence", _params, socket) do
+    {:noreply,
+     assign(
+       socket,
+       :advanced_evidence_open?,
+       !socket.assigns.advanced_evidence_open?
+     )}
   end
 
   def handle_event("refresh-horde", _params, socket) do
@@ -1579,8 +1589,16 @@ defmodule ProteinLoopWeb.OperatorLive do
           </div>
         </section>
 
-        <details id="advanced-evidence" class="group rounded-box border border-base-300 bg-base-100">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-4 [&::-webkit-details-marker]:hidden">
+        <details
+          id="advanced-evidence"
+          class="group rounded-box border border-base-300 bg-base-100"
+          open={@advanced_evidence_open?}
+        >
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between gap-4 p-4 [&::-webkit-details-marker]:hidden"
+            phx-click="toggle-advanced-evidence"
+            aria-expanded={to_string(@advanced_evidence_open?)}
+          >
             <span>
               <span class="block font-semibold">Advanced evidence and controls</span>
               <span class="mt-1 block text-sm text-base-content/60">

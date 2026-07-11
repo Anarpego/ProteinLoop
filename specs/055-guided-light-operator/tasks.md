@@ -8,3 +8,4 @@
 - [x] Update validators and documentation.
 - [x] Run Docker and live-route verification.
 - [x] Publish the completed feature.
+- [x] Preserve the advanced disclosure and scroll context across periodic telemetry patches.
