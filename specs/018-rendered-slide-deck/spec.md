@@ -11,12 +11,13 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 ## Functional Requirements
 
 1. The repo shall include generated PowerPoint and PDF decks under `submission/`.
-2. The deck shall contain a concise ProteinLoop pitch with real product proof, architecture, verifier, executable evidence, off-grid transport, HITL, and an honestly labeled AMD promotion path.
+2. The deck shall contain a concise ProteinLoop pitch with real product proof, architecture, verifier, executable evidence, off-grid transport, HITL, and captured AMD-hosted Gemma evidence.
 3. The opening and product-proof slides shall use real deployed application captures rather than an abstract placeholder cover.
 4. The repo shall include a reproducible artifact-tool generator script.
 5. The lablab form export and upload bundle shall identify and include the PDF presentation.
 6. The repo shall include validation that checks required submission artifacts, the PPTX slide count, and the PDF page count.
 7. README shall document both deck artifacts and the validation command.
+8. The AMD proof shall distinguish the temporary notebook experiment from the durable public CPU deployment and shall report the validated 20-emergency repair result without implying training or a model-weight update.
 
 ## Acceptance Criteria
 
@@ -27,3 +28,4 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 5. Artifact-tool layout QA reports 0 errors and 0 warnings during generation.
 6. `python3 scripts/validate_submission_artifacts.py` passes.
 7. Existing regression checks still pass.
+8. The AMD evidence slide reports 2/20 first answers safe, 18 verifier-feedback repairs, 20/20 model-safe outcomes, and zero fallback, while labeling the result as captured inference-time evidence.

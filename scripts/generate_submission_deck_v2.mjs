@@ -2,7 +2,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const root = path.resolve(".");
-const workspace = path.join(root, "outputs/manual-proteinloop/presentations/submission-deck");
+const workspace = path.resolve(
+  root,
+  process.env.PRESENTATION_WORKSPACE ??
+    "outputs/manual-proteinloop/presentations/submission-deck",
+);
 const slidesDir = path.join(workspace, "slides");
 const assetDir = path.join(root, "submission/deck-assets");
 
@@ -65,8 +69,40 @@ await fs.writeFile(
     "06 Executable tests and RLVR evidence make the safety claim inspectable.",
     "07 DECT NR+ keeps the field hop local; edge compute keeps decision-making local.",
     "08 The producer retains control of risky or irreversible actions.",
-    "09 Captured AMD Gemma evidence shows unsafe first answers becoming safe through verifier feedback.",
+    "09 Verifier feedback turns 10% first-pass safety into 100% model-safe plans on the captured AMD runtime.",
     "10 The market wedge is resilient protein production where connectivity cannot be assumed.",
+    "",
+  ].join("\n"),
+);
+await fs.writeFile(
+  path.join(workspace, "design-system.txt"),
+  [
+    "slide size: 1280x720, 16:9",
+    "backgrounds: cool white for product and architecture; deep ink for executable and AMD evidence",
+    "typography: installed title sans plus utilitarian body sans; claim titles 34-42 px; body 14-18 px",
+    "palette: ink and cool white base, teal system accent, orange decision accent, blue runtime proof",
+    "diagram grammar: left-to-right authority flow with attached semantic connectors and explicit reject branch",
+    "container grammar: boxes only for system boundaries, decisions, or evidence groups; square corners",
+    "footer grammar: 9 px source or boundary note aligned left at y=682",
+    "brand policy: use real ProteinLoop UI captures; do not fabricate AMD or Nordic marks",
+    "banned motifs: generic feature-card grids, decorative gradients, floating arrows, unproven hardware claims",
+    "",
+  ].join("\n"),
+);
+await fs.writeFile(
+  path.join(workspace, "contact-sheet-plan.txt"),
+  [
+    "01 immersive product cover",
+    "02 editorial shared-risk argument with vertical dependency rail",
+    "03 framed deployed-product capture",
+    "04 full-bleed live recovery capture with sequence overlay",
+    "05 horizontal authority and reject-flow diagram",
+    "06 dark executable metric rail",
+    "07 field-to-edge architecture sequence with proven-versus-next labels",
+    "08 asymmetric producer-decision composition",
+    "09 dark three-column AMD runtime, repair, and execution evidence",
+    "10 split closing ask with real product capture",
+    "gate: no three consecutive slides share a macro layout; no generic card-grid cadence",
     "",
   ].join("\n"),
 );
@@ -328,11 +364,11 @@ export default async function slide08(presentation, ctx) {
   `import { C, base, title, body, footer } from "./common.mjs";
 export default async function slide09(presentation, ctx) {
   const s = base(presentation, ctx, "AMD Gemma proof", true);
-  title(ctx, s, "AMD-hosted Gemma repairs unsafe plans.", { y: 62, h: 74, size: 40, color: C.white });
+  title(ctx, s, "Verifier feedback turns 10% first-pass safety into 100%.", { y: 62, h: 82, size: 37, color: C.white });
   body(ctx, s, "Exact verifier failures return as bounded feedback; every revision is parsed and verified again.", 48, 136, 920, 38, "#c2d6dd", 16);
   const columns = [
-    { x: 52, label: "CAPTURED AMD RUNTIME", color: C.blue, heading: "Gemma 4 E2B", lines: ["ROCm 7.2.53211", "vLLM 0.20.2", "gfx1100 · 47.98 GiB"] },
-    { x: 450, label: "20-EMERGENCY REPAIR", color: C.teal2, heading: "10% → 100% model-safe", lines: ["18 rejected answers repaired", "17 in one revision · 1 in two", "0 fallback · no weight update"] },
+    { x: 52, label: "CAPTURED AMD RUNTIME", color: C.blue, heading: "Gemma 4 E2B", lines: ["PyTorch 2.10 · ROCm 7.2", "vLLM 0.20.2 · gfx1100", "47.98 GiB AMD GPU memory"] },
+    { x: 450, label: "20-EMERGENCY REPAIR", color: C.teal2, heading: "18 repairs · zero fallback", lines: ["2/20 first answers safe", "17 repaired once · 1 twice", "20/20 model-safe · no weight update"] },
     { x: 848, label: "MEASURED EXECUTION", color: C.orange, heading: "139 requests", lines: ["60,385 observed tokens", "99.793 completion tokens/s", "p50 latency · 655.522 ms"] }
   ];
   columns.forEach(({ x, label, color, heading, lines }) => {
@@ -368,7 +404,8 @@ export default async function slide10(presentation, ctx) {
     ctx.addText(s, { x: 82, y, w: 220, h: 20, text: label, fontSize: 11, bold: true, color: C.ink });
     ctx.addText(s, { x: 304, y, w: 244, h: 24, text: note, fontSize: 13, color: C.body });
   });
-  ctx.addText(s, { x: 58, y: 642, w: 500, h: 26, text: "proteinloop.dev-vb.lat  |  Best Unicorn", fontSize: 15, bold: true, color: C.orange });
+  ctx.addText(s, { x: 58, y: 626, w: 500, h: 22, text: "proteinloop.dev-vb.lat  |  Best Unicorn", fontSize: 14, bold: true, color: C.orange });
+  ctx.addText(s, { x: 58, y: 654, w: 500, h: 20, text: "github.com/Anarpego/ProteinLoop", fontSize: 12, bold: true, color: C.teal });
   ctx.addShape(s, { x: 610, y: 0, w: 670, h: 720, fill: C.white, line: ctx.line("#00000000", 0) });
   await ctx.addImage(s, { path: A.recovery, x: 610, y: 0, w: 670, h: 720, fit: "cover", alt: "ProteinLoop living tank" });
   ctx.addShape(s, { x: 610, y: 622, w: 670, h: 98, fill: "#102d3ccc", line: ctx.line("#00000000", 0) });

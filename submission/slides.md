@@ -5,75 +5,47 @@ Rendered decks: editable `submission/proteinloop-hackathon-deck.pptx` and upload
 Regenerate with:
 
 ```sh
-node scripts/generate_submission_deck_v2.mjs
+PRESENTATION_WORKSPACE=outputs/manual-proteinloop/presentations/submission-deck node scripts/generate_submission_deck_v2.mjs
 node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
-python3 scripts/export_slide_pdf.py
+PRESENTATION_PREVIEW_DIR=outputs/manual-proteinloop/presentations/submission-deck/preview python3 scripts/export_slide_pdf.py
 ```
 
 ## 1. ProteinLoop
 
-An agentic loop that closes the protein cycle.
+Off-grid AI for living protein systems: Gemma 4, DECT NR+, and deterministic safety.
 
-## 2. Problem
+## 2. One Loop, Shared Risk
 
-Aquaponics is promising but incomplete for rural food security. Vegetables are not enough; families need reliable daily protein.
+A chemistry failure does not stop at the vegetables. Fish, prawns, plants, feed reserve, and eggs depend on the same biological loop.
 
-## 3. Product
+## 3. Product Proof
 
-ProteinLoop coordinates fish, freshwater prawns, duckweed, hydroponic plants, and chickens in one closed loop.
+The deployed product makes animal behavior, plain-language chemistry, biomass, and the next action understandable in one living operator view.
 
-## 4. Why Agents
+## 4. Visible Recovery
 
-The system is too dynamic to operate manually: feed, oxygen, ammonia, nitrate, harvest timing, and node health all interact.
+The operator watches observation, four specialist briefs, supervisor synthesis, verification, execution, and measured recovery as structured runtime events.
 
-## 5. Verifier-Gated Harness
+## 5. Safety Boundary
 
-Models propose actions. The simulator verifier decides whether the action can mutate state.
+Gemma can recommend, but only `verify_ecosystem_safety` can admit simulator mutation. Unsafe proposals are rejected and recorded before state changes.
 
-Proof: unsafe overfeeding is rejected before state changes.
+## 6. Executable Evidence
 
-## 6. Collapse Versus Recovery
+The simulator is also the policy evaluator and RLVR source of truth. The one-click judge path injects an emergency, rejects an unsafe proposal, admits recovery, and exposes measured chemistry.
 
-The demo injects an ammonia spike, shows unsafe rejection, then applies a safe recovery action.
+## 7. Off-Grid Architecture
 
-## 7. RLVR
+Two physical nRF9151 boards prove the private DECT NR+ field hop. A separate edge computer runs Gemma and the verifier. Physical probes and measured solar autonomy remain explicitly labeled next proofs.
 
-The simulator reward scores survival, biomass, water quality, and mortality. The RLVR panel compares naive and safety policies.
+## 8. Producer Control
 
-## 8. Multi-Agent Topology
+Risky or irreversible actions stop for approve, apply-half, or reject. Edited actions are verified again before execution.
 
-Four subsystem agents cover fish tank, freshwater prawn, hydroponia, and duckweed/chickens; a fifth parent supervisor closes the cycle. The first-viewport activity network shows each real start, structured brief, supervisor synthesis, deterministic safety decision, and measured outcome without exposing private chain-of-thought.
+## 9. Captured AMD Gemma Proof
 
-## 9. Self-Healing Mesh
+`google/gemma-4-E2B-it` ran through vLLM on the assigned Act-II AMD notebook using PyTorch 2.10, ROCm 7.2, a `gfx1100` GPU, and 47.98 GiB memory. Only 2/20 first answers were safe. Exact verifier feedback repaired the remaining 18, producing 20/20 model-safe plans with zero fallback. The experiment observed 139 requests, 60,385 tokens, 99.793 completion tokens/s, and 655.522 ms median client latency. It used inference-time repair with no training or weight update. The public site remains a durable private CPU deployment and displays this as captured evidence.
 
-Two real BEAM nodes run Sagents through Horde. Stopping the managed agent's actual owner restores it on the surviving peer while preserving identity, state token, and canonical state fingerprint.
+## 10. Ask
 
-## 10. Physical DECT NR+
-
-DECT NR+ is the private, non-cellular 5G field link between the tank and local gateway. Two physical nRF9151 DKs exchange bidirectional traffic without Wi-Fi, a SIM, or cloud access: FT `1051223739` and PT `1051239227` each sent locally and received the peer's matching sequence number in a read-only, non-simulated capture with no flash or reset.
-
-The nRF9151 boards transport field data. A separate edge computer runs self-hosted Gemma and the deterministic verifier. Physical chemistry probes and measured solar-plus-battery autonomy are the next field proofs.
-
-## 11. Human Approval
-
-Risky water exchange and harvest actions pause for an English producer decision: approve, apply half, or reject.
-
-## 12. Real Sagents Runtime
-
-Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `close_cycle` through `verify_ecosystem_safety`, and terminates with `until_tool_success`.
-
-## 13. Proven AMD-Hosted Gemma Runtime
-
-`google/gemma-4-E2B-it` ran through vLLM on the assigned Act-II AMD notebook using PyTorch 2.10, ROCm 7.2, a `gfx1100` GPU, and 47.98 GiB memory. Six-plan verifier-guided search improved reward by 71.092 and recovered ammonia from 2.4 to 0.7228 mg/L. Across 20 deterministic emergencies, first-answer safety was 10%; exact verifier feedback repaired 18 rejected answers, and the combined model path reached 100% safety with zero fallback. The run observed 139 requests, 60,385 tokens, and 420.648 kg of aggregate scenario biomass. It used inference-time repair with no weight update. The public URL remains on its durable CPU fallback and presents this as captured AMD evidence.
-
-## 14. Market
-
-Rural families and cooperatives in Latin America need resilient protein production where Wi-Fi, cloud access, and grid electricity cannot be assumed.
-
-## 15. Business Model
-
-Community edge node plus optional remote services; local producers retain private radio, local inference, deterministic fallback, and a plain-language approval flow.
-
-## 16. Ask
-
-ProteinLoop turns aquaponics from a fragile expert system into a verifier-gated agentic protein platform.
+Protect protein production where connectivity cannot be assumed. ProteinLoop combines a private field link, local intelligence, executable safety, and producer control for farms, cooperatives, and food-security programs.

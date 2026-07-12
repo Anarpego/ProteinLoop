@@ -10,3 +10,5 @@
 - [x] Make the PDF a required validated submission artifact.
 - [x] Point the lablab form export and deterministic bundle at the PDF.
 - [x] Rebuild and visually verify the final PDF.
+- [x] Refresh the deck and source outline with the imported AMD verifier-feedback experiment.
+- [x] Align the README and five-minute recording script with the final submission artifacts.

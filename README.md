@@ -8,7 +8,7 @@
 
 ProteinLoop lets an operator set an ecosystem mission, then coordinates fish, freshwater prawns, hydroponic plants, duckweed, and chickens through a [deterministic Python simulator](sim/proteinloop_sim), a [Phoenix LiveView control plane](app), and Gemma-powered Sagents agents. Models may propose actions; only deterministic rules and explicit producer approval can authorize state mutation.
 
-[Off-grid architecture](#why-dect-nr-matters-off-grid) · [Run the judge proof](#run-the-one-click-judge-proof) · [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [System workflow](#system-workflow) · [Evidence packet](#submission-packet)
+[Pitch deck](submission/proteinloop-hackathon-deck.pdf) · [AMD experiment](submission/amd-experiment-report.md) · [Off-grid architecture](#why-dect-nr-matters-off-grid) · [Run the judge proof](#run-the-one-click-judge-proof) · [Run an intervention](#run-an-agentic-intervention) · [Run locally](#run-the-demo) · [Evidence packet](#submission-packet)
 
 ## Why ProteinLoop Focuses on Protein Outcomes
 
@@ -723,11 +723,11 @@ make gemma-check
 Submission source artifacts live in `submission/`:
 
 - `lablab-submission.md`: title, descriptions, tags, and demo notes.
-- `video-script.md`: 2-3 minute demo recording script.
-- `slides.md`: pitch deck source.
+- `video-script.md`: synchronized five-minute narration script for the final live walkthrough.
+- `slides.md`: exact ten-slide narrative and regeneration commands.
 - `proteinloop-hackathon-deck.pptx`: editable PowerPoint deck.
 - `proteinloop-hackathon-deck.pdf`: upload-ready ten-page slide presentation.
-- `proteinloop-demo-video.avi`: generated storyboard video artifact.
+- `proteinloop-demo-video.avi`: lightweight generated storyboard artifact; the final five-minute live walkthrough must be uploaded separately to the submission video host.
 - `cover-final.png`: canonical real-product cover composition.
 - `cover.png`: rendered 1600x900 upload-ready cover used by the README and lablab packet.
 - `deck-assets/`: tracked real-product captures used to regenerate the PDF and PPTX.

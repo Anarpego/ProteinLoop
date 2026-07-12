@@ -1,8 +1,18 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-12T03:15:29+00:00
-Commit: `adb38e0`
-Working tree (source): `clean`
+Generated: 2026-07-12T06:10:41+00:00
+Commit: `5e14d5e`
+Working tree (source): `M Makefile
+ M README.md
+ M scripts/export_slide_pdf.py
+ M scripts/generate_submission_deck_v2.mjs
+ M specs/018-rendered-slide-deck/spec.md
+ M specs/018-rendered-slide-deck/tasks.md
+ M submission/artifact-build-manifest.json
+ M submission/proteinloop-hackathon-deck.pdf
+ M submission/proteinloop-hackathon-deck.pptx
+ M submission/slides.md
+ M submission/video-script.md`
 Gemma evidence mode: `amd_notebook`
 
 ## Command Evidence
@@ -49,7 +59,7 @@ SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize
 python3 -m unittest discover -s tests
 ............................................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 220 tests in 0.184s
+Ran 220 tests in 0.212s
 
 OK
 ```
@@ -234,7 +244,7 @@ SUBMISSION_GEMMA_MODE="amd_notebook" python3 scripts/validate_submission_readine
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - adb38e0a74b5611956dd6f91135f0b05181b57e8
+[ok] local git commit - 5e14d5e464a0158b54c09d8d64a0b4f114d13716
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK

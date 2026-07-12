@@ -7,9 +7,9 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 53640,
+      "bytes": 53894,
       "path": "README.md",
-      "sha256": "de0ff4b118d1eb81794b18a0f263c17af103eff573fc2323dbe0b411d14f9d1e"
+      "sha256": "90f564bfefe5906282836d12415a670f4fcd191658371d07ec906266cdd8d296"
     },
     {
       "bytes": 7774,
@@ -22,29 +22,29 @@
       "sha256": "dc63323501e78d4a922a3a3a7f6fdb1eed5c15f7585edba851080859ec9775cd"
     },
     {
-      "bytes": 7544,
+      "bytes": 7907,
       "path": "submission/final-readiness-report.md",
-      "sha256": "3bf89d63da00bb2bf622baeae09549e87bb8d3b9be86f735d0fd13eb84ab34df"
+      "sha256": "1131e73168502434c1ee8085c59a0069da9547dc8f80eaa797c89a52ea96185b"
     },
     {
-      "bytes": 6496,
+      "bytes": 4664,
       "path": "submission/video-script.md",
-      "sha256": "4a21551771f4b0d2b9fdb2329305669322639779aad09e1003e253a2ba8121af"
+      "sha256": "a99d115eceac5a85808820e86d7bcace2ce50038c874256fd160464db58b9dfe"
     },
     {
-      "bytes": 4449,
+      "bytes": 3204,
       "path": "submission/slides.md",
-      "sha256": "15be11175048d655f213e6ded650cd7ae6c8042aaf4e4f0ed25f019ed0a34f3c"
+      "sha256": "b8c2ff29abf59b8c5fb0068df15b16b545392961902fdcc721e434dc7baa3a57"
     },
     {
-      "bytes": 4100494,
+      "bytes": 4100596,
       "path": "submission/proteinloop-hackathon-deck.pptx",
-      "sha256": "47424cc56911cc14536e87421ef1460afa7ce736df747aece802a92b94f73dde"
+      "sha256": "ddc9e8fbadff9e63bc7d79ab49ac6f1ca9195f1cff9a14dac6c203b2838d737d"
     },
     {
-      "bytes": 1463860,
+      "bytes": 1470511,
       "path": "submission/proteinloop-hackathon-deck.pdf",
-      "sha256": "2dce9a2162bad079d0f1180460b0728ef5bfefc77baf7c9f6d2a2f8929205446"
+      "sha256": "df4b82a3d08830e6c43f6d4cd89b6e551ba3c14f909c16250567f7987f271bb2"
     },
     {
       "bytes": 11487962,
@@ -247,5 +247,5 @@
       "sha256": "be579e15fe2d63a60d3690ea83b8e33140fe28b987b76df60c475e2b5fab63a2"
     }
   ],
-  "generated_at": "2026-07-12T03:16:28.472907+00:00"
+  "generated_at": "2026-07-12T06:32:06.550940+00:00"
 }

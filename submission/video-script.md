@@ -1,85 +1,41 @@
-# ProteinLoop Video Script
+# ProteinLoop Five-Minute Video Script
 
-Target length: 2-3 minutes.
+Target length: `5:00`. The narration follows the final live screen recording. Speak at a calm 125-135 words per minute and leave short pauses when the interface changes state.
 
-## Scene 1: Problem
+## 0:00-0:49 — Captured AMD Evidence
 
-Show the title and closed-loop diagram.
+ProteinLoop is an agentic control system for closed aquaponic protein production. It protects fish and freshwater prawns first, then connects the plants that clean the water, duckweed used as feed, and eggs produced downstream.
 
-Narration:
+This first panel is captured evidence from our assigned AMD Act-II notebook. The smallest Gemma 4 instruction model, E2B, ran through vLLM with PyTorch 2.10 and ROCm 7.2 on a `gfx1100` AMD GPU with 47.98 gigabytes of memory. The public demo remains on durable self-hosted CPU inference, so the interface labels the notebook result as captured evidence rather than pretending the temporary GPU endpoint is still connected.
 
-ProteinLoop is an off-grid-ready agentic aquaponic system for rural protein security. Aquaponics already joins fish and plants. ProteinLoop makes that animal-protein outcome measurable and recoverable, then extends the managed loop to prawns, duckweed feed, and eggs without assuming farm Wi-Fi or cloud access.
+## 0:49-1:27 — The Living Protein Loop
 
-## Scene 2: Collapse Versus Recovery
+The main view begins with the living system, not an analytics dashboard. Fish and prawns move inside a state-driven Three.js tank. Water color, oxygen bubbles, animal movement, and alerts respond to the Python simulator every second.
 
-Open `http://localhost:4001/`.
+The operator also sees the food outcome: fish-and-prawn biomass, plants cleaning the water, duckweed reserve, chickens, and eggs. Ammonia is explained as waste in the water, and dissolved oxygen as the air animals can breathe. This makes the system understandable before exposing technical controls.
 
-Action:
+## 1:27-2:09 — Inject a Water Emergency
 
-Start with the animated fish-to-eggs flow, executable proof ribbon, `Off-grid continuity` band, and the visible `Live agent activity` network over the tank. Trace water probes to PT, DECT NR+, FT, separate edge computer, and producer. Press `Run one-click verifier proof` and show the emergency, blocked unsafe proposal, admitted safe recovery, and zero unsafe actions executed. Then press `Inject demo water emergency` and watch the water, bubbles, fish, prawns, animated food loop, and quantified biomass risk change. Choose `Recover water quality`, press `Create safe recovery plan`, and narrate the real-time transition from state observation to four specialist briefs, supervisor synthesis, deterministic verification, applied action, and measured recovery.
+Now we inject a demonstration water emergency. The interface changes because simulator state changed, not because a prerecorded animation started. Rising ammonia increases visible water stress, while oxygen conditions change bubbles and animal behavior. The system immediately explains which protein output is at risk.
 
-Narration:
+Gemma is allowed to propose aeration, feeding, water exchange, or harvest actions. It is never allowed to mutate the ecosystem directly. Every proposal crosses the deterministic `verify_ecosystem_safety` boundary, which checks chemistry, feed reserve, water exchange, biomass, and collapse limits before state can change.
 
-The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. The animated food-flow strip changes between stable, risk, and recovery. The proof ribbon distinguishes the configured Gemma path, deterministic verifier, physical radio capture, producer control, and captured AMD experiment. The AMD replay shows six model plans, verifier decisions, measured chemistry, and the five-emergency safety audit while clearly labeling the public CPU fallback. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface.
+## 2:09-2:56 — Verified Recovery
 
-## Scene 3: RLVR Evidence
+The recovery path makes that boundary visible. An unsafe action is rejected before mutation. A safe action is admitted, applied exactly once, and followed by measured chemistry from the simulator. The receipt reports the action, the verifier decision, the before-and-after state, and whether any unsafe action executed.
 
-Scroll to `RLVR reward verifier`.
+The same simulator reward scores survival, water quality, biomass, and mortality. That makes it the RLVR source of truth as well as the product physics. The result is inspectable: a judge can reproduce the emergency, see rejection, run recovery, and compare the measured outcome instead of trusting an AI explanation.
 
-Narration:
+## 2:56-3:53 — Why the AMD Experiment Matters
 
-The reward function is programmatic: survival, water quality, biomass, and mortality. This panel compares a naive policy with the safety policy across fixed scenarios and shows recovered collapse cases.
+On AMD, Gemma generated multiple structured recovery plans. In the six-plan search, deterministic rules admitted three candidates and rejected four, including a deliberate unsafe control. The selected plan moved ammonia from 2.4 to 0.7228 milligrams per liter, restored oxygen from 4.8 to 5.6742, and improved reward by 71.092 over the naive routine.
 
-## Scene 4: Self-Healing Mesh
+We then expanded the test to twenty deterministic emergencies. Only two first answers were safe. ProteinLoop returned exact verifier violations as bounded feedback and asked Gemma for a fresh structured action. Seventeen cases were repaired in one revision and one in two revisions. The combined model path finished twenty out of twenty safe with zero fallback. This was inference-time repair, not training and not a model-weight update.
 
-Action:
+## 3:53-5:00 — Live Agent Activity and Closing
 
-Show the `Real Sagents/Horde cluster` status band and `submission/horde-evidence.md`. Press `Simulate node loss` only as the repeatable dashboard rehearsal.
+The live agent panel shows how a producer goal becomes an action. Four specialists evaluate fish, prawns, plants, and the feed loop in parallel. A supervisor combines their structured briefs into one bounded proposal. A separate deterministic verifier then accepts or rejects it, and the producer keeps control of risky or irreversible actions.
 
-Narration:
+The field architecture follows the same principle. Two physical nRF9151 boards provide a private DECT NR+ field link. This local hop needs no Wi-Fi, SIM, or cloud account. Gemma and the verifier run on separate edge compute, not on the radio boards. Physical probes and measured solar-plus-battery autonomy are our next field proofs.
 
-The executable failover proof runs two distributed BEAM nodes with Sagents 0.9.0 and Horde 0.10.0. It stops the managed agent's actual owner service, restores that agent on the surviving peer, and rejoins the stopped node. Identity, state token, and canonical state fingerprint remain unchanged. The dashboard controls provide a fast deterministic rehearsal of the same operator story.
-
-## Scene 5: Physical DECT NR+
-
-Action:
-
-Show both connected nRF9151 DKs, then open the `Physical DECT NR+ link` panel. Point out sequence `#100`, both J-Link identities, and the `real radio capture` badge. Press `Replay sensor alert`.
-
-Narration:
-
-DECT NR+ is the private, non-cellular 5G field link. PT board 1051239227 maps to the tank edge and FT board 1051223739 maps to the gateway radio. This local hop needs no Wi-Fi, SIM, or cloud account. Each board sent locally and received sequence 100 from its peer, captured from both UARTs read-only with no flash or reset. A separate edge computer, not the nRF9151 boards, runs self-hosted Gemma and the deterministic verifier. Nordic's stock hello_dect proves radio transport; pressing replay explicitly creates a simulated water-quality alert and does not claim a chemical reading. Physical probes and measured solar-plus-battery autonomy are the next field proofs.
-
-## Scene 6: Human Approval
-
-Action:
-
-Press `Request producer approval`, open `/producer`, then press `Apply half` or `Approve`.
-
-Narration:
-
-Risky water exchange and harvest actions pause for the producer. The English decision screen explains the tank in plain language and lets the producer approve, reject, or halve the irreversible parts of the tool call. Even after approval, the simulator verifier remains the mutation boundary.
-
-## Scene 7: Ask the AI Team
-
-Action:
-
-Select `Protect protein yield`, press `Create safe recovery plan`, and inspect the completed `Verified recovery receipt`.
-
-Narration:
-
-The operator sets a plain-language goal instead of receiving a generic summary. Sagents 0.9.0 sends that mission to four Gemma specialists in parallel, then a fifth parent supervisor resolves their recommendations into one action and calls `close_cycle`. Progress comes from those actual runtime boundaries rather than a decorative timer. The interface shows role status, structured recommendations, tool calls, verifier outcomes, and measured chemistry without exposing private chain-of-thought. `verify_ecosystem_safety` remains the authority before execution. Technical controls remain available in the closed `Advanced evidence and controls` section.
-
-## Scene 8: Self-hosted Gemma 4
-
-Show `Captured AMD experiment`, then expand its verifier decision ledger.
-
-Narration:
-
-The smallest Gemma 4 instruction model, E2B, ran through vLLM on the assigned AMD notebook using PyTorch 2.10, ROCm 7.2, and a 47.98 GiB `gfx1100` GPU. Gemma generated six recovery plans; deterministic rules admitted three and selected the plan that moved ammonia from 2.4 to 0.7228, oxygen from 4.8 to 5.6742, and reward 71.092 above the naive routine. Then we expanded to 20 emergencies. Only two first answers were safe. ProteinLoop returned exact verifier violations to Gemma, which repaired the other 18; the combined model path finished 20 out of 20 safe with zero fallback. The run observed 139 requests, 60,385 tokens, and 420.648 kilograms of aggregate scenario biomass. This is inference-time repair, not training or a weight update. The public site remains on its durable self-hosted CPU inference fallback; this panel replays credential-free AMD evidence rather than claiming a live notebook connection.
-
-## Closing
-
-Narration:
-
-ProteinLoop is a food system and an agent system at the same time: private field radio, local intelligence, deterministic safety, and human control designed to keep protein production operable when Wi-Fi, cloud access, and the electrical grid cannot be assumed.
+ProteinLoop turns aquaponics from a fragile expert workflow into a verifier-gated protein platform: private field communication, local intelligence, executable safety, and human control designed for places where connectivity cannot be assumed.

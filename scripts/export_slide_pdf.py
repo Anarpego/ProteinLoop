@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import os
 import shutil
 import subprocess
 import tempfile
@@ -12,13 +13,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "submission" / "proteinloop-hackathon-deck.pptx"
 OUTPUT = ROOT / "submission" / "proteinloop-hackathon-deck.pdf"
-PREVIEW_DIR = (
-    ROOT
-    / "outputs"
-    / "manual-proteinloop"
-    / "presentations"
-    / "submission-deck"
-    / "preview"
+PREVIEW_DIR = Path(
+    os.environ.get(
+        "PRESENTATION_PREVIEW_DIR",
+        ROOT
+        / "outputs"
+        / "manual-proteinloop"
+        / "presentations"
+        / "submission-deck"
+        / "preview",
+    )
 )
 EXPECTED_PAGE_COUNT = 10
 
