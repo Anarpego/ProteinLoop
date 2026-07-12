@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK_DIR="${AMD_WORK_DIR:-/workspace/proteinloop-amd}"
 AMD_NOTEBOOK_PYTHON="${AMD_NOTEBOOK_PYTHON:-${WORK_DIR}/vllm-gemma4/bin/python}"
+AMD_UV="${AMD_UV:-/opt/venv/bin/uv}"
 GEMMA_ENDPOINT="${GEMMA_ENDPOINT:-http://127.0.0.1:8001}"
 GEMMA_MODEL="${GEMMA_MODEL:-google/gemma-4-E2B-it}"
 BUNDLE_PATH="${AMD_BUNDLE_PATH:-/workspace/proteinloop-amd-roundtrip.zip}"
@@ -49,8 +50,16 @@ make amd-notebook-repair-eval \
   GEMMA_MODEL="${GEMMA_MODEL}"
 
 echo "== Exact package freeze =="
-"${AMD_NOTEBOOK_PYTHON}" -m pip freeze --all | LC_ALL=C sort \
-  >submission/amd-notebook-freeze.txt
+if [[ -x "${AMD_UV}" ]]; then
+  "${AMD_UV}" pip freeze --python "${AMD_NOTEBOOK_PYTHON}" | LC_ALL=C sort \
+    >submission/amd-notebook-freeze.txt
+elif "${AMD_NOTEBOOK_PYTHON}" -m pip --version >/dev/null 2>&1; then
+  "${AMD_NOTEBOOK_PYTHON}" -m pip freeze --all | LC_ALL=C sort \
+    >submission/amd-notebook-freeze.txt
+else
+  echo "Neither uv nor pip is available to capture the package freeze" >&2
+  exit 4
+fi
 
 echo "== Credential-free evidence bundle =="
 "${AMD_NOTEBOOK_PYTHON}" scripts/build_amd_notebook_bundle.py --output "${BUNDLE_PATH}"

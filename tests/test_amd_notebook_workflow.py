@@ -59,6 +59,8 @@ class AmdNotebookWorkflowTests(unittest.TestCase):
         self.assertIn('if [[ "${BASHUPLOAD}" == "1" ]]', run_all)
         self.assertIn("amd_notebook_upload_bundle.sh", run_all)
         self.assertIn("sha256", run_all)
+        self.assertIn('"${AMD_UV}" pip freeze --python "${AMD_NOTEBOOK_PYTHON}"', run_all)
+        self.assertIn("Neither uv nor pip is available", run_all)
 
         upload = scripts[3].read_text(encoding="utf-8")
         self.assertIn("import_amd_notebook_bundle.py", upload)
