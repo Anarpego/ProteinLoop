@@ -2834,6 +2834,62 @@ defmodule ProteinLoopWeb.OperatorLive do
         </span>
       </div>
 
+      <section
+        :if={@evidence.repair_evaluation}
+        id="amd-repair-audit"
+        class="amd-product-audit amd-product-audit--repair"
+        aria-labelledby="amd-repair-audit-title"
+      >
+        <header>
+          <div>
+            <p>20-emergency verifier-feedback audit</p>
+            <h3 id="amd-repair-audit-title">
+              Rejected actions became structured feedback. Gemma revised them and tried again.
+            </h3>
+          </div>
+          <span class="badge badge-success">
+            {@evidence.repair_evaluation.scenario_count}/20 model-safe after feedback
+          </span>
+        </header>
+        <div class="amd-product-audit__metrics">
+          <span data-audit-risk>
+            <small>First proposal</small>
+            <strong>{round(@evidence.repair_evaluation.first_safe_rate * 100)}% first-answer safe</strong>
+          </span>
+          <span data-audit-success>
+            <small>Bounded repair</small>
+            <strong>{round(@evidence.repair_evaluation.repair_safe_rate * 100)}% safe after feedback</strong>
+          </span>
+          <span>
+            <small>Repair contribution</small>
+            <strong>{@evidence.repair_evaluation.rescue_count} rejected answers repaired</strong>
+          </span>
+          <span>
+            <small>Final fallback</small>
+            <strong>{@evidence.repair_evaluation.fallback_count} deterministic fallbacks</strong>
+          </span>
+          <span>
+            <small>Food protected</small>
+            <strong>{@evidence.repair_evaluation.protected_biomass_kg} kg aggregate scenario biomass protected</strong>
+          </span>
+          <span>
+            <small>Observed generation</small>
+            <strong>{@evidence.repair_evaluation.completion_tokens_per_second} completion tokens/s</strong>
+          </span>
+        </div>
+        <footer>
+          <strong>
+            {@evidence.repair_evaluation.one_revision_count} repaired in one revision · {@evidence.repair_evaluation.multi_revision_count} needed multiple revisions
+          </strong>
+          <p>
+            {@evidence.repair_evaluation.model_request_count} observed AMD requests · {one_decimal(
+              @evidence.repair_evaluation.total_tokens / 1000
+            )}k observed tokens · {@evidence.repair_evaluation.latency_p50_ms} ms median response.
+            Inference-time repair only · no training or weight updates.
+          </p>
+        </footer>
+      </section>
+
       <section :if={@evidence.product_evaluation} class="amd-product-audit">
         <header>
           <div>

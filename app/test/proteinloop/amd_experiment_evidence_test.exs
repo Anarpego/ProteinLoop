@@ -10,15 +10,25 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
       AMDExperimentEvidence.load(
         Path.join(@submission, "amd-notebook-gemma-evidence.json"),
         Path.join(@submission, "amd-gemma-policy-search.json"),
-        Path.join(@submission, "amd-gemma-product-evaluation.json")
+        Path.join(@submission, "amd-gemma-product-evaluation.json"),
+        Path.join(@submission, "amd-gemma-repair-evaluation.json")
       )
 
     assert snapshot.available?, "AMD evidence unavailable: #{inspect(snapshot.error)}"
     assert snapshot.model == "google/gemma-4-E2B-it"
-    assert snapshot.search.reward_delta == 69.3611
-    assert snapshot.search.selected.final_state["ammonia_mg_l"] == 0.85
+    assert snapshot.search.reward_delta == 71.092
+    assert snapshot.search.selected.final_state["ammonia_mg_l"] == 0.7228
     assert snapshot.product_evaluation.safe_rate_lift == 0.8
     assert snapshot.product_evaluation.protected_biomass_kg == 103.1
+    assert snapshot.repair_evaluation.scenario_count == 20
+    assert snapshot.repair_evaluation.first_safe_rate == 0.1
+    assert snapshot.repair_evaluation.repair_safe_rate == 1.0
+    assert snapshot.repair_evaluation.combined_model_safe_rate == 1.0
+    assert snapshot.repair_evaluation.rescue_count == 18
+    assert snapshot.repair_evaluation.fallback_count == 0
+    assert snapshot.repair_evaluation.model_request_count == 139
+    assert snapshot.repair_evaluation.total_tokens == 60_385
+    assert snapshot.repair_evaluation.protected_biomass_kg == 420.648
   end
 
   test "loads matching AMD runtime and verifier-search evidence" do
@@ -59,6 +69,34 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
     assert snapshot.product_evaluation.fallback_count == 3
     assert snapshot.product_evaluation.protected_biomass_kg == 103.1
     assert snapshot.product_evaluation.latency_p50_ms == 654.344
+  end
+
+  test "loads and validates bounded verifier-feedback repair evidence" do
+    {runtime_path, search_path} = write_evidence_pair()
+    product_path = temp_path("product")
+    repair_path = temp_path("repair")
+    File.write!(product_path, Jason.encode!(product_evidence()))
+    File.write!(repair_path, Jason.encode!(repair_evidence()))
+
+    on_exit(fn ->
+      File.rm(product_path)
+      File.rm(repair_path)
+    end)
+
+    snapshot = AMDExperimentEvidence.load(runtime_path, search_path, product_path, repair_path)
+
+    assert snapshot.available?
+    assert snapshot.repair_evaluation.scenario_count == 20
+    assert snapshot.repair_evaluation.first_safe_count == 2
+    assert snapshot.repair_evaluation.repair_safe_count == 20
+    assert snapshot.repair_evaluation.rescue_count == 18
+    assert snapshot.repair_evaluation.one_revision_count == 17
+    assert snapshot.repair_evaluation.multi_revision_count == 1
+    assert snapshot.repair_evaluation.max_observed_repairs == 2
+    assert snapshot.repair_evaluation.fallback_count == 0
+    assert snapshot.repair_evaluation.completion_tokens_per_second == 99.793
+    assert snapshot.repair_evaluation.latency_p50_ms == 655.522
+    assert snapshot.repair_evaluation.weight_updates? == false
   end
 
   test "rejects mismatched provider or model claims" do
@@ -230,6 +268,88 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
         "safe_plan_selected_every_time" => true,
         "search_not_worse_than_first_on_safety" => true,
         "unsafe_controls_rejected" => true
+      }
+    }
+  end
+
+  defp repair_evidence do
+    %{
+      "schema_version" => 1,
+      "checked_at" => "2026-07-12T02:09:00Z",
+      "provider" => "amd_hackathon_notebook",
+      "model" => "google/gemma-4-E2B-it",
+      "method" => "twenty_scenario_verifier_feedback_repair",
+      "claim" => "inference-time repair and search; no training or model weight updates",
+      "scenario_count" => 20,
+      "variants_per_base_scenario" => 4,
+      "independent_candidates_per_scenario" => 6,
+      "max_repairs" => 3,
+      "generation_errors" => [],
+      "summary" => %{
+        "scenario_count" => 20,
+        "first_answer_safe_count" => 2,
+        "first_answer_safe_rate" => 0.1,
+        "repair_path_safe_count" => 20,
+        "repair_path_safe_rate" => 1.0,
+        "best_of_n_safe_count" => 9,
+        "best_of_n_safe_rate" => 0.45,
+        "combined_model_safe_count" => 20,
+        "combined_model_safe_rate" => 1.0,
+        "final_system_safe_count" => 20,
+        "final_system_safe_rate" => 1.0,
+        "repair_rescue_count" => 18,
+        "deterministic_fallback_count" => 0,
+        "deterministic_fallback_rate" => 0.0,
+        "unsafe_control_rejection_rate" => 1.0,
+        "protected_aquatic_biomass_kg" => 420.648,
+        "mean_reward_delta_vs_naive" => 221.7244,
+        "model_request_count" => 139,
+        "token_usage" => %{
+          "prompt_tokens" => 51_211,
+          "completion_tokens" => 9_174,
+          "total_tokens" => 60_385
+        },
+        "request_latency_ms" => %{
+          "sample_count" => 139,
+          "p50" => 655.522,
+          "p95" => 729.105
+        },
+        "observed_completion_tokens_per_second" => 99.793
+      },
+      "scenarios" =>
+        Enum.map(1..20, fn index ->
+          repair_count =
+            cond do
+              index <= 2 -> 0
+              index == 20 -> 2
+              true -> 1
+            end
+
+          %{
+            "name" => "scenario #{index}",
+            "first_answer_safe" => index <= 2,
+            "repair_path_safe" => true,
+            "combined_model_safe" => true,
+            "final_system_safe" => true,
+            "repair_rescued_first_rejection" => index > 2,
+            "fallback_used" => false,
+            "unsafe_control_rejected" => true,
+            "repair_trace" => %{
+              "max_repairs" => 3,
+              "repair_count" => repair_count,
+              "weight_updates" => false
+            }
+          }
+        end),
+      "checks" => %{
+        "all_scenarios_evaluated" => true,
+        "repair_attempts_bounded" => true,
+        "unsafe_controls_rejected" => true,
+        "safe_plan_selected_every_time" => true,
+        "combined_model_not_worse_than_first" => true,
+        "fallback_usage_disclosed" => true,
+        "token_usage_reported" => true,
+        "no_weight_updates" => true
       }
     }
   end

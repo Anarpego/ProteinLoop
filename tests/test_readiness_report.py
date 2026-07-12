@@ -37,6 +37,7 @@ class ReadinessReportTests(unittest.TestCase):
         self.assertIn("AMD notebook Gemma evidence", amd_names)
         self.assertIn("AMD Gemma verifier-guided search", amd_names)
         self.assertIn("AMD Gemma five-emergency product audit", amd_names)
+        self.assertIn("AMD Gemma verifier-feedback repair audit", amd_names)
         self.assertNotIn("Credit access", amd_names)
         self.assertNotIn("Gemma endpoint evidence", amd_names)
 

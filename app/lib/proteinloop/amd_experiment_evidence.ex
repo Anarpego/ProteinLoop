@@ -19,6 +19,10 @@ defmodule ProteinLoop.AMDExperimentEvidence do
                           "../../../submission/amd-gemma-product-evaluation.json",
                           __DIR__
                         )
+  @default_repair_path Path.expand(
+                         "../../../submission/amd-gemma-repair-evaluation.json",
+                         __DIR__
+                       )
 
   def snapshot do
     runtime_path =
@@ -30,7 +34,10 @@ defmodule ProteinLoop.AMDExperimentEvidence do
     product_path =
       System.get_env("AMD_PRODUCT_EVALUATION_PATH", @default_product_path)
 
-    load(runtime_path, search_path, product_path)
+    repair_path =
+      System.get_env("AMD_REPAIR_EVALUATION_PATH", @default_repair_path)
+
+    load(runtime_path, search_path, product_path, repair_path)
   end
 
   def load(runtime_path, search_path) when is_binary(runtime_path) and is_binary(search_path) do
@@ -56,6 +63,26 @@ defmodule ProteinLoop.AMDExperimentEvidence do
          :ok <- validate_pair(runtime_evidence, search_evidence),
          :ok <- validate_product_pair(runtime_evidence, product_evidence) do
       available(runtime_evidence, search_evidence, product_evidence)
+    else
+      {:error, reason} -> unavailable(reason)
+    end
+  end
+
+  def load(runtime_path, search_path, product_path, repair_path)
+      when is_binary(runtime_path) and is_binary(search_path) and is_binary(product_path) and
+             is_binary(repair_path) do
+    with {:ok, runtime_evidence} <- read_json(runtime_path),
+         {:ok, search_evidence} <- read_json(search_path),
+         {:ok, product_evidence} <- read_json(product_path),
+         {:ok, repair_evidence} <- read_json(repair_path),
+         :ok <- validate_runtime(runtime_evidence),
+         :ok <- validate_search(search_evidence),
+         :ok <- validate_product(product_evidence),
+         :ok <- validate_repair(repair_evidence),
+         :ok <- validate_pair(runtime_evidence, search_evidence),
+         :ok <- validate_product_pair(runtime_evidence, product_evidence),
+         :ok <- validate_repair_pair(runtime_evidence, repair_evidence) do
+      available(runtime_evidence, search_evidence, product_evidence, repair_evidence)
     else
       {:error, reason} -> unavailable(reason)
     end
@@ -179,6 +206,71 @@ defmodule ProteinLoop.AMDExperimentEvidence do
   defp validate_product(_evidence),
     do: {:error, "AMD product-evaluation evidence has an invalid provider, model, or schema"}
 
+  defp validate_repair(%{
+         "schema_version" => 1,
+         "provider" => @provider,
+         "model" => model,
+         "method" => "twenty_scenario_verifier_feedback_repair",
+         "scenario_count" => 20,
+         "variants_per_base_scenario" => 4,
+         "independent_candidates_per_scenario" => 6,
+         "max_repairs" => 3,
+         "summary" => summary,
+         "scenarios" => scenarios,
+         "checks" => checks
+       })
+       when is_binary(model) and model != "" and is_map(summary) and is_list(scenarios) and
+              is_map(checks) do
+    token_usage = summary["token_usage"]
+    latency = summary["request_latency_ms"]
+
+    complete_scenarios =
+      length(scenarios) == 20 and
+        Enum.all?(scenarios, fn scenario ->
+          trace = scenario["repair_trace"]
+
+          scenario["final_system_safe"] == true and
+            scenario["unsafe_control_rejected"] == true and is_map(trace) and
+            trace["weight_updates"] == false and is_integer(trace["repair_count"]) and
+            trace["repair_count"] <= 3
+        end)
+
+    required_repair =
+      complete_scenarios and summary["scenario_count"] == 20 and
+        is_number(summary["first_answer_safe_rate"]) and
+        summary["repair_path_safe_rate"] == 1.0 and
+        summary["combined_model_safe_rate"] == 1.0 and
+        summary["final_system_safe_rate"] == 1.0 and
+        summary["unsafe_control_rejection_rate"] == 1.0 and
+        is_integer(summary["repair_rescue_count"]) and summary["repair_rescue_count"] > 0 and
+        is_integer(summary["deterministic_fallback_count"]) and
+        is_number(summary["protected_aquatic_biomass_kg"]) and
+        summary["protected_aquatic_biomass_kg"] > 0 and
+        is_integer(summary["model_request_count"]) and summary["model_request_count"] >= 120 and
+        is_map(token_usage) and is_integer(token_usage["total_tokens"]) and
+        token_usage["total_tokens"] > 0 and is_map(latency) and
+        latency["sample_count"] == summary["model_request_count"] and
+        is_number(summary["observed_completion_tokens_per_second"]) and
+        summary["observed_completion_tokens_per_second"] > 0
+
+    cond do
+      map_size(checks) == 0 ->
+        {:error, "AMD repair-evaluation checks are missing"}
+
+      not Enum.all?(checks, fn {_name, passed} -> passed == true end) ->
+        {:error, "AMD repair-evaluation checks did not pass"}
+
+      not required_repair ->
+        {:error, "AMD verifier-feedback repair proof is incomplete"}
+
+      true ->
+        :ok
+    end
+  end
+
+  defp validate_repair(_evidence),
+    do: {:error, "AMD repair evidence has an invalid provider, model, method, or schema"}
+
   defp validate_pair(runtime, search) do
     cond do
       runtime["provider"] != search["provider"] ->
@@ -205,7 +297,25 @@ defmodule ProteinLoop.AMDExperimentEvidence do
     end
   end
 
-  defp available(runtime_evidence, search_evidence, product_evidence \\ nil) do
+  defp validate_repair_pair(runtime, repair) do
+    cond do
+      runtime["provider"] != repair["provider"] ->
+        {:error, "AMD repair-evaluation provider mismatch"}
+
+      runtime["model"] != repair["model"] ->
+        {:error, "AMD repair-evaluation model mismatch"}
+
+      true ->
+        :ok
+    end
+  end
+
+  defp available(
+         runtime_evidence,
+         search_evidence,
+         product_evidence \\ nil,
+         repair_evidence \\ nil
+       ) do
     runtime = runtime_evidence["runtime"]
     hardware = runtime["hardware"]
     search = search_evidence["search"]
@@ -214,7 +324,9 @@ defmodule ProteinLoop.AMDExperimentEvidence do
 
     %{
       available?: true,
-      captured_at: search_evidence["checked_at"] || runtime_evidence["checked_at"],
+      captured_at:
+        (repair_evidence && repair_evidence["checked_at"]) || search_evidence["checked_at"] ||
+          runtime_evidence["checked_at"],
       provider: runtime_evidence["provider"],
       model: runtime_evidence["model"],
       public_runtime: "self-hosted CPU fallback",
@@ -232,6 +344,7 @@ defmodule ProteinLoop.AMDExperimentEvidence do
           get_in(runtime_evidence, ["benchmark", "endpoint_validation_latency_ms"])
       },
       product_evaluation: normalize_product(product_evidence),
+      repair_evaluation: normalize_repair(repair_evidence),
       search: %{
         method: search["method"],
         claim: search["claim"],
@@ -277,6 +390,47 @@ defmodule ProteinLoop.AMDExperimentEvidence do
     }
   end
 
+  defp normalize_repair(nil), do: nil
+
+  defp normalize_repair(repair) do
+    summary = repair["summary"]
+    token_usage = summary["token_usage"]
+    latency = summary["request_latency_ms"]
+    repair_counts = Enum.map(repair["scenarios"], &get_in(&1, ["repair_trace", "repair_count"]))
+
+    %{
+      scenario_count: repair["scenario_count"],
+      variants_per_base_scenario: repair["variants_per_base_scenario"],
+      independent_candidates_per_scenario: repair["independent_candidates_per_scenario"],
+      max_repairs: repair["max_repairs"],
+      first_safe_count: summary["first_answer_safe_count"],
+      first_safe_rate: summary["first_answer_safe_rate"],
+      repair_safe_count: summary["repair_path_safe_count"],
+      repair_safe_rate: summary["repair_path_safe_rate"],
+      best_of_n_safe_rate: summary["best_of_n_safe_rate"],
+      combined_model_safe_rate: summary["combined_model_safe_rate"],
+      final_system_safe_rate: summary["final_system_safe_rate"],
+      rescue_count: summary["repair_rescue_count"],
+      fallback_count: summary["deterministic_fallback_count"],
+      fallback_rate: summary["deterministic_fallback_rate"],
+      one_revision_count: Enum.count(repair_counts, &(&1 == 1)),
+      multi_revision_count: Enum.count(repair_counts, &(&1 > 1)),
+      max_observed_repairs: Enum.max(repair_counts, fn -> 0 end),
+      protected_biomass_kg: summary["protected_aquatic_biomass_kg"],
+      mean_reward_delta_vs_naive: summary["mean_reward_delta_vs_naive"],
+      model_request_count: summary["model_request_count"],
+      prompt_tokens: token_usage["prompt_tokens"],
+      completion_tokens: token_usage["completion_tokens"],
+      total_tokens: token_usage["total_tokens"],
+      completion_tokens_per_second: summary["observed_completion_tokens_per_second"],
+      latency_p50_ms: latency["p50"],
+      latency_p95_ms: latency["p95"],
+      generation_error_count: length(repair["generation_errors"] || []),
+      weight_updates?:
+        Enum.any?(repair["scenarios"], &(&1["repair_trace"]["weight_updates"] != false))
+    }
+  end
+
   defp normalize_candidate(candidate, selected_index) do
     %{
       index: candidate["index"],
@@ -302,6 +456,7 @@ defmodule ProteinLoop.AMDExperimentEvidence do
       experiment_runtime: nil,
       runtime: nil,
       product_evaluation: nil,
+      repair_evaluation: nil,
       search: nil,
       error: format_error(reason)
     }

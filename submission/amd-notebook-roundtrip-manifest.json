@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "AMD Gemma five-emergency product audit": true,
+    "AMD Gemma verifier-feedback repair audit": true,
+    "AMD Gemma verifier-guided search": true,
+    "AMD notebook Gemma evidence": true
+  },
+  "files": [
+    {
+      "bytes": 2759,
+      "path": "submission/amd-notebook-gemma-evidence.json",
+      "sha256": "f37866fe6daa9b343fba015645aefe8959878d3ebd8dda221ef8fa5f3daef73e"
+    },
+    {
+      "bytes": 11630,
+      "path": "submission/amd-gemma-policy-search.json",
+      "sha256": "76a527b9c012242e413adcd65495e97c69630a766b9b9421db172c5fde58ecfd"
+    },
+    {
+      "bytes": 25552,
+      "path": "submission/amd-gemma-product-evaluation.json",
+      "sha256": "dd1d89487673785e73213dd57460aa275704814596dd095e51d4f11f92feb331"
+    },
+    {
+      "bytes": 704589,
+      "path": "submission/amd-gemma-repair-evaluation.json",
+      "sha256": "0436af257d2635a5cffc5a66de394784d8f5ce0f8cb72a02ec9e72313c47e5d0"
+    },
+    {
+      "bytes": 4202,
+      "path": "submission/amd-notebook-freeze.txt",
+      "sha256": "8b5c0068ad805174e93b5f7c4f21dc15628b9815045a48ca881920dae1e21e70"
+    },
+    {
+      "bytes": 6226,
+      "path": "notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb",
+      "sha256": "cf13bfb5e9610268937c5aad8fe9b60d1988356f4b67b7dd1b43db55c501dc64"
+    }
+  ],
+  "generated_at": "2026-07-12T02:09:52.064759+00:00",
+  "model": "google/gemma-4-E2B-it",
+  "provider": "amd_hackathon_notebook",
+  "schema_version": 1,
+  "source_commit": "a4b67d80659b4b92f863f1a508cd1b58e2a95b36"
+}

@@ -64,7 +64,7 @@ Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `
 
 ## 13. Proven AMD-Hosted Gemma Runtime
 
-`google/gemma-4-E2B-it` ran through vLLM on the assigned Act-II AMD notebook using PyTorch 2.10, ROCm 7.2, a `gfx1100` GPU, and 47.98 GiB memory. Six-plan verifier-guided search improved reward by 69.3611 and recovered ammonia from 2.4 to 0.85 mg/L. Across five emergencies, one-shot safety was 20%; verified selection plus deterministic fallback reached 100%, rescuing four first-answer failures and protecting 103.1 kg of aggregate aquatic biomass. The public URL remains on its durable CPU fallback and presents this as captured AMD evidence.
+`google/gemma-4-E2B-it` ran through vLLM on the assigned Act-II AMD notebook using PyTorch 2.10, ROCm 7.2, a `gfx1100` GPU, and 47.98 GiB memory. Six-plan verifier-guided search improved reward by 71.092 and recovered ammonia from 2.4 to 0.7228 mg/L. Across 20 deterministic emergencies, first-answer safety was 10%; exact verifier feedback repaired 18 rejected answers, and the combined model path reached 100% safety with zero fallback. The run observed 139 requests, 60,385 tokens, and 420.648 kg of aggregate scenario biomass. It used inference-time repair with no weight update. The public URL remains on its durable CPU fallback and presents this as captured AMD evidence.
 
 ## 14. Market
 

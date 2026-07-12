@@ -651,6 +651,38 @@ body {
   color: #047857;
 }
 
+.amd-product-audit__metrics [data-audit-risk] {
+  background: #fff1f2;
+}
+
+.amd-product-audit__metrics [data-audit-risk] strong {
+  color: #be123c;
+}
+
+.amd-product-audit--repair {
+  background: #f8fbff;
+}
+
+.amd-product-audit--repair > header p {
+  color: #1d4ed8;
+}
+
+.amd-product-audit--repair .amd-product-audit__metrics {
+  border-color: #cbdcf5;
+}
+
+.amd-product-audit--repair .amd-product-audit__metrics > span + span {
+  border-color: #cbdcf5;
+}
+
+.amd-product-audit--repair > footer {
+  background: #eff6ff;
+}
+
+.amd-product-audit--repair > footer strong {
+  color: #1e40af;
+}
+
 .amd-product-audit > footer {
   align-items: flex-start;
   background: #fffbeb;
@@ -1991,6 +2023,10 @@ body {
     border-top: 1px solid #eadfc9;
   }
 
+  .amd-product-audit--repair .amd-product-audit__metrics > span:nth-child(n + 4) {
+    border-top-color: #cbdcf5;
+  }
+
   .off-grid-continuity__header {
     flex-direction: column;
     gap: 0.5rem;
@@ -2106,6 +2142,10 @@ body {
   .amd-product-audit__metrics > span + span {
     border-top: 1px solid #d8e0e3;
     border-left: 0;
+  }
+
+  .amd-product-audit--repair .amd-product-audit__metrics > span + span {
+    border-top-color: #cbdcf5;
   }
 
   .amd-product-audit > header,

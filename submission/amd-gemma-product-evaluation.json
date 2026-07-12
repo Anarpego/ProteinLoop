@@ -1,6 +1,6 @@
 {
   "candidates_per_scenario": 6,
-  "checked_at": "2026-07-11T23:36:57.664774+00:00",
+  "checked_at": "2026-07-12T02:01:14.054443+00:00",
   "checks": {
     "all_scenarios_evaluated": true,
     "no_weight_updates": true,
@@ -84,12 +84,12 @@
       },
       "first_proposal_safe": false,
       "generation_latency_ms": [
-        654.418,
-        710.763,
-        617.394,
-        729.789,
-        675.309,
-        666.509
+        645.754,
+        709.427,
+        616.267,
+        727.697,
+        662.892,
+        632.806
       ],
       "initial_state": {
         "ammonia_mg_l": 2.4,
@@ -264,12 +264,12 @@
       },
       "first_proposal_safe": true,
       "generation_latency_ms": [
-        607.764,
-        645.106,
-        616.992,
-        636.013,
-        684.384,
-        647.776
+        606.927,
+        643.854,
+        615.849,
+        634.639,
+        672.41,
+        672.259
       ],
       "initial_state": {
         "ammonia_mg_l": 1.1,
@@ -402,12 +402,12 @@
       },
       "first_proposal_safe": false,
       "generation_latency_ms": [
-        616.969,
-        654.999,
-        663.705,
-        626.111,
-        695.64,
-        638.899
+        622.228,
+        653.936,
+        662.534,
+        625.38,
+        671.916,
+        623.124
       ],
       "initial_state": {
         "ammonia_mg_l": 3.4,
@@ -560,12 +560,12 @@
       },
       "first_proposal_safe": false,
       "generation_latency_ms": [
-        654.098,
-        654.27,
-        682.615,
-        626.646,
-        675.133,
-        656.457
+        653.766,
+        653.907,
+        681.611,
+        625.896,
+        663.013,
+        644.1
       ],
       "initial_state": {
         "ammonia_mg_l": 1.8,
@@ -719,12 +719,12 @@
       },
       "first_proposal_safe": false,
       "generation_latency_ms": [
-        614.302,
-        721.257,
-        636.327,
-        644.304,
-        685.063,
-        667.005
+        613.47,
+        718.931,
+        635.533,
+        644.667,
+        632.423,
+        640.282
       ],
       "initial_state": {
         "ammonia_mg_l": 2.8,
@@ -818,8 +818,8 @@
     "first_proposal_safe_rate": 0.2,
     "gemma_safe_scenario_count": 2,
     "generation_latency_ms": {
-      "p50": 654.344,
-      "p95": 716.535,
+      "p50": 644.384,
+      "p95": 714.654,
       "sample_count": 30
     },
     "mean_reward_delta_vs_first": 0.0,

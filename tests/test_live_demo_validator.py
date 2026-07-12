@@ -75,6 +75,9 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertIn("Captured AMD experiment", OPERATOR_NEEDLES)
         self.assertIn("google/gemma-4-E2B-it", OPERATOR_NEEDLES)
         self.assertIn("Five-emergency product audit", OPERATOR_NEEDLES)
+        self.assertIn("20-emergency verifier-feedback audit", OPERATOR_NEEDLES)
+        self.assertIn("18 rejected answers repaired", OPERATOR_NEEDLES)
+        self.assertIn("100% safe after feedback", OPERATOR_NEEDLES)
         self.assertIn("Public app remains on CPU fallback", OPERATOR_NEEDLES)
         self.assertIn("Open tank full screen", PRODUCER_NEEDLES)
 

@@ -25,8 +25,8 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
-| AMD-hosted Gemma 4 | Gemma 4 E2B ran through vLLM on the assigned Act-II AMD notebook with ROCm, generated six recovery candidates, and participated in a five-emergency product audit. | [AMD runtime](submission/amd-notebook-gemma-evidence.json) · [Verifier-guided search](submission/amd-gemma-policy-search.json) · [Product evaluation](submission/amd-gemma-product-evaluation.json) |
-| AMD verifier repair rerun | A committed notebook and one-command pod workflow add structured reject-and-revise feedback plus a 20-emergency comparison. Results remain pending until a fresh AMD artifact passes import validation. | [Notebook](notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb) · [Spec](specs/071-amd-gemma-verifier-repair/spec.md) |
+| AMD-hosted Gemma 4 | Gemma 4 E2B ran through vLLM on the assigned Act-II AMD notebook with ROCm, generated six recovery candidates, and participated in five- and 20-emergency product audits. | [AMD runtime](submission/amd-notebook-gemma-evidence.json) · [Verifier-guided search](submission/amd-gemma-policy-search.json) · [Product evaluation](submission/amd-gemma-product-evaluation.json) |
+| AMD verifier-feedback repair | Across 20 deterministic emergencies, 2 first answers were safe and structured verifier feedback repaired the other 18. The combined Gemma path finished 20/20 model-safe with zero fallback and no weight update. | [Repair evidence](submission/amd-gemma-repair-evaluation.json) · [Notebook](notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb) · [Spec](specs/071-amd-gemma-verifier-repair/spec.md) |
 | Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
 | Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
@@ -389,7 +389,7 @@ diverse recovery plans, injects one explicit unsafe control, rejects unsafe acti
 and ranks safe candidates with `SafetyVerifier.reward`. It writes
 `submission/amd-gemma-policy-search.json` and accurately labels the method as inference-time
 Best-of-N search with no model weight update. The selected Gemma plan moved ammonia from `2.4` to
-`0.85` mg/L, oxygen from `4.8` to `5.5058` mg/L, and reward `+69.3611` over the naive routine.
+`0.7228` mg/L, oxygen from `4.8` to `5.6742` mg/L, and reward `+71.092` over the naive routine.
 
 The third target evaluates 30 Gemma plans across five emergencies. A single first answer was safe in
 20% of scenarios; verifier-guided selection plus explicit deterministic fallback produced a safe
@@ -397,8 +397,18 @@ final plan in 100%, rescued four rejected first answers, and protected 103.1 kg 
 biomass across the scenarios. Gemma supplied a safe plan in two scenarios; all model plans were
 rejected in three, where the labeled deterministic emergency policy took over. This is a product
 safety result, not a claim that Gemma alone was always safe. The artifacts do not serialize
-`HF_TOKEN`, API keys, cookies, UUIDs, or hardware serial numbers. Validate the imported AMD-hosted
-submission profile with:
+`HF_TOKEN`, API keys, cookies, UUIDs, or hardware serial numbers.
+
+The fourth target evaluated structured reject-and-revise feedback across 20 deterministic
+emergencies. Only 2/20 first answers were safe. Exact verifier violations drove bounded Gemma
+revisions that repaired the remaining 18, so the combined model path finished 20/20 safe without
+using deterministic fallback. The run recorded 139 model requests, 60,385 tokens, 99.793 observed
+completion tokens/s, 655.522 ms median client latency, and 420.648 kg of aggregate aquatic biomass
+represented across the scenarios. These are captured experiment metrics, not production output or
+a server benchmark; the loop performed inference-time repair only, with no training or weight
+updates.
+
+Validate the imported AMD-hosted submission profile with:
 
 ```sh
 SUBMISSION_GEMMA_MODE=amd_notebook make submission-ready-check
@@ -734,8 +744,8 @@ Submission source artifacts live in `submission/`:
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
 - `gemma-evidence.json`: optional remote-profile artifact generated after `make gemma-check` succeeds against a non-loopback OpenAI-compatible endpoint.
-- `amd-gemma-repair-evaluation.json`: optional real AMD artifact for the 20-emergency verifier-feedback rerun; it is bundled only after strict validation and import.
-- `amd-notebook-freeze.txt` / `amd-notebook-roundtrip-manifest.json`: optional exact package freeze and checksum manifest returned by the AMD notebook.
+- `amd-gemma-repair-evaluation.json`: imported real AMD artifact for the 20-emergency verifier-feedback audit; strict validation records 18 repairs, 20/20 model-safe outcomes, and zero fallback.
+- `amd-notebook-freeze.txt` / `amd-notebook-roundtrip-manifest.json`: imported exact package freeze and checksum manifest returned by the AMD notebook.
 - `../notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb`: runnable AMD evidence notebook using the same committed shell and Python workflow.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, local and public-host CPU Gemma proof, lablab form JSON, final readiness report, Docker smoke evidence, and remote Gemma evidence when it exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
@@ -917,10 +927,9 @@ manual submission handling:
 1. Rehearse the judge path on `https://proteinloop.dev-vb.lat` and record the final live walkthrough.
 2. Upload the cover, deck, video, and `submission/proteinloop-lablab-upload.zip` to lablab.
 3. Paste the prepared fields from `submission/lablab-form.json`, verify the public links, and submit.
-4. For the stronger AMD partner-prize evidence, run the committed verifier-feedback notebook and
-   import its validated roundtrip ZIP before rebuilding the final upload bundle.
 
-The Act-II AMD notebook evidence is imported and is the submitted remote-compute proof. Use
+The Act-II AMD notebook runtime, search, product, and verifier-feedback evidence is imported and is
+the submitted remote-compute proof. Use
 `SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize` for the AMD-hosted Gemma profile.
 The public URL remains a durable CPU deployment and the interface labels the notebook result as a
 captured experiment rather than a live connection. Fireworks remains an optional provider path, not

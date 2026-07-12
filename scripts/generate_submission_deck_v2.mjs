@@ -7,8 +7,8 @@ const slidesDir = path.join(workspace, "slides");
 const assetDir = path.join(root, "submission/deck-assets");
 
 const data = {
-  pythonTests: 199,
-  phoenixTests: 140,
+  pythonTests: 220,
+  phoenixTests: 141,
   rewardDelta: 463,
   collapseAvoidance: "100%",
   animalBiomass: "14.5 kg",
@@ -38,7 +38,7 @@ await fs.writeFile(
     "Cover source: submission/cover.png, generated from the deployed full-screen tank capture.",
     "Operator overview: submission/deck-assets/operator-overview.png.",
     "Agent recovery: submission/deck-assets/agent-recovery.png.",
-    `Executable evidence verified July 11, 2026: ${data.pythonTests} Python tests and ${data.phoenixTests} Phoenix tests, zero failures.`,
+    `Executable evidence verified July 12, 2026: ${data.pythonTests} Python tests and ${data.phoenixTests} Phoenix tests, zero failures.`,
     "Physical evidence: two nRF9151 boards exchanged matching bidirectional DECT NR+ sequence 100.",
     "No external identity marks are drawn or approximated.",
     "",
@@ -65,7 +65,7 @@ await fs.writeFile(
     "06 Executable tests and RLVR evidence make the safety claim inspectable.",
     "07 DECT NR+ keeps the field hop local; edge compute keeps decision-making local.",
     "08 The producer retains control of risky or irreversible actions.",
-    "09 Captured AMD Gemma evidence shows measured recovery and why deterministic fallback matters.",
+    "09 Captured AMD Gemma evidence shows unsafe first answers becoming safe through verifier feedback.",
     "10 The market wedge is resilient protein production where connectivity cannot be assumed.",
     "",
   ].join("\n"),
@@ -260,7 +260,7 @@ export default async function slide06(presentation, ctx) {
   ctx.addShape(s, { x: 52, y: 446, w: 1130, h: 112, fill: "#173f50", line: ctx.line("#315b6b", 1) });
   ctx.addText(s, { x: 82, y: 468, w: 260, h: 24, text: "ONE-CLICK JUDGE PROOF", fontSize: 12, bold: true, color: "#8ee7d5" });
   ctx.addText(s, { x: 82, y: 506, w: 1030, h: 30, text: "Inject emergency  ->  block unsafe proposal  ->  admit safe recovery  ->  inspect measured chemistry", fontSize: 18, bold: true, color: C.white });
-  footer(ctx, s, "Verified July 11, 2026: ${data.pythonTests} Python and ${data.phoenixTests} Phoenix tests, zero failures.", true);
+  footer(ctx, s, "Verified July 12, 2026: ${data.pythonTests} Python and ${data.phoenixTests} Phoenix tests, zero failures.", true);
   return s;
 }`,
 
@@ -328,24 +328,24 @@ export default async function slide08(presentation, ctx) {
   `import { C, base, title, body, footer } from "./common.mjs";
 export default async function slide09(presentation, ctx) {
   const s = base(presentation, ctx, "AMD Gemma proof", true);
-  title(ctx, s, "AMD-hosted Gemma. Measured product outcomes.", { y: 62, h: 74, size: 40, color: C.white });
-  body(ctx, s, "Gemma explores recovery options; ecosystem rules decide what can touch the tank.", 48, 136, 820, 38, "#c2d6dd", 16);
+  title(ctx, s, "AMD-hosted Gemma repairs unsafe plans.", { y: 62, h: 74, size: 40, color: C.white });
+  body(ctx, s, "Exact verifier failures return as bounded feedback; every revision is parsed and verified again.", 48, 136, 920, 38, "#c2d6dd", 16);
   const columns = [
     { x: 52, label: "CAPTURED AMD RUNTIME", color: C.blue, heading: "Gemma 4 E2B", lines: ["ROCm 7.2.53211", "vLLM 0.20.2", "gfx1100 · 47.98 GiB"] },
-    { x: 450, label: "SELECTED GEMMA RECOVERY", color: C.teal2, heading: "+69.3611 reward", lines: ["ammonia 2.4 → 0.85", "oxygen 4.8 → 5.5058", "unsafe control rejected"] },
-    { x: 848, label: "5-EMERGENCY AUDIT", color: C.orange, heading: "20% → 100% safe", lines: ["30 Gemma plans tested", "4 first-answer rescues", "3 explicit fallbacks"] }
+    { x: 450, label: "20-EMERGENCY REPAIR", color: C.teal2, heading: "10% → 100% model-safe", lines: ["18 rejected answers repaired", "17 in one revision · 1 in two", "0 fallback · no weight update"] },
+    { x: 848, label: "MEASURED EXECUTION", color: C.orange, heading: "139 requests", lines: ["60,385 observed tokens", "99.793 completion tokens/s", "p50 latency · 655.522 ms"] }
   ];
   columns.forEach(({ x, label, color, heading, lines }) => {
     ctx.addText(s, { x: x + 12, y: 214, w: 320, h: 24, text: label, fontSize: 11, bold: true, color });
     ctx.addShape(s, { x, y: 252, w: 350, h: 246, fill: "#173f50", line: ctx.line(color, 2) });
-    ctx.addText(s, { x: x + 28, y: 278, w: 294, h: 42, text: heading, fontSize: 24, bold: true, color: C.white });
+    ctx.addText(s, { x: x + 24, y: 276, w: 302, h: 48, text: heading, fontSize: 21, bold: true, color: C.white });
     lines.forEach((line, index) => {
       ctx.addShape(s, { x: x + 30, y: 344 + index * 42, w: 5, h: 24, fill: color, line: ctx.line("#00000000", 0) });
-      ctx.addText(s, { x: x + 48, y: 344 + index * 42, w: 270, h: 25, text: line, fontSize: 15, color: "#c2d6dd" });
+      ctx.addText(s, { x: x + 48, y: 344 + index * 42, w: 270, h: 27, text: line, fontSize: 14, color: "#c2d6dd" });
     });
   });
-  ctx.addText(s, { x: 52, y: 538, w: 1146, h: 46, text: "103.1 kg aggregate fish + prawn biomass protected across the audit", fontSize: 23, bold: true, color: "#8ee7d5", align: "center" });
-  footer(ctx, s, "Captured AMD experiment; the durable public URL remains on its private 8 GB host and CPU fallback.", true);
+  ctx.addText(s, { x: 52, y: 532, w: 1146, h: 54, text: "420.648 kg aggregate scenario biomass · +221.7244 mean reward vs naive", fontSize: 21, bold: true, color: "#8ee7d5", align: "center" });
+  footer(ctx, s, "Captured inference-time repair experiment; the public URL remains on its private 8 GB host and CPU fallback.", true);
   return s;
 }`,
 

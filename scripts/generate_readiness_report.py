@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scripts.validate_submission_readiness import (  # noqa: E402
+    amd_repair_evaluation_check,
     gemma_evidence_check,
     policy_search_evidence_check,
     product_evaluation_evidence_check,
@@ -31,6 +32,7 @@ LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
 AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
 AMD_GEMMA_POLICY_SEARCH_EVIDENCE = SUBMISSION / "amd-gemma-policy-search.json"
 AMD_GEMMA_PRODUCT_EVALUATION = SUBMISSION / "amd-gemma-product-evaluation.json"
+AMD_GEMMA_REPAIR_EVALUATION = SUBMISSION / "amd-gemma-repair-evaluation.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -63,6 +65,7 @@ AMD_NOTEBOOK_MODEL_COMMANDS = [
     ("AMD notebook Gemma evidence", ["make", "amd-notebook-gemma-evidence"]),
     ("AMD Gemma verifier-guided search", ["make", "amd-notebook-gemma-search"]),
     ("AMD Gemma five-emergency product audit", ["make", "amd-notebook-product-eval"]),
+    ("AMD Gemma verifier-feedback repair audit", ["make", "amd-notebook-repair-eval"]),
 ]
 
 FINAL_EVIDENCE_COMMANDS = [
@@ -146,6 +149,8 @@ def collect_evidence(model_mode: str = "local") -> list[CommandEvidence]:
             evidence.append(amd_policy_search_evidence(AMD_GEMMA_POLICY_SEARCH_EVIDENCE))
         elif name == "AMD Gemma five-emergency product audit":
             evidence.append(amd_product_evaluation_evidence(AMD_GEMMA_PRODUCT_EVALUATION))
+        elif name == "AMD Gemma verifier-feedback repair audit":
+            evidence.append(amd_repair_evaluation_evidence(AMD_GEMMA_REPAIR_EVALUATION))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -327,6 +332,17 @@ def amd_product_evaluation_evidence(path: Path) -> CommandEvidence:
     name = "AMD Gemma five-emergency product audit"
     command = ["make", "amd-notebook-product-eval"]
     result = product_evaluation_evidence_check(
+        path,
+        expected_model="google/gemma-4-E2B-it",
+    )
+    output = f"evidence: {display_path(path)}\n[{'ok' if result.ok else 'FAIL'}] {result.detail}"
+    return CommandEvidence(name, command, 0 if result.ok else 1, output, "")
+
+
+def amd_repair_evaluation_evidence(path: Path) -> CommandEvidence:
+    name = "AMD Gemma verifier-feedback repair audit"
+    command = ["make", "amd-notebook-repair-eval"]
+    result = amd_repair_evaluation_check(
         path,
         expected_model="google/gemma-4-E2B-it",
     )

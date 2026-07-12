@@ -7,9 +7,9 @@
     "water_exchange_fraction": 0.15
   },
   "benchmark": {
-    "endpoint_validation_latency_ms": 7257.197
+    "endpoint_validation_latency_ms": 810.916
   },
-  "checked_at": "2026-07-11T22:47:29.842184+00:00",
+  "checked_at": "2026-07-12T02:00:49.948298+00:00",
   "checks": [
     {
       "detail": "1 model(s)",
@@ -57,7 +57,7 @@
       "ok": true
     },
     {
-      "detail": "494.447 ms",
+      "detail": "320.237 ms",
       "name": "GPU tensor execution",
       "ok": true
     }
@@ -71,11 +71,18 @@
   "provider": "amd_hackathon_notebook",
   "runtime": {
     "amd_smi_version": "AMDSMI Tool: 26.2.2+e1a6bc5663 | AMDSMI Library version: 26.2.2 | ROCm version: 7.2.1 | amdgpu version: 6.16.13 | hsmp version: N/A",
+    "dependencies": {
+      "huggingface-hub": "1.23.0",
+      "tokenizers": "0.23.0rc0",
+      "torch": "2.10.0+git8514f05",
+      "transformers": "5.13.1",
+      "vllm": "0.20.2rc1.dev15+g321fa2d6d.rocm721"
+    },
     "gpu_available": true,
     "gpu_count": 1,
     "gpu_memory_gib": 47.98,
     "gpu_name": "",
-    "gpu_tensor_latency_ms": 494.447,
+    "gpu_tensor_latency_ms": 320.237,
     "gpu_tensor_test": true,
     "hardware": {
       "architecture": "gfx1100",
@@ -85,6 +92,11 @@
       "vram_mb": 49136,
       "vram_type": "GDDR6",
       "vram_vendor": "SAMSUNG"
+    },
+    "platform": {
+      "machine": "x86_64",
+      "release": "6.8.0-79-generic",
+      "system": "Linux"
     },
     "python_executable": "/workspace/proteinloop-amd/vllm-gemma4/bin/python",
     "python_version": "3.12.13",
