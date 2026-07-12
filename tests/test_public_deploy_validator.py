@@ -15,6 +15,10 @@ class PublicDeployValidatorTests(unittest.TestCase):
             '${PUBLIC_BIND_IP:-0.0.0.0}:${PUBLIC_PORT:-80}:4000',
             text,
         )
+        self.assertIn(
+            'AMD_REPAIR_EVALUATION_PATH: "/evidence/amd-gemma-repair-evaluation.json"',
+            text,
+        )
 
     def test_validate_profile_rejects_missing_file(self):
         checks = validate_profile(Path("/tmp/does-not-exist-proteinloop-compose.yml"))

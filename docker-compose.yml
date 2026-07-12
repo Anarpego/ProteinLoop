@@ -23,6 +23,7 @@ services:
       AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
       AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
       AMD_PRODUCT_EVALUATION_PATH: "/evidence/amd-gemma-product-evaluation.json"
+      AMD_REPAIR_EVALUATION_PATH: "/evidence/amd-gemma-repair-evaluation.json"
       SECRET_KEY_BASE: "proteinloop-docker-secret-key-base-000000000000000000000000000000000000000000000000000000000000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
