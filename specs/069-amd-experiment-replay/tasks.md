@@ -9,4 +9,4 @@
 - [x] Import the real AMD notebook artifacts.
 - [x] Update README and submission assets.
 - [x] Run full executable and visual verification.
-- [ ] Publish and deploy the completed replay.
+- [x] Publish and deploy the completed replay.

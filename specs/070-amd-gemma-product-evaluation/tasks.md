@@ -9,4 +9,4 @@
 - [x] Run the evaluation on the AMD pod.
 - [x] Import and validate the real artifact.
 - [x] Expose measured outcomes in the replay UI and submission assets.
-- [ ] Run full verification and publish.
+- [x] Run full verification and publish.
