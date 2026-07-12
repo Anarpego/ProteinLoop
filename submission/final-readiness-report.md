@@ -1,7 +1,7 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-12T00:39:31+00:00
-Commit: `ab0afc0`
+Generated: 2026-07-12T03:15:29+00:00
+Commit: `adb38e0`
 Working tree (source): `clean`
 Gemma evidence mode: `amd_notebook`
 
@@ -20,6 +20,7 @@ Gemma evidence mode: `amd_notebook`
 | AMD notebook Gemma evidence | `make amd-notebook-gemma-evidence` | 0 | PASS |
 | AMD Gemma verifier-guided search | `make amd-notebook-gemma-search` | 0 | PASS |
 | AMD Gemma five-emergency product audit | `make amd-notebook-product-eval` | 0 | PASS |
+| AMD Gemma verifier-feedback repair audit | `make amd-notebook-repair-eval` | 0 | PASS |
 | Public demo environment | `make public-env-check` | 0 | PASS |
 | Public live demo | `make live-demo-check` | 0 | PASS |
 | Final submission readiness | `make submission-ready-check` | 0 | PASS |
@@ -46,9 +47,9 @@ SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-.......................................................................................................................................................................................................
+............................................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 199 tests in 0.155s
+Ran 220 tests in 0.184s
 
 OK
 ```
@@ -176,7 +177,7 @@ evidence: submission/amd-notebook-gemma-evidence.json
 
 ```text
 evidence: submission/amd-gemma-policy-search.json
-[ok] 6 Gemma candidates; 3 safe; +69.3611 vs naive
+[ok] 6 Gemma candidates; 3 safe; +71.0920 vs naive
 ```
 
 ### AMD Gemma five-emergency product audit
@@ -186,13 +187,20 @@ evidence: submission/amd-gemma-product-evaluation.json
 [ok] 5 emergencies; 100% safe final plans; 103.1 kg protected
 ```
 
+### AMD Gemma verifier-feedback repair audit
+
+```text
+evidence: submission/amd-gemma-repair-evaluation.json
+[ok] 20 emergencies; 18 repair rescues; 100% model-safe
+```
+
 ### Public demo environment
 
 ```text
 python3 scripts/validate_public_env.py
 [ok] PHX_HOST - proteinloop.dev-vb.lat
-[ok] SECRET_KEY_BASE - 64 characters
-[ok] PUBLIC_PORT - default 80
+[ok] SECRET_KEY_BASE - 128 characters
+[ok] PUBLIC_PORT - 4011
 [ok] SIMULATOR_URL - http://simulator:8000
 public environment OK
 ```
@@ -217,15 +225,16 @@ SUBMISSION_GEMMA_MODE="amd_notebook" python3 scripts/validate_submission_readine
 [ok] lablab form matches draft - submission/lablab-form.json
 [ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
 [ok] AMD notebook Gemma evidence - google/gemma-4-E2B-it on ROCm 7.2.53211 / gfx1100
-[ok] AMD Gemma verifier-guided search - 6 Gemma candidates; 3 safe; +69.3611 vs naive
+[ok] AMD Gemma verifier-guided search - 6 Gemma candidates; 3 safe; +71.0920 vs naive
 [ok] AMD Gemma five-emergency product audit - 5 emergencies; 100% safe final plans; 103.1 kg protected
+[ok] AMD Gemma verifier-feedback repair audit - 20 emergencies; 18 repair rescues; 100% model-safe
 [ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
 [ok] application URL - https://proteinloop.dev-vb.lat
 [ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - ab0afc0508c02fb8f7313c5e3bc09734700a9f6e
+[ok] local git commit - adb38e0a74b5611956dd6f91135f0b05181b57e8
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK
