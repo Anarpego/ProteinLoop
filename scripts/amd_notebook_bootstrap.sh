@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPOSITORY="${PROTEINLOOP_REPOSITORY:-https://github.com/Anarpego/ProteinLoop.git}"
+REPO_DIR="${PROTEINLOOP_NOTEBOOK_REPO:-/workspace/ProteinLoop}"
+
+if [[ -d "${REPO_DIR}/.git" ]]; then
+  echo "Updating ${REPO_DIR}"
+  if ! git -C "${REPO_DIR}" pull --ff-only origin main; then
+    echo "Verified Git TLS failed in this notebook; retrying this pull only without verification" >&2
+    GIT_SSL_NO_VERIFY=true git -C "${REPO_DIR}" pull --ff-only origin main
+  fi
+else
+  echo "Cloning ProteinLoop into ${REPO_DIR}"
+  if ! git clone --branch main --single-branch "${REPOSITORY}" "${REPO_DIR}"; then
+    echo "Verified Git TLS failed in this notebook; retrying this clone only without verification" >&2
+    GIT_SSL_NO_VERIFY=true git clone --branch main --single-branch "${REPOSITORY}" "${REPO_DIR}"
+  fi
+fi
+
+cd "${REPO_DIR}"
+./scripts/amd_notebook_setup_vllm.sh
+./scripts/amd_notebook_run_all.sh

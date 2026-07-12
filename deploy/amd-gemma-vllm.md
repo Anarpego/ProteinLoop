@@ -9,6 +9,8 @@ remote credentials; this deployment keeps Gemma behind the existing OpenAI-compa
 ## Current References
 
 - vLLM Gemma 4 recipe: `https://docs.vllm.ai/projects/recipes/en/stable/Google/Gemma4.html`
+- Current vLLM AMD GPU install guide: `https://docs.vllm.ai/en/latest/getting_started/installation/gpu/`
+- Hugging Face snapshot download reference: `https://huggingface.co/docs/huggingface_hub/main/package_reference/file_download`
 - AMD ROCm vLLM inference docs: `https://rocm.docs.amd.com/en/latest/how-to/rocm-for-ai/inference/benchmark-docker/vllm.html`
 - AMD ROCm Gemma/vLLM blog: `https://rocm.blogs.amd.com/artificial-intelligence/deployingGemma-vllm/README.html`
 
@@ -61,50 +63,57 @@ If Docker is available:
 docker compose --env-file .env -f docker-compose.gemma-rocm.yml --profile amd-gemma up -d
 ```
 
-## Act-II Prepared Notebook Image
+## Act-II Notebook: Automated Path
 
-The assigned pod image already provides ROCm, PyTorch, and vLLM in `/opt/venv`; its terminal's
-`/usr/bin/python` is only the base environment. Verify the prepared kernel before installing
-anything:
+The assigned pod image exposes the AMD GPU and ROCm stack but its base `/usr/bin/python` is not the
+prepared model-serving environment. Download and run the committed bootstrap from a terminal:
 
 ```sh
-/opt/venv/bin/python3.10 -c 'import torch,vllm; print(torch.__version__, torch.version.hip, vllm.__version__, torch.cuda.is_available())'
+curl -kfsSL \
+  https://raw.githubusercontent.com/Anarpego/ProteinLoop/main/scripts/amd_notebook_bootstrap.sh \
+  -o /workspace/proteinloop-bootstrap.sh
+bash /workspace/proteinloop-bootstrap.sh
 ```
 
-Keep model weights and logs on the mounted workspace volume:
+The script first reuses a healthy endpoint. On a fresh pod it creates a Python 3.12 environment with
+`uv`, installs the current vLLM ROCm 7.2.1 nightly from the official wheel index, downloads the
+Gemma snapshot into `/workspace/proteinloop-amd/hf-cache`, unsets the download token before starting
+vLLM from the local snapshot, and waits for compilation. It does not use Docker because the assigned
+pod does not expose nested Docker.
 
-```sh
-source /opt/venv/bin/activate
-mkdir -p /workspace/proteinloop-amd/{hf-cache,logs,evidence}
-export HF_HOME=/workspace/proteinloop-amd/hf-cache
-read -s -p "Hugging Face token: " HF_TOKEN
-export HF_TOKEN
-echo
-nohup vllm serve google/gemma-4-E2B-it \
-  --host 127.0.0.1 \
-  --port 8001 \
-  --max-model-len 8192 \
-  --gpu-memory-utilization 0.80 \
-  --limit-mm-per-prompt image=0,audio=0 \
-  > /workspace/proteinloop-amd/logs/vllm.log 2>&1 &
+The complete experiment then runs:
+
+1. AMD runtime, dependency, tensor, endpoint, and structured-action proof.
+2. Six independent Gemma recovery plans plus an unsafe verifier control.
+3. Five-emergency product evaluation with explicit deterministic fallback.
+4. Twenty deterministic emergency variants with up to three verifier-feedback repairs, independent
+   best-of-six comparison, and separate model-only and final-system rates.
+5. Exact `pip freeze`, credential scan, SHA-256 manifest, and deterministic return ZIP.
+
+The default output remains inside the Jupyter workspace:
+
+```text
+/workspace/proteinloop-amd-roundtrip.zip
 ```
 
-After the server reports ready, clone ProteinLoop and generate the credential-free artifact:
+Temporary BashUpload is explicit rather than automatic:
 
 ```sh
-git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
 cd /workspace/ProteinLoop
-make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
-make amd-notebook-gemma-search GEMMA_MODEL=google/gemma-4-E2B-it
+BASHUPLOAD_EXPIRATION_SECONDS=3600 ./scripts/amd_notebook_upload_bundle.sh
 ```
 
-Download `submission/amd-notebook-gemma-evidence.json` and
-`submission/amd-gemma-policy-search.json` before the temporary allocation ends. The runtime
-collector records only non-secret facts and the bounded model action; it strips hardware serial
-identifiers by selecting an explicit safe field set from AMD SMI output. The policy-search artifact
-records six Gemma proposals, deterministic verifier outcomes, simulator rewards, the winning plan,
-and reward delta against a naive baseline. It explicitly records `weight_updates: false`; do not
-describe this inference-time search as RL fine-tuning.
+On the receiving machine, never extract or copy the ZIP manually. Validate and import atomically:
+
+```sh
+python3 scripts/import_amd_notebook_bundle.py /path/to/proteinloop-amd-roundtrip.zip --sha256 HASH_FROM_NOTEBOOK --dry-run
+python3 scripts/import_amd_notebook_bundle.py /path/to/proteinloop-amd-roundtrip.zip --sha256 HASH_FROM_NOTEBOOK
+```
+
+The importer rejects path traversal, checksum mismatch, missing scenarios, unsafe final plans,
+model/provider mismatches, credentials, hardware serials, and private-reasoning fields before it
+replaces any tracked evidence. The method remains inference-time search and repair with
+`weight_updates: false`; do not describe it as RL fine-tuning.
 
 Validate the OpenAI-compatible server:
 

@@ -12,6 +12,7 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,6 +29,7 @@ REMOTE_GEMMA_EVIDENCE = SUBMISSION / "gemma-evidence.json"
 AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
 AMD_GEMMA_POLICY_SEARCH_EVIDENCE = SUBMISSION / "amd-gemma-policy-search.json"
 AMD_GEMMA_PRODUCT_EVALUATION = SUBMISSION / "amd-gemma-product-evaluation.json"
+AMD_GEMMA_REPAIR_EVALUATION = SUBMISSION / "amd-gemma-repair-evaluation.json"
 
 BASE_REQUIRED_ARTIFACTS = [
     ROOT / "README.md",
@@ -132,6 +134,13 @@ def run_checks(
                 expected_model=expected_model,
             )
         )
+        if AMD_GEMMA_REPAIR_EVALUATION.exists():
+            checks.append(
+                amd_repair_evaluation_check(
+                    AMD_GEMMA_REPAIR_EVALUATION,
+                    expected_model=expected_model,
+                )
+            )
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
     repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
@@ -486,6 +495,155 @@ def product_evaluation_evidence_check(path: Path, expected_model: str) -> Check:
     )
 
 
+def amd_repair_evaluation_check(path: Path, expected_model: str) -> Check:
+    name = "AMD Gemma verifier-feedback repair audit"
+    evidence, error = load_json_object(path)
+    if error:
+        return Check(name, False, error)
+
+    identity_error = amd_evidence_identity_error(evidence, expected_model)
+    if identity_error:
+        return Check(name, False, identity_error)
+
+    sensitive_error = sensitive_evidence_error(evidence)
+    if sensitive_error:
+        return Check(name, False, sensitive_error)
+
+    checks_error = boolean_checks_error(evidence.get("checks"))
+    if checks_error:
+        return Check(name, False, checks_error)
+
+    summary = evidence.get("summary")
+    scenarios = evidence.get("scenarios")
+    if not isinstance(summary, dict) or not isinstance(scenarios, list):
+        return Check(name, False, "missing repair summary or scenarios")
+
+    scenario_count = int(evidence.get("scenario_count") or 0)
+    variants_per_base = int(evidence.get("variants_per_base_scenario") or 0)
+    independent_candidates = int(evidence.get("independent_candidates_per_scenario") or 0)
+    max_repairs = int(evidence.get("max_repairs") or 0)
+    first_rate = float(summary.get("first_answer_safe_rate") or 0.0)
+    model_rate = float(summary.get("combined_model_safe_rate") or 0.0)
+    final_rate = float(summary.get("final_system_safe_rate") or 0.0)
+    unsafe_rate = float(summary.get("unsafe_control_rejection_rate") or 0.0)
+    repair_rescues = int(summary.get("repair_rescue_count") or 0)
+    fallback_count = summary.get("deterministic_fallback_count")
+    request_count = int(summary.get("model_request_count") or 0)
+    token_usage = summary.get("token_usage")
+
+    if scenario_count != 20 or len(scenarios) != 20:
+        return Check(name, False, "exactly 20 complete emergency scenarios are required")
+    if int(summary.get("scenario_count") or 0) != scenario_count:
+        return Check(name, False, "summary scenario count does not match the evidence")
+    if variants_per_base != 4:
+        return Check(name, False, "the final audit must include four variants per base emergency")
+    if independent_candidates != 6:
+        return Check(name, False, "the final audit must include an independent best-of-six path")
+    if max_repairs != 3:
+        return Check(name, False, "final repair audit must allow exactly three bounded revisions")
+    names = [str(item.get("name", "")) for item in scenarios if isinstance(item, dict)]
+    if (
+        len(names) != scenario_count
+        or any(not value for value in names)
+        or len(set(names)) != scenario_count
+    ):
+        return Check(name, False, "scenario names are missing or duplicated")
+
+    for item in scenarios:
+        trace = item.get("repair_trace") if isinstance(item, dict) else None
+        final_selection = item.get("final_selection") if isinstance(item, dict) else None
+        requests = item.get("model_requests") if isinstance(item, dict) else None
+        if not isinstance(trace, dict) or not isinstance(requests, list):
+            return Check(name, False, "scenario repair trace or request evidence is incomplete")
+        repair_count = int(trace.get("repair_count") or 0)
+        attempts = trace.get("attempts")
+        if (
+            trace.get("max_repairs") != max_repairs
+            or trace.get("weight_updates") is not False
+            or repair_count > max_repairs
+            or not isinstance(attempts, list)
+            or len(attempts) != repair_count + 1
+        ):
+            return Check(name, False, "scenario repair bounds or no-weight-update proof is invalid")
+        if (
+            item.get("final_system_safe") is not True
+            or not isinstance(final_selection, dict)
+            or final_selection.get("accepted") is not True
+            or not isinstance(final_selection.get("final_state"), dict)
+            or final_selection["final_state"].get("collapsed") is True
+        ):
+            return Check(name, False, "a final plan is missing, rejected, or collapses the loop")
+        if item.get("unsafe_control_rejected") is not True:
+            return Check(name, False, "an unsafe verifier control was not rejected")
+        best_of_six_requests = sum(
+            1
+            for request in requests
+            if isinstance(request, dict)
+            and request.get("phase") in {"initial", "best_of_n"}
+        )
+        if best_of_six_requests < independent_candidates:
+            return Check(name, False, "a scenario has incomplete best-of-six model requests")
+
+    rate_fields = {
+        "first_answer_safe_rate": "first_answer_safe",
+        "repair_path_safe_rate": "repair_path_safe",
+        "best_of_n_safe_rate": "best_of_n_safe",
+        "combined_model_safe_rate": "combined_model_safe",
+        "final_system_safe_rate": "final_system_safe",
+        "unsafe_control_rejection_rate": "unsafe_control_rejected",
+    }
+    for summary_key, scenario_key in rate_fields.items():
+        expected_rate = round(
+            sum(1 for item in scenarios if item.get(scenario_key) is True) / scenario_count,
+            4,
+        )
+        if float(summary.get(summary_key) or 0.0) != expected_rate:
+            return Check(name, False, f"summary metric {summary_key} is inconsistent")
+
+    expected_rescues = sum(
+        1 for item in scenarios if item.get("repair_rescued_first_rejection") is True
+    )
+    expected_fallbacks = sum(1 for item in scenarios if item.get("fallback_used") is True)
+    if repair_rescues != expected_rescues:
+        return Check(name, False, "summary repair rescue count is inconsistent")
+    if fallback_count != expected_fallbacks:
+        return Check(name, False, "summary deterministic fallback count is inconsistent")
+
+    requests = [
+        request
+        for item in scenarios
+        for request in item.get("model_requests") or []
+        if isinstance(request, dict)
+    ]
+    if request_count != len(requests):
+        return Check(name, False, "summary model request count is inconsistent")
+    if final_rate != 1.0 or unsafe_rate != 1.0:
+        return Check(name, False, "final safety and unsafe-control rejection must both be 100%")
+    if model_rate < first_rate:
+        return Check(name, False, "combined model path is worse than first-answer safety")
+    if not isinstance(fallback_count, int) or fallback_count < 0:
+        return Check(name, False, "deterministic fallback frequency is not disclosed")
+    if request_count < 20:
+        return Check(name, False, "model request evidence is incomplete")
+    if not isinstance(token_usage, dict) or int(token_usage.get("total_tokens") or 0) <= 0:
+        return Check(name, False, "observed API token usage is missing")
+    observed_tokens = {
+        key: sum(int(request.get(key) or 0) for request in requests)
+        for key in ("prompt_tokens", "completion_tokens", "total_tokens")
+    }
+    if any(int(token_usage.get(key) or 0) != value for key, value in observed_tokens.items()):
+        return Check(name, False, "summary API token usage is inconsistent")
+    latency = summary.get("request_latency_ms")
+    if not isinstance(latency, dict) or int(latency.get("sample_count") or 0) != request_count:
+        return Check(name, False, "request latency sample count is inconsistent")
+
+    return Check(
+        name,
+        True,
+        f"20 emergencies; {repair_rescues} repair rescues; {model_rate * 100:.0f}% model-safe",
+    )
+
+
 def load_json_object(path: Path) -> tuple[dict, str | None]:
     if not path.exists():
         return {}, f"missing {display_path(path)}"
@@ -514,6 +672,46 @@ def boolean_checks_error(checks: object) -> str | None:
     if failed:
         return f"failed checks: {', '.join(failed)}"
     return None
+
+
+def sensitive_evidence_error(value: Any) -> str | None:
+    sensitive_keys = {
+        "authorization",
+        "api_key",
+        "gemma_api_key",
+        "hf_token",
+        "access_token",
+        "password",
+        "secret",
+        "serial",
+        "serial_number",
+        "uuid",
+        "chain_of_thought",
+        "reasoning",
+        "thinking",
+    }
+
+    def visit(item: Any) -> str | None:
+        if isinstance(item, dict):
+            for key, child in item.items():
+                normalized = str(key).strip().lower()
+                if normalized in sensitive_keys and child not in (None, "", [], {}):
+                    return f"credential, serial, or private-reasoning field is present: {key}"
+                nested = visit(child)
+                if nested:
+                    return nested
+        elif isinstance(item, list):
+            for child in item:
+                nested = visit(child)
+                if nested:
+                    return nested
+        elif isinstance(item, str):
+            lowered = item.lower()
+            if "bearer hf_" in lowered or re.search(r"\bhf_[a-z0-9]{12,}\b", lowered):
+                return "credential material is present in evidence"
+        return None
+
+    return visit(value)
 
 
 def model_is_advertised(model: str, model_ids: list[str]) -> bool:

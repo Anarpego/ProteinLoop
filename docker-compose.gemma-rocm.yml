@@ -33,4 +33,4 @@ services:
       - --gpu-memory-utilization
       - ${VLLM_GPU_MEMORY_UTILIZATION:-0.90}
       - --limit-mm-per-prompt
-      - ${VLLM_MM_LIMITS:-image=0,audio=0}
+      - '{"image":0,"audio":0}'

@@ -26,6 +26,7 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
 | AMD-hosted Gemma 4 | Gemma 4 E2B ran through vLLM on the assigned Act-II AMD notebook with ROCm, generated six recovery candidates, and participated in a five-emergency product audit. | [AMD runtime](submission/amd-notebook-gemma-evidence.json) · [Verifier-guided search](submission/amd-gemma-policy-search.json) · [Product evaluation](submission/amd-gemma-product-evaluation.json) |
+| AMD verifier repair rerun | A committed notebook and one-command pod workflow add structured reject-and-revise feedback plus a 20-emergency comparison. Results remain pending until a fresh AMD artifact passes import validation. | [Notebook](notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb) · [Spec](specs/071-amd-gemma-verifier-repair/spec.md) |
 | Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
 | Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
@@ -338,13 +339,48 @@ For the Act-II AMD notebook, keep the vLLM endpoint private on pod loopback and 
 ROCm, vLLM, tensor-execution, latency, model, and structured-action proof together:
 
 ```sh
-git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
-cd /workspace/ProteinLoop
-export AMD_NOTEBOOK_PYTHON=/workspace/proteinloop-amd/vllm-gemma4/bin/python
-make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
-make amd-notebook-gemma-search GEMMA_MODEL=google/gemma-4-E2B-it
-make amd-notebook-product-eval GEMMA_MODEL=google/gemma-4-E2B-it
+curl -kfsSL \
+  https://raw.githubusercontent.com/Anarpego/ProteinLoop/main/scripts/amd_notebook_bootstrap.sh \
+  -o /workspace/proteinloop-bootstrap.sh
+bash /workspace/proteinloop-bootstrap.sh
 ```
+
+The bootstrap updates or clones `/workspace/ProteinLoop`, reuses a healthy private Gemma endpoint,
+and otherwise installs the current official ROCm 7.2.1 vLLM nightly with `uv`, downloads the gated
+model without logging the Hugging Face token, and waits through the first ROCm compilation. The
+official vLLM documentation currently requires Python 3.12 for the ROCm 7.2.1 nightly wheel and
+publishes it at `https://wheels.vllm.ai/rocm/nightly/rocm721`; the setup script follows that path.
+
+The run-all phase executes the runtime proof, six-plan search, five-emergency comparison, and a new
+20-emergency verifier-feedback audit. A rejected action is returned to Gemma as structured state,
+hard limits, violations, and warnings for at most three revisions. Every revision is parsed and
+verified from scratch. The audit separately reports first-answer, repaired-model, best-of-six,
+combined-model, and final-system safety, plus fallback frequency, reward, biomass, latency, and
+observed API token usage. It remains inference-time repair, not training or a weight update.
+
+The preferred return path is the Jupyter file browser:
+
+```text
+/workspace/proteinloop-amd-roundtrip.zip
+```
+
+For a temporary one-hour BashUpload link, opt in explicitly; external upload is off by default:
+
+```sh
+cd /workspace/ProteinLoop
+./scripts/amd_notebook_upload_bundle.sh
+```
+
+After downloading the ZIP locally, validate checksums, credentials, model identity, all safety
+checks, and all 20 scenarios before replacing any current artifact:
+
+```sh
+python3 scripts/import_amd_notebook_bundle.py ~/Downloads/proteinloop-amd-roundtrip.zip --sha256 HASH_FROM_NOTEBOOK --dry-run
+python3 scripts/import_amd_notebook_bundle.py ~/Downloads/proteinloop-amd-roundtrip.zip --sha256 HASH_FROM_NOTEBOOK
+```
+
+The same workflow is available as
+[`notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb`](notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb).
 
 The captured run used Python 3.12, PyTorch `2.10.0+git8514f05`, ROCm `7.2.53211`, and vLLM
 `0.20.2rc1.dev15+g321fa2d6d` on one `gfx1100` AMD GPU with 47.98 GiB memory. The first target writes
@@ -698,6 +734,9 @@ Submission source artifacts live in `submission/`:
 - `nrf9151-telemetry-bridge.json` / `nrf9151-telemetry-bridge.md`: sample two-board JSONL bridge evidence for simulator and dashboard events.
 - `docker-smoke-evidence.json`: generated Docker Compose smoke evidence for simulator, dashboard, producer route, and recovery endpoints.
 - `gemma-evidence.json`: optional remote-profile artifact generated after `make gemma-check` succeeds against a non-loopback OpenAI-compatible endpoint.
+- `amd-gemma-repair-evaluation.json`: optional real AMD artifact for the 20-emergency verifier-feedback rerun; it is bundled only after strict validation and import.
+- `amd-notebook-freeze.txt` / `amd-notebook-roundtrip-manifest.json`: optional exact package freeze and checksum manifest returned by the AMD notebook.
+- `../notebooks/ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb`: runnable AMD evidence notebook using the same committed shell and Python workflow.
 - `proteinloop-lablab-upload.zip`: generated bundle containing the upload packet, local and public-host CPU Gemma proof, lablab form JSON, final readiness report, Docker smoke evidence, and remote Gemma evidence when it exists.
 - `bundle-manifest.json`: file sizes and SHA-256 checksums for the bundle contents.
 - `lablab-form.json`: structured lablab form fields and artifact paths.
@@ -878,6 +917,8 @@ manual submission handling:
 1. Rehearse the judge path on `https://proteinloop.dev-vb.lat` and record the final live walkthrough.
 2. Upload the cover, deck, video, and `submission/proteinloop-lablab-upload.zip` to lablab.
 3. Paste the prepared fields from `submission/lablab-form.json`, verify the public links, and submit.
+4. For the stronger AMD partner-prize evidence, run the committed verifier-feedback notebook and
+   import its validated roundtrip ZIP before rebuilding the final upload bundle.
 
 The Act-II AMD notebook evidence is imported and is the submitted remote-compute proof. Use
 `SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize` for the AMD-hosted Gemma profile.

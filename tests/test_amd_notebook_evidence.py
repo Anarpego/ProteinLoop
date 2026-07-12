@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.capture_amd_notebook_evidence import (
+    collect_dependency_versions,
     parse_amd_smi_static,
     runtime_checks,
 )
@@ -54,6 +55,21 @@ class AmdNotebookEvidenceTests(unittest.TestCase):
         failed = runtime_checks({**passing, "rocm_version": None, "gpu_tensor_test": False})
         self.assertTrue(any(not check.ok and check.name == "ROCm runtime" for check in failed))
         self.assertTrue(any(not check.ok and check.name == "GPU tensor execution" for check in failed))
+
+    def test_dependency_versions_use_safe_package_names_only(self):
+        versions = {
+            "torch": "2.10.0+rocm",
+            "vllm": "0.20.2rc1",
+            "transformers": "5.13.1",
+            "huggingface-hub": "1.23.0",
+            "tokenizers": "0.23.0rc0",
+        }
+
+        captured = collect_dependency_versions(lambda name: versions[name])
+
+        self.assertEqual(captured, versions)
+        self.assertNotIn("token", captured)
+        self.assertNotIn("authorization", captured)
 
 
 if __name__ == "__main__":

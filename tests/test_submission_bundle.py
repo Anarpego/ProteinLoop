@@ -20,6 +20,10 @@ class SubmissionBundleTests(unittest.TestCase):
         self.assertIn("cpu-gemma-deployment-evidence.json", names)
         self.assertIn("amd-notebook-gemma-evidence.json", names)
         self.assertIn("amd-gemma-policy-search.json", names)
+        self.assertIn("amd-gemma-repair-evaluation.json", names)
+        self.assertIn("amd-notebook-freeze.txt", names)
+        self.assertIn("amd-notebook-roundtrip-manifest.json", names)
+        self.assertIn("ProteinLoop_AMD_Gemma_Verifier_Repair.ipynb", names)
 
     def test_build_manifest_includes_size_and_checksum(self):
         with tempfile.TemporaryDirectory() as temp_dir:

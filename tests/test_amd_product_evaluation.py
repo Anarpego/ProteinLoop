@@ -103,6 +103,44 @@ class AmdProductEvaluationTests(unittest.TestCase):
         self.assertEqual(recovered["safe_count"], 1)
         self.assertIsNotNone(recovered["reward_delta_vs_naive"])
 
+    def test_uses_fallback_when_selected_model_action_collapses_the_loop(self):
+        state = EcosystemState(
+            ammonia_mg_l=3.4,
+            dissolved_oxygen_mg_l=3.6,
+            fish_biomass_kg=16.0,
+            prawn_biomass_kg=4.0,
+            duckweed_kg=6.0,
+            stress_days=2,
+        )
+        collapsed = {
+            "index": 1,
+            "source": "amd_hosted_gemma",
+            "strategy": "bounded but biologically insufficient",
+            "accepted": True,
+            "reward": -400.0,
+            "violations": [],
+            "action": {"note": "no aeration"},
+            "final_state": {"collapsed": True},
+        }
+        search = {
+            "baseline": {"accepted": True, "reward": -450.0},
+            "selected": collapsed,
+            "candidates": [collapsed],
+            "candidate_count": 1,
+            "safe_count": 1,
+            "rejected_count": 0,
+            "parse_error_count": 0,
+            "weight_updates": False,
+            "reward_delta_vs_naive": 50.0,
+        }
+
+        recovered = ensure_safe_selection(state, search)
+
+        self.assertTrue(recovered["fallback_used"])
+        self.assertEqual(recovered["selected"]["source"], "deterministic_fallback")
+        self.assertFalse(recovered["selected"]["final_state"]["collapsed"])
+        self.assertFalse(recovered["model_safe_plan_available"])
+
 
 def search_result(first_accepted, first_reward, selected_reward, baseline):
     first = {

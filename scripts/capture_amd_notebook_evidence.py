@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.metadata
 import json
 import os
 import platform
@@ -10,6 +11,7 @@ import re
 import subprocess
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -127,8 +129,27 @@ def collect_runtime_evidence() -> dict[str, Any]:
         "gpu_tensor_test": tensor_ok,
         "gpu_tensor_latency_ms": tensor_latency_ms,
         "amd_smi_version": safe_version_line(version_output),
+        "dependencies": collect_dependency_versions(),
+        "platform": {
+            "system": platform.system(),
+            "release": platform.release(),
+            "machine": platform.machine(),
+        },
         "hardware": hardware,
     }
+
+
+def collect_dependency_versions(
+    version_getter: Callable[[str], str] = importlib.metadata.version,
+) -> dict[str, str]:
+    packages = ("torch", "vllm", "transformers", "huggingface-hub", "tokenizers")
+    versions: dict[str, str] = {}
+    for package in packages:
+        try:
+            versions[package] = str(version_getter(package))
+        except importlib.metadata.PackageNotFoundError:
+            versions[package] = "not-installed"
+    return versions
 
 
 def run_command(command: list[str]) -> str:

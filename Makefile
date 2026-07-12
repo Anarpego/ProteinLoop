@@ -1,4 +1,4 @@
-.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check visual-evidence-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check amd-notebook-gemma-evidence amd-notebook-gemma-search amd-notebook-product-eval local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
+.PHONY: test demo serve web-deps web-assets web-test web-serve submission-render submission-check visual-evidence-check submission-bundle submission-form submission-finalize demo-rehearsal mesh-evidence sagents-evidence horde-up horde-evidence nrf9151-plan nrf9151-bridge nrf9151-live-evidence readiness-report submission-ready-check docker-smoke ci-check live-demo-check credit-check gemma-check amd-notebook-gemma-evidence amd-notebook-gemma-search amd-notebook-product-eval amd-notebook-repair-eval amd-notebook-evidence-bundle amd-notebook-run-all amd-notebook-upload local-gemma-install local-gemma-start local-gemma-status local-gemma-check local-gemma-submission-evidence local-gemma-stop local-gemma-command public-env-check public-deploy-check publish-repo set-demo-url
 
 LOCAL_GEMMA_HOST ?= 127.0.0.1
 LOCAL_GEMMA_PORT ?= 8001
@@ -114,6 +114,18 @@ amd-notebook-gemma-search:
 
 amd-notebook-product-eval:
 	PYTHONPATH=sim GEMMA_ENDPOINT="$(AMD_NOTEBOOK_GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" $(AMD_NOTEBOOK_PYTHON) scripts/run_amd_gemma_product_evaluation.py
+
+amd-notebook-repair-eval:
+	PYTHONPATH=sim GEMMA_ENDPOINT="$(AMD_NOTEBOOK_GEMMA_ENDPOINT)" GEMMA_MODEL="$(GEMMA_MODEL)" GEMMA_API_KEY="$(GEMMA_API_KEY)" $(AMD_NOTEBOOK_PYTHON) scripts/run_amd_gemma_repair_evaluation.py
+
+amd-notebook-evidence-bundle:
+	$(AMD_NOTEBOOK_PYTHON) scripts/build_amd_notebook_bundle.py
+
+amd-notebook-run-all:
+	./scripts/amd_notebook_run_all.sh
+
+amd-notebook-upload:
+	./scripts/amd_notebook_upload_bundle.sh
 
 local-gemma-install:
 	python3 scripts/local_gemma.py --host "$(LOCAL_GEMMA_HOST)" --port "$(LOCAL_GEMMA_PORT)" install

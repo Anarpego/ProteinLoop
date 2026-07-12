@@ -16,7 +16,7 @@ def ensure_safe_selection(
     search: dict[str, Any],
 ) -> dict[str, Any]:
     selected = search.get("selected")
-    if isinstance(selected, dict) and selected.get("accepted") is True:
+    if selection_preserves_loop(selected):
         return {
             **search,
             "fallback_used": False,
@@ -32,7 +32,7 @@ def ensure_safe_selection(
             "strategy": "verified emergency fallback",
         }
     )
-    fallback_accepted = fallback.get("accepted") is True
+    fallback_accepted = selection_preserves_loop(fallback)
     baseline_reward = numeric_reward(search.get("baseline"))
     fallback_reward = numeric_reward(fallback) if fallback_accepted else None
 
@@ -46,6 +46,15 @@ def ensure_safe_selection(
         "fallback_used": fallback_accepted,
         "model_safe_plan_available": False,
     }
+
+
+def selection_preserves_loop(value: Any) -> bool:
+    return bool(
+        isinstance(value, dict)
+        and value.get("accepted") is True
+        and isinstance(value.get("final_state"), dict)
+        and value["final_state"].get("collapsed") is not True
+    )
 
 
 def build_scenario_record(
