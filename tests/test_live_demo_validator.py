@@ -72,8 +72,10 @@ class LiveDemoValidatorTests(unittest.TestCase):
         self.assertIn("Create safe recovery plan", OPERATOR_NEEDLES)
         self.assertIn("Inject demo water emergency", OPERATOR_NEEDLES)
         self.assertIn("Run one-click verifier proof", OPERATOR_NEEDLES)
-        self.assertIn("AMD ROCm + vLLM profile", OPERATOR_NEEDLES)
-        self.assertIn("Portable path · current demo is local", OPERATOR_NEEDLES)
+        self.assertIn("Captured AMD experiment", OPERATOR_NEEDLES)
+        self.assertIn("google/gemma-4-E2B-it", OPERATOR_NEEDLES)
+        self.assertIn("Five-emergency product audit", OPERATOR_NEEDLES)
+        self.assertIn("Public app remains on CPU fallback", OPERATOR_NEEDLES)
         self.assertIn("Open tank full screen", PRODUCER_NEEDLES)
 
 
