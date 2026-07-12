@@ -71,6 +71,11 @@ class AmdNotebookWorkflowTests(unittest.TestCase):
         self.assertIn("torch.version.hip", setup)
         self.assertIn("torch.cuda.is_available", setup)
 
+        bootstrap = scripts[0].read_text(encoding="utf-8")
+        self.assertIn("PROTEINLOOP_EXPECTED_COMMIT", bootstrap)
+        self.assertIn("git -C", bootstrap)
+        self.assertIn("rev-parse HEAD", bootstrap)
+
     def test_makefile_exposes_repair_and_roundtrip_targets(self):
         makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
 
