@@ -9,5 +9,5 @@
 - [x] Add evidence bundle, checksum, Jupyter download, and opt-in BashUpload flow.
 - [x] Update README, Make targets, and submission bundle integration.
 - [x] Run full Python, Phoenix, shell, notebook, and artifact verification.
-- [ ] Publish the workflow and run it on the AMD notebook.
-- [ ] Import the real artifact and update judge-visible product claims.
+- [x] Publish the workflow and run it on the AMD notebook.
+- [x] Import the real artifact and update judge-visible product claims.
