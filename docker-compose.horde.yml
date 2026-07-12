@@ -11,6 +11,7 @@ services:
       NRF9151_EVIDENCE_PATH: "/evidence/nrf9151-live-evidence.json"
       AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
       AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
+      AMD_PRODUCT_EVALUATION_PATH: "/evidence/amd-gemma-product-evaluation.json"
     volumes:
       - proteinloop_sagents_state:/app/priv/sagents-state
       - ./submission:/evidence:ro
@@ -32,6 +33,7 @@ services:
       NRF9151_EVIDENCE_PATH: "/evidence/nrf9151-live-evidence.json"
       AMD_NOTEBOOK_EVIDENCE_PATH: "/evidence/amd-notebook-gemma-evidence.json"
       AMD_POLICY_SEARCH_EVIDENCE_PATH: "/evidence/amd-gemma-policy-search.json"
+      AMD_PRODUCT_EVALUATION_PATH: "/evidence/amd-gemma-product-evaluation.json"
       SECRET_KEY_BASE: "proteinloop-horde-peer-secret-key-base-000000000000000000000000000000000000000000000000000000000000"
       ERL_AFLAGS: "-sname proteinloop_peer@peer -setcookie proteinloop_local_horde"
       SAGENTS_DISTRIBUTION: "horde"

@@ -3,6 +3,24 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
 
   alias ProteinLoop.AMDExperimentEvidence
 
+  @submission Path.expand("../../../submission", __DIR__)
+
+  test "loads the imported AMD notebook submission artifacts" do
+    snapshot =
+      AMDExperimentEvidence.load(
+        Path.join(@submission, "amd-notebook-gemma-evidence.json"),
+        Path.join(@submission, "amd-gemma-policy-search.json"),
+        Path.join(@submission, "amd-gemma-product-evaluation.json")
+      )
+
+    assert snapshot.available?, "AMD evidence unavailable: #{inspect(snapshot.error)}"
+    assert snapshot.model == "google/gemma-4-E2B-it"
+    assert snapshot.search.reward_delta == 69.3611
+    assert snapshot.search.selected.final_state["ammonia_mg_l"] == 0.85
+    assert snapshot.product_evaluation.safe_rate_lift == 0.8
+    assert snapshot.product_evaluation.protected_biomass_kg == 103.1
+  end
+
   test "loads matching AMD runtime and verifier-search evidence" do
     {runtime_path, search_path} = write_evidence_pair()
 
@@ -23,6 +41,24 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
     assert snapshot.search.selected.strategy == "oxygen-first emergency recovery"
     assert snapshot.search.selected.action["aeration_hours"] == 18.0
     assert Enum.any?(snapshot.search.candidates, &(&1.source == "control_unsafe"))
+  end
+
+  test "loads and validates the multi-scenario AMD product evaluation" do
+    {runtime_path, search_path} = write_evidence_pair()
+    product_path = temp_path("product")
+    File.write!(product_path, Jason.encode!(product_evidence()))
+    on_exit(fn -> File.rm(product_path) end)
+
+    snapshot = AMDExperimentEvidence.load(runtime_path, search_path, product_path)
+
+    assert snapshot.available?
+    assert snapshot.product_evaluation.scenario_count == 5
+    assert snapshot.product_evaluation.first_safe_rate == 0.2
+    assert snapshot.product_evaluation.selected_safe_rate == 1.0
+    assert snapshot.product_evaluation.rescue_count == 4
+    assert snapshot.product_evaluation.fallback_count == 3
+    assert snapshot.product_evaluation.protected_biomass_kg == 103.1
+    assert snapshot.product_evaluation.latency_p50_ms == 654.344
   end
 
   test "rejects mismatched provider or model claims" do
@@ -148,9 +184,52 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
         "rejected_count" => 4,
         "parse_error_count" => 0,
         "reward_delta_vs_naive" => 69.3611,
+        "initial_state" => %{
+          "ammonia_mg_l" => 2.4,
+          "dissolved_oxygen_mg_l" => 4.8
+        },
         "baseline" => %{"accepted" => true, "reward" => 113.0589},
         "selected" => selected,
         "candidates" => [unsafe_candidate(), selected, safe_candidate(2, "balanced", 160.0)]
+      }
+    }
+  end
+
+  defp product_evidence do
+    %{
+      "schema_version" => 1,
+      "checked_at" => "2026-07-11T23:10:00Z",
+      "provider" => "amd_hackathon_notebook",
+      "model" => "google/gemma-4-E2B-it",
+      "method" => "multi_scenario_verifier_guided_best_of_n",
+      "claim" => "product outcome evaluation; inference only; no model weight updates",
+      "scenario_count" => 5,
+      "candidates_per_scenario" => 6,
+      "summary" => %{
+        "scenario_count" => 5,
+        "model_candidate_count" => 30,
+        "first_proposal_safe_rate" => 0.2,
+        "selected_plan_safe_rate" => 1.0,
+        "safe_rate_lift" => 0.8,
+        "search_rescue_count" => 4,
+        "search_improvement_count" => 4,
+        "gemma_safe_scenario_count" => 2,
+        "deterministic_fallback_count" => 3,
+        "mean_reward_delta_vs_naive" => 180.3907,
+        "protected_aquatic_biomass_kg" => 103.1,
+        "unsafe_control_rejection_rate" => 1.0,
+        "generation_latency_ms" => %{"sample_count" => 30, "p50" => 654.344, "p95" => 716.535}
+      },
+      "scenarios" =>
+        Enum.map(1..5, fn index ->
+          %{"name" => "scenario #{index}", "fallback_used" => index > 2}
+        end),
+      "checks" => %{
+        "all_scenarios_evaluated" => true,
+        "no_weight_updates" => true,
+        "safe_plan_selected_every_time" => true,
+        "search_not_worse_than_first_on_safety" => true,
+        "unsafe_controls_rejected" => true
       }
     }
   end
@@ -170,6 +249,11 @@ defmodule ProteinLoop.AMDExperimentEvidenceTest do
         "water_exchange_fraction" => 0.2,
         "duckweed_harvest_kg" => 1.0,
         "note" => "Prioritize oxygen while reducing waste load."
+      },
+      "final_state" => %{
+        "ammonia_mg_l" => 0.85,
+        "dissolved_oxygen_mg_l" => 5.5058,
+        "collapsed" => false
       }
     }
   end

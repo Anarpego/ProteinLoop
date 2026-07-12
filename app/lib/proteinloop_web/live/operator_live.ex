@@ -2810,6 +2810,76 @@ defmodule ProteinLoopWeb.OperatorLive do
         </dl>
       </div>
 
+      <div class="amd-experiment__outcome" aria-label="Selected plan measured outcome">
+        <span>
+          <small>Waste in water</small>
+          <strong>
+            {@evidence.search.initial_state["ammonia_mg_l"]} → {@selected.final_state["ammonia_mg_l"]} mg/L
+          </strong>
+          <p>Ammonia moved toward the safe range.</p>
+        </span>
+        <span>
+          <small>Breathing oxygen</small>
+          <strong>
+            {@evidence.search.initial_state["dissolved_oxygen_mg_l"]} → {@selected.final_state[
+              "dissolved_oxygen_mg_l"
+            ]} mg/L
+          </strong>
+          <p>Usable underwater oxygen recovered.</p>
+        </span>
+        <span>
+          <small>Verified reward</small>
+          <strong>{@selected.reward}</strong>
+          <p>+{@evidence.search.reward_delta} versus the naive routine.</p>
+        </span>
+      </div>
+
+      <section :if={@evidence.product_evaluation} class="amd-product-audit">
+        <header>
+          <div>
+            <p>Five-emergency product audit</p>
+            <h3>One model answer was not enough. The verified system recovered every scenario.</h3>
+          </div>
+          <span class="badge badge-info">{@evidence.product_evaluation.model_candidate_count} AMD Gemma plans tested</span>
+        </header>
+        <div class="amd-product-audit__metrics">
+          <span>
+            <small>Single answer</small>
+            <strong>{round(@evidence.product_evaluation.first_safe_rate * 100)}% first-answer safe</strong>
+          </span>
+          <span data-audit-success>
+            <small>Verified system</small>
+            <strong>{round(@evidence.product_evaluation.selected_safe_rate * 100)}% safe final plan</strong>
+          </span>
+          <span>
+            <small>Search value</small>
+            <strong>{@evidence.product_evaluation.rescue_count} rejected first answers rescued</strong>
+          </span>
+          <span>
+            <small>Safety fallback</small>
+            <strong>{@evidence.product_evaluation.fallback_count} deterministic fallbacks</strong>
+          </span>
+          <span>
+            <small>Food protected</small>
+            <strong>{@evidence.product_evaluation.protected_biomass_kg} kg aquatic biomass protected</strong>
+          </span>
+          <span>
+            <small>AMD generation</small>
+            <strong>{@evidence.product_evaluation.latency_p50_ms} ms median generation</strong>
+          </span>
+        </div>
+        <footer>
+          <strong>
+            Gemma supplied a safe plan in {@evidence.product_evaluation.gemma_safe_scenario_count} of {@evidence.product_evaluation.scenario_count} emergencies.
+          </strong>
+          <p>
+            In the remaining {@evidence.product_evaluation.fallback_count}, every model proposal was
+            blocked and the deterministic emergency policy recovered the loop. The application
+            records which path won instead of presenting fallback output as model output.
+          </p>
+        </footer>
+      </section>
+
       <details class="amd-experiment__ledger">
         <summary>
           <span>

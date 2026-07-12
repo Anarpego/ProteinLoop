@@ -197,6 +197,16 @@ defmodule ProteinLoopWeb.OperatorLiveTest do
     assert html =~ "Captured experiment · not a live notebook connection"
     assert html =~ "Public demo runtime: self-hosted CPU fallback"
     assert html =~ "No model weights were updated"
+    assert html =~ "2.4 → 0.85 mg/L"
+    assert html =~ "4.8 → 5.5058 mg/L"
+    assert html =~ "Five-emergency product audit"
+    assert html =~ "20% first-answer safe"
+    assert html =~ "100% safe final plan"
+    assert html =~ "4 rejected first answers rescued"
+    assert html =~ "3 deterministic fallbacks"
+    assert html =~ "103.1 kg aquatic biomass protected"
+    assert html =~ "Gemma supplied a safe plan in 2 of 5 emergencies"
+    assert html =~ "654.344 ms median generation"
 
     assert has_element?(
              view,

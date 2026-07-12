@@ -6,12 +6,21 @@ import datetime as dt
 import json
 import os
 import subprocess
+import sys
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from scripts.validate_submission_readiness import (  # noqa: E402
+    gemma_evidence_check,
+    policy_search_evidence_check,
+    product_evaluation_evidence_check,
+)
+
 SUBMISSION = ROOT / "submission"
 OUTPUT = SUBMISSION / "final-readiness-report.md"
 DOCKER_SMOKE_EVIDENCE = SUBMISSION / "docker-smoke-evidence.json"
@@ -20,6 +29,8 @@ HORDE_EVIDENCE = SUBMISSION / "horde-evidence.json"
 NRF9151_LIVE_EVIDENCE = SUBMISSION / "nrf9151-live-evidence.json"
 LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
 AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
+AMD_GEMMA_POLICY_SEARCH_EVIDENCE = SUBMISSION / "amd-gemma-policy-search.json"
+AMD_GEMMA_PRODUCT_EVALUATION = SUBMISSION / "amd-gemma-product-evaluation.json"
 GENERATED_ARTIFACT_PATHS = [
     "submission/bundle-manifest.json",
     "submission/docker-smoke-evidence.json",
@@ -50,6 +61,8 @@ LOCAL_MODEL_COMMANDS = [
 
 AMD_NOTEBOOK_MODEL_COMMANDS = [
     ("AMD notebook Gemma evidence", ["make", "amd-notebook-gemma-evidence"]),
+    ("AMD Gemma verifier-guided search", ["make", "amd-notebook-gemma-search"]),
+    ("AMD Gemma five-emergency product audit", ["make", "amd-notebook-product-eval"]),
 ]
 
 FINAL_EVIDENCE_COMMANDS = [
@@ -129,6 +142,10 @@ def collect_evidence(model_mode: str = "local") -> list[CommandEvidence]:
             evidence.append(local_gemma_endpoint_evidence(LOCAL_GEMMA_EVIDENCE))
         elif name == "AMD notebook Gemma evidence":
             evidence.append(amd_notebook_endpoint_evidence(AMD_NOTEBOOK_GEMMA_EVIDENCE))
+        elif name == "AMD Gemma verifier-guided search":
+            evidence.append(amd_policy_search_evidence(AMD_GEMMA_POLICY_SEARCH_EVIDENCE))
+        elif name == "AMD Gemma five-emergency product audit":
+            evidence.append(amd_product_evaluation_evidence(AMD_GEMMA_PRODUCT_EVALUATION))
         else:
             evidence.append(run_command(name, command))
     return evidence
@@ -290,13 +307,30 @@ def local_gemma_endpoint_evidence(path: Path) -> CommandEvidence:
 
 
 def amd_notebook_endpoint_evidence(path: Path) -> CommandEvidence:
-    from scripts.validate_submission_readiness import gemma_evidence_check
-
     name = "AMD notebook Gemma evidence"
     command = ["make", "amd-notebook-gemma-evidence"]
     path_label = display_path(path)
     result = gemma_evidence_check(path, mode="amd_notebook")
     output = f"evidence: {path_label}\n[{'ok' if result.ok else 'FAIL'}] {result.detail}"
+    return CommandEvidence(name, command, 0 if result.ok else 1, output, "")
+
+
+def amd_policy_search_evidence(path: Path) -> CommandEvidence:
+    name = "AMD Gemma verifier-guided search"
+    command = ["make", "amd-notebook-gemma-search"]
+    result = policy_search_evidence_check(path, expected_model="google/gemma-4-E2B-it")
+    output = f"evidence: {display_path(path)}\n[{'ok' if result.ok else 'FAIL'}] {result.detail}"
+    return CommandEvidence(name, command, 0 if result.ok else 1, output, "")
+
+
+def amd_product_evaluation_evidence(path: Path) -> CommandEvidence:
+    name = "AMD Gemma five-emergency product audit"
+    command = ["make", "amd-notebook-product-eval"]
+    result = product_evaluation_evidence_check(
+        path,
+        expected_model="google/gemma-4-E2B-it",
+    )
+    output = f"evidence: {display_path(path)}\n[{'ok' if result.ok else 'FAIL'}] {result.detail}"
     return CommandEvidence(name, command, 0 if result.ok else 1, output, "")
 
 

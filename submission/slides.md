@@ -62,9 +62,9 @@ Risky water exchange and harvest actions pause for an English producer decision:
 
 Sagents 0.9.0 runs four Gemma subsystem agents plus a parent supervisor, gates `close_cycle` through `verify_ecosystem_safety`, and terminates with `until_tool_success`.
 
-## 13. Proven Gemma Runtime
+## 13. Proven AMD-Hosted Gemma Runtime
 
-`google/gemma-4-E2B-it` runs privately through llama.cpp on the public 8 GB CPU host, with separate Metal evidence for the full Sagents path. `GEMMA_ENDPOINT` can later move to a solar-powered edge host or vLLM/ROCm without changing agent or verifier code. No AMD/GPU inference is claimed.
+`google/gemma-4-E2B-it` ran through vLLM on the assigned Act-II AMD notebook using PyTorch 2.10, ROCm 7.2, a `gfx1100` GPU, and 47.98 GiB memory. Six-plan verifier-guided search improved reward by 69.3611 and recovered ammonia from 2.4 to 0.85 mg/L. Across five emergencies, one-shot safety was 20%; verified selection plus deterministic fallback reached 100%, rescuing four first-answer failures and protecting 103.1 kg of aggregate aquatic biomass. The public URL remains on its durable CPU fallback and presents this as captured AMD evidence.
 
 ## 14. Market
 

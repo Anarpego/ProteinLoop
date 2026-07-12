@@ -6,6 +6,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validate_submission_readiness import (
+    AMD_GEMMA_POLICY_SEARCH_EVIDENCE,
+    AMD_GEMMA_PRODUCT_EVALUATION,
     AMD_NOTEBOOK_GEMMA_EVIDENCE,
     BASE_REQUIRED_ARTIFACTS,
     LOCAL_GEMMA_EVIDENCE,
@@ -18,6 +20,8 @@ from scripts.validate_submission_readiness import (
     lablab_form_check,
     normalize_git_remote,
     normalize_model_mode,
+    policy_search_evidence_check,
+    product_evaluation_evidence_check,
     required_artifacts,
     reachable_check,
     submission_bundle_check,
@@ -98,6 +102,8 @@ class SubmissionReadinessTests(unittest.TestCase):
         self.assertIn(REMOTE_GEMMA_EVIDENCE, remote)
         self.assertNotIn(LOCAL_GEMMA_EVIDENCE, remote)
         self.assertIn(AMD_NOTEBOOK_GEMMA_EVIDENCE, amd_notebook)
+        self.assertIn(AMD_GEMMA_POLICY_SEARCH_EVIDENCE, amd_notebook)
+        self.assertIn(AMD_GEMMA_PRODUCT_EVALUATION, amd_notebook)
         self.assertNotIn(LOCAL_GEMMA_EVIDENCE, amd_notebook)
         self.assertNotIn(REMOTE_GEMMA_EVIDENCE, amd_notebook)
         self.assertEqual(normalize_model_mode(None), "local")
@@ -379,6 +385,131 @@ https://demo.example.com
 
         self.assertFalse(result.ok)
         self.assertIn("runtime", result.detail.lower())
+
+    def test_policy_search_evidence_requires_safe_improving_verified_search(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-gemma-policy-search.json"
+            path.write_text(
+                """
+                {
+                  "provider": "amd_hackathon_notebook",
+                  "model": "google/gemma-4-E2B-it",
+                  "generated_model_candidates": 6,
+                  "checks": {
+                    "amd_gemma_generated_candidates": true,
+                    "safe_candidate_selected": true,
+                    "unsafe_control_rejected": true,
+                    "positive_reward_delta_vs_naive": true,
+                    "no_weight_update_claim_is_explicit": true
+                  },
+                  "search": {
+                    "candidate_count": 7,
+                    "safe_count": 3,
+                    "rejected_count": 4,
+                    "reward_delta_vs_naive": 69.3611,
+                    "weight_updates": false,
+                    "selected": {"source": "amd_hosted_gemma"}
+                  }
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = policy_search_evidence_check(
+                path,
+                expected_model="google/gemma-4-E2B-it",
+            )
+
+        self.assertTrue(result.ok)
+        self.assertIn("6 Gemma", result.detail)
+
+    def test_policy_search_evidence_rejects_model_mismatch(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-gemma-policy-search.json"
+            path.write_text(
+                '{"provider":"amd_hackathon_notebook","model":"other",'
+                '"generated_model_candidates":6,"checks":{},"search":{}}',
+                encoding="utf-8",
+            )
+
+            result = policy_search_evidence_check(
+                path,
+                expected_model="google/gemma-4-E2B-it",
+            )
+
+        self.assertFalse(result.ok)
+        self.assertIn("model mismatch", result.detail)
+
+    def test_product_evaluation_requires_five_safe_final_scenarios(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-gemma-product-evaluation.json"
+            path.write_text(
+                """
+                {
+                  "provider": "amd_hackathon_notebook",
+                  "model": "google/gemma-4-E2B-it",
+                  "scenario_count": 5,
+                  "candidates_per_scenario": 6,
+                  "checks": {
+                    "all_scenarios_evaluated": true,
+                    "safe_plan_selected_every_time": true,
+                    "search_not_worse_than_first_on_safety": true,
+                    "unsafe_controls_rejected": true,
+                    "no_weight_updates": true
+                  },
+                  "summary": {
+                    "scenario_count": 5,
+                    "model_candidate_count": 30,
+                    "selected_plan_safe_rate": 1.0,
+                    "safe_rate_lift": 0.8,
+                    "search_rescue_count": 4,
+                    "deterministic_fallback_count": 3,
+                    "protected_aquatic_biomass_kg": 103.1,
+                    "unsafe_control_rejection_rate": 1.0
+                  },
+                  "scenarios": [
+                    {"selected_plan_safe": true}, {"selected_plan_safe": true},
+                    {"selected_plan_safe": true}, {"selected_plan_safe": true},
+                    {"selected_plan_safe": true}
+                  ]
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            result = product_evaluation_evidence_check(
+                path,
+                expected_model="google/gemma-4-E2B-it",
+            )
+
+        self.assertTrue(result.ok)
+        self.assertIn("103.1 kg", result.detail)
+
+    def test_product_evaluation_rejects_failed_safety_check(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "amd-gemma-product-evaluation.json"
+            path.write_text(
+                """
+                {
+                  "provider": "amd_hackathon_notebook",
+                  "model": "google/gemma-4-E2B-it",
+                  "scenario_count": 5,
+                  "candidates_per_scenario": 6,
+                  "checks": {"safe_plan_selected_every_time": false},
+                  "summary": {},
+                  "scenarios": []
+                }
+                """,
+                encoding="utf-8"
+            )
+
+            result = product_evaluation_evidence_check(
+                path,
+                expected_model="google/gemma-4-E2B-it",
+            )
+
+        self.assertFalse(result.ok)
+        self.assertIn("failed checks", result.detail)
 
 
 if __name__ == "__main__":

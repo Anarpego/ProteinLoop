@@ -6,7 +6,7 @@
 - [x] Add failing LiveView replay and fallback tests.
 - [x] Implement the judge-visible replay UI.
 - [x] Configure Docker evidence paths.
-- [ ] Import the real AMD notebook artifacts.
-- [ ] Update README and submission assets.
-- [ ] Run full executable and visual verification.
+- [x] Import the real AMD notebook artifacts.
+- [x] Update README and submission assets.
+- [x] Run full executable and visual verification.
 - [ ] Publish and deploy the completed replay.

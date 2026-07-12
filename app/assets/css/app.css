@@ -528,6 +528,148 @@ body {
   overflow-wrap: anywhere;
 }
 
+.amd-experiment__outcome {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid #b7decf;
+  background: #ffffff;
+}
+
+.amd-experiment__outcome > span {
+  min-width: 0;
+  padding: 0.85rem 1.25rem;
+}
+
+.amd-experiment__outcome > span + span {
+  border-left: 1px solid #d8e0e3;
+}
+
+.amd-experiment__outcome small,
+.amd-experiment__outcome strong,
+.amd-experiment__outcome p {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.amd-experiment__outcome small {
+  color: #64748b;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 0.9rem;
+  text-transform: uppercase;
+}
+
+.amd-experiment__outcome strong {
+  margin-top: 0.2rem;
+  color: #047857;
+  font-size: 1rem;
+  line-height: 1.3rem;
+}
+
+.amd-experiment__outcome p {
+  margin-top: 0.18rem;
+  color: #64748b;
+  font-size: 0.66rem;
+  line-height: 0.95rem;
+}
+
+.amd-product-audit {
+  border-bottom: 1px solid #cbd5e1;
+  background: #fffdf8;
+}
+
+.amd-product-audit > header,
+.amd-product-audit > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+}
+
+.amd-product-audit > header p {
+  color: #b45309;
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 0.9rem;
+  text-transform: uppercase;
+}
+
+.amd-product-audit > header h3 {
+  margin-top: 0.15rem;
+  color: #111827;
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.2rem;
+}
+
+.amd-product-audit__metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 1px solid #eadfc9;
+  border-bottom: 1px solid #eadfc9;
+}
+
+.amd-product-audit__metrics > span {
+  min-width: 0;
+  min-height: 4.75rem;
+  padding: 0.75rem;
+}
+
+.amd-product-audit__metrics > span + span {
+  border-left: 1px solid #eadfc9;
+}
+
+.amd-product-audit__metrics small,
+.amd-product-audit__metrics strong {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.amd-product-audit__metrics small {
+  color: #78716c;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 0.85rem;
+  text-transform: uppercase;
+}
+
+.amd-product-audit__metrics strong {
+  margin-top: 0.2rem;
+  color: #292524;
+  font-size: 0.7rem;
+  line-height: 1rem;
+}
+
+.amd-product-audit__metrics [data-audit-success] {
+  background: #ecfdf5;
+}
+
+.amd-product-audit__metrics [data-audit-success] strong {
+  color: #047857;
+}
+
+.amd-product-audit > footer {
+  align-items: flex-start;
+  background: #fffbeb;
+}
+
+.amd-product-audit > footer strong {
+  flex: 0 0 auto;
+  color: #92400e;
+  font-size: 0.72rem;
+  line-height: 1.05rem;
+}
+
+.amd-product-audit > footer p {
+  max-width: 48rem;
+  color: #57534e;
+  font-size: 0.68rem;
+  line-height: 1rem;
+}
+
 .amd-experiment__ledger > summary {
   display: flex;
   min-height: 3.75rem;
@@ -1837,6 +1979,18 @@ body {
     border-left: 0;
   }
 
+  .amd-product-audit__metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .amd-product-audit__metrics > span:nth-child(4) {
+    border-left: 0;
+  }
+
+  .amd-product-audit__metrics > span:nth-child(n + 4) {
+    border-top: 1px solid #eadfc9;
+  }
+
   .off-grid-continuity__header {
     flex-direction: column;
     gap: 0.5rem;
@@ -1941,6 +2095,23 @@ body {
 
   .amd-experiment__footer .btn {
     min-height: 2.75rem;
+  }
+
+  .amd-experiment__outcome,
+  .amd-product-audit__metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .amd-experiment__outcome > span + span,
+  .amd-product-audit__metrics > span + span {
+    border-top: 1px solid #d8e0e3;
+    border-left: 0;
+  }
+
+  .amd-product-audit > header,
+  .amd-product-audit > footer {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .advanced-state__header {

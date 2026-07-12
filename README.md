@@ -25,6 +25,7 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 | Closed-loop physics | A naive policy collapses after an ammonia spike; the verified policy recovers. | [Demo evidence](submission/demo-evidence.md) |
 | Real multi-agent runtime | Four Sagents domain agents report to a parent supervisor that returns a structured action. | [Sagents evidence](submission/sagents-evidence.md) |
 | Local Gemma 4 | `google/gemma-4-E2B-it` runs behind the OpenAI-compatible `GEMMA_ENDPOINT` boundary. | [Gemma endpoint evidence](submission/local-gemma-evidence.json) |
+| AMD-hosted Gemma 4 | Gemma 4 E2B ran through vLLM on the assigned Act-II AMD notebook with ROCm, generated six recovery candidates, and participated in a five-emergency product audit. | [AMD runtime](submission/amd-notebook-gemma-evidence.json) · [Verifier-guided search](submission/amd-gemma-policy-search.json) · [Product evaluation](submission/amd-gemma-product-evaluation.json) |
 | Deterministic safety | `verify_ecosystem_safety` rejects unsafe proposals before simulator mutation. | [RLVR trace evidence](submission/demo-rehearsal.md) |
 | Human control | Risky actions pause for approve, edit-to-half, or reject before execution. | [HITL evidence](submission/sagents-evidence.md) |
 | Distributed recovery | A two-node Horde runtime restores the same managed agent state after owner loss. | [Horde failover evidence](submission/horde-evidence.md) |
@@ -65,7 +66,7 @@ This creates three independent continuity layers:
 - **No cloud:** self-hosted Gemma proposes actions locally; the deterministic verifier and offline emergency rules remain authoritative even if the model is unavailable.
 - **No electrical grid:** the target deployment uses a solar panel, charge controller, and battery for the radios, gateway, and edge computer.
 
-The proof boundary is deliberate. The repository proves the bidirectional two-board radio exchange, local Gemma inference, deterministic fallback rules, and producer approval. It does **not yet** claim physical chemistry-probe acquisition, measured solar autonomy, field range, or region-specific spectrum approval. Those require a probe integration, an energy budget and battery test, a field range test, and confirmation of the deployment frequency with the local regulator. Nordic supports DECT NR+ across 1.9 GHz and, on supported nRF9151 configurations, [915 MHz](https://www.nordicsemi.com/Nordic-news/2025/03/Nordic-Semiconductor-extends-NR-non-cellular-5G-mesh-networking); the final band cannot be selected from a global claim alone.
+The proof boundary is deliberate. The repository proves the bidirectional two-board radio exchange, local Gemma inference, AMD-hosted Gemma 4 E2B inference through ROCm/vLLM, deterministic fallback rules, and producer approval. The AMD notebook run is a captured experiment; the durable public application still uses its private CPU fallback. ProteinLoop does **not yet** claim physical chemistry-probe acquisition, measured solar autonomy, field range, or region-specific spectrum approval. Those require a probe integration, an energy budget and battery test, a field range test, and confirmation of the deployment frequency with the local regulator. Nordic supports DECT NR+ across 1.9 GHz and, on supported nRF9151 configurations, [915 MHz](https://www.nordicsemi.com/Nordic-news/2025/03/Nordic-Semiconductor-extends-NR-non-cellular-5G-mesh-networking); the final band cannot be selected from a global claim alone.
 
 ## Run the One-Click Judge Proof
 
@@ -339,19 +340,29 @@ ROCm, vLLM, tensor-execution, latency, model, and structured-action proof togeth
 ```sh
 git clone https://github.com/Anarpego/ProteinLoop.git /workspace/ProteinLoop
 cd /workspace/ProteinLoop
+export AMD_NOTEBOOK_PYTHON=/workspace/proteinloop-amd/vllm-gemma4/bin/python
 make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
 make amd-notebook-gemma-search GEMMA_MODEL=google/gemma-4-E2B-it
+make amd-notebook-product-eval GEMMA_MODEL=google/gemma-4-E2B-it
 ```
 
-The target deliberately uses `/opt/venv/bin/python3.10`, the prepared notebook kernel, and writes
+The captured run used Python 3.12, PyTorch `2.10.0+git8514f05`, ROCm `7.2.53211`, and vLLM
+`0.20.2rc1.dev15+g321fa2d6d` on one `gfx1100` AMD GPU with 47.98 GiB memory. The first target writes
 `submission/amd-notebook-gemma-evidence.json`. The second target asks AMD-hosted Gemma for six
 diverse recovery plans, injects one explicit unsafe control, rejects unsafe actions before mutation,
 and ranks safe candidates with `SafetyVerifier.reward`. It writes
 `submission/amd-gemma-policy-search.json` and accurately labels the method as inference-time
-Best-of-N search with no model weight update. Neither target serializes `HF_TOKEN`, endpoint API
-keys, cookies, UUIDs, or hardware serial numbers. Download both JSON files from Jupyter before the
-temporary allocation ends, add them to the local repository, and validate the AMD-hosted submission
-profile:
+Best-of-N search with no model weight update. The selected Gemma plan moved ammonia from `2.4` to
+`0.85` mg/L, oxygen from `4.8` to `5.5058` mg/L, and reward `+69.3611` over the naive routine.
+
+The third target evaluates 30 Gemma plans across five emergencies. A single first answer was safe in
+20% of scenarios; verifier-guided selection plus explicit deterministic fallback produced a safe
+final plan in 100%, rescued four rejected first answers, and protected 103.1 kg of aggregate aquatic
+biomass across the scenarios. Gemma supplied a safe plan in two scenarios; all model plans were
+rejected in three, where the labeled deterministic emergency policy took over. This is a product
+safety result, not a claim that Gemma alone was always safe. The artifacts do not serialize
+`HF_TOKEN`, API keys, cookies, UUIDs, or hardware serial numbers. Validate the imported AMD-hosted
+submission profile with:
 
 ```sh
 SUBMISSION_GEMMA_MODE=amd_notebook make submission-ready-check
@@ -868,8 +879,8 @@ manual submission handling:
 2. Upload the cover, deck, video, and `submission/proteinloop-lablab-upload.zip` to lablab.
 3. Paste the prepared fields from `submission/lablab-form.json`, verify the public links, and submit.
 
-AMD Hackathon notebook or Fireworks inference remains an optional remote profile. Use
-`SUBMISSION_GEMMA_MODE=remote make submission-finalize` only after `make credit-check` and
-`make gemma-check` pass against that endpoint. The public CPU runtime remains the submitted proof
-until a remote run produces executable evidence. Once the real pod artifact is imported, use
+The Act-II AMD notebook evidence is imported and is the submitted remote-compute proof. Use
 `SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize` for the AMD-hosted Gemma profile.
+The public URL remains a durable CPU deployment and the interface labels the notebook result as a
+captured experiment rather than a live connection. Fireworks remains an optional provider path, not
+the basis of the AMD-hosted claim.

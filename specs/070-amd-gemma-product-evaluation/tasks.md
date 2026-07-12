@@ -6,7 +6,7 @@
 - [x] Add the AMD pod evaluation runner.
 - [x] Add Make and submission-bundle integration.
 - [x] Add a tested deterministic fallback when every Gemma plan is rejected.
-- [ ] Run the evaluation on the AMD pod.
-- [ ] Import and validate the real artifact.
-- [ ] Expose measured outcomes in the replay UI and submission assets.
+- [x] Run the evaluation on the AMD pod.
+- [x] Import and validate the real artifact.
+- [x] Expose measured outcomes in the replay UI and submission assets.
 - [ ] Run full verification and publish.

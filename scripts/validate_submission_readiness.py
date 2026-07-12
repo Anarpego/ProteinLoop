@@ -26,6 +26,8 @@ from scripts.validate_submission_artifacts import BUNDLE, MANIFEST, bundle_ok  #
 LOCAL_GEMMA_EVIDENCE = SUBMISSION / "local-gemma-evidence.json"
 REMOTE_GEMMA_EVIDENCE = SUBMISSION / "gemma-evidence.json"
 AMD_NOTEBOOK_GEMMA_EVIDENCE = SUBMISSION / "amd-notebook-gemma-evidence.json"
+AMD_GEMMA_POLICY_SEARCH_EVIDENCE = SUBMISSION / "amd-gemma-policy-search.json"
+AMD_GEMMA_PRODUCT_EVALUATION = SUBMISSION / "amd-gemma-product-evaluation.json"
 
 BASE_REQUIRED_ARTIFACTS = [
     ROOT / "README.md",
@@ -116,6 +118,20 @@ def run_checks(
     checks.append(submission_bundle_check(BUNDLE, MANIFEST))
     evidence_path = evidence_path_for_mode(model_mode)
     checks.append(gemma_evidence_check(evidence_path, mode=model_mode))
+    if model_mode == "amd_notebook":
+        expected_model = evidence_model(evidence_path)
+        checks.append(
+            policy_search_evidence_check(
+                AMD_GEMMA_POLICY_SEARCH_EVIDENCE,
+                expected_model=expected_model,
+            )
+        )
+        checks.append(
+            product_evaluation_evidence_check(
+                AMD_GEMMA_PRODUCT_EVALUATION,
+                expected_model=expected_model,
+            )
+        )
 
     lablab_text = lablab_path.read_text(encoding="utf-8") if lablab_path.exists() else ""
     repo_url = extract_labeled_url(lablab_text, "Public GitHub Repository")
@@ -140,7 +156,12 @@ def normalize_model_mode(value: str | None) -> str:
 def required_artifacts(model_mode: str | None = None) -> list[Path]:
     mode = normalize_model_mode(model_mode)
     evidence = evidence_path_for_mode(mode)
-    return [*BASE_REQUIRED_ARTIFACTS, evidence]
+    artifacts = [*BASE_REQUIRED_ARTIFACTS, evidence]
+    if mode == "amd_notebook":
+        artifacts.extend(
+            [AMD_GEMMA_POLICY_SEARCH_EVIDENCE, AMD_GEMMA_PRODUCT_EVALUATION]
+        )
+    return artifacts
 
 
 def evidence_path_for_mode(mode: str) -> Path:
@@ -149,6 +170,14 @@ def evidence_path_for_mode(mode: str) -> Path:
         "remote": REMOTE_GEMMA_EVIDENCE,
         "amd_notebook": AMD_NOTEBOOK_GEMMA_EVIDENCE,
     }[normalize_model_mode(mode)]
+
+
+def evidence_model(path: Path) -> str:
+    try:
+        evidence = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+    return str(evidence.get("model", "")).strip()
 
 
 def extract_labeled_url(text: str, label: str) -> str | None:
@@ -363,6 +392,127 @@ def amd_notebook_runtime_error(evidence: dict) -> str | None:
         return "AMD notebook runtime has insufficient proven GPU memory"
     if runtime.get("gpu_tensor_test") is not True:
         return "AMD notebook runtime missing passing GPU tensor execution"
+    return None
+
+
+def policy_search_evidence_check(path: Path, expected_model: str) -> Check:
+    name = "AMD Gemma verifier-guided search"
+    evidence, error = load_json_object(path)
+    if error:
+        return Check(name, False, error)
+
+    identity_error = amd_evidence_identity_error(evidence, expected_model)
+    if identity_error:
+        return Check(name, False, identity_error)
+
+    checks_error = boolean_checks_error(evidence.get("checks"))
+    if checks_error:
+        return Check(name, False, checks_error)
+
+    search = evidence.get("search")
+    if not isinstance(search, dict):
+        return Check(name, False, "missing search object")
+
+    generated = int(evidence.get("generated_model_candidates") or 0)
+    candidate_count = int(search.get("candidate_count") or 0)
+    safe_count = int(search.get("safe_count") or 0)
+    rejected_count = int(search.get("rejected_count") or 0)
+    reward_delta = float(search.get("reward_delta_vs_naive") or 0.0)
+    selected = search.get("selected")
+    if generated < 2 or candidate_count < generated:
+        return Check(name, False, "insufficient generated candidate evidence")
+    if safe_count < 1 or rejected_count < 1:
+        return Check(name, False, "search does not prove both selection and rejection")
+    if reward_delta <= 0:
+        return Check(name, False, "selected plan did not improve on the naive plan")
+    if search.get("weight_updates") is not False:
+        return Check(name, False, "weight-update boundary is not explicit")
+    if not isinstance(selected, dict) or selected.get("source") != "amd_hosted_gemma":
+        return Check(name, False, "selected plan is not attributed to AMD-hosted Gemma")
+
+    return Check(
+        name,
+        True,
+        f"{generated} Gemma candidates; {safe_count} safe; +{reward_delta:.4f} vs naive",
+    )
+
+
+def product_evaluation_evidence_check(path: Path, expected_model: str) -> Check:
+    name = "AMD Gemma five-emergency product audit"
+    evidence, error = load_json_object(path)
+    if error:
+        return Check(name, False, error)
+
+    identity_error = amd_evidence_identity_error(evidence, expected_model)
+    if identity_error:
+        return Check(name, False, identity_error)
+
+    checks_error = boolean_checks_error(evidence.get("checks"))
+    if checks_error:
+        return Check(name, False, checks_error)
+
+    summary = evidence.get("summary")
+    scenarios = evidence.get("scenarios")
+    if not isinstance(summary, dict) or not isinstance(scenarios, list):
+        return Check(name, False, "missing product evaluation summary or scenarios")
+
+    scenario_count = int(evidence.get("scenario_count") or 0)
+    candidates_per_scenario = int(evidence.get("candidates_per_scenario") or 0)
+    model_candidate_count = int(summary.get("model_candidate_count") or 0)
+    safe_rate = float(summary.get("selected_plan_safe_rate") or 0.0)
+    safe_rate_lift = float(summary.get("safe_rate_lift") or 0.0)
+    rescue_count = int(summary.get("search_rescue_count") or 0)
+    protected_biomass = float(summary.get("protected_aquatic_biomass_kg") or 0.0)
+    unsafe_rejection_rate = float(summary.get("unsafe_control_rejection_rate") or 0.0)
+    fallback_count = summary.get("deterministic_fallback_count")
+
+    if scenario_count < 5 or len(scenarios) != scenario_count:
+        return Check(name, False, "five complete emergency scenarios are required")
+    if candidates_per_scenario < 2 or model_candidate_count < scenario_count * candidates_per_scenario:
+        return Check(name, False, "incomplete multi-candidate model audit")
+    if safe_rate != 1.0 or not all(item.get("selected_plan_safe") is True for item in scenarios):
+        return Check(name, False, "final plan safety rate must be 100%")
+    if safe_rate_lift <= 0 or rescue_count < 1 or protected_biomass <= 0:
+        return Check(name, False, "audit does not prove a positive product outcome")
+    if unsafe_rejection_rate != 1.0:
+        return Check(name, False, "unsafe control rejection rate must be 100%")
+    if not isinstance(fallback_count, int) or fallback_count < 0:
+        return Check(name, False, "deterministic fallback usage is not disclosed")
+
+    return Check(
+        name,
+        True,
+        f"{scenario_count} emergencies; 100% safe final plans; {protected_biomass:.1f} kg protected",
+    )
+
+
+def load_json_object(path: Path) -> tuple[dict, str | None]:
+    if not path.exists():
+        return {}, f"missing {display_path(path)}"
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {}, f"invalid JSON: {exc}"
+    if not isinstance(value, dict):
+        return {}, "expected a JSON object"
+    return value, None
+
+
+def amd_evidence_identity_error(evidence: dict, expected_model: str) -> str | None:
+    if evidence.get("provider") != "amd_hackathon_notebook":
+        return "provider is not the AMD hackathon notebook"
+    model = str(evidence.get("model", "")).strip()
+    if not expected_model or model != expected_model:
+        return f"model mismatch: expected {expected_model!r}, got {model!r}"
+    return None
+
+
+def boolean_checks_error(checks: object) -> str | None:
+    if not isinstance(checks, dict) or not checks:
+        return "missing evidence checks"
+    failed = sorted(key for key, value in checks.items() if value is not True)
+    if failed:
+        return f"failed checks: {', '.join(failed)}"
     return None
 
 

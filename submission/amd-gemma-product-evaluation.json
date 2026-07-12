@@ -1,0 +1,838 @@
+{
+  "candidates_per_scenario": 6,
+  "checked_at": "2026-07-11T23:36:57.664774+00:00",
+  "checks": {
+    "all_scenarios_evaluated": true,
+    "no_weight_updates": true,
+    "safe_plan_selected_every_time": true,
+    "search_not_worse_than_first_on_safety": true,
+    "unsafe_controls_rejected": true
+  },
+  "claim": "product outcome evaluation; inference only; no model weight updates",
+  "generation_errors": [],
+  "method": "multi_scenario_verifier_guided_best_of_n",
+  "model": "google/gemma-4-E2B-it",
+  "provider": "amd_hackathon_notebook",
+  "scenario_count": 5,
+  "scenarios": [
+    {
+      "aquatic_biomass_kg": 23.4,
+      "baseline": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.15,
+          "feed_kg": 0.42,
+          "note": "naive_routine",
+          "water_exchange_fraction": 0.0
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.6806,
+          "aquatic_biomass_kg": 23.5615,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 4,
+          "dissolved_oxygen_mg_l": 4.0351,
+          "duckweed_kg": 12.0,
+          "edible_biomass_kg": 44.6422,
+          "eggs_count": 4.482,
+          "fish_biomass_kg": 18.1277,
+          "last_event": "naive_routine",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 30.124,
+          "ph": 7.1918,
+          "plant_biomass_kg": 21.0808,
+          "prawn_biomass_kg": 5.4338,
+          "stress_days": 0,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "reward": 242.2536,
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "candidate_count": 7,
+      "fallback_used": false,
+      "first_proposal": {
+        "accepted": false,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 1.5,
+          "note": "Increased aeration and moderate feeding to boost oxygen levels and manage ammonia.",
+          "water_exchange_fraction": 0.25
+        },
+        "final_state": null,
+        "index": 1,
+        "reward": null,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [
+          "feed_kg 1.500 exceeds safe daily limit 0.819"
+        ],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "first_proposal_safe": false,
+      "generation_latency_ms": [
+        654.418,
+        710.763,
+        617.394,
+        729.789,
+        675.309,
+        666.509
+      ],
+      "initial_state": {
+        "ammonia_mg_l": 2.4,
+        "aquatic_biomass_kg": 23.4,
+        "chicken_count": 6,
+        "collapsed": false,
+        "day": 3,
+        "dissolved_oxygen_mg_l": 4.8,
+        "duckweed_kg": 12.0,
+        "edible_biomass_kg": 44.4,
+        "eggs_count": 0.0,
+        "fish_biomass_kg": 18.0,
+        "last_event": "loaded",
+        "mortality_events": {
+          "chicken": 0,
+          "fish": 0,
+          "prawn": 0
+        },
+        "nitrate_mg_l": 35.0,
+        "ph": 7.2,
+        "plant_biomass_kg": 21.0,
+        "prawn_biomass_kg": 5.4,
+        "stress_days": 1,
+        "temperature_c": 26.0,
+        "water_volume_l": 1000.0
+      },
+      "model_candidate_count": 6,
+      "model_safe_plan_available": true,
+      "name": "ammonia surge",
+      "parse_error_count": 0,
+      "protected_aquatic_biomass_kg": 23.4,
+      "rejected_count": 6,
+      "reward_delta_vs_first": null,
+      "reward_delta_vs_naive": 8.0735,
+      "safe_count": 1,
+      "search_improved_first": true,
+      "search_rescued_first_rejection": true,
+      "selected_plan": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 1.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.0,
+          "note": "Minimal water recovery strategy: performed minimal aeration and slight water exchange to manage ammonia, prioritizing low water loss.",
+          "water_exchange_fraction": 0.1
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.1044,
+          "aquatic_biomass_kg": 23.4,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 4,
+          "dissolved_oxygen_mg_l": 3.629,
+          "duckweed_kg": 12.0,
+          "edible_biomass_kg": 44.4726,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 18.0,
+          "last_event": "Minimal water recovery strategy: performed minimal aeration and slight water exchange to manage ammonia, prioritizing low water loss.",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 26.9048,
+          "ph": 7.2037,
+          "plant_biomass_kg": 21.0726,
+          "prawn_biomass_kg": 5.4,
+          "stress_days": 0,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 2,
+        "reward": 250.3271,
+        "source": "amd_hosted_gemma",
+        "strategy": "minimal-water recovery",
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "selected_plan_safe": true,
+      "unsafe_control_rejected": true,
+      "weight_updates": false
+    },
+    {
+      "aquatic_biomass_kg": 17.2,
+      "baseline": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.15,
+          "feed_kg": 0.42,
+          "note": "naive_routine",
+          "water_exchange_fraction": 0.0
+        },
+        "final_state": {
+          "ammonia_mg_l": 0.9641,
+          "aquatic_biomass_kg": 9.8066,
+          "chicken_count": 6,
+          "collapsed": true,
+          "day": 8,
+          "dissolved_oxygen_mg_l": 2.9762,
+          "duckweed_kg": 4.5231,
+          "edible_biomass_kg": 17.9022,
+          "eggs_count": 4.482,
+          "fish_biomass_kg": 8.1905,
+          "last_event": "naive_routine",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 1,
+            "prawn": 1
+          },
+          "nitrate_mg_l": 37.396,
+          "ph": 7.2,
+          "plant_biomass_kg": 8.0955,
+          "prawn_biomass_kg": 1.6161,
+          "stress_days": 3,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "reward": -392.2547,
+        "violations": [],
+        "warnings": [
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "candidate_count": 7,
+      "fallback_used": false,
+      "first_proposal": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.5,
+          "note": "Increase aeration and water exchange to immediately improve dissolved oxygen levels.",
+          "water_exchange_fraction": 0.2
+        },
+        "final_state": {
+          "ammonia_mg_l": 0.7974,
+          "aquatic_biomass_kg": 17.3927,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 8,
+          "dissolved_oxygen_mg_l": 3.5882,
+          "duckweed_kg": 4.5465,
+          "edible_biomass_kg": 25.4744,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 14.1524,
+          "last_event": "Increase aeration and water exchange to immediately improve dissolved oxygen levels.",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 30.36,
+          "ph": 7.21,
+          "plant_biomass_kg": 8.0817,
+          "prawn_biomass_kg": 3.2403,
+          "stress_days": 1,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 1,
+        "reward": 156.9029,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [],
+        "warnings": [
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "first_proposal_safe": true,
+      "generation_latency_ms": [
+        607.764,
+        645.106,
+        616.992,
+        636.013,
+        684.384,
+        647.776
+      ],
+      "initial_state": {
+        "ammonia_mg_l": 1.1,
+        "aquatic_biomass_kg": 17.2,
+        "chicken_count": 6,
+        "collapsed": false,
+        "day": 7,
+        "dissolved_oxygen_mg_l": 3.2,
+        "duckweed_kg": 4.0,
+        "edible_biomass_kg": 25.2,
+        "eggs_count": 0.0,
+        "fish_biomass_kg": 14.0,
+        "last_event": "loaded",
+        "mortality_events": {
+          "chicken": 0,
+          "fish": 0,
+          "prawn": 0
+        },
+        "nitrate_mg_l": 35.0,
+        "ph": 7.2,
+        "plant_biomass_kg": 8.0,
+        "prawn_biomass_kg": 3.2,
+        "stress_days": 2,
+        "temperature_c": 26.0,
+        "water_volume_l": 1000.0
+      },
+      "model_candidate_count": 6,
+      "model_safe_plan_available": true,
+      "name": "oxygen crash",
+      "parse_error_count": 0,
+      "protected_aquatic_biomass_kg": 17.2,
+      "rejected_count": 5,
+      "reward_delta_vs_first": 0.0,
+      "reward_delta_vs_naive": 549.1576,
+      "safe_count": 2,
+      "search_improved_first": false,
+      "search_rescued_first_rejection": false,
+      "selected_plan": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.5,
+          "note": "Increase aeration and water exchange to immediately improve dissolved oxygen levels.",
+          "water_exchange_fraction": 0.2
+        },
+        "final_state": {
+          "ammonia_mg_l": 0.7974,
+          "aquatic_biomass_kg": 17.3927,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 8,
+          "dissolved_oxygen_mg_l": 3.5882,
+          "duckweed_kg": 4.5465,
+          "edible_biomass_kg": 25.4744,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 14.1524,
+          "last_event": "Increase aeration and water exchange to immediately improve dissolved oxygen levels.",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 30.36,
+          "ph": 7.21,
+          "plant_biomass_kg": 8.0817,
+          "prawn_biomass_kg": 3.2403,
+          "stress_days": 1,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 1,
+        "reward": 156.9029,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [],
+        "warnings": [
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "selected_plan_safe": true,
+      "unsafe_control_rejected": true,
+      "weight_updates": false
+    },
+    {
+      "aquatic_biomass_kg": 20.0,
+      "baseline": {
+        "accepted": false,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.15,
+          "feed_kg": 0.42,
+          "note": "naive_routine",
+          "water_exchange_fraction": 0.0
+        },
+        "final_state": null,
+        "reward": null,
+        "violations": [
+          "feed must stay at or below 0.10 kg/day during critical ammonia"
+        ],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "candidate_count": 8,
+      "fallback_used": true,
+      "first_proposal": {
+        "accepted": false,
+        "action": {
+          "aeration_hours": 8.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 1.5,
+          "note": "Increased aeration to address low DO and provided a small feed amount.",
+          "water_exchange_fraction": 0.2
+        },
+        "final_state": null,
+        "index": 1,
+        "reward": null,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [
+          "feed_kg 1.500 exceeds safe daily limit 0.700",
+          "feed must stay at or below 0.10 kg/day during critical ammonia"
+        ],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "first_proposal_safe": false,
+      "generation_latency_ms": [
+        616.969,
+        654.999,
+        663.705,
+        626.111,
+        695.64,
+        638.899
+      ],
+      "initial_state": {
+        "ammonia_mg_l": 3.4,
+        "aquatic_biomass_kg": 20.0,
+        "chicken_count": 6,
+        "collapsed": false,
+        "day": 11,
+        "dissolved_oxygen_mg_l": 3.6,
+        "duckweed_kg": 6.0,
+        "edible_biomass_kg": 32.0,
+        "eggs_count": 0.0,
+        "fish_biomass_kg": 16.0,
+        "last_event": "loaded",
+        "mortality_events": {
+          "chicken": 0,
+          "fish": 0,
+          "prawn": 0
+        },
+        "nitrate_mg_l": 35.0,
+        "ph": 7.2,
+        "plant_biomass_kg": 12.0,
+        "prawn_biomass_kg": 4.0,
+        "stress_days": 2,
+        "temperature_c": 26.0,
+        "water_volume_l": 1000.0
+      },
+      "model_candidate_count": 6,
+      "model_safe_plan_available": false,
+      "name": "critical combined water emergency",
+      "parse_error_count": 0,
+      "protected_aquatic_biomass_kg": 20.0,
+      "rejected_count": 7,
+      "reward_delta_vs_first": null,
+      "reward_delta_vs_naive": null,
+      "safe_count": 1,
+      "search_improved_first": true,
+      "search_rescued_first_rejection": true,
+      "selected_plan": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 24.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.0,
+          "note": "critical_ammonia_recovery",
+          "water_exchange_fraction": 0.3
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.7828,
+          "aquatic_biomass_kg": 20.0,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 12,
+          "dissolved_oxygen_mg_l": 8.4727,
+          "duckweed_kg": 6.4418,
+          "edible_biomass_kg": 32.0705,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 16.0,
+          "last_event": "critical_ammonia_recovery",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 24.5464,
+          "ph": 7.2056,
+          "plant_biomass_kg": 12.0705,
+          "prawn_biomass_kg": 4.0,
+          "stress_days": 1,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 7,
+        "reward": 204.6942,
+        "source": "deterministic_fallback",
+        "strategy": "verified emergency fallback",
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "selected_plan_safe": true,
+      "unsafe_control_rejected": true,
+      "weight_updates": false
+    },
+    {
+      "aquatic_biomass_kg": 14.5,
+      "baseline": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.42,
+          "note": "naive_routine",
+          "water_exchange_fraction": 0.0
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.699,
+          "aquatic_biomass_kg": 14.674,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 16,
+          "dissolved_oxygen_mg_l": 5.0863,
+          "duckweed_kg": 1.024,
+          "edible_biomass_kg": 21.7913,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 12.1376,
+          "last_event": "naive_routine",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 40.584,
+          "ph": 7.1916,
+          "plant_biomass_kg": 7.1173,
+          "prawn_biomass_kg": 2.5364,
+          "stress_days": 0,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "reward": 166.4265,
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration"
+        ]
+      },
+      "candidate_count": 8,
+      "fallback_used": true,
+      "first_proposal": {
+        "accepted": false,
+        "action": {
+          "aeration_hours": 4.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 1.5,
+          "note": "Increase aeration to address low dissolved oxygen and provide immediate oxygen-first recovery.",
+          "water_exchange_fraction": 0.2
+        },
+        "final_state": null,
+        "index": 1,
+        "reward": null,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [
+          "feed_kg 1.500 exceeds safe daily limit 0.508"
+        ],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration"
+        ]
+      },
+      "first_proposal_safe": false,
+      "generation_latency_ms": [
+        654.098,
+        654.27,
+        682.615,
+        626.646,
+        675.133,
+        656.457
+      ],
+      "initial_state": {
+        "ammonia_mg_l": 1.8,
+        "aquatic_biomass_kg": 14.5,
+        "chicken_count": 6,
+        "collapsed": false,
+        "day": 15,
+        "dissolved_oxygen_mg_l": 5.1,
+        "duckweed_kg": 0.8,
+        "edible_biomass_kg": 21.5,
+        "eggs_count": 0.0,
+        "fish_biomass_kg": 12.0,
+        "last_event": "loaded",
+        "mortality_events": {
+          "chicken": 0,
+          "fish": 0,
+          "prawn": 0
+        },
+        "nitrate_mg_l": 35.0,
+        "ph": 7.2,
+        "plant_biomass_kg": 7.0,
+        "prawn_biomass_kg": 2.5,
+        "stress_days": 1,
+        "temperature_c": 26.0,
+        "water_volume_l": 1000.0
+      },
+      "model_candidate_count": 6,
+      "model_safe_plan_available": false,
+      "name": "feed reserve constraint",
+      "parse_error_count": 0,
+      "protected_aquatic_biomass_kg": 14.5,
+      "rejected_count": 7,
+      "reward_delta_vs_first": null,
+      "reward_delta_vs_naive": 30.1156,
+      "safe_count": 1,
+      "search_improved_first": true,
+      "search_rescued_first_rejection": true,
+      "selected_plan": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 18.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.08,
+          "note": "ammonia_stabilization",
+          "water_exchange_fraction": 0.15
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.1524,
+          "aquatic_biomass_kg": 14.5344,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 16,
+          "dissolved_oxygen_mg_l": 8.5206,
+          "duckweed_kg": 1.024,
+          "edible_biomass_kg": 21.6418,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 12.0272,
+          "last_event": "ammonia_stabilization",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 35.8092,
+          "ph": 7.2057,
+          "plant_biomass_kg": 7.1074,
+          "prawn_biomass_kg": 2.5072,
+          "stress_days": 0,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 7,
+        "reward": 196.5421,
+        "source": "deterministic_fallback",
+        "strategy": "verified emergency fallback",
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration"
+        ]
+      },
+      "selected_plan_safe": true,
+      "unsafe_control_rejected": true,
+      "weight_updates": false
+    },
+    {
+      "aquatic_biomass_kg": 28.0,
+      "baseline": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 6.0,
+          "duckweed_harvest_kg": 0.15,
+          "feed_kg": 0.42,
+          "note": "naive_routine",
+          "water_exchange_fraction": 0.0
+        },
+        "final_state": {
+          "ammonia_mg_l": 2.2357,
+          "aquatic_biomass_kg": 28.1385,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 22,
+          "dissolved_oxygen_mg_l": 2.8582,
+          "duckweed_kg": 10.3474,
+          "edible_biomass_kg": 52.2021,
+          "eggs_count": 4.482,
+          "fish_biomass_kg": 22.1095,
+          "last_event": "naive_routine",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 27.636,
+          "ph": 7.1852,
+          "plant_biomass_kg": 24.0636,
+          "prawn_biomass_kg": 6.029,
+          "stress_days": 2,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "reward": 182.1242,
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "candidate_count": 8,
+      "fallback_used": true,
+      "first_proposal": {
+        "accepted": false,
+        "action": {
+          "aeration_hours": 4.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 1.5,
+          "note": "Increase aeration and feed slightly to boost oxygen levels during emergency recovery.",
+          "water_exchange_fraction": 0.1
+        },
+        "final_state": null,
+        "index": 1,
+        "reward": null,
+        "source": "amd_hosted_gemma",
+        "strategy": "oxygen-first emergency recovery",
+        "violations": [
+          "feed_kg 1.500 exceeds safe daily limit 0.980"
+        ],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "first_proposal_safe": false,
+      "generation_latency_ms": [
+        614.302,
+        721.257,
+        636.327,
+        644.304,
+        685.063,
+        667.005
+      ],
+      "initial_state": {
+        "ammonia_mg_l": 2.8,
+        "aquatic_biomass_kg": 28.0,
+        "chicken_count": 6,
+        "collapsed": false,
+        "day": 21,
+        "dissolved_oxygen_mg_l": 4.0,
+        "duckweed_kg": 10.0,
+        "edible_biomass_kg": 52.0,
+        "eggs_count": 0.0,
+        "fish_biomass_kg": 22.0,
+        "last_event": "loaded",
+        "mortality_events": {
+          "chicken": 0,
+          "fish": 0,
+          "prawn": 0
+        },
+        "nitrate_mg_l": 35.0,
+        "ph": 7.2,
+        "plant_biomass_kg": 24.0,
+        "prawn_biomass_kg": 6.0,
+        "stress_days": 1,
+        "temperature_c": 26.0,
+        "water_volume_l": 1000.0
+      },
+      "model_candidate_count": 6,
+      "model_safe_plan_available": false,
+      "name": "high biomass recovery",
+      "parse_error_count": 0,
+      "protected_aquatic_biomass_kg": 28.0,
+      "rejected_count": 7,
+      "reward_delta_vs_first": null,
+      "reward_delta_vs_naive": 134.2163,
+      "safe_count": 1,
+      "search_improved_first": true,
+      "search_rescued_first_rejection": true,
+      "selected_plan": {
+        "accepted": true,
+        "action": {
+          "aeration_hours": 18.0,
+          "duckweed_harvest_kg": 0.0,
+          "feed_kg": 0.08,
+          "note": "ammonia_stabilization",
+          "water_exchange_fraction": 0.15
+        },
+        "final_state": {
+          "ammonia_mg_l": 1.5324,
+          "aquatic_biomass_kg": 28.0336,
+          "chicken_count": 6,
+          "collapsed": false,
+          "day": 22,
+          "dissolved_oxygen_mg_l": 6.2924,
+          "duckweed_kg": 10.4109,
+          "edible_biomass_kg": 52.1004,
+          "eggs_count": 4.32,
+          "fish_biomass_kg": 22.0265,
+          "last_event": "ammonia_stabilization",
+          "mortality_events": {
+            "chicken": 0,
+            "fish": 0,
+            "prawn": 0
+          },
+          "nitrate_mg_l": 22.8252,
+          "ph": 7.2011,
+          "plant_biomass_kg": 24.0668,
+          "prawn_biomass_kg": 6.007,
+          "stress_days": 0,
+          "temperature_c": 26.0,
+          "water_volume_l": 1000.0
+        },
+        "index": 7,
+        "reward": 316.3405,
+        "source": "deterministic_fallback",
+        "strategy": "verified emergency fallback",
+        "violations": [],
+        "warnings": [
+          "ammonia is elevated; reduce feed and increase biofiltration",
+          "dissolved oxygen is low; increase aeration"
+        ]
+      },
+      "selected_plan_safe": true,
+      "unsafe_control_rejected": true,
+      "weight_updates": false
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "deterministic_fallback_count": 3,
+    "first_proposal_safe_count": 1,
+    "first_proposal_safe_rate": 0.2,
+    "gemma_safe_scenario_count": 2,
+    "generation_latency_ms": {
+      "p50": 654.344,
+      "p95": 716.535,
+      "sample_count": 30
+    },
+    "mean_reward_delta_vs_first": 0.0,
+    "mean_reward_delta_vs_naive": 180.3907,
+    "model_candidate_count": 30,
+    "protected_aquatic_biomass_kg": 103.1,
+    "reward_comparison_count": 1,
+    "safe_rate_lift": 0.8,
+    "scenario_count": 5,
+    "search_improvement_count": 4,
+    "search_rescue_count": 4,
+    "selected_plan_safe_count": 5,
+    "selected_plan_safe_rate": 1.0,
+    "unsafe_control_rejection_rate": 1.0
+  }
+}

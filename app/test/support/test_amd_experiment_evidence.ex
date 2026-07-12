@@ -18,6 +18,24 @@ defmodule ProteinLoop.TestAMDExperimentEvidence do
         tensor_latency_ms: 494.447,
         endpoint_latency_ms: 12_400.5
       },
+      product_evaluation: %{
+        scenario_count: 5,
+        candidates_per_scenario: 6,
+        model_candidate_count: 30,
+        first_safe_rate: 0.2,
+        selected_safe_rate: 1.0,
+        safe_rate_lift: 0.8,
+        rescue_count: 4,
+        improvement_count: 4,
+        gemma_safe_scenario_count: 2,
+        fallback_count: 3,
+        mean_reward_delta_vs_naive: 180.3907,
+        protected_biomass_kg: 103.1,
+        unsafe_control_rejection_rate: 1.0,
+        latency_p50_ms: 654.344,
+        latency_p95_ms: 716.535,
+        scenarios: []
+      },
       search: %{
         method: "verifier_guided_best_of_n",
         claim: "inference-time policy search; no RL training or fine-tuning",
@@ -30,6 +48,10 @@ defmodule ProteinLoop.TestAMDExperimentEvidence do
         parse_error_count: 0,
         reward_delta: 69.3611,
         baseline_reward: 113.0589,
+        initial_state: %{
+          "ammonia_mg_l" => 2.4,
+          "dissolved_oxygen_mg_l" => 4.8
+        },
         selected: selected_candidate(),
         candidates: [unsafe_candidate(), selected_candidate(), alternate_candidate()]
       }
@@ -52,6 +74,11 @@ defmodule ProteinLoop.TestAMDExperimentEvidence do
         "water_exchange_fraction" => 0.2,
         "duckweed_harvest_kg" => 1.0,
         "note" => "Prioritize oxygen while reducing waste load."
+      },
+      final_state: %{
+        "ammonia_mg_l" => 0.85,
+        "dissolved_oxygen_mg_l" => 5.5058,
+        "collapsed" => false
       }
     }
   end
@@ -72,7 +99,8 @@ defmodule ProteinLoop.TestAMDExperimentEvidence do
         "water_exchange_fraction" => 0.6,
         "duckweed_harvest_kg" => 12.0,
         "note" => "deliberately unsafe control"
-      }
+      },
+      final_state: nil
     }
   end
 
@@ -92,6 +120,11 @@ defmodule ProteinLoop.TestAMDExperimentEvidence do
         "water_exchange_fraction" => 0.15,
         "duckweed_harvest_kg" => 0.8,
         "note" => "Balance oxygen, water exchange, and feed reserve."
+      },
+      final_state: %{
+        "ammonia_mg_l" => 1.1,
+        "dissolved_oxygen_mg_l" => 5.0,
+        "collapsed" => false
       }
     }
   end
@@ -107,6 +140,7 @@ defmodule ProteinLoop.TestUnavailableAMDExperimentEvidence do
       public_runtime: "self-hosted CPU fallback",
       experiment_runtime: nil,
       runtime: nil,
+      product_evaluation: nil,
       search: nil,
       error: "AMD experiment evidence file was not found"
     }

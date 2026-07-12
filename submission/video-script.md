@@ -20,7 +20,7 @@ Start with the animated fish-to-eggs flow, executable proof ribbon, `Off-grid co
 
 Narration:
 
-The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. The animated food-flow strip changes between stable, risk, and recovery. The proof ribbon distinguishes the configured Gemma path, deterministic verifier, physical radio capture, producer control, and portable AMD profile. The one-click proof is deterministic; the full-screen mission is the separate live Gemma workflow. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface. Unsafe overfeeding is rejected before execution; the verified recovery visibly stabilizes the same tank.
+The tank is not a looping video. A locally bundled PBR fish model, four recognizable foreground prawns, physical water and glass, shadows, bubbles, and plants are rendered live in Three.js. Phoenix streams the Python simulator state every second into the scene shared by the operator and producer routes. The animated food-flow strip changes between stable, risk, and recovery. The proof ribbon distinguishes the configured Gemma path, deterministic verifier, physical radio capture, producer control, and captured AMD experiment. The AMD replay shows six model plans, verifier decisions, measured chemistry, and the five-emergency safety audit while clearly labeling the public CPU fallback. Rising ammonia clouds and warms the water; falling oxygen reduces bubbles, slows fish, and drives them toward the surface.
 
 ## Scene 3: RLVR Evidence
 
@@ -72,11 +72,11 @@ The operator sets a plain-language goal instead of receiving a generic summary. 
 
 ## Scene 8: Self-hosted Gemma 4
 
-Show the configured model status panel and `submission/cpu-gemma-deployment-evidence.json`.
+Show `Captured AMD experiment`, then expand its verifier decision ledger.
 
 Narration:
 
-The proven model is Gemma 4 E2B, the smallest current Gemma 4 instruction model. The judge demo serves its official QAT Q4 weights through a private llama.cpp service on our owned 8 GB CPU host, while a separate Metal run records the full Sagents and human-approval proof. The radios transport field data; they do not run the model. The OpenAI-compatible `GEMMA_ENDPOINT` contract lets the same agents move to a solar-powered edge host or a future ROCm/vLLM deployment without changing their safety boundary. The public runtime is self-hosted CPU inference, not an AMD-hosted or GPU claim.
+The smallest Gemma 4 instruction model, E2B, ran through vLLM on the assigned AMD notebook using PyTorch 2.10, ROCm 7.2, and a 47.98 GiB `gfx1100` GPU. Gemma generated six recovery plans; deterministic rules admitted three and selected the plan that moved ammonia from 2.4 to 0.85, oxygen from 4.8 to 5.5058, and reward 69.3611 above the naive routine. In a separate five-emergency audit, the first answer was safe only 20 percent of the time. Multi-plan verification rescued four first-answer failures, and a labeled deterministic fallback handled three scenarios where every Gemma proposal was unsafe. The verified system produced a safe final plan in all five scenarios while protecting 103.1 kilograms of aggregate fish-and-prawn biomass. The public site remains on its durable self-hosted CPU inference fallback; this panel replays credential-free AMD evidence rather than claiming a live notebook connection.
 
 ## Closing
 

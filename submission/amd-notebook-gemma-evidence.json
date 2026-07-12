@@ -1,0 +1,96 @@
+{
+  "action": {
+    "aeration_hours": 12.0,
+    "duckweed_harvest_kg": 10.5,
+    "feed_kg": 0.05,
+    "note": "Ammonia level is high (2.4 mg/L), so feed is kept low (<= 0.08).",
+    "water_exchange_fraction": 0.15
+  },
+  "benchmark": {
+    "endpoint_validation_latency_ms": 7257.197
+  },
+  "checked_at": "2026-07-11T22:47:29.842184+00:00",
+  "checks": [
+    {
+      "detail": "1 model(s)",
+      "name": "models endpoint",
+      "ok": true
+    },
+    {
+      "detail": "google/gemma-4-E2B-it",
+      "name": "requested model advertised",
+      "ok": true
+    },
+    {
+      "detail": "valid action inside deterministic safety envelope",
+      "name": "chat action contract",
+      "ok": true
+    },
+    {
+      "detail": "2.10.0+git8514f05",
+      "name": "PyTorch runtime",
+      "ok": true
+    },
+    {
+      "detail": "7.2.53211",
+      "name": "ROCm runtime",
+      "ok": true
+    },
+    {
+      "detail": "0.20.2rc1.dev15+g321fa2d6d",
+      "name": "vLLM runtime",
+      "ok": true
+    },
+    {
+      "detail": "1 device(s)",
+      "name": "AMD GPU available",
+      "ok": true
+    },
+    {
+      "detail": "gfx1100",
+      "name": "AMD GPU architecture",
+      "ok": true
+    },
+    {
+      "detail": "47.98 GiB",
+      "name": "AMD GPU memory",
+      "ok": true
+    },
+    {
+      "detail": "494.447 ms",
+      "name": "GPU tensor execution",
+      "ok": true
+    }
+  ],
+  "endpoint": "http://127.0.0.1:8001",
+  "model": "google/gemma-4-E2B-it",
+  "models": [
+    "google/gemma-4-E2B-it"
+  ],
+  "notebook_service": "https://notebooks.amd.com/hackathon",
+  "provider": "amd_hackathon_notebook",
+  "runtime": {
+    "amd_smi_version": "AMDSMI Tool: 26.2.2+e1a6bc5663 | AMDSMI Library version: 26.2.2 | ROCm version: 7.2.1 | amdgpu version: 6.16.13 | hsmp version: N/A",
+    "gpu_available": true,
+    "gpu_count": 1,
+    "gpu_memory_gib": 47.98,
+    "gpu_name": "",
+    "gpu_tensor_latency_ms": 494.447,
+    "gpu_tensor_test": true,
+    "hardware": {
+      "architecture": "gfx1100",
+      "compute_units": 96,
+      "device_id": "0x744b",
+      "market_name": "0x744b",
+      "vram_mb": 49136,
+      "vram_type": "GDDR6",
+      "vram_vendor": "SAMSUNG"
+    },
+    "python_executable": "/workspace/proteinloop-amd/vllm-gemma4/bin/python",
+    "python_version": "3.12.13",
+    "pytorch_version": "2.10.0+git8514f05",
+    "rocm_version": "7.2.53211",
+    "vllm_version": "0.20.2rc1.dev15+g321fa2d6d"
+  },
+  "schema_version": 1
+}
