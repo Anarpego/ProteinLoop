@@ -7,44 +7,44 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 47485,
+      "bytes": 50241,
       "path": "README.md",
-      "sha256": "f246548b035ca2dd1d1f2da5d70dbfbdb3eb7b4d6983a2990693a0ab0b72a550"
+      "sha256": "11e5510402a8edc4ce3b6757ea3ecb8d8d16ed1713f6dacf706f09a265b7f472"
     },
     {
-      "bytes": 7836,
+      "bytes": 7618,
       "path": "submission/lablab-submission.md",
-      "sha256": "15abc0c03717879edf8827765f8ca7ee8c027787dde14c6f9944252a3bb61503"
+      "sha256": "1fa8c8d5630f99da520e94a57e0b994872bf42c6eaac719fcf47f5faee8951ec"
     },
     {
-      "bytes": 8301,
+      "bytes": 8083,
       "path": "submission/lablab-form.json",
-      "sha256": "1218d8e413ed075b034561758988ea21b54eb644ddb352a9d35642ca2fb3794c"
+      "sha256": "2dcc39f74ad7b209f88498dca79281031899a25078070e9b63d3118375bac086"
     },
     {
-      "bytes": 6489,
+      "bytes": 7170,
       "path": "submission/final-readiness-report.md",
-      "sha256": "be15dd7df07e3df6face88f9df71f206807926938bc319f042e65794546f03b4"
+      "sha256": "053bd73c6d2214a9d5e4e29ac119bb2c8eb73b52bd0d71da71d333e757a6754d"
     },
     {
-      "bytes": 6227,
+      "bytes": 6495,
       "path": "submission/video-script.md",
-      "sha256": "ae3b0145f3cbd0a1ba925771aaddad28291b048501fbd7249852a35f8be3798f"
+      "sha256": "69907b9f0af7d913a25493551cae5f83609ac60c7aaf0d475e5796d0e74de7f8"
     },
     {
-      "bytes": 4049,
+      "bytes": 4316,
       "path": "submission/slides.md",
-      "sha256": "cbc31fc2ca4cb03a8f3cfea06902499d072c6264c2df137beeebfdd631c997a6"
+      "sha256": "a9c15a78dfc828db57558fc837c8d63c9a98d6fc344392de3742f2cb840594a7"
     },
     {
-      "bytes": 4099898,
+      "bytes": 4100460,
       "path": "submission/proteinloop-hackathon-deck.pptx",
-      "sha256": "b47c54540c295bbe218392a5c550ffce7383a4695be6b5f87b1a1dda73100f3d"
+      "sha256": "e352781bcf3af35f8003ddadb87e2af749bfef21a87530c92992e8719a58fbb1"
     },
     {
-      "bytes": 982186,
+      "bytes": 984299,
       "path": "submission/proteinloop-hackathon-deck.pdf",
-      "sha256": "93ae786d74044a5202b520759115e7d8dd63d08f22f069eb8734c6fc886889c3"
+      "sha256": "95f1353faf6eb62a8fc13c95459a72270a985aa6ab2ef584e60887eb4f362ef4"
     },
     {
       "bytes": 11487962,
@@ -192,6 +192,26 @@
       "sha256": "452bf63353791f1594682d743dabdf4000b13d3b7c07f956bf5f0cb9cf38bcaa"
     },
     {
+      "bytes": 2431,
+      "path": "submission/amd-notebook-gemma-evidence.json",
+      "sha256": "bcc64c42532494c7cad860ad56457da97f7909e496b2c4786c88590ef83bd7ff"
+    },
+    {
+      "bytes": 11654,
+      "path": "submission/amd-gemma-policy-search.json",
+      "sha256": "3c4b87ac6514d6053930a80edaf547e6832e7c08121db6c0f2cbd3464c8b1524"
+    },
+    {
+      "bytes": 25555,
+      "path": "submission/amd-gemma-product-evaluation.json",
+      "sha256": "9b6a9f4ba798c27e6989c2dce9511f76abe9528af58434634bec2c4860d02d89"
+    },
+    {
+      "bytes": 2588,
+      "path": "submission/amd-experiment-report.md",
+      "sha256": "0f2de7ce5eda03acef1e7aee5646e4774338c38b6adb32bc18c20027213b68cc"
+    },
+    {
       "bytes": 829,
       "path": "submission/cpu-gemma-deployment-evidence.json",
       "sha256": "ec66b2aa3a17a71ee848d1957227e9f85d5bb38aac824f60f750db016d1b0445"
@@ -207,5 +227,5 @@
       "sha256": "be579e15fe2d63a60d3690ea83b8e33140fe28b987b76df60c475e2b5fab63a2"
     }
   ],
-  "generated_at": "2026-07-11T18:32:53.057967+00:00"
+  "generated_at": "2026-07-12T00:40:16.737976+00:00"
 }

@@ -1,9 +1,9 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-11T18:32:14+00:00
-Commit: `d948de1`
+Generated: 2026-07-12T00:39:31+00:00
+Commit: `ab0afc0`
 Working tree (source): `clean`
-Gemma evidence mode: `local`
+Gemma evidence mode: `amd_notebook`
 
 ## Command Evidence
 
@@ -17,7 +17,9 @@ Gemma evidence mode: `local`
 | Live nRF9151 DECT NR+ evidence | `make nrf9151-live-evidence` | 0 | PASS |
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
-| Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
+| AMD notebook Gemma evidence | `make amd-notebook-gemma-evidence` | 0 | PASS |
+| AMD Gemma verifier-guided search | `make amd-notebook-gemma-search` | 0 | PASS |
+| AMD Gemma five-emergency product audit | `make amd-notebook-product-eval` | 0 | PASS |
 | Public demo environment | `make public-env-check` | 0 | PASS |
 | Public live demo | `make live-demo-check` | 0 | PASS |
 | Final submission readiness | `make submission-ready-check` | 0 | PASS |
@@ -32,10 +34,10 @@ Gemma evidence mode: `local`
 PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check
 DEMO_URL=https://your-public-demo-url make live-demo-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
-make local-gemma-check
-make local-gemma-submission-evidence
+AMD_NOTEBOOK_STATUS=active make credit-check
+make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
 make sagents-evidence
-SUBMISSION_GEMMA_MODE=local make submission-finalize
+SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize
 ```
 
 ## Output Snippets
@@ -44,9 +46,9 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-..........................................................................................................................................................................................
+.......................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 186 tests in 0.179s
+Ran 199 tests in 0.155s
 
 OK
 ```
@@ -163,16 +165,25 @@ python3 scripts/validate_public_deploy.py
 public deploy profile OK
 ```
 
-### Local Gemma endpoint evidence
+### AMD notebook Gemma evidence
 
 ```text
-evidence: submission/local-gemma-evidence.json
-model: google/gemma-4-E2B-it
-endpoint scope: 127.0.0.1
-[ok] models endpoint
-[ok] requested model advertised
-[ok] chat action contract
-local Gemma endpoint evidence OK
+evidence: submission/amd-notebook-gemma-evidence.json
+[ok] google/gemma-4-E2B-it on ROCm 7.2.53211 / gfx1100
+```
+
+### AMD Gemma verifier-guided search
+
+```text
+evidence: submission/amd-gemma-policy-search.json
+[ok] 6 Gemma candidates; 3 safe; +69.3611 vs naive
+```
+
+### AMD Gemma five-emergency product audit
+
+```text
+evidence: submission/amd-gemma-product-evaluation.json
+[ok] 5 emergencies; 100% safe final plans; 103.1 kg protected
 ```
 
 ### Public demo environment
@@ -201,18 +212,20 @@ live demo OK
 ### Final submission readiness
 
 ```text
-SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
+SUBMISSION_GEMMA_MODE="amd_notebook" python3 scripts/validate_submission_readiness.py
 [ok] required local artifacts
 [ok] lablab form matches draft - submission/lablab-form.json
 [ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
-[ok] Local Gemma evidence - google/gemma-4-E2B-it via 127.0.0.1
+[ok] AMD notebook Gemma evidence - google/gemma-4-E2B-it on ROCm 7.2.53211 / gfx1100
+[ok] AMD Gemma verifier-guided search - 6 Gemma candidates; 3 safe; +69.3611 vs naive
+[ok] AMD Gemma five-emergency product audit - 5 emergencies; 100% safe final plans; 103.1 kg protected
 [ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
 [ok] application URL - https://proteinloop.dev-vb.lat
 [ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
 [ok] application control reachable - https://proteinloop.dev-vb.lat
 [ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
 [ok] local git repository
-[ok] local git commit - d948de1cbf941f056d2380fd588c131b6471981e
+[ok] local git commit - ab0afc0508c02fb8f7313c5e3bc09734700a9f6e
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 submission readiness OK
