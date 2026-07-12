@@ -1,0 +1,29 @@
+{
+  "allowed": [
+    "slide-04.layout.json:text-image:3:1",
+    "slide-04.layout.json:text-image:4:1",
+    "slide-04.layout.json:text-image:5:1",
+    "slide-04.layout.json:text-image:6:1",
+    "slide-04.layout.json:text-image:7:1",
+    "slide-04.layout.json:text-image:8:1",
+    "slide-04.layout.json:text-image:9:1",
+    "slide-04.layout.json:text-image:10:1",
+    "slide-04.layout.json:text-image:11:1",
+    "slide-04.layout.json:text-image:12:1",
+    "slide-04.layout.json:text-image:13:1",
+    "slide-04.layout.json:text-image:14:1",
+    "slide-04.layout.json:split-inline:4:5",
+    "slide-04.layout.json:split-inline:6:7",
+    "slide-04.layout.json:split-inline:8:9",
+    "slide-04.layout.json:split-inline:10:11",
+    "slide-04.layout.json:split-inline:12:13",
+    "slide-07.layout.json:split-inline:26:27",
+    "slide-07.layout.json:split-inline:29:30",
+    "slide-07.layout.json:split-inline:32:33",
+    "slide-07.layout.json:split-inline:35:36",
+    "slide-10.layout.json:text-image:20:18",
+    "slide-10.layout.json:split-inline:7:8",
+    "slide-10.layout.json:split-inline:10:11",
+    "slide-10.layout.json:split-inline:13:14"
+  ]
+}

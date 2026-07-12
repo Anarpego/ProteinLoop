@@ -24,13 +24,13 @@ await fs.writeFile(path.join(workspace, "data.json"), `${JSON.stringify(data, nu
 await fs.writeFile(
   path.join(workspace, "profile-plan.txt"),
   [
-    "task mode: create",
+    "task mode: targeted-edit",
     "primary deck-profile: engineering-platform",
     "secondary profile gates: startup pitch, food security, product proof",
-    "required proof objects: real product UI, verifier workflow, executable metrics, off-grid architecture, producer control, runtime boundary",
+    "required proof objects: real product UI, verifier workflow, executable metrics, offline AMD edge architecture, producer control, runtime boundary",
     "source assets: submission/cover.png, operator-overview.png, agent-recovery.png, repository evidence artifacts",
     "brand constraints: no invented AMD or Nordic logos; use product typography and verified UI only",
-    "QA gates: 16:9, readable at thumbnail scale, attached connector direction, proven-versus-next labels, no unmeasured claims",
+    "QA gates: 16:9, readable at thumbnail scale, contained node text, attached connector direction, proven-versus-next labels, no unmeasured claims",
     "known boundary: AMD ROCm/vLLM is captured experiment evidence; current public inference remains CPU llama.cpp",
     "",
   ].join("\n"),
@@ -44,6 +44,9 @@ await fs.writeFile(
     "Agent recovery: submission/deck-assets/agent-recovery.png.",
     `Executable evidence verified July 12, 2026: ${data.pythonTests} Python tests and ${data.phoenixTests} Phoenix tests, zero failures.`,
     "Physical evidence: two nRF9151 boards exchanged matching bidirectional DECT NR+ sequence 100.",
+    "AMD deployment basis: https://rocm.docs.amd.com/en/7.13.0-preview/ai-inference/vllm.html documents local vLLM inference and serving on supported AMD GPUs and APUs.",
+    "Offline model basis: https://huggingface.co/docs/transformers/installation documents pre-caching model files and HF_HUB_OFFLINE=1 for offline or firewalled operation.",
+    "Boundary: the assigned AMD notebook run is captured proof; a farm-installed AMD GPU and measured solar autonomy remain deployment work.",
     "No external identity marks are drawn or approximated.",
     "",
   ].join("\n"),
@@ -59,6 +62,43 @@ await fs.writeFile(
   ].join("\n"),
 );
 await fs.writeFile(
+  path.join(workspace, "template-audit.txt"),
+  [
+    "preserve: ten-slide story, light/dark rhythm, teal/orange/blue system, real UI captures, honest evidence boundaries",
+    "improve: slide 05 title/detail containment and slide 07 offline AMD explanation",
+    "do not imitate: the previous slide 05 overflow or slide 07 generic five-box pipeline",
+    "brand/assets: preserve verified ProteinLoop captures and omit fabricated AMD or Nordic marks",
+    "exact clone: slides 01-04, 06, and 08-10 retain their established macro layouts",
+    "insertion contract: slides 05 and 07 remain in place and inherit the existing title, footer, palette, and typography grammar",
+    "",
+  ].join("\n"),
+);
+await fs.writeFile(
+  path.join(workspace, "template-frame-map.json"),
+  `${JSON.stringify(
+    {
+      mode: "targeted-edit",
+      source: "scripts/generate_submission_deck_v2.mjs",
+      preserved: [1, 2, 3, 4, 6, 8, 9, 10],
+      edited: {
+        5: "repair node title/detail geometry and rejection lane",
+        7: "replace generic edge box with explicit offline AMD decision boundary",
+      },
+    },
+    null,
+    2,
+  )}\n`,
+);
+await fs.writeFile(
+  path.join(workspace, "deviation-log.txt"),
+  [
+    "slide 05: equalized workflow-node geometry and shortened the rejection lane to prevent text collisions",
+    "slide 07: changed the proof object from a generic component row to field / on-site AMD / producer boundaries plus optional cloud and power notes",
+    "all other slide macro layouts remain unchanged",
+    "",
+  ].join("\n"),
+);
+await fs.writeFile(
   path.join(workspace, "claim-spine.txt"),
   [
     "01 ProteinLoop keeps living protein systems understandable and recoverable at the edge.",
@@ -67,7 +107,7 @@ await fs.writeFile(
     "04 Four specialists and one supervisor turn live state into a verified recovery.",
     "05 Gemma can recommend, but only deterministic rules can admit mutation.",
     "06 Executable tests and RLVR evidence make the safety claim inspectable.",
-    "07 DECT NR+ keeps the field hop local; edge compute keeps decision-making local.",
+    "07 After provisioning, an on-site AMD GPU can keep cached Gemma inference and deterministic decisions local while DECT NR+ carries the field hop.",
     "08 The producer retains control of risky or irreversible actions.",
     "09 Verifier feedback turns 10% first-pass safety into 100% model-safe plans on the captured AMD runtime.",
     "10 The market wedge is resilient protein production where connectivity cannot be assumed.",
@@ -98,7 +138,7 @@ await fs.writeFile(
     "04 full-bleed live recovery capture with sequence overlay",
     "05 horizontal authority and reject-flow diagram",
     "06 dark executable metric rail",
-    "07 field-to-edge architecture sequence with proven-versus-next labels",
+    "07 field / on-site AMD / producer boundary diagram with optional cloud and explicit power note",
     "08 asymmetric producer-decision composition",
     "09 dark three-column AMD runtime, repair, and execution evidence",
     "10 split closing ask with real product capture",
@@ -172,14 +212,14 @@ export function pill(ctx, s, text, x, y, w, fill, color = C.ink) {
   ctx.addText(s, { x: x + 10, y: y + 7, w: w - 20, h: 18, text, fontSize: 11, bold: true, color, align: "center" });
 }
 
-export function node(ctx, s, { x, y, w, h, label, detail, fill = C.white, line = C.teal, number }) {
+export function node(ctx, s, { x, y, w, h, label, detail, fill = C.white, line = C.teal, number, labelSize = 16, labelHeight = 44, detailY = 72, detailSize = 11 }) {
   ctx.addShape(s, { x, y, w, h, fill, line: ctx.line(line, 2) });
   if (number) {
-    ctx.addShape(s, { x: x + 14, y: y + 14, w: 32, h: 32, fill: line, line: ctx.line("#00000000", 0), geometry: "ellipse" });
-    ctx.addText(s, { x: x + 14, y: y + 20, w: 32, h: 18, text: number, fontSize: 12, bold: true, color: C.white, align: "center" });
+    ctx.addShape(s, { x: x + 14, y: y + 16, w: 32, h: 32, fill: line, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+    ctx.addText(s, { x: x + 14, y: y + 22, w: 32, h: 18, text: number, fontSize: 12, bold: true, color: C.white, align: "center" });
   }
-  ctx.addText(s, { x: x + (number ? 58 : 18), y: y + 14, w: w - (number ? 74 : 36), h: 26, text: label, fontSize: 17, bold: true, color: C.ink });
-  if (detail) ctx.addText(s, { x: x + 18, y: y + 48, w: w - 36, h: h - 60, text: detail, fontSize: 11, color: C.body });
+  ctx.addText(s, { x: x + (number ? 58 : 18), y: y + 12, w: w - (number ? 74 : 36), h: labelHeight, text: label, fontSize: labelSize, bold: true, color: C.ink, valign: "mid" });
+  if (detail) ctx.addText(s, { x: x + 18, y: y + detailY, w: w - 36, h: h - detailY - 18, text: detail, fontSize: detailSize, color: C.body, valign: "top" });
 }
 
 export function connector(ctx, s, x, y, w, color = C.teal) {
@@ -237,7 +277,7 @@ export default async function slide02(presentation, ctx) {
 export default async function slide03(presentation, ctx) {
   const s = base(presentation, ctx, "Product proof");
   title(ctx, s, "A living system people can understand in seconds.", { y: 54, h: 70, size: 34 });
-  body(ctx, s, "The deployed operator view connects animal behavior, plain-language chemistry, biomass, and action in one scene.", 46, 120, 970, 44, C.body, 15);
+  body(ctx, s, "The deployed operator view connects animal behavior, plain-language chemistry, biomass, and action in one scene.", 46, 130, 970, 38, C.body, 15);
   ctx.addShape(s, { x: 42, y: 176, w: 1192, h: 428, fill: C.white, line: ctx.line(C.line, 1) });
   await ctx.addImage(s, { path: A.overview, x: 56, y: 188, w: 1164, h: 404, fit: "contain", alt: "ProteinLoop operator overview" });
   pill(ctx, s, "SEE THE ANIMALS", 74, 618, 190, C.blueSoft, C.blue);
@@ -268,18 +308,18 @@ export default async function slide05(presentation, ctx) {
   const s = base(presentation, ctx, "Safety boundary");
   title(ctx, s, "The model can recommend. It cannot mutate.", { y: 58, h: 74, size: 38 });
   body(ctx, s, "Authority moves left to right. Every connector ends at an explicit decision boundary.", 46, 132, 820, 38, C.body, 15);
-  node(ctx, s, { x: 42, y: 218, w: 212, h: 138, label: "Gemma specialists", detail: "Fish, prawns, plants, and feed-loop briefs.", fill: C.mint, line: C.teal, number: "1" });
-  connector(ctx, s, 260, 274, 72, C.teal);
-  node(ctx, s, { x: 338, y: 218, w: 190, h: 138, label: "Supervisor", detail: "One bounded proposal.", fill: C.blueSoft, line: C.blue, number: "2" });
-  connector(ctx, s, 536, 274, 72, C.blue);
-  node(ctx, s, { x: 612, y: 198, w: 244, h: 178, label: "Deterministic verifier", detail: "Checks chemistry, feed, water exchange, reserve, and collapse rules.", fill: C.orangeSoft, line: C.orange, number: "3" });
-  connector(ctx, s, 864, 274, 72, C.orange);
-  node(ctx, s, { x: 942, y: 218, w: 246, h: 138, label: "Simulator mutation", detail: "Only admitted actions change state.", fill: C.greenSoft, line: C.green, number: "4" });
-  ctx.addShape(s, { x: 612, y: 430, w: 576, h: 94, fill: C.redSoft, line: ctx.line(C.red, 2) });
-  ctx.addText(s, { x: 638, y: 452, w: 136, h: 24, text: "UNSAFE", fontSize: 14, bold: true, color: C.red });
-  ctx.addText(s, { x: 782, y: 444, w: 378, h: 42, text: "Rejected before mutation and written to the RLVR trace.", fontSize: 16, color: C.ink });
-  ctx.addShape(s, { x: 730, y: 376, w: 3, h: 54, fill: C.red, line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: 714, y: 398, w: 34, h: 24, text: "v", fontSize: 18, bold: true, color: C.red, align: "center" });
+  node(ctx, s, { x: 42, y: 220, w: 220, h: 150, label: "Gemma specialists", detail: "Fish, prawns, plants, and feed-loop briefs.", fill: C.mint, line: C.teal, number: "1" });
+  connector(ctx, s, 270, 282, 46, C.teal);
+  node(ctx, s, { x: 324, y: 220, w: 196, h: 150, label: "Supervisor", detail: "Combines briefs into one bounded proposal.", fill: C.blueSoft, line: C.blue, number: "2" });
+  connector(ctx, s, 528, 282, 48, C.blue);
+  node(ctx, s, { x: 584, y: 220, w: 272, h: 150, label: "Deterministic verifier", detail: "Checks chemistry, feed, water exchange, reserve, and collapse rules.", fill: C.orangeSoft, line: C.orange, number: "3" });
+  connector(ctx, s, 864, 282, 48, C.orange);
+  node(ctx, s, { x: 920, y: 220, w: 268, h: 150, label: "Simulator mutation", detail: "Only admitted actions can change ecosystem state.", fill: C.greenSoft, line: C.green, number: "4" });
+  ctx.addShape(s, { x: 584, y: 438, w: 604, h: 78, fill: C.redSoft, line: ctx.line(C.red, 2) });
+  ctx.addText(s, { x: 610, y: 465, w: 112, h: 24, text: "BLOCKED", fontSize: 14, bold: true, color: C.red });
+  ctx.addText(s, { x: 742, y: 451, w: 418, h: 48, text: "Rejected before state change, logged to the RLVR trace, and returned as verifier feedback.", fontSize: 15, color: C.ink, valign: "mid" });
+  ctx.addShape(s, { x: 718, y: 370, w: 3, h: 68, fill: C.red, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 702, y: 407, w: 34, h: 24, text: "v", fontSize: 18, bold: true, color: C.red, align: "center" });
   footer(ctx, s, "verify_ecosystem_safety is the only authority allowed to admit simulator mutation.");
   return s;
 }`,
@@ -300,43 +340,60 @@ export default async function slide06(presentation, ctx) {
   return s;
 }`,
 
-  `import { C, base, title, body, pill, footer } from "./common.mjs";
+  `import { C, base, title, body, footer } from "./common.mjs";
 export default async function slide07(presentation, ctx) {
   const s = base(presentation, ctx, "Off-grid architecture");
-  title(ctx, s, "Keep the food-control loop local.", { y: 54, h: 72, size: 38 });
-  body(ctx, s, "Three continuity layers separate transport, intelligence, and power claims.", 46, 124, 820, 38, C.body, 15);
-  const xs = [74, 330, 588, 846, 1076];
-  const labels = [
-    ["Tank probes", "next integration", C.orangeSoft, C.orange],
-    ["nRF9151 PT", "physical tank radio", C.blueSoft, C.blue],
-    ["DECT NR+", "no Wi-Fi / SIM / cloud", C.greenSoft, C.green],
-    ["nRF9151 FT", "physical gateway radio", C.blueSoft, C.blue],
-    ["Edge computer", "Gemma + verifier", C.mint, C.teal]
+  title(ctx, s, "An on-site AMD GPU can keep the decision loop local.", { y: 52, h: 72, size: 36 });
+  body(ctx, s, "After the application and Gemma weights are provisioned, farm decisions do not require an internet API.", 46, 132, 900, 32, C.body, 15);
+
+  ctx.addShape(s, { x: 42, y: 204, w: 410, h: 246, fill: C.white, line: ctx.line(C.green, 2) });
+  ctx.addText(s, { x: 64, y: 222, w: 300, h: 22, text: "FIELD LINK · PHYSICALLY PROVEN", fontSize: 11, bold: true, color: C.green });
+  const fieldNodes = [
+    { x: 64, w: 126, label: "nRF9151 PT", note: "tank radio" },
+    { x: 210, w: 84, label: "DECT NR+", note: "private hop" },
+    { x: 314, w: 116, label: "nRF9151 FT", note: "gateway" }
   ];
-  labels.forEach(([label, note, fill, line], i) => {
-    const w = i === 4 ? 158 : 174;
-    ctx.addShape(s, { x: xs[i], y: 240, w, h: 106, fill, line: ctx.line(line, 2) });
-    ctx.addText(s, { x: xs[i] + 14, y: 258, w: w - 28, h: 26, text: label, fontSize: 16, bold: true, color: C.ink, align: "center" });
-    ctx.addText(s, { x: xs[i] + 12, y: 294, w: w - 24, h: 36, text: note, fontSize: 10, color: C.body, align: "center" });
-    if (i < 4) ctx.addText(s, { x: xs[i] + w + 10, y: 277, w: 50, h: 28, text: ">", fontSize: 22, bold: true, color: i === 0 ? C.orange : C.teal, align: "center" });
+  fieldNodes.forEach(({ x, w, label, note }, index) => {
+    ctx.addShape(s, { x, y: 270, w, h: 94, fill: index === 1 ? C.greenSoft : C.blueSoft, line: ctx.line(index === 1 ? C.green : C.blue, 2) });
+    ctx.addText(s, { x: x + 8, y: 288, w: w - 16, h: 26, text: label, fontSize: index === 1 ? 13 : 14, bold: true, color: C.ink, align: "center" });
+    ctx.addText(s, { x: x + 8, y: 326, w: w - 16, h: 20, text: note, fontSize: 10, color: C.body, align: "center" });
+    if (index < 2) ctx.addText(s, { x: x + w + 2, y: 302, w: 18, h: 24, text: ">", fontSize: 17, bold: true, color: C.teal, align: "center" });
   });
-  pill(ctx, s, "NEXT", 108, 204, 100, C.orangeSoft, C.orange);
-  pill(ctx, s, "PROVEN", 366, 204, 110, C.greenSoft, C.green);
-  pill(ctx, s, "PROVEN", 622, 204, 110, C.greenSoft, C.green);
-  pill(ctx, s, "PROVEN", 880, 204, 110, C.greenSoft, C.green);
-  pill(ctx, s, "PROVEN", 1098, 204, 110, C.greenSoft, C.green);
-  ctx.addShape(s, { x: 74, y: 418, w: 1106, h: 1, fill: C.line, line: ctx.line("#00000000", 0) });
-  const claims = [
-    ["NO WI-FI", "DECT NR+ carries the tank-to-gateway hop.", C.blue],
-    ["NO CLOUD", "Self-hosted Gemma and deterministic rules remain local.", C.teal],
-    ["NO GRID", "Solar + battery is the next measured autonomy proof.", C.orange]
+  ctx.addText(s, { x: 64, y: 390, w: 344, h: 34, text: "Two physical boards exchanged the same bidirectional sequence 100.", fontSize: 12, color: C.body });
+
+  ctx.addText(s, { x: 462, y: 302, w: 30, h: 28, text: ">", fontSize: 22, bold: true, color: C.teal, align: "center" });
+  ctx.addShape(s, { x: 502, y: 186, w: 438, h: 284, fill: C.blueSoft, line: ctx.line(C.blue, 3) });
+  ctx.addText(s, { x: 526, y: 204, w: 380, h: 22, text: "ON-SITE AMD GPU · DEPLOYMENT OPTION", fontSize: 11, bold: true, color: C.blue });
+  ctx.addText(s, { x: 526, y: 238, w: 380, h: 34, text: "Gemma stays at the farm", fontSize: 24, bold: true, color: C.ink });
+  const amdRows = [
+    ["Cached model", "Gemma 4 E2B weights"],
+    ["ROCm + vLLM", "local OpenAI-compatible endpoint"],
+    ["Python verifier", "blocks unsafe actions"],
+    ["Simulator + UI", "state, receipts, and producer control"]
   ];
-  claims.forEach(([label, note, color], i) => {
-    const x = 84 + i * 386;
-    ctx.addText(s, { x, y: 458, w: 150, h: 26, text: label, fontSize: 18, bold: true, color });
-    ctx.addText(s, { x, y: 496, w: 326, h: 54, text: note, fontSize: 14, color: C.body });
+  amdRows.forEach(([label, note], index) => {
+    const y = 286 + index * 34;
+    ctx.addShape(s, { x: 526, y: y + 4, w: 5, h: 22, fill: index < 2 ? C.blue : C.teal, line: ctx.line("#00000000", 0) });
+    ctx.addText(s, { x: 544, y, w: 128, h: 26, text: label, fontSize: 12, bold: true, color: C.ink });
+    ctx.addText(s, { x: 678, y, w: 228, h: 26, text: note, fontSize: 12, color: C.body });
   });
-  footer(ctx, s, "Physical chemistry acquisition and measured solar autonomy are future field proofs, not current claims.");
+  ctx.addShape(s, { x: 526, y: 426, w: 380, h: 28, fill: C.mint, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 536, y: 433, w: 360, h: 16, text: "No remote API in the action path", fontSize: 11, bold: true, color: C.teal, align: "center" });
+
+  ctx.addText(s, { x: 950, y: 302, w: 30, h: 28, text: ">", fontSize: 22, bold: true, color: C.orange, align: "center" });
+  ctx.addShape(s, { x: 990, y: 252, w: 220, h: 136, fill: C.orangeSoft, line: ctx.line(C.orange, 2) });
+  ctx.addText(s, { x: 1012, y: 270, w: 174, h: 20, text: "LOCAL LAN", fontSize: 10, bold: true, color: C.orange, align: "center" });
+  ctx.addText(s, { x: 1012, y: 302, w: 174, h: 30, text: "Producer control", fontSize: 18, bold: true, color: C.ink, align: "center" });
+  ctx.addText(s, { x: 1012, y: 342, w: 174, h: 28, text: "Approve risky actions and inspect receipts.", fontSize: 11, color: C.body, align: "center" });
+
+  ctx.addShape(s, { x: 502, y: 500, w: 708, h: 70, fill: C.white, line: ctx.line(C.line, 1) });
+  ctx.addText(s, { x: 524, y: 518, w: 150, h: 22, text: "OPTIONAL CLOUD", fontSize: 11, bold: true, color: C.orange });
+  ctx.addText(s, { x: 684, y: 512, w: 502, h: 34, text: "Sync evidence and model updates when connectivity returns; never required to verify or execute.", fontSize: 13, color: C.body, valign: "mid" });
+
+  ctx.addShape(s, { x: 42, y: 604, w: 1168, h: 50, fill: C.orangeSoft, line: ctx.line(C.orange, 1) });
+  ctx.addText(s, { x: 64, y: 619, w: 180, h: 22, text: "POWER BOUNDARY", fontSize: 11, bold: true, color: C.orange });
+  ctx.addText(s, { x: 248, y: 613, w: 930, h: 28, text: "AMD compute still needs electricity; solar + battery autonomy is the next measured field proof.", fontSize: 13, color: C.ink, valign: "mid" });
+  footer(ctx, s, "AMD inference is proven on the assigned notebook; a farm-installed AMD GPU remains the next hardware deployment step.");
   return s;
 }`,
 
@@ -365,7 +422,7 @@ export default async function slide08(presentation, ctx) {
 export default async function slide09(presentation, ctx) {
   const s = base(presentation, ctx, "AMD Gemma proof", true);
   title(ctx, s, "Verifier feedback turns 10% first-pass safety into 100%.", { y: 62, h: 82, size: 37, color: C.white });
-  body(ctx, s, "Exact verifier failures return as bounded feedback; every revision is parsed and verified again.", 48, 136, 920, 38, "#c2d6dd", 16);
+  body(ctx, s, "Exact verifier failures return as bounded feedback; every revision is parsed and verified again.", 48, 152, 920, 32, "#c2d6dd", 16);
   const columns = [
     { x: 52, label: "CAPTURED AMD RUNTIME", color: C.blue, heading: "Gemma 4 E2B", lines: ["PyTorch 2.10 · ROCm 7.2", "vLLM 0.20.2 · gfx1100", "47.98 GiB AMD GPU memory"] },
     { x: 450, label: "20-EMERGENCY REPAIR", color: C.teal2, heading: "18 repairs · zero fallback", lines: ["2/20 first answers safe", "17 repaired once · 1 twice", "20/20 model-safe · no weight update"] },

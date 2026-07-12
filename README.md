@@ -40,6 +40,8 @@ That changes the promise from "monitor an aquaponic garden" to "protect every fo
 
 The two nRF9151 boards are radios and embedded acquisition nodes; they do not run Gemma. The PT board maps to the tank edge. The FT board maps to the gateway radio. A **separate edge computer** runs self-hosted Gemma, Phoenix, the Python simulator/verifier, and producer controls. Nordic's [nRF9151 product specification](https://docs.nordicsemi.com/r/bundle/ps_nrf9151/page/product_overview.html) documents the integrated DECT NR+ network processor and Cortex-M33 application processor; its embedded resources are for sensing and communications, not this language-model runtime.
 
+That edge computer can use CPU inference, as the durable public demo does today, or a supported on-site AMD GPU. After Gemma weights and the application are provisioned locally, ROCm and vLLM can serve the same OpenAI-compatible endpoint from cached files while the verifier, simulator, Phoenix UI, and producer decisions remain on the farm. Internet access is then optional for evidence synchronization and model updates rather than part of the action path. The assigned AMD notebook proves Gemma 4 E2B execution through ROCm/vLLM; a farm-installed AMD GPU is a deployment option, not a claimed field installation. Electricity is still required, and solar-plus-battery autonomy remains an unmeasured next proof.
+
 ### Target Field Acquisition Path
 
 ```mermaid

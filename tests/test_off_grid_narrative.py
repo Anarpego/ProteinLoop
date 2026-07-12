@@ -16,6 +16,10 @@ class OffGridNarrativeTests(unittest.TestCase):
             "No cloud",
             "No electrical grid",
             "separate edge computer",
+            "supported on-site AMD GPU",
+            "cached files",
+            "Internet access is then optional",
+            "Electricity is still required",
             "does **not yet** claim physical chemistry-probe acquisition",
         ]:
             self.assertIn(marker, readme)
@@ -36,10 +40,19 @@ class OffGridNarrativeTests(unittest.TestCase):
 
         self.assertIn("This local hop needs no Wi-Fi, SIM, or cloud account", video)
         self.assertIn("Physical probes and measured solar-plus-battery autonomy", video)
-        self.assertIn("DECT NR+ keeps the field hop local", deck)
-        self.assertIn("measured solar autonomy are future field proofs", deck)
+        self.assertIn("An on-site AMD GPU can keep the decision loop local", deck)
+        self.assertIn("No remote API in the action path", deck)
+        self.assertIn("solar + battery autonomy is the next measured field proof", deck)
+        self.assertIn("farm-installed AMD GPU remains the next hardware deployment step", deck)
         self.assertIn("private 8 GB host", deck)
         self.assertIn("self-hosted CPU inference", video)
+
+    def test_safety_nodes_reserve_separate_title_and_detail_regions(self):
+        deck = (ROOT / "scripts/generate_submission_deck_v2.mjs").read_text(encoding="utf-8")
+
+        self.assertIn("labelHeight = 44, detailY = 72", deck)
+        self.assertIn("y: y + detailY", deck)
+        self.assertIn("Rejected before state change", deck)
 
     def test_rendered_deck_uses_tracked_product_captures(self):
         deck = (ROOT / "scripts/generate_submission_deck_v2.mjs").read_text(encoding="utf-8")

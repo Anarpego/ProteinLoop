@@ -7,9 +7,9 @@
       "sha256": "215a5de5df63e23386afbd0a19f8154b0d9be7060ae554d7bfc0d3b6447b7e32"
     },
     {
-      "bytes": 53894,
+      "bytes": 54608,
       "path": "README.md",
-      "sha256": "90f564bfefe5906282836d12415a670f4fcd191658371d07ec906266cdd8d296"
+      "sha256": "f254178a0b06e98541ec59e825e7e6af89d37c704f0a55d9c2f2fafc5565c439"
     },
     {
       "bytes": 7774,
@@ -32,19 +32,19 @@
       "sha256": "a99d115eceac5a85808820e86d7bcace2ce50038c874256fd160464db58b9dfe"
     },
     {
-      "bytes": 3204,
+      "bytes": 3878,
       "path": "submission/slides.md",
-      "sha256": "b8c2ff29abf59b8c5fb0068df15b16b545392961902fdcc721e434dc7baa3a57"
+      "sha256": "0390a8d2c1ee26ec185671b86c9aacd2b64833efaad299f1ce6c894bb81cc6d4"
     },
     {
-      "bytes": 4100596,
+      "bytes": 4101564,
       "path": "submission/proteinloop-hackathon-deck.pptx",
-      "sha256": "ddc9e8fbadff9e63bc7d79ab49ac6f1ca9195f1cff9a14dac6c203b2838d737d"
+      "sha256": "be1e3a0d7cddb0b0b1ae3c7b79eebb9b6ffed17673d21beec36d51e0b7036e3d"
     },
     {
-      "bytes": 1470511,
+      "bytes": 1503485,
       "path": "submission/proteinloop-hackathon-deck.pdf",
-      "sha256": "df4b82a3d08830e6c43f6d4cd89b6e551ba3c14f909c16250567f7987f271bb2"
+      "sha256": "11f57bd50ae32fb7e33ea5e4c8639c11b3f915c04d7c103e4fa45ed546f9cf5a"
     },
     {
       "bytes": 11487962,
@@ -247,5 +247,5 @@
       "sha256": "be579e15fe2d63a60d3690ea83b8e33140fe28b987b76df60c475e2b5fab63a2"
     }
   ],
-  "generated_at": "2026-07-12T06:35:11.016712+00:00"
+  "generated_at": "2026-07-12T18:05:52.442905+00:00"
 }

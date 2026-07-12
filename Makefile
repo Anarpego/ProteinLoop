@@ -41,6 +41,7 @@ submission-render:
 	python3 scripts/export_lablab_form.py
 	PRESENTATION_WORKSPACE="$(PRESENTATION_WORKSPACE)" node scripts/generate_submission_deck_v2.mjs
 	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir "$(PRESENTATION_WORKSPACE)/slides" --out submission/proteinloop-hackathon-deck.pptx --preview-dir "$(PRESENTATION_WORKSPACE)/preview" --layout-dir "$(PRESENTATION_WORKSPACE)/layout" --contact-sheet "$(PRESENTATION_WORKSPACE)/contact-sheet.png" --slide-count 10
+	node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/check_layout_quality.mjs --layout "$(PRESENTATION_WORKSPACE)/layout" --allowlist scripts/presentation_layout_allowlist.json
 	PRESENTATION_PREVIEW_DIR="$(PRESENTATION_WORKSPACE)/preview" python3 scripts/export_slide_pdf.py
 	python3 scripts/validate_visual_evidence.py
 	python3 scripts/build_submission_bundle.py

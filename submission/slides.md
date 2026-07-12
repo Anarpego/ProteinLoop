@@ -7,6 +7,7 @@ Regenerate with:
 ```sh
 PRESENTATION_WORKSPACE=outputs/manual-proteinloop/presentations/submission-deck node scripts/generate_submission_deck_v2.mjs
 node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/build_artifact_deck.mjs --slides-dir outputs/manual-proteinloop/presentations/submission-deck/slides --out submission/proteinloop-hackathon-deck.pptx --preview-dir outputs/manual-proteinloop/presentations/submission-deck/preview --layout-dir outputs/manual-proteinloop/presentations/submission-deck/layout --contact-sheet outputs/manual-proteinloop/presentations/submission-deck/contact-sheet.png --slide-count 10
+node /Users/anibalperez/.codex/plugins/cache/openai-primary-runtime/presentations/26.521.10419/skills/presentations/scripts/check_layout_quality.mjs --layout outputs/manual-proteinloop/presentations/submission-deck/layout --allowlist scripts/presentation_layout_allowlist.json
 PRESENTATION_PREVIEW_DIR=outputs/manual-proteinloop/presentations/submission-deck/preview python3 scripts/export_slide_pdf.py
 ```
 
@@ -28,7 +29,7 @@ The operator watches observation, four specialist briefs, supervisor synthesis, 
 
 ## 5. Safety Boundary
 
-Gemma can recommend, but only `verify_ecosystem_safety` can admit simulator mutation. Unsafe proposals are rejected and recorded before state changes.
+Gemma can recommend, but only `verify_ecosystem_safety` can admit simulator mutation. Every role has a separate title and detail region; unsafe proposals are rejected, recorded, and returned as verifier feedback before state changes.
 
 ## 6. Executable Evidence
 
@@ -36,7 +37,7 @@ The simulator is also the policy evaluator and RLVR source of truth. The one-cli
 
 ## 7. Off-Grid Architecture
 
-Two physical nRF9151 boards prove the private DECT NR+ field hop. A separate edge computer runs Gemma and the verifier. Physical probes and measured solar autonomy remain explicitly labeled next proofs.
+Two physical nRF9151 boards prove the private DECT NR+ field hop. After provisioning, an on-site AMD GPU can serve cached Gemma 4 weights through ROCm/vLLM while the deterministic verifier, simulator, Phoenix UI, and producer controls remain local. Internet access is optional for evidence synchronization and model updates, not for the action path. The captured AMD notebook run proves the software stack; a farm-installed AMD GPU, physical probes, and measured solar autonomy remain explicitly labeled next proofs.
 
 ## 8. Producer Control
 

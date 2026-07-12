@@ -12,3 +12,6 @@
 - [x] Rebuild and visually verify the final PDF.
 - [x] Refresh the deck and source outline with the imported AMD verifier-feedback experiment.
 - [x] Align the README and five-minute recording script with the final submission artifacts.
+- [x] Repair the safety-boundary diagram so node titles and details cannot overlap.
+- [x] Explain the offline AMD edge deployment option without overstating current field proof.
+- [x] Regenerate and visually verify all ten final slides after the architecture revision.

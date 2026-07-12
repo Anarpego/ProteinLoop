@@ -18,6 +18,8 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 6. The repo shall include validation that checks required submission artifacts, the PPTX slide count, and the PDF page count.
 7. README shall document both deck artifacts and the validation command.
 8. The AMD proof shall distinguish the temporary notebook experiment from the durable public CPU deployment and shall report the validated 20-emergency repair result without implying training or a model-weight update.
+9. The off-grid architecture shall explain how an on-site AMD GPU can run cached Gemma weights through ROCm/vLLM without an internet dependency while DECT NR+ carries the local field hop.
+10. The deck shall distinguish internet independence from power independence: cloud synchronization is optional for local decisions, while measured solar and battery autonomy remain future field proof.
 
 ## Acceptance Criteria
 
@@ -29,3 +31,5 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 6. `python3 scripts/validate_submission_artifacts.py` passes.
 7. Existing regression checks still pass.
 8. The AMD evidence slide reports 2/20 first answers safe, 18 verifier-feedback repairs, 20/20 model-safe outcomes, and zero fallback, while labeling the result as captured inference-time evidence.
+9. The safety-boundary diagram renders every node title and detail inside its assigned box with no overlap.
+10. The off-grid architecture slide shows cached Gemma, ROCm/vLLM, the deterministic verifier, simulator, and local operator UI inside the on-site decision boundary, with cloud access shown only as optional synchronization.
