@@ -20,6 +20,10 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 8. The AMD proof shall distinguish the temporary notebook experiment from the durable public CPU deployment and shall report the validated 20-emergency repair result without implying training or a model-weight update.
 9. The off-grid architecture shall explain how an on-site AMD GPU can run cached Gemma weights through ROCm/vLLM without an internet dependency while DECT NR+ carries the local field hop.
 10. The deck shall distinguish internet independence from power independence: cloud synchronization is optional for local decisions, while measured solar and battery autonomy remain future field proof.
+11. The deck shall use a cohesive editorial visual system with image-led product proof, restrained containers, deliberate light/dark rhythm, and at least five distinct macro-layout families.
+12. The AMD result shall be visualized as a first-pass-to-verified-safety bridge rather than a generic equal-weight card grid.
+13. The off-grid architecture shall use a visible local-farm containment boundary so judges can distinguish field transport, on-site AMD inference, producer control, optional cloud synchronization, and the separate power dependency.
+14. The Unicorn Track story shall explicitly show product/market potential through a sourced aquaculture market signal, named initial buyers, a repeatable revenue model, and a tank-to-site-to-network expansion path.
 
 ## Acceptance Criteria
 
@@ -33,3 +37,7 @@ The submission packet includes an editable `.pptx` deck and the `.pdf` format re
 8. The AMD evidence slide reports 2/20 first answers safe, 18 verifier-feedback repairs, 20/20 model-safe outcomes, and zero fallback, while labeling the result as captured inference-time evidence.
 9. The safety-boundary diagram renders every node title and detail inside its assigned box with no overlap.
 10. The off-grid architecture slide shows cached Gemma, ROCm/vLLM, the deterministic verifier, simulator, and local operator UI inside the on-site decision boundary, with cloud access shown only as optional synchronization.
+11. The rendered contact sheet presents at least five visually distinct slide families, with no three consecutive slides sharing the same composition and no more than two card-grid compositions.
+12. Kicker rows use named marker/label pairs and the final artifact-tool layout check reports zero unallowlisted errors or warnings.
+13. Full-resolution review confirms that the safety flow, local-farm architecture, human decision panel, and AMD repair bridge remain legible without wrapped headings or decorative connector ambiguity.
+14. At least one slide answers who pays, what they buy, how ProteinLoop earns recurring revenue, and how the initial farm deployment expands without inventing pricing or customer traction.

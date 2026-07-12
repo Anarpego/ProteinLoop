@@ -12,19 +12,19 @@
       "sha256": "f254178a0b06e98541ec59e825e7e6af89d37c704f0a55d9c2f2fafc5565c439"
     },
     {
-      "bytes": 7774,
+      "bytes": 8101,
       "path": "submission/lablab-submission.md",
-      "sha256": "15b13709c2d496f530de2637b1eab4c86394ce18d8767bb915d92f9f6c4869a5"
+      "sha256": "24afb0f43ff0b40b6762575595f651764125148f9f3713d1798339e8e1cebd0b"
     },
     {
-      "bytes": 8239,
+      "bytes": 8566,
       "path": "submission/lablab-form.json",
-      "sha256": "dc63323501e78d4a922a3a3a7f6fdb1eed5c15f7585edba851080859ec9775cd"
+      "sha256": "a54a8dc6f74f13ddea9775ad0ee29380206c0beba0cb9ac4371b775a5b520386"
     },
     {
-      "bytes": 7544,
+      "bytes": 7033,
       "path": "submission/final-readiness-report.md",
-      "sha256": "1d123e288d52b42b9a3678d84451c07a0a009809634e9050f685f710490d46d8"
+      "sha256": "5857538332c5a5b6eab71d8d8cd7054e52ff71d6f3f5cdbaaf16f22d037486c0"
     },
     {
       "bytes": 4664,
@@ -32,19 +32,19 @@
       "sha256": "a99d115eceac5a85808820e86d7bcace2ce50038c874256fd160464db58b9dfe"
     },
     {
-      "bytes": 3878,
+      "bytes": 4154,
       "path": "submission/slides.md",
-      "sha256": "0390a8d2c1ee26ec185671b86c9aacd2b64833efaad299f1ce6c894bb81cc6d4"
+      "sha256": "76e0d72a032c2aef1d1144f2eec514f48fcf1e2fd6c12feb305462dd0b903a3f"
     },
     {
-      "bytes": 4101564,
+      "bytes": 4875627,
       "path": "submission/proteinloop-hackathon-deck.pptx",
-      "sha256": "be1e3a0d7cddb0b0b1ae3c7b79eebb9b6ffed17673d21beec36d51e0b7036e3d"
+      "sha256": "45e42efdc2f94c0172753ac92a34a5581e7c2d2d65c7ede16bc758b5ebb6b7b8"
     },
     {
-      "bytes": 1503485,
+      "bytes": 1285242,
       "path": "submission/proteinloop-hackathon-deck.pdf",
-      "sha256": "11f57bd50ae32fb7e33ea5e4c8639c11b3f915c04d7c103e4fa45ed546f9cf5a"
+      "sha256": "7ffb90b8842ddd456bfe7cb6edfecaa92753ac5c59953942f99e1f59a140b650"
     },
     {
       "bytes": 11487962,
@@ -247,5 +247,5 @@
       "sha256": "be579e15fe2d63a60d3690ea83b8e33140fe28b987b76df60c475e2b5fab63a2"
     }
   ],
-  "generated_at": "2026-07-12T18:05:52.442905+00:00"
+  "generated_at": "2026-07-12T19:24:34.270905+00:00"
 }

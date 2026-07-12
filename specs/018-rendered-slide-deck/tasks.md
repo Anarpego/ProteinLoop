@@ -15,3 +15,8 @@
 - [x] Repair the safety-boundary diagram so node titles and details cannot overlap.
 - [x] Explain the offline AMD edge deployment option without overstating current field proof.
 - [x] Regenerate and visually verify all ten final slides after the architecture revision.
+- [x] Replace the documentation-like box cadence with a cohesive editorial visual system.
+- [x] Rebuild the off-grid slide around a visible local-farm containment boundary.
+- [x] Rebuild the AMD evidence slide as a first-pass-to-model-safe repair bridge.
+- [x] Inspect the full contact sheet and weakest slides at full resolution, then record the final rubric score.
+- [x] Add a sourced Unicorn business slide and make the closing ask communicate beachhead, revenue, and expansion.

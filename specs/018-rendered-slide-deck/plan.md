@@ -7,6 +7,8 @@
 - Store final PPTX and PDF artifacts in `submission/`.
 - Add `scripts/validate_submission_artifacts.py`.
 - Repair the safety-boundary node geometry and replace the generic edge-compute label with an explicit offline AMD deployment path.
+- Restyle the complete deck around an editorial aquaculture/engineering system: stronger typography, fewer outlines, image-led proof, a local-farm containment diagram, and a data-led AMD repair bridge.
+- Rebalance the technical story for the Unicorn Track by replacing redundant test exposition with sourced market context, buyer/value/revenue logic, and a credible land-and-expand path.
 
 ## Verification
 
@@ -16,3 +18,4 @@
 - Validate PPTX internals with Python `zipfile`.
 - Validate PDF page count and form/bundle references.
 - Run project regression tests.
+- Score the final contact sheet against the presentation comeback rubric and iterate any dimension below four.

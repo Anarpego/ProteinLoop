@@ -11,8 +11,9 @@ const slidesDir = path.join(workspace, "slides");
 const assetDir = path.join(root, "submission/deck-assets");
 
 const data = {
-  pythonTests: 220,
+  pythonTests: 222,
   phoenixTests: 141,
+  totalTests: 363,
   rewardDelta: 463,
   collapseAvoidance: "100%",
   animalBiomass: "14.5 kg",
@@ -24,13 +25,13 @@ await fs.writeFile(path.join(workspace, "data.json"), `${JSON.stringify(data, nu
 await fs.writeFile(
   path.join(workspace, "profile-plan.txt"),
   [
-    "task mode: targeted-edit",
+    "task mode: create",
     "primary deck-profile: engineering-platform",
     "secondary profile gates: startup pitch, food security, product proof",
-    "required proof objects: real product UI, verifier workflow, executable metrics, offline AMD edge architecture, producer control, runtime boundary",
-    "source assets: submission/cover.png, operator-overview.png, agent-recovery.png, repository evidence artifacts",
-    "brand constraints: no invented AMD or Nordic logos; use product typography and verified UI only",
-    "QA gates: 16:9, readable at thumbnail scale, contained node text, attached connector direction, proven-versus-next labels, no unmeasured claims",
+    "required proof objects: real product UI, authority flow, sourced market wedge, buyer and revenue model, local-farm containment architecture, producer decision surface, AMD repair bridge",
+    "source assets: operator-overview.png, agent-recovery.png, repository evidence artifacts",
+    "brand constraints: no invented AMD or Nordic logos; use verified ProteinLoop product captures and typography only",
+    "QA gates: 16:9, five or more macro-layout families, no generic card cadence, attached directional flow, honest proven-versus-next boundaries",
     "known boundary: AMD ROCm/vLLM is captured experiment evidence; current public inference remains CPU llama.cpp",
     "",
   ].join("\n"),
@@ -39,13 +40,13 @@ await fs.writeFile(
   path.join(workspace, "source-notes.txt"),
   [
     "Product captures were provided by the user from the deployed ProteinLoop application.",
-    "Cover source: submission/cover.png, generated from the deployed full-screen tank capture.",
     "Operator overview: submission/deck-assets/operator-overview.png.",
-    "Agent recovery: submission/deck-assets/agent-recovery.png.",
+    "Agent recovery and cover image: submission/deck-assets/agent-recovery.png.",
     `Executable evidence verified July 12, 2026: ${data.pythonTests} Python tests and ${data.phoenixTests} Phoenix tests, zero failures.`,
     "Physical evidence: two nRF9151 boards exchanged matching bidirectional DECT NR+ sequence 100.",
     "AMD deployment basis: https://rocm.docs.amd.com/en/7.13.0-preview/ai-inference/vllm.html documents local vLLM inference and serving on supported AMD GPUs and APUs.",
     "Offline model basis: https://huggingface.co/docs/transformers/installation documents pre-caching model files and HF_HUB_OFFLINE=1 for offline or firewalled operation.",
+    "Market evidence: https://www.fao.org/newsroom/detail/sofia-2026--global-fisheries-and-aquaculture-production-reaches-new-highs/en reports 103 million tonnes of aquaculture aquatic-animal production in 2024, valued at $371 billion at farm gate.",
     "Boundary: the assigned AMD notebook run is captured proof; a farm-installed AMD GPU and measured solar autonomy remain deployment work.",
     "No external identity marks are drawn or approximated.",
     "",
@@ -54,47 +55,10 @@ await fs.writeFile(
 await fs.writeFile(
   path.join(workspace, "reference-audit.txt"),
   [
-    "The previous deck was accurate but visually repetitive: nine slides used similar heading-plus-box compositions.",
-    "Preserve: light theme, teal system color, deterministic-verifier language, honest proof boundaries.",
-    "Improve: image-led opening, real UI proof, stronger hierarchy, fewer words, distinct slide rhythms, larger metrics.",
-    "Avoid: decorative card grids, vague AI-layer labels, live-public AMD claims, unmeasured solar or sensor claims.",
-    "",
-  ].join("\n"),
-);
-await fs.writeFile(
-  path.join(workspace, "template-audit.txt"),
-  [
-    "preserve: ten-slide story, light/dark rhythm, teal/orange/blue system, real UI captures, honest evidence boundaries",
-    "improve: slide 05 title/detail containment and slide 07 offline AMD explanation",
-    "do not imitate: the previous slide 05 overflow or slide 07 generic five-box pipeline",
-    "brand/assets: preserve verified ProteinLoop captures and omit fabricated AMD or Nordic marks",
-    "exact clone: slides 01-04, 06, and 08-10 retain their established macro layouts",
-    "insertion contract: slides 05 and 07 remain in place and inherit the existing title, footer, palette, and typography grammar",
-    "",
-  ].join("\n"),
-);
-await fs.writeFile(
-  path.join(workspace, "template-frame-map.json"),
-  `${JSON.stringify(
-    {
-      mode: "targeted-edit",
-      source: "scripts/generate_submission_deck_v2.mjs",
-      preserved: [1, 2, 3, 4, 6, 8, 9, 10],
-      edited: {
-        5: "repair node title/detail geometry and rejection lane",
-        7: "replace generic edge box with explicit offline AMD decision boundary",
-      },
-    },
-    null,
-    2,
-  )}\n`,
-);
-await fs.writeFile(
-  path.join(workspace, "deviation-log.txt"),
-  [
-    "slide 05: equalized workflow-node geometry and shortened the rejection lane to prevent text collisions",
-    "slide 07: changed the proof object from a generic component row to field / on-site AMD / producer boundaries plus optional cloud and power notes",
-    "all other slide macro layouts remain unchanged",
+    "The source deck was accurate and clean but several slides still read like formatted documentation.",
+    "Preserve: verified product captures, light/dark rhythm, teal/orange/blue semantics, deterministic-verifier language, honest proof boundaries.",
+    "Improve: editorial typography, image-led proof, fewer outlines, stronger whitespace, explicit containment, and data-led evidence bridges.",
+    "Avoid: generic equal-weight cards, decorative gradients, vague AI labels, live-public AMD claims, and unmeasured solar or sensor claims.",
     "",
   ].join("\n"),
 );
@@ -103,14 +67,14 @@ await fs.writeFile(
   [
     "01 ProteinLoop keeps living protein systems understandable and recoverable at the edge.",
     "02 One shared water loop means one chemistry failure threatens every food output.",
-    "03 The deployed product makes the loop visible in one operator view.",
-    "04 Four specialists and one supervisor turn live state into a verified recovery.",
+    "03 The deployed product makes animal behavior, chemistry, biomass, and action visible together.",
+    "04 Four specialists and one supervisor turn live state into a visible recovery mission.",
     "05 Gemma can recommend, but only deterministic rules can admit mutation.",
-    "06 Executable tests and RLVR evidence make the safety claim inspectable.",
-    "07 After provisioning, an on-site AMD GPU can keep cached Gemma inference and deterministic decisions local while DECT NR+ carries the field hop.",
-    "08 The producer retains control of risky or irreversible actions.",
+    "06 A $371B aquaculture economy creates a large market for a local resilience layer; ProteinLoop starts with hard-to-connect fish and prawn operators.",
+    "07 An on-site AMD GPU can keep the decision loop local while DECT NR+ carries the field hop.",
+    "08 The workflow pauses at the only irreversible boundary for a producer decision.",
     "09 Verifier feedback turns 10% first-pass safety into 100% model-safe plans on the captured AMD runtime.",
-    "10 The market wedge is resilient protein production where connectivity cannot be assumed.",
+    "10 ProteinLoop lands at one tank, earns through deployment and recurring site software, then expands through farms and cooperative networks.",
     "",
   ].join("\n"),
 );
@@ -118,30 +82,34 @@ await fs.writeFile(
   path.join(workspace, "design-system.txt"),
   [
     "slide size: 1280x720, 16:9",
-    "backgrounds: cool white for product and architecture; deep ink for executable and AMD evidence",
-    "typography: installed title sans plus utilitarian body sans; claim titles 34-42 px; body 14-18 px",
-    "palette: ink and cool white base, teal system accent, orange decision accent, blue runtime proof",
-    "diagram grammar: left-to-right authority flow with attached semantic connectors and explicit reject branch",
-    "container grammar: boxes only for system boundaries, decisions, or evidence groups; square corners",
-    "footer grammar: 9 px source or boundary note aligned left at y=682",
+    "backgrounds: warm paper, pure white, and deep ocean ink in a deliberate light/dark rhythm",
+    "typography: Avenir Next for titles and body; claim titles 38-52 px; body 15-19 px; compact evidence labels 10-12 px",
+    "palette: ocean ink base, ProteinLoop teal, water blue, safety orange, and restrained red/green states",
+    "chart grammar: direct labels, one dominant bridge or metric, no legends, no decorative axes",
+    "diagram grammar: explicit local-farm containment, left-to-right authority, and a separate downward rejection branch",
+    "connector grammar: thin attached rails with consistent direction and no crossings",
+    "container grammar: fill-only zones for real system boundaries or decision surfaces; outlines are secondary",
+    "footer grammar: quiet 9 px evidence note above a hairline rule; slide marker at top right",
+    "title/kicker grammar: named marker and label pair, then a conclusion-sized claim",
     "brand policy: use real ProteinLoop UI captures; do not fabricate AMD or Nordic marks",
-    "banned motifs: generic feature-card grids, decorative gradients, floating arrows, unproven hardware claims",
+    "allowed layout families: immersive cover, dependency editorial, product annotation, full-bleed sequence, authority flow, metric composition, containment architecture, decision surface, evidence bridge, immersive close",
+    "banned motifs: generic feature-card grids, decorative gradients, floating arrows, oversized pills, and unproven hardware claims",
     "",
   ].join("\n"),
 );
 await fs.writeFile(
   path.join(workspace, "contact-sheet-plan.txt"),
   [
-    "01 immersive product cover",
-    "02 editorial shared-risk argument with vertical dependency rail",
-    "03 framed deployed-product capture",
-    "04 full-bleed live recovery capture with sequence overlay",
-    "05 horizontal authority and reject-flow diagram",
-    "06 dark executable metric rail",
-    "07 field / on-site AMD / producer boundary diagram with optional cloud and explicit power note",
-    "08 asymmetric producer-decision composition",
-    "09 dark three-column AMD runtime, repair, and execution evidence",
-    "10 split closing ask with real product capture",
+    "01 immersive product cover with dark editorial veil",
+    "02 asymmetric shared-risk argument with branching output spine",
+    "03 annotated deployed-product capture",
+    "04 full-bleed live recovery capture with five-step sequence rail",
+    "05 horizontal authority flow with emphasized verifier gate and rejection lane",
+    "06 dark market-and-business composition with sourced scale, buyer, revenue, and expansion path",
+    "07 local-farm containment architecture with external cloud and power boundaries",
+    "08 single producer decision surface with live chemistry context",
+    "09 dark first-pass-to-model-safe data bridge with runtime proof rail",
+    "10 immersive startup close with beachhead, revenue, expansion, and dual-prize ask",
     "gate: no three consecutive slides share a macro layout; no generic card-grid cadence",
     "",
   ].join("\n"),
@@ -149,24 +117,33 @@ await fs.writeFile(
 
 const common = `
 export const C = {
-  ink: "#0b1f2a",
-  body: "#425466",
-  fog: "#f3f7f6",
+  ink: "#082531",
+  navy: "#0b2f3f",
+  navy2: "#123d4d",
+  paper: "#f5f7f3",
   white: "#ffffff",
-  teal: "#087f75",
-  teal2: "#18a999",
-  mint: "#dff7ef",
-  blue: "#1687c8",
-  blueSoft: "#e2f3fb",
-  orange: "#ef6c21",
-  orangeSoft: "#fff0e5",
-  green: "#2f9e66",
-  greenSoft: "#e5f7ed",
-  red: "#d9485f",
-  redSoft: "#fde8ec",
-  yellow: "#f2c94c",
-  navy: "#102d3c",
-  line: "#cbd8dc"
+  body: "#4e646d",
+  muted: "#71858c",
+  line: "#cbd8d5",
+  lineDark: "#315665",
+  teal: "#0a887c",
+  teal2: "#3fc1aa",
+  mint: "#dff4ed",
+  blue: "#367fd0",
+  blueSoft: "#e2effa",
+  orange: "#ef6b32",
+  orangeSoft: "#fff0e7",
+  green: "#2f9c68",
+  greenSoft: "#e2f3e9",
+  red: "#d94b60",
+  redSoft: "#fae7eb",
+  yellow: "#f0c95a"
+};
+
+export const TYPE = {
+  title: "Avenir Next",
+  body: "Avenir Next",
+  condensed: "Avenir Next Condensed"
 };
 
 export const A = {
@@ -175,298 +152,405 @@ export const A = {
   recovery: ${JSON.stringify(path.join(assetDir, "agent-recovery.png"))}
 };
 
-export function base(presentation, ctx, section, dark = false) {
+export function base(presentation, ctx, section, page, dark = false) {
   const s = presentation.slides.add();
-  ctx.addShape(s, { x: 0, y: 0, w: ctx.W, h: ctx.H, fill: dark ? C.navy : C.fog });
-  ctx.addShape(s, { x: 0, y: 0, w: 14, h: ctx.H, fill: dark ? C.orange : C.teal });
-  ctx.addText(s, { x: 42, y: 24, w: 220, h: 24, text: "PROTEINLOOP", fontSize: 13, bold: true, color: dark ? "#8ee7d5" : C.teal });
-  ctx.addText(s, { x: 1000, y: 24, w: 220, h: 20, text: section.toUpperCase(), fontSize: 10, bold: true, color: dark ? "#b7cbd3" : C.body, align: "right" });
+  ctx.addShape(s, { x: 0, y: 0, w: ctx.W, h: ctx.H, fill: dark ? C.navy : C.paper });
+  ctx.addShape(s, { x: 42, y: 52, w: 1196, h: 1, fill: dark ? C.lineDark : C.line, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 42, y: 20, w: 220, h: 22, text: "PROTEINLOOP", fontSize: 12, bold: true, color: dark ? C.teal2 : C.teal, typeface: TYPE.body, valign: "mid" });
+  ctx.addText(s, { x: 950, y: 20, w: 240, h: 22, text: section.toUpperCase(), fontSize: 9, bold: true, color: dark ? "#9fb8c1" : C.muted, typeface: TYPE.body, align: "right", valign: "mid" });
+  ctx.addText(s, { x: 1200, y: 20, w: 38, h: 22, text: String(page).padStart(2, "0"), fontSize: 10, bold: true, color: dark ? C.orange : C.ink, typeface: TYPE.body, align: "right", valign: "mid" });
   return s;
+}
+
+export function kicker(ctx, s, text, x, y, color = C.orange) {
+  ctx.addShape(s, { name: "kicker-marker", x, y: y + 7, w: 8, h: 8, fill: color, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+  ctx.addText(s, { name: "kicker-label", x: x + 18, y, w: 280, h: 22, text: text.toUpperCase(), fontSize: 10, bold: true, color, typeface: TYPE.body, valign: "mid" });
 }
 
 export function title(ctx, s, text, options = {}) {
   ctx.addText(s, {
     x: options.x ?? 42,
-    y: options.y ?? 64,
+    y: options.y ?? 74,
     w: options.w ?? 1120,
-    h: options.h ?? 92,
+    h: options.h ?? 98,
     text,
-    fontSize: options.size ?? 34,
+    fontSize: options.size ?? 40,
     bold: true,
     color: options.color ?? C.ink,
-    typeface: ctx.fonts.title,
-    valign: "mid"
+    typeface: TYPE.title,
+    valign: options.valign ?? "mid"
   });
 }
 
-export function kicker(ctx, s, text, x, y, color = C.orange) {
-  ctx.addText(s, { x, y, w: 240, h: 20, text: text.toUpperCase(), fontSize: 10, bold: true, color });
+export function body(ctx, s, text, x, y, w, h, color = C.body, size = 16, options = {}) {
+  ctx.addText(s, { x, y, w, h, text, fontSize: size, color, typeface: TYPE.body, valign: options.valign ?? "mid", align: options.align ?? "left" });
 }
 
-export function body(ctx, s, text, x, y, w, h, color = C.body, size = 16) {
-  ctx.addText(s, { x, y, w, h, text, fontSize: size, color, valign: "mid" });
-}
-
-export function pill(ctx, s, text, x, y, w, fill, color = C.ink) {
-  ctx.addShape(s, { x, y, w, h: 32, fill, line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: x + 10, y: y + 7, w: w - 20, h: 18, text, fontSize: 11, bold: true, color, align: "center" });
-}
-
-export function node(ctx, s, { x, y, w, h, label, detail, fill = C.white, line = C.teal, number, labelSize = 16, labelHeight = 44, detailY = 72, detailSize = 11 }) {
-  ctx.addShape(s, { x, y, w, h, fill, line: ctx.line(line, 2) });
-  if (number) {
-    ctx.addShape(s, { x: x + 14, y: y + 16, w: 32, h: 32, fill: line, line: ctx.line("#00000000", 0), geometry: "ellipse" });
-    ctx.addText(s, { x: x + 14, y: y + 22, w: 32, h: 18, text: number, fontSize: 12, bold: true, color: C.white, align: "center" });
-  }
-  ctx.addText(s, { x: x + (number ? 58 : 18), y: y + 12, w: w - (number ? 74 : 36), h: labelHeight, text: label, fontSize: labelSize, bold: true, color: C.ink, valign: "mid" });
-  if (detail) ctx.addText(s, { x: x + 18, y: y + detailY, w: w - 36, h: h - detailY - 18, text: detail, fontSize: detailSize, color: C.body, valign: "top" });
-}
-
-export function connector(ctx, s, x, y, w, color = C.teal) {
-  ctx.addShape(s, { x, y: y + 9, w: w - 28, h: 3, fill: color, line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: x + w - 30, y, w: 30, h: 24, text: ">", fontSize: 18, bold: true, color, align: "center" });
-}
-
-export function metric(ctx, s, { x, y, value, label, note, color }) {
-  ctx.addText(s, { x, y, w: 230, h: 62, text: value, fontSize: 42, bold: true, color });
-  ctx.addText(s, { x, y: y + 66, w: 230, h: 26, text: label, fontSize: 14, bold: true, color: C.white });
-  ctx.addText(s, { x, y: y + 94, w: 230, h: 30, text: note, fontSize: 10, color: "#bad0d8" });
-  ctx.addShape(s, { x, y: y + 132, w: 210, h: 4, fill: color, line: ctx.line("#00000000", 0) });
+export function label(ctx, s, text, x, y, w, color = C.muted, options = {}) {
+  ctx.addText(s, { x, y, w, h: options.h ?? 22, text: text.toUpperCase(), fontSize: options.size ?? 10, bold: true, color, typeface: TYPE.body, align: options.align ?? "left", valign: "mid" });
 }
 
 export function footer(ctx, s, text, dark = false) {
-  ctx.addText(s, { x: 42, y: 682, w: 1130, h: 16, text, fontSize: 9, color: dark ? "#9db6c0" : "#6b7f88" });
+  ctx.addShape(s, { x: 42, y: 666, w: 1196, h: 1, fill: dark ? C.lineDark : C.line, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 42, y: 676, w: 1160, h: 16, text, fontSize: 8.5, color: dark ? "#8faab4" : C.muted, typeface: TYPE.body });
+}
+
+export function flowArrow(ctx, s, x, y, w, color = C.teal) {
+  ctx.addShape(s, { x, y: y + 11, w: w - 22, h: 2, fill: color, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: x + w - 24, y, w: 24, h: 24, text: ">", fontSize: 17, bold: true, color, typeface: TYPE.body, align: "center", valign: "mid" });
+}
+
+export function node(ctx, s, { x, y, w, h, label: nodeLabel, detail, fill = C.white, line = C.teal, number, labelSize = 16, labelHeight = 44, detailY = 72, detailSize = 11, lineWidth = 0, textColor = C.ink }) {
+  ctx.addShape(s, { x, y, w, h, fill, line: ctx.line(line, lineWidth) });
+  if (number) {
+    ctx.addText(s, { x: x + 16, y: y + 14, w: 34, h: 28, text: number, fontSize: 23, bold: true, color: line, typeface: TYPE.title, valign: "mid" });
+  }
+  ctx.addText(s, { x: x + (number ? 58 : 18), y: y + 12, w: w - (number ? 74 : 36), h: labelHeight, text: nodeLabel, fontSize: labelSize, bold: true, color: textColor, typeface: TYPE.title, valign: "mid" });
+  if (detail) ctx.addText(s, { x: x + 18, y: y + detailY, w: w - 36, h: h - detailY - 18, text: detail, fontSize: detailSize, color: textColor === C.white ? "#dce8ec" : C.body, typeface: TYPE.body, valign: "top" });
 }
 `;
 
 await fs.writeFile(path.join(slidesDir, "common.mjs"), common);
 
 const slides = [
-  `import { A } from "./common.mjs";
+  `import { C, TYPE, A, label } from "./common.mjs";
 export default async function slide01(presentation, ctx) {
   const s = presentation.slides.add();
-  await ctx.addImage(s, { path: A.cover, x: 0, y: 0, w: ctx.W, h: ctx.H, fit: "cover", alt: "ProteinLoop tank and Gemma recovery control" });
-  return s;
-}`,
-
-  `import { C, base, title, body, kicker, footer } from "./common.mjs";
-export default async function slide02(presentation, ctx) {
-  const s = base(presentation, ctx, "Problem");
-  kicker(ctx, s, "One loop, shared risk", 52, 74, C.red);
-  title(ctx, s, "A chemistry failure does not stop at the vegetables.", { x: 52, y: 104, w: 650, h: 120, size: 42 });
-  body(ctx, s, "Fish and prawns breathe the water. Plants clean it. Duckweed stores feed. Eggs depend on what survives upstream.", 56, 236, 590, 100, C.body, 18);
-  ctx.addShape(s, { x: 56, y: 382, w: 590, h: 118, fill: C.redSoft, line: ctx.line(C.red, 0) });
-  ctx.addText(s, { x: 80, y: 404, w: 540, h: 42, text: "One ammonia spike", fontSize: 26, bold: true, color: C.red });
-  ctx.addText(s, { x: 80, y: 454, w: 540, h: 30, text: "can threaten every protein output in the loop.", fontSize: 17, color: C.ink });
-  const items = [
-    ["14.5 kg", "fish + prawn stock", C.blue, 102],
-    ["5.0 kg", "plants cleaning water", C.teal, 268],
-    ["eggs", "downstream protein", C.orange, 434]
+  await ctx.addImage(s, { path: A.recovery, x: 0, y: 0, w: ctx.W, h: ctx.H, fit: "cover", alt: "ProteinLoop living tank and verified recovery control" });
+  ctx.addShape(s, { x: 0, y: 0, w: 616, h: 720, fill: "#082531f8", line: ctx.line("#00000000", 0) });
+  ctx.addShape(s, { x: 48, y: 54, w: 6, h: 48, fill: C.teal2, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 70, y: 54, w: 420, h: 22, text: "PROTEINLOOP", fontSize: 14, bold: true, color: C.teal2, typeface: TYPE.body, valign: "mid" });
+  ctx.addText(s, { x: 70, y: 81, w: 460, h: 20, text: "AMD DEVELOPER HACKATHON · ACT II", fontSize: 9.5, bold: true, color: "#b8cbd2", typeface: TYPE.body, valign: "mid" });
+  ctx.addText(s, { x: 64, y: 150, w: 500, h: 190, text: "Local AI for living protein systems.", fontSize: 52, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+  ctx.addText(s, { x: 68, y: 352, w: 455, h: 72, text: "Keep fish, prawns, plants, duckweed, and eggs recoverable when cloud access disappears.", fontSize: 19, color: "#d5e3e7", typeface: TYPE.body, valign: "mid" });
+  ctx.addShape(s, { x: 68, y: 470, w: 470, h: 1, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  const proofs = [
+    ["GEMMA 4 E2B", "local planning"],
+    ["DECT NR+", "private field link"],
+    ["RULES", "deterministic safety"]
   ];
-  ctx.addShape(s, { x: 770, y: 118, w: 4, h: 460, fill: C.line, line: ctx.line("#00000000", 0) });
-  for (const [value, label, color, y] of items) {
-    ctx.addShape(s, { x: 750, y: y + 35, w: 44, h: 44, fill: color, line: ctx.line("#00000000", 0), geometry: "ellipse" });
-    ctx.addText(s, { x: 824, y, w: 320, h: 54, text: value, fontSize: 34, bold: true, color: C.ink });
-    ctx.addText(s, { x: 824, y: y + 58, w: 320, h: 30, text: label, fontSize: 16, color: C.body });
-  }
-  footer(ctx, s, "ProteinLoop measures the animal-protein outcome instead of treating it as a hidden side effect.");
+  proofs.forEach(([name, note], index) => {
+    const x = 68 + index * 160;
+    ctx.addShape(s, { x, y: 494, w: 4, h: 46, fill: index === 0 ? C.teal2 : index === 1 ? C.blue : C.orange, line: ctx.line("#00000000", 0) });
+    ctx.addText(s, { x: x + 14, y: 492, w: 132, h: 22, text: name, fontSize: 11, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+    ctx.addText(s, { x: x + 14, y: 518, w: 132, h: 20, text: note, fontSize: 9.5, color: "#9fb8c1", typeface: TYPE.body, valign: "mid" });
+  });
+  label(ctx, s, "BEST UNICORN", 68, 622, 160, C.orange, { size: 10 });
+  ctx.addText(s, { x: 68, y: 650, w: 450, h: 20, text: "proteinloop.dev-vb.lat", fontSize: 13, bold: true, color: C.white, typeface: TYPE.body });
   return s;
 }`,
 
-  `import { C, A, base, title, body, pill, footer } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, footer } from "./common.mjs";
+export default async function slide02(presentation, ctx) {
+  const s = base(presentation, ctx, "Shared risk", 2);
+  kicker(ctx, s, "one loop · shared failure", 52, 78, C.red);
+  title(ctx, s, "One ammonia spike threatens every protein output.", { x: 52, y: 104, w: 650, h: 118, size: 44 });
+  body(ctx, s, "Aquaponics is usually framed as vegetables. ProteinLoop measures what the same water failure means for animals and downstream food.", 56, 236, 570, 92, C.body, 17);
+  ctx.addShape(s, { x: 56, y: 374, w: 558, h: 1, fill: C.line, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "ANIMAL PROTEIN AT RISK", 56, 402, 260, C.red);
+  ctx.addText(s, { x: 54, y: 430, w: 300, h: 74, text: "14.5 kg", fontSize: 54, bold: true, color: C.ink, typeface: TYPE.title, valign: "mid" });
+  body(ctx, s, "fish + prawn stock breathing the same water", 58, 508, 430, 48, C.body, 15);
+
+  ctx.addShape(s, { x: 770, y: 168, w: 3, h: 378, fill: C.red, line: ctx.line("#00000000", 0) });
+  ctx.addShape(s, { x: 724, y: 320, w: 96, h: 96, fill: C.red, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+  ctx.addText(s, { x: 734, y: 340, w: 76, h: 28, text: "NH3", fontSize: 22, bold: true, color: C.white, typeface: TYPE.title, align: "center", valign: "mid" });
+  ctx.addText(s, { x: 734, y: 371, w: 76, h: 18, text: "spike", fontSize: 10, bold: true, color: C.white, typeface: TYPE.body, align: "center", valign: "mid" });
+  const outputs = [
+    { y: 174, value: "14.5 kg", name: "fish + prawns", note: "breathing risk", color: C.blue },
+    { y: 326, value: "5.0 kg", name: "plants", note: "filtration loss", color: C.teal },
+    { y: 478, value: "eggs", name: "downstream protein", note: "feed-loop impact", color: C.orange }
+  ];
+  outputs.forEach(({ y, value, name, note, color }) => {
+    ctx.addShape(s, { x: 770, y: y + 34, w: 76, h: 2, fill: color, line: ctx.line("#00000000", 0) });
+    ctx.addShape(s, { x: 840, y: y + 27, w: 16, h: 16, fill: color, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+    ctx.addText(s, { x: 882, y, w: 300, h: 42, text: value, fontSize: 30, bold: true, color: C.ink, typeface: TYPE.title, valign: "mid" });
+    ctx.addText(s, { x: 884, y: y + 45, w: 190, h: 24, text: name, fontSize: 13, bold: true, color: C.ink, typeface: TYPE.body, valign: "mid" });
+    ctx.addText(s, { x: 1080, y: y + 45, w: 130, h: 24, text: note, fontSize: 11, color: C.muted, typeface: TYPE.body, align: "right", valign: "mid" });
+  });
+  footer(ctx, s, "ProteinLoop makes animal protein a first-class operational outcome, not a hidden side effect.");
+  return s;
+}`,
+
+  `import { C, TYPE, A, base, kicker, title, body, label, footer } from "./common.mjs";
 export default async function slide03(presentation, ctx) {
-  const s = base(presentation, ctx, "Product proof");
-  title(ctx, s, "A living system people can understand in seconds.", { y: 54, h: 70, size: 34 });
-  body(ctx, s, "The deployed operator view connects animal behavior, plain-language chemistry, biomass, and action in one scene.", 46, 130, 970, 38, C.body, 15);
-  ctx.addShape(s, { x: 42, y: 176, w: 1192, h: 428, fill: C.white, line: ctx.line(C.line, 1) });
-  await ctx.addImage(s, { path: A.overview, x: 56, y: 188, w: 1164, h: 404, fit: "contain", alt: "ProteinLoop operator overview" });
-  pill(ctx, s, "SEE THE ANIMALS", 74, 618, 190, C.blueSoft, C.blue);
-  pill(ctx, s, "UNDERSTAND THE WATER", 286, 618, 236, C.mint, C.teal);
-  pill(ctx, s, "ACT WITH EVIDENCE", 544, 618, 206, C.orangeSoft, C.orange);
+  const s = base(presentation, ctx, "Product proof", 3);
+  kicker(ctx, s, "deployed operator view", 52, 78, C.teal);
+  title(ctx, s, "A living system people can understand in seconds.", { x: 52, y: 104, w: 850, h: 96, size: 39 });
+  body(ctx, s, "The tank, chemistry, biomass, and recovery controls share one visual language.", 56, 206, 760, 30, C.body, 15);
+
+  const notes = [
+    ["01", "ANIMALS", "Movement changes with water stress."],
+    ["02", "WATER", "Ammonia is waste; oxygen is breathable air."],
+    ["03", "ACTION", "Verified recovery stays in the same scene."]
+  ];
+  notes.forEach(([number, name, note], index) => {
+    const y = 276 + index * 108;
+    ctx.addText(s, { x: 54, y, w: 50, h: 32, text: number, fontSize: 20, bold: true, color: index === 0 ? C.blue : index === 1 ? C.teal : C.orange, typeface: TYPE.title, valign: "mid" });
+    label(ctx, s, name, 116, y + 2, 150, C.ink, { size: 10 });
+    body(ctx, s, note, 116, y + 30, 200, 48, C.body, 13, { valign: "top" });
+    if (index < notes.length - 1) ctx.addShape(s, { x: 54, y: y + 91, w: 260, h: 1, fill: C.line, line: ctx.line("#00000000", 0) });
+  });
+  ctx.addShape(s, { x: 348, y: 246, w: 870, h: 388, fill: C.white, line: ctx.line(C.line, 1) });
+  await ctx.addImage(s, { path: A.overview, x: 362, y: 260, w: 842, h: 360, fit: "cover", alt: "ProteinLoop deployed operator overview" });
+  ctx.addShape(s, { x: 348, y: 246, w: 6, h: 388, fill: C.teal, line: ctx.line("#00000000", 0) });
+  ctx.addShape(s, { x: 968, y: 230, w: 214, h: 34, fill: C.navy, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 980, y: 237, w: 190, h: 20, text: "LIVE DEPLOYED PRODUCT", fontSize: 10, bold: true, color: C.white, typeface: TYPE.body, align: "center", valign: "mid" });
   footer(ctx, s, "Real deployed UI at proteinloop.dev-vb.lat; the tank is rendered live, not a looping video.");
   return s;
 }`,
 
-  `import { C, A, title, footer } from "./common.mjs";
+  `import { C, TYPE, A } from "./common.mjs";
 export default async function slide04(presentation, ctx) {
   const s = presentation.slides.add();
   await ctx.addImage(s, { path: A.recovery, x: 0, y: 0, w: ctx.W, h: ctx.H, fit: "cover", alt: "Live ProteinLoop recovery mission" });
-  ctx.addShape(s, { x: 0, y: 0, w: 1280, h: 116, fill: "#102d3cee", line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: 44, y: 20, w: 720, h: 54, text: "The recovery is visible while it happens.", fontSize: 31, bold: true, color: C.white });
-  const steps = [["1", "Observe"], ["2", "4 specialists"], ["3", "Supervisor"], ["4", "Verify"], ["5", "Measure"]];
-  steps.forEach(([n, label], i) => {
-    const x = 48 + i * 238;
-    ctx.addText(s, { x, y: 82, w: 28, h: 20, text: n, fontSize: 11, bold: true, color: C.orange });
-    ctx.addText(s, { x: x + 28, y: 80, w: 170, h: 22, text: label, fontSize: 13, bold: true, color: C.white });
+  ctx.addShape(s, { x: 0, y: 0, w: 1280, h: 132, fill: "#082531ec", line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 46, y: 22, w: 820, h: 48, text: "The recovery is visible while it happens.", fontSize: 34, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+  ctx.addText(s, { x: 48, y: 78, w: 860, h: 28, text: "Every specialist, verifier outcome, and producer boundary appears as a structured event.", fontSize: 14, color: "#c4d5da", typeface: TYPE.body, valign: "mid" });
+  ctx.addShape(s, { x: 0, y: 618, w: 1280, h: 102, fill: "#082531ee", line: ctx.line("#00000000", 0) });
+  const steps = [["1", "Observe"], ["2", "Specialists"], ["3", "Supervisor"], ["4", "Verify"], ["5", "Measure"]];
+  steps.forEach(([number, step], index) => {
+    const x = 48 + index * 238;
+    ctx.addShape(s, { x, y: 644, w: 28, h: 28, fill: index === 3 ? C.orange : C.teal, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+    ctx.addText(s, { x, y: 649, w: 28, h: 18, text: number, fontSize: 10, bold: true, color: C.white, typeface: TYPE.body, align: "center", valign: "mid" });
+    ctx.addText(s, { x: x + 40, y: 642, w: 154, h: 22, text: step, fontSize: 13, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+    if (index < steps.length - 1) ctx.addShape(s, { x: x + 40, y: 674, w: 158, h: 2, fill: C.lineDark, line: ctx.line("#00000000", 0) });
   });
-  footer(ctx, s, "Structured events and tool outcomes are visible; private model chain-of-thought is not presented as evidence.", true);
+  ctx.addText(s, { x: 48, y: 694, w: 1140, h: 14, text: "Structured events and tool outcomes are visible; private model chain-of-thought is not presented as evidence.", fontSize: 8.5, color: "#8faab4", typeface: TYPE.body });
   return s;
 }`,
 
-  `import { C, base, title, body, node, connector, footer } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, node, flowArrow, footer } from "./common.mjs";
 export default async function slide05(presentation, ctx) {
-  const s = base(presentation, ctx, "Safety boundary");
-  title(ctx, s, "The model can recommend. It cannot mutate.", { y: 58, h: 74, size: 38 });
-  body(ctx, s, "Authority moves left to right. Every connector ends at an explicit decision boundary.", 46, 132, 820, 38, C.body, 15);
-  node(ctx, s, { x: 42, y: 220, w: 220, h: 150, label: "Gemma specialists", detail: "Fish, prawns, plants, and feed-loop briefs.", fill: C.mint, line: C.teal, number: "1" });
-  connector(ctx, s, 270, 282, 46, C.teal);
-  node(ctx, s, { x: 324, y: 220, w: 196, h: 150, label: "Supervisor", detail: "Combines briefs into one bounded proposal.", fill: C.blueSoft, line: C.blue, number: "2" });
-  connector(ctx, s, 528, 282, 48, C.blue);
-  node(ctx, s, { x: 584, y: 220, w: 272, h: 150, label: "Deterministic verifier", detail: "Checks chemistry, feed, water exchange, reserve, and collapse rules.", fill: C.orangeSoft, line: C.orange, number: "3" });
-  connector(ctx, s, 864, 282, 48, C.orange);
-  node(ctx, s, { x: 920, y: 220, w: 268, h: 150, label: "Simulator mutation", detail: "Only admitted actions can change ecosystem state.", fill: C.greenSoft, line: C.green, number: "4" });
-  ctx.addShape(s, { x: 584, y: 438, w: 604, h: 78, fill: C.redSoft, line: ctx.line(C.red, 2) });
-  ctx.addText(s, { x: 610, y: 465, w: 112, h: 24, text: "BLOCKED", fontSize: 14, bold: true, color: C.red });
-  ctx.addText(s, { x: 742, y: 451, w: 418, h: 48, text: "Rejected before state change, logged to the RLVR trace, and returned as verifier feedback.", fontSize: 15, color: C.ink, valign: "mid" });
-  ctx.addShape(s, { x: 718, y: 370, w: 3, h: 68, fill: C.red, line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: 702, y: 407, w: 34, h: 24, text: "v", fontSize: 18, bold: true, color: C.red, align: "center" });
+  const s = base(presentation, ctx, "Safety boundary", 5);
+  kicker(ctx, s, "authority, not autonomy", 52, 78, C.orange);
+  title(ctx, s, "Gemma can recommend. It cannot mutate.", { x: 52, y: 104, w: 940, h: 70, size: 42 });
+  body(ctx, s, "Only the deterministic verifier can admit an action into ecosystem state.", 56, 180, 780, 34, C.body, 15);
+
+  const stages = [
+    { x: 52, w: 240, stage: "PROPOSE", number: "1", name: "Gemma specialists", detail: "Fish, prawn, plant, and feed-loop briefs.", fill: C.mint, color: C.teal },
+    { x: 350, w: 188, stage: "SYNTHESIZE", number: "2", name: "Supervisor", detail: "One bounded recovery proposal.", fill: C.blueSoft, color: C.blue },
+    { x: 596, w: 276, stage: "GATE", number: "3", name: "Deterministic verifier", detail: "Chemistry, feed, exchange, reserve, and collapse rules.", fill: C.orangeSoft, color: C.orange },
+    { x: 930, w: 252, stage: "MUTATE", number: "4", name: "Simulator state", detail: "Only admitted actions can change the living system.", fill: C.greenSoft, color: C.green }
+  ];
+  stages.forEach(({ x, w, stage, number, name, detail, fill, color }, index) => {
+    label(ctx, s, stage, x, 246, w, color, { align: "center", size: 9 });
+    node(ctx, s, { x, y: 278, w, h: 176, label: name, detail, fill, line: color, number, labelSize: index === 2 ? 15 : 16, labelHeight: 44, detailY: 72, detailSize: 11, lineWidth: index === 2 ? 2 : 0 });
+  });
+  flowArrow(ctx, s, 300, 354, 42, C.teal);
+  flowArrow(ctx, s, 546, 354, 42, C.blue);
+  flowArrow(ctx, s, 880, 354, 42, C.orange);
+
+  ctx.addShape(s, { x: 732, y: 454, w: 3, h: 62, fill: C.red, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 720, y: 486, w: 28, h: 22, text: "v", fontSize: 16, bold: true, color: C.red, typeface: TYPE.body, align: "center" });
+  ctx.addShape(s, { x: 596, y: 516, w: 586, h: 78, fill: C.redSoft, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "BLOCKED", 618, 536, 100, C.red, { size: 10 });
+  body(ctx, s, "Rejected before state change, written to the RLVR trace, then returned as verifier feedback.", 744, 528, 410, 42, C.ink, 14);
+  ctx.addText(s, { x: 52, y: 538, w: 480, h: 38, text: "Gemma proposes. Rules decide.", fontSize: 24, bold: true, color: C.ink, typeface: TYPE.title, valign: "mid" });
   footer(ctx, s, "verify_ecosystem_safety is the only authority allowed to admit simulator mutation.");
   return s;
 }`,
 
-  `import { C, base, title, metric, footer } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, footer } from "./common.mjs";
 export default async function slide06(presentation, ctx) {
-  const s = base(presentation, ctx, "Executable evidence", true);
-  title(ctx, s, "Safety is demonstrated, not narrated.", { y: 60, h: 76, size: 39, color: C.white });
-  ctx.addText(s, { x: 46, y: 140, w: 790, h: 44, text: "The simulator is simultaneously the product demo, the policy evaluator, and the RLVR source of truth.", fontSize: 16, color: "#c2d6dd" });
-  metric(ctx, s, { x: 52, y: 224, value: "${data.pythonTests}", label: "Python tests", note: "simulator, verifier, API, evidence", color: "#63c7f2" });
-  metric(ctx, s, { x: 342, y: 224, value: "${data.phoenixTests}", label: "Phoenix tests", note: "Sagents, LiveView, producer control", color: "#76d9ad" });
-  metric(ctx, s, { x: 632, y: 224, value: "+463", label: "reward delta", note: "verified policy versus naive average", color: "#f2c94c" });
-  metric(ctx, s, { x: 922, y: 224, value: "100%", label: "collapse avoidance", note: "fixed baseline scenarios recovered", color: "#ff8e5c" });
-  ctx.addShape(s, { x: 52, y: 446, w: 1130, h: 112, fill: "#173f50", line: ctx.line("#315b6b", 1) });
-  ctx.addText(s, { x: 82, y: 468, w: 260, h: 24, text: "ONE-CLICK JUDGE PROOF", fontSize: 12, bold: true, color: "#8ee7d5" });
-  ctx.addText(s, { x: 82, y: 506, w: 1030, h: 30, text: "Inject emergency  ->  block unsafe proposal  ->  admit safe recovery  ->  inspect measured chemistry", fontSize: 18, bold: true, color: C.white });
-  footer(ctx, s, "Verified July 12, 2026: ${data.pythonTests} Python and ${data.phoenixTests} Phoenix tests, zero failures.", true);
+  const s = base(presentation, ctx, "Business case", 6, true);
+  kicker(ctx, s, "unicorn market wedge", 52, 78, C.teal2);
+  title(ctx, s, "Aquaculture is a $371B market. The wedge is resilience.", { x: 52, y: 102, w: 1050, h: 92, size: 39, color: C.white });
+  body(ctx, s, "FAO reports 103M tonnes of farmed aquatic animals in 2024. ProteinLoop starts where cloud-first control is a poor fit.", 56, 200, 1010, 34, "#bcd0d7", 15);
+
+  ctx.addText(s, { x: 52, y: 262, w: 292, h: 76, text: "$371B", fontSize: 62, bold: true, color: C.yellow, typeface: TYPE.title, valign: "mid" });
+  label(ctx, s, "2024 FARM-GATE VALUE", 58, 344, 252, C.white, { size: 10 });
+  ctx.addText(s, { x: 52, y: 382, w: 292, h: 58, text: "103M t", fontSize: 45, bold: true, color: C.teal2, typeface: TYPE.title, valign: "mid" });
+  body(ctx, s, "aquaculture aquatic-animal production", 58, 444, 278, 42, "#9fb8c1", 11.5, { valign: "top" });
+
+  ctx.addShape(s, { x: 390, y: 264, w: 1, h: 224, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "WHO PAYS", 442, 266, 220, C.orange, { size: 10 });
+  const buyers = ["Fish + prawn farms", "Producer cooperatives", "Food-security programs"];
+  buyers.forEach((item, index) => {
+    const y = 308 + index * 46;
+    ctx.addShape(s, { x: 442, y: y + 5, w: 8, h: 8, fill: C.orange, line: ctx.line("#00000000", 0), geometry: "ellipse" });
+    ctx.addText(s, { x: 466, y, w: 250, h: 22, text: item, fontSize: 13, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+  });
+  body(ctx, s, "The buyer is the operator accountable for biomass survival and production continuity.", 442, 452, 292, 50, "#9fb8c1", 11.5, { valign: "top" });
+
+  label(ctx, s, "HOW IT EARNS", 796, 266, 220, C.blue, { size: 10 });
+  const revenue = [
+    ["DEPLOY", "Edge commissioning + radio gateway"],
+    ["SUBSCRIBE", "Annual site software + support"],
+    ["EXPAND", "Optional fleet and evidence service"]
+  ];
+  revenue.forEach(([name, note], index) => {
+    const y = 306 + index * 58;
+    ctx.addText(s, { x: 796, y, w: 112, h: 22, text: name, fontSize: 10, bold: true, color: index === 0 ? C.orange : index === 1 ? C.teal2 : C.blue, typeface: TYPE.body, valign: "mid" });
+    ctx.addText(s, { x: 918, y, w: 286, h: 34, text: note, fontSize: 12.5, color: C.white, typeface: TYPE.body, valign: "top" });
+    if (index < revenue.length - 1) ctx.addShape(s, { x: 796, y: y + 42, w: 408, h: 1, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  });
+
+  ctx.addShape(s, { x: 52, y: 536, w: 1152, h: 80, fill: C.navy2, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "LAND AND EXPAND", 76, 554, 200, C.teal2, { size: 9 });
+  ctx.addText(s, { x: 300, y: 548, w: 860, h: 34, text: "TANK  >  SITE  >  COOPERATIVE NETWORK", fontSize: 21, bold: true, color: C.white, typeface: TYPE.title, align: "center", valign: "mid" });
+  body(ctx, s, "Revenue grows with protected production capacity, not user screen time.", 300, 582, 860, 18, "#9fb8c1", 10.5, { align: "center" });
+  footer(ctx, s, "Source: FAO SOFIA 2026 (2024 production): 103M tonnes and $371B farm-gate value.", true);
   return s;
 }`,
 
-  `import { C, base, title, body, footer } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, flowArrow, footer } from "./common.mjs";
 export default async function slide07(presentation, ctx) {
-  const s = base(presentation, ctx, "Off-grid architecture");
-  title(ctx, s, "An on-site AMD GPU can keep the decision loop local.", { y: 52, h: 72, size: 36 });
-  body(ctx, s, "After the application and Gemma weights are provisioned, farm decisions do not require an internet API.", 46, 132, 900, 32, C.body, 15);
+  const s = base(presentation, ctx, "Off-grid architecture", 7);
+  kicker(ctx, s, "local by design", 52, 78, C.teal);
+  title(ctx, s, "An on-site AMD GPU can keep the decision loop local.", { x: 52, y: 106, w: 1120, h: 58, size: 35 });
+  body(ctx, s, "After provisioning, cached Gemma inference and deterministic decisions do not require an internet API.", 56, 170, 960, 32, C.body, 15);
 
-  ctx.addShape(s, { x: 42, y: 204, w: 410, h: 246, fill: C.white, line: ctx.line(C.green, 2) });
-  ctx.addText(s, { x: 64, y: 222, w: 300, h: 22, text: "FIELD LINK · PHYSICALLY PROVEN", fontSize: 11, bold: true, color: C.green });
-  const fieldNodes = [
-    { x: 64, w: 126, label: "nRF9151 PT", note: "tank radio" },
-    { x: 210, w: 84, label: "DECT NR+", note: "private hop" },
-    { x: 314, w: 116, label: "nRF9151 FT", note: "gateway" }
+  ctx.addShape(s, { x: 52, y: 240, w: 1176, h: 298, fill: C.white, line: ctx.line(C.teal, 2) });
+  ctx.addShape(s, { x: 52, y: 240, w: 1176, h: 34, fill: C.mint, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "LOCAL FARM BOUNDARY", 72, 246, 320, C.teal, { size: 10 });
+  ctx.addText(s, { x: 948, y: 246, w: 258, h: 20, text: "No remote API in the action path", fontSize: 10, bold: true, color: C.teal, typeface: TYPE.body, align: "right", valign: "mid" });
+
+  ctx.addShape(s, { x: 394, y: 292, w: 1, h: 222, fill: C.line, line: ctx.line("#00000000", 0) });
+  ctx.addShape(s, { x: 922, y: 292, w: 1, h: 222, fill: C.line, line: ctx.line("#00000000", 0) });
+
+  label(ctx, s, "PRIVATE FIELD LINK · PROVEN", 76, 298, 280, C.green, { size: 9 });
+  const radios = [
+    { x: 76, w: 88, name: "nRF9151 PT", note: "tank" },
+    { x: 198, w: 84, name: "DECT NR+", note: "private" },
+    { x: 316, w: 68, name: "nRF9151 FT", note: "gateway" }
   ];
-  fieldNodes.forEach(({ x, w, label, note }, index) => {
-    ctx.addShape(s, { x, y: 270, w, h: 94, fill: index === 1 ? C.greenSoft : C.blueSoft, line: ctx.line(index === 1 ? C.green : C.blue, 2) });
-    ctx.addText(s, { x: x + 8, y: 288, w: w - 16, h: 26, text: label, fontSize: index === 1 ? 13 : 14, bold: true, color: C.ink, align: "center" });
-    ctx.addText(s, { x: x + 8, y: 326, w: w - 16, h: 20, text: note, fontSize: 10, color: C.body, align: "center" });
-    if (index < 2) ctx.addText(s, { x: x + w + 2, y: 302, w: 18, h: 24, text: ">", fontSize: 17, bold: true, color: C.teal, align: "center" });
+  radios.forEach(({ x, w, name, note }, index) => {
+    ctx.addShape(s, { x, y: 352, w, h: 84, fill: index === 1 ? C.greenSoft : C.blueSoft, line: ctx.line("#00000000", 0) });
+    ctx.addText(s, { x: x + 6, y: 370, w: w - 12, h: 24, text: name, fontSize: index === 2 ? 9.5 : 11, bold: true, color: C.ink, typeface: TYPE.body, align: "center", valign: "mid" });
+    ctx.addText(s, { x: x + 6, y: 402, w: w - 12, h: 18, text: note, fontSize: 9, color: C.muted, typeface: TYPE.body, align: "center", valign: "mid" });
+    if (index < radios.length - 1) flowArrow(ctx, s, x + w + 6, 382, 26, C.teal);
   });
-  ctx.addText(s, { x: 64, y: 390, w: 344, h: 34, text: "Two physical boards exchanged the same bidirectional sequence 100.", fontSize: 12, color: C.body });
+  body(ctx, s, "Two physical boards exchanged bidirectional sequence 100.", 76, 458, 292, 42, C.body, 11.5, { valign: "top" });
 
-  ctx.addText(s, { x: 462, y: 302, w: 30, h: 28, text: ">", fontSize: 22, bold: true, color: C.teal, align: "center" });
-  ctx.addShape(s, { x: 502, y: 186, w: 438, h: 284, fill: C.blueSoft, line: ctx.line(C.blue, 3) });
-  ctx.addText(s, { x: 526, y: 204, w: 380, h: 22, text: "ON-SITE AMD GPU · DEPLOYMENT OPTION", fontSize: 11, bold: true, color: C.blue });
-  ctx.addText(s, { x: 526, y: 238, w: 380, h: 34, text: "Gemma stays at the farm", fontSize: 24, bold: true, color: C.ink });
-  const amdRows = [
-    ["Cached model", "Gemma 4 E2B weights"],
-    ["ROCm + vLLM", "local OpenAI-compatible endpoint"],
-    ["Python verifier", "blocks unsafe actions"],
-    ["Simulator + UI", "state, receipts, and producer control"]
+  ctx.addShape(s, { x: 426, y: 296, w: 466, h: 214, fill: C.navy, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "ON-SITE AMD GPU · DEPLOYMENT OPTION", 452, 314, 390, C.orange, { size: 9 });
+  ctx.addText(s, { x: 452, y: 344, w: 390, h: 38, text: "Gemma stays at the farm.", fontSize: 25, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+  const stack = [
+    ["Cached Gemma 4 E2B", "model weights"],
+    ["ROCm + vLLM", "local endpoint"],
+    ["Python verifier", "safety gate"],
+    ["Simulator + Phoenix", "state and UI"]
   ];
-  amdRows.forEach(([label, note], index) => {
-    const y = 286 + index * 34;
-    ctx.addShape(s, { x: 526, y: y + 4, w: 5, h: 22, fill: index < 2 ? C.blue : C.teal, line: ctx.line("#00000000", 0) });
-    ctx.addText(s, { x: 544, y, w: 128, h: 26, text: label, fontSize: 12, bold: true, color: C.ink });
-    ctx.addText(s, { x: 678, y, w: 228, h: 26, text: note, fontSize: 12, color: C.body });
+  stack.forEach(([name, note], index) => {
+    const x = 452 + (index % 2) * 204;
+    const y = 400 + Math.floor(index / 2) * 48;
+    ctx.addShape(s, { x, y: y + 4, w: 4, h: 30, fill: index < 2 ? C.blue : C.teal2, line: ctx.line("#00000000", 0) });
+    ctx.addText(s, { x: x + 14, y, w: 178, h: 20, text: name, fontSize: 11, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+    ctx.addText(s, { x: x + 14, y: y + 21, w: 178, h: 16, text: note, fontSize: 9, color: "#9fb8c1", typeface: TYPE.body, valign: "mid" });
   });
-  ctx.addShape(s, { x: 526, y: 426, w: 380, h: 28, fill: C.mint, line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: 536, y: 433, w: 360, h: 16, text: "No remote API in the action path", fontSize: 11, bold: true, color: C.teal, align: "center" });
 
-  ctx.addText(s, { x: 950, y: 302, w: 30, h: 28, text: ">", fontSize: 22, bold: true, color: C.orange, align: "center" });
-  ctx.addShape(s, { x: 990, y: 252, w: 220, h: 136, fill: C.orangeSoft, line: ctx.line(C.orange, 2) });
-  ctx.addText(s, { x: 1012, y: 270, w: 174, h: 20, text: "LOCAL LAN", fontSize: 10, bold: true, color: C.orange, align: "center" });
-  ctx.addText(s, { x: 1012, y: 302, w: 174, h: 30, text: "Producer control", fontSize: 18, bold: true, color: C.ink, align: "center" });
-  ctx.addText(s, { x: 1012, y: 342, w: 174, h: 28, text: "Approve risky actions and inspect receipts.", fontSize: 11, color: C.body, align: "center" });
+  label(ctx, s, "LOCAL LAN · PRODUCER AUTHORITY", 950, 298, 250, C.orange, { size: 9 });
+  ctx.addText(s, { x: 950, y: 348, w: 248, h: 56, text: "Approve risky actions.", fontSize: 22, bold: true, color: C.ink, typeface: TYPE.title, valign: "mid" });
+  body(ctx, s, "Inspect chemistry, verifier result, and execution receipts without leaving the farm.", 952, 410, 228, 78, C.body, 13, { valign: "top" });
 
-  ctx.addShape(s, { x: 502, y: 500, w: 708, h: 70, fill: C.white, line: ctx.line(C.line, 1) });
-  ctx.addText(s, { x: 524, y: 518, w: 150, h: 22, text: "OPTIONAL CLOUD", fontSize: 11, bold: true, color: C.orange });
-  ctx.addText(s, { x: 684, y: 512, w: 502, h: 34, text: "Sync evidence and model updates when connectivity returns; never required to verify or execute.", fontSize: 13, color: C.body, valign: "mid" });
-
-  ctx.addShape(s, { x: 42, y: 604, w: 1168, h: 50, fill: C.orangeSoft, line: ctx.line(C.orange, 1) });
-  ctx.addText(s, { x: 64, y: 619, w: 180, h: 22, text: "POWER BOUNDARY", fontSize: 11, bold: true, color: C.orange });
-  ctx.addText(s, { x: 248, y: 613, w: 930, h: 28, text: "AMD compute still needs electricity; solar + battery autonomy is the next measured field proof.", fontSize: 13, color: C.ink, valign: "mid" });
+  ctx.addShape(s, { x: 52, y: 566, w: 548, h: 76, fill: C.orangeSoft, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "POWER · ALWAYS REQUIRED", 72, 584, 220, C.orange, { size: 9 });
+  body(ctx, s, "AMD compute needs electricity; solar + battery autonomy is the next measured field proof.", 300, 578, 276, 48, C.ink, 11.5);
+  ctx.addShape(s, { x: 626, y: 566, w: 602, h: 76, fill: C.blueSoft, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "CLOUD · OPTIONAL", 646, 584, 170, C.blue, { size: 9 });
+  body(ctx, s, "Sync evidence and model updates when connectivity returns; never required to verify or execute.", 822, 578, 382, 48, C.ink, 11.5);
   footer(ctx, s, "AMD inference is proven on the assigned notebook; a farm-installed AMD GPU remains the next hardware deployment step.");
   return s;
 }`,
 
-  `import { C, base, title, body, footer } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, footer } from "./common.mjs";
 export default async function slide08(presentation, ctx) {
-  const s = base(presentation, ctx, "Producer control");
-  title(ctx, s, "Risky actions stop for a human decision.", { x: 52, y: 78, w: 600, h: 110, size: 42 });
-  body(ctx, s, "The producer sees the proposed change, safety result, and current chemistry before choosing what happens next.", 56, 210, 540, 94, C.body, 18);
-  ctx.addText(s, { x: 56, y: 348, w: 520, h: 88, text: "No irreversible action\\nruns silently.", fontSize: 34, bold: true, color: C.orange });
-  ctx.addShape(s, { x: 690, y: 112, w: 462, h: 108, fill: C.greenSoft, line: ctx.line(C.green, 2) });
-  ctx.addText(s, { x: 722, y: 134, w: 132, h: 32, text: "APPROVE", fontSize: 18, bold: true, color: C.green });
-  ctx.addText(s, { x: 868, y: 132, w: 250, h: 48, text: "Execute the verified proposal exactly once.", fontSize: 14, color: C.ink });
-  ctx.addShape(s, { x: 690, y: 252, w: 462, h: 108, fill: C.orangeSoft, line: ctx.line(C.orange, 2) });
-  ctx.addText(s, { x: 722, y: 274, w: 132, h: 32, text: "APPLY HALF", fontSize: 18, bold: true, color: C.orange });
-  ctx.addText(s, { x: 868, y: 272, w: 250, h: 48, text: "Reduce the action, then verify the edited amount again.", fontSize: 14, color: C.ink });
-  ctx.addShape(s, { x: 690, y: 392, w: 462, h: 108, fill: C.redSoft, line: ctx.line(C.red, 2) });
-  ctx.addText(s, { x: 722, y: 414, w: 132, h: 32, text: "REJECT", fontSize: 18, bold: true, color: C.red });
-  ctx.addText(s, { x: 868, y: 412, w: 250, h: 48, text: "Resume the workflow with zero simulator mutation.", fontSize: 14, color: C.ink });
-  ctx.addShape(s, { x: 918, y: 220, w: 3, h: 32, fill: C.line, line: ctx.line("#00000000", 0) });
-  ctx.addShape(s, { x: 918, y: 360, w: 3, h: 32, fill: C.line, line: ctx.line("#00000000", 0) });
-  footer(ctx, s, "Producer decisions are replaced in place by a receipt containing mutation status, chemistry, and verifier reward.");
-  return s;
-}`,
+  const s = base(presentation, ctx, "Producer control", 8);
+  kicker(ctx, s, "human in the loop", 52, 78, C.orange);
+  title(ctx, s, "The workflow pauses at the only irreversible boundary.", { x: 52, y: 104, w: 1080, h: 88, size: 36 });
+  body(ctx, s, "The producer sees current chemistry, the proposed action, and the verifier result before anything changes.", 56, 198, 880, 30, C.body, 15);
 
-  `import { C, base, title, body, footer } from "./common.mjs";
-export default async function slide09(presentation, ctx) {
-  const s = base(presentation, ctx, "AMD Gemma proof", true);
-  title(ctx, s, "Verifier feedback turns 10% first-pass safety into 100%.", { y: 62, h: 82, size: 37, color: C.white });
-  body(ctx, s, "Exact verifier failures return as bounded feedback; every revision is parsed and verified again.", 48, 152, 920, 32, "#c2d6dd", 16);
-  const columns = [
-    { x: 52, label: "CAPTURED AMD RUNTIME", color: C.blue, heading: "Gemma 4 E2B", lines: ["PyTorch 2.10 · ROCm 7.2", "vLLM 0.20.2 · gfx1100", "47.98 GiB AMD GPU memory"] },
-    { x: 450, label: "20-EMERGENCY REPAIR", color: C.teal2, heading: "18 repairs · zero fallback", lines: ["2/20 first answers safe", "17 repaired once · 1 twice", "20/20 model-safe · no weight update"] },
-    { x: 848, label: "MEASURED EXECUTION", color: C.orange, heading: "139 requests", lines: ["60,385 observed tokens", "99.793 completion tokens/s", "p50 latency · 655.522 ms"] }
+  ctx.addShape(s, { x: 52, y: 258, w: 336, h: 322, fill: C.navy, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "LIVE CONTEXT", 78, 282, 180, C.teal2, { size: 9 });
+  ctx.addText(s, { x: 78, y: 322, w: 132, h: 48, text: "2.75", fontSize: 39, bold: true, color: C.orange, typeface: TYPE.title, valign: "mid" });
+  ctx.addText(s, { x: 210, y: 336, w: 100, h: 24, text: "mg/L NH3", fontSize: 11, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+  ctx.addText(s, { x: 78, y: 390, w: 132, h: 48, text: "9.2", fontSize: 39, bold: true, color: C.blue, typeface: TYPE.title, valign: "mid" });
+  ctx.addText(s, { x: 210, y: 404, w: 100, h: 24, text: "mg/L O2", fontSize: 11, bold: true, color: C.white, typeface: TYPE.body, valign: "mid" });
+  ctx.addShape(s, { x: 78, y: 462, w: 258, h: 1, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "VERIFIED PLAN", 78, 482, 180, C.orange, { size: 9 });
+  body(ctx, s, "Increase aeration. Reduce feed. Monitor the next reading.", 78, 510, 244, 52, C.white, 13, { valign: "top" });
+
+  ctx.addShape(s, { x: 430, y: 258, w: 752, h: 322, fill: C.white, line: ctx.line(C.line, 1) });
+  label(ctx, s, "PRODUCER DECISION REQUIRED", 460, 282, 330, C.orange, { size: 10 });
+  ctx.addText(s, { x: 460, y: 318, w: 670, h: 38, text: "Protect the protein loop", fontSize: 26, bold: true, color: C.ink, typeface: TYPE.title, valign: "mid" });
+  ctx.addShape(s, { x: 460, y: 378, w: 692, h: 1, fill: C.line, line: ctx.line("#00000000", 0) });
+  const choices = [
+    { y: 392, action: "APPROVE", note: "Execute the verified proposal exactly once.", color: C.green, fill: C.greenSoft },
+    { y: 452, action: "APPLY HALF", note: "Reduce the amount, then verify the edit again.", color: C.orange, fill: C.orangeSoft },
+    { y: 512, action: "REJECT", note: "Resume with zero simulator mutation.", color: C.red, fill: C.redSoft }
   ];
-  columns.forEach(({ x, label, color, heading, lines }) => {
-    ctx.addText(s, { x: x + 12, y: 214, w: 320, h: 24, text: label, fontSize: 11, bold: true, color });
-    ctx.addShape(s, { x, y: 252, w: 350, h: 246, fill: "#173f50", line: ctx.line(color, 2) });
-    ctx.addText(s, { x: x + 24, y: 276, w: 302, h: 48, text: heading, fontSize: 21, bold: true, color: C.white });
-    lines.forEach((line, index) => {
-      ctx.addShape(s, { x: x + 30, y: 344 + index * 42, w: 5, h: 24, fill: color, line: ctx.line("#00000000", 0) });
-      ctx.addText(s, { x: x + 48, y: 344 + index * 42, w: 270, h: 27, text: line, fontSize: 14, color: "#c2d6dd" });
-    });
+  choices.forEach(({ y, action, note, color, fill }) => {
+    ctx.addShape(s, { x: 460, y, w: 692, h: 50, fill, line: ctx.line("#00000000", 0) });
+    ctx.addText(s, { x: 478, y: y + 14, w: 140, h: 22, text: action, fontSize: 11, bold: true, color, typeface: TYPE.body, valign: "mid" });
+    ctx.addText(s, { x: 632, y: y + 13, w: 494, h: 24, text: note, fontSize: 12.5, color: C.ink, typeface: TYPE.body, valign: "mid" });
   });
-  ctx.addText(s, { x: 52, y: 532, w: 1146, h: 54, text: "420.648 kg aggregate scenario biomass · +221.7244 mean reward vs naive", fontSize: 21, bold: true, color: "#8ee7d5", align: "center" });
-  footer(ctx, s, "Captured inference-time repair experiment; the public URL remains on its private 8 GB host and CPU fallback.", true);
+  ctx.addText(s, { x: 430, y: 608, w: 752, h: 28, text: "Every choice becomes a receipt: mutation status, chemistry, and verifier reward.", fontSize: 13, bold: true, color: C.teal, typeface: TYPE.body, align: "center", valign: "mid" });
+  footer(ctx, s, "No risky or irreversible action runs silently.");
   return s;
 }`,
 
-  `import { C, A, title, body } from "./common.mjs";
+  `import { C, TYPE, base, kicker, title, body, label, footer } from "./common.mjs";
+export default async function slide09(presentation, ctx) {
+  const s = base(presentation, ctx, "AMD Gemma proof", 9, true);
+  kicker(ctx, s, "captured inference-time evidence", 52, 78, C.teal2);
+  title(ctx, s, "Verifier feedback turns 10% first-pass safety into 100% model-safe plans.", { x: 52, y: 104, w: 1120, h: 98, size: 36, color: C.white });
+  body(ctx, s, "Exact rule failures return as bounded feedback; each revision is parsed and verified again.", 56, 208, 930, 28, "#bcd0d7", 15);
+
+  label(ctx, s, "FIRST PASS", 66, 264, 220, C.orange, { size: 10 });
+  ctx.addText(s, { x: 62, y: 292, w: 228, h: 92, text: "10%", fontSize: 70, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+  body(ctx, s, "2 / 20 safe", 68, 388, 180, 28, "#9fb8c1", 13);
+
+  ctx.addShape(s, { x: 300, y: 338, w: 600, h: 8, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  ctx.addShape(s, { x: 300, y: 338, w: 600, h: 8, fill: C.teal2, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 884, y: 320, w: 30, h: 38, text: ">", fontSize: 28, bold: true, color: C.teal2, typeface: TYPE.body, align: "center", valign: "mid" });
+  ctx.addShape(s, { x: 544, y: 284, w: 194, h: 58, fill: C.orange, line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 560, y: 296, w: 162, h: 30, text: "VERIFIER FEEDBACK", fontSize: 10, bold: true, color: C.white, typeface: TYPE.body, align: "center", valign: "mid" });
+  ctx.addText(s, { x: 430, y: 374, w: 416, h: 34, text: "18 unsafe answers repaired", fontSize: 19, bold: true, color: C.white, typeface: TYPE.title, align: "center", valign: "mid" });
+  body(ctx, s, "17 in one revision · 1 in two revisions", 430, 410, 416, 24, "#9fb8c1", 11.5, { align: "center" });
+
+  label(ctx, s, "MODEL SAFE", 966, 264, 220, C.teal2, { size: 10, align: "right" });
+  ctx.addText(s, { x: 946, y: 292, w: 240, h: 92, text: "100%", fontSize: 68, bold: true, color: C.teal2, typeface: TYPE.title, align: "right", valign: "mid" });
+  body(ctx, s, "20 / 20 · zero fallback", 946, 388, 240, 28, "#9fb8c1", 13, { align: "right" });
+
+  ctx.addShape(s, { x: 52, y: 474, w: 1136, h: 110, fill: C.navy2, line: ctx.line("#00000000", 0) });
+  const proofBlocks = [
+    { x: 76, label: "MODEL", heading: "Gemma 4 E2B", notes: ["ROCm 7.2 · vLLM 0.20.2", "gfx1100 · 47.98 GiB"], color: C.blue },
+    { x: 356, label: "EXECUTION", heading: "139 requests", notes: ["60,385 observed tokens", "99.793 tok/s · p50 655.522 ms"], color: C.orange },
+    { x: 708, label: "COMPLETENESS", heading: "363 executable checks", notes: ["222 Python + 141 Phoenix", "zero failures · no weight update"], color: C.teal2 }
+  ];
+  proofBlocks.forEach(({ x, label: blockLabel, heading, notes, color }, index) => {
+    if (index > 0) ctx.addShape(s, { x: x - 26, y: 492, w: 1, h: 72, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+    label(ctx, s, blockLabel, x, 490, 220, color, { size: 8.5 });
+    ctx.addText(s, { x, y: 516, w: index === 2 ? 420 : 250, h: 26, text: heading, fontSize: 16, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+    ctx.addText(s, { x, y: 548, w: index === 0 ? 230 : index === 1 ? 300 : 420, h: 18, text: notes.join("  ·  "), fontSize: 9.5, color: "#b8cbd2", typeface: TYPE.body, valign: "mid" });
+  });
+  ctx.addText(s, { x: 52, y: 610, w: 1136, h: 28, text: "420.648 kg aggregate scenario biomass · +221.7244 mean reward vs naive", fontSize: 13, bold: true, color: C.yellow, typeface: TYPE.body, align: "center", valign: "mid" });
+  footer(ctx, s, "Captured AMD notebook experiment; the public URL remains on its private 8 GB host and CPU fallback.", true);
+  return s;
+}`,
+
+  `import { C, TYPE, A, label } from "./common.mjs";
 export default async function slide10(presentation, ctx) {
   const s = presentation.slides.add();
-  ctx.addShape(s, { x: 0, y: 0, w: 1280, h: 720, fill: C.fog });
-  ctx.addShape(s, { x: 0, y: 0, w: 18, h: 720, fill: C.orange });
-  ctx.addText(s, { x: 54, y: 42, w: 240, h: 24, text: "PROTEINLOOP", fontSize: 14, bold: true, color: C.teal });
-  ctx.addText(s, { x: 54, y: 92, w: 510, h: 190, text: "Protect protein production where connectivity cannot be assumed.", fontSize: 38, bold: true, color: C.ink, typeface: ctx.fonts.title });
-  body(ctx, s, "A verifier-gated, producer-controlled platform for rural farms, cooperatives, and food-security programs.", 58, 304, 490, 82, C.body, 17);
+  await ctx.addImage(s, { path: A.recovery, x: 0, y: 0, w: 1280, h: 720, fit: "cover", alt: "ProteinLoop living tank" });
+  ctx.addShape(s, { x: 0, y: 0, w: 720, h: 720, fill: "#082531f6", line: ctx.line("#00000000", 0) });
+  ctx.addText(s, { x: 56, y: 48, w: 300, h: 24, text: "PROTEINLOOP", fontSize: 14, bold: true, color: C.teal2, typeface: TYPE.body, valign: "mid" });
+  ctx.addText(s, { x: 56, y: 108, w: 584, h: 190, text: "From one tank to the operating layer for resilient aquatic food.", fontSize: 43, bold: true, color: C.white, typeface: TYPE.title, valign: "mid" });
+  ctx.addText(s, { x: 60, y: 310, w: 540, h: 70, text: "Start with hard-to-connect fish and prawn farms. Expand site by site through cooperatives and food-security programs.", fontSize: 16.5, color: "#d5e3e7", typeface: TYPE.body, valign: "mid" });
   const proofs = [
-    ["PRIVATE FIELD LINK", "Two physical nRF9151 radios"],
-    ["LOCAL INTELLIGENCE", "Self-hosted Gemma 4"],
-    ["EXECUTABLE SAFETY", "Deterministic verifier + RLVR"]
+    ["BEACHHEAD", "Off-grid fish + prawn farms", C.blue],
+    ["REVENUE", "Deployment + annual software/support", C.teal2],
+    ["SCALE", "Tank > site > cooperative network", C.orange]
   ];
-  proofs.forEach(([label, note], i) => {
-    const y = 426 + i * 64;
-    ctx.addShape(s, { x: 58, y: y + 3, w: 6, h: 42, fill: i === 0 ? C.blue : i === 1 ? C.teal : C.orange, line: ctx.line("#00000000", 0) });
-    ctx.addText(s, { x: 82, y, w: 220, h: 20, text: label, fontSize: 11, bold: true, color: C.ink });
-    ctx.addText(s, { x: 304, y, w: 244, h: 24, text: note, fontSize: 13, color: C.body });
+  proofs.forEach(([name, note, color], index) => {
+    const y = 420 + index * 56;
+    ctx.addShape(s, { x: 60, y: y + 5, w: 5, h: 34, fill: color, line: ctx.line("#00000000", 0) });
+    label(ctx, s, name, 82, y, 210, C.white, { size: 9 });
+    ctx.addText(s, { x: 296, y, w: 310, h: 24, text: note, fontSize: 12.5, color: "#b8cbd2", typeface: TYPE.body, valign: "mid" });
   });
-  ctx.addText(s, { x: 58, y: 626, w: 500, h: 22, text: "proteinloop.dev-vb.lat  |  Best Unicorn", fontSize: 14, bold: true, color: C.orange });
-  ctx.addText(s, { x: 58, y: 654, w: 500, h: 20, text: "github.com/Anarpego/ProteinLoop", fontSize: 12, bold: true, color: C.teal });
-  ctx.addShape(s, { x: 610, y: 0, w: 670, h: 720, fill: C.white, line: ctx.line("#00000000", 0) });
-  await ctx.addImage(s, { path: A.recovery, x: 610, y: 0, w: 670, h: 720, fit: "cover", alt: "ProteinLoop living tank" });
-  ctx.addShape(s, { x: 610, y: 622, w: 670, h: 98, fill: "#102d3ccc", line: ctx.line("#00000000", 0) });
-  ctx.addText(s, { x: 646, y: 646, w: 590, h: 34, text: "ASK: BEST UNICORN", fontSize: 23, bold: true, color: C.white, align: "center" });
+  ctx.addShape(s, { x: 60, y: 604, w: 552, h: 1, fill: C.lineDark, line: ctx.line("#00000000", 0) });
+  label(ctx, s, "ASK · BEST UNICORN + BEST AMD-HOSTED GEMMA", 60, 624, 440, C.orange, { size: 10.5 });
+  ctx.addText(s, { x: 60, y: 652, w: 500, h: 20, text: "proteinloop.dev-vb.lat  ·  github.com/Anarpego/ProteinLoop", fontSize: 11.5, bold: true, color: C.white, typeface: TYPE.body });
   return s;
 }`
 ];

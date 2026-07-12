@@ -1,9 +1,20 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-12T06:34:31+00:00
-Commit: `46f5340`
-Working tree (source): `clean`
-Gemma evidence mode: `amd_notebook`
+Generated: 2026-07-12T19:24:34+00:00
+Commit: `0160518`
+Working tree (source): `M scripts/generate_submission_deck_v2.mjs
+ M scripts/presentation_layout_allowlist.json
+ M specs/018-rendered-slide-deck/plan.md
+ M specs/018-rendered-slide-deck/spec.md
+ M specs/018-rendered-slide-deck/tasks.md
+ M submission/artifact-build-manifest.json
+ M submission/lablab-form.json
+ M submission/lablab-submission.md
+ M submission/proteinloop-hackathon-deck.pdf
+ M submission/proteinloop-hackathon-deck.pptx
+ M submission/slides.md
+ M tests/test_off_grid_narrative.py`
+Gemma evidence mode: `local`
 
 ## Command Evidence
 
@@ -17,17 +28,19 @@ Gemma evidence mode: `amd_notebook`
 | Live nRF9151 DECT NR+ evidence | `make nrf9151-live-evidence` | 0 | PASS |
 | CI workflow contract | `make ci-check` | 0 | PASS |
 | Public deploy profile | `make public-deploy-check` | 0 | PASS |
-| AMD notebook Gemma evidence | `make amd-notebook-gemma-evidence` | 0 | PASS |
-| AMD Gemma verifier-guided search | `make amd-notebook-gemma-search` | 0 | PASS |
-| AMD Gemma five-emergency product audit | `make amd-notebook-product-eval` | 0 | PASS |
-| AMD Gemma verifier-feedback repair audit | `make amd-notebook-repair-eval` | 0 | PASS |
-| Public demo environment | `make public-env-check` | 0 | PASS |
-| Public live demo | `make live-demo-check` | 0 | PASS |
-| Final submission readiness | `make submission-ready-check` | 0 | PASS |
+| Local Gemma endpoint evidence | `make local-gemma-submission-evidence` | 0 | PASS |
+| Public demo environment | `make public-env-check` | 2 | FAIL |
+| Public live demo | `make live-demo-check` | 2 | FAIL |
+| Final submission readiness | `make submission-ready-check` | 2 | FAIL |
 
 ## Remaining Blockers
 
-- None. Final readiness gates are passing.
+- Public demo environment: [FAIL] PHX_HOST - set PHX_HOST to the public hostname
+- Public demo environment: [FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
+- Public live demo: exited 2
+- Final submission readiness: [FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+- Final submission readiness: [FAIL] application control reachable - https://proteinloop.dev-vb.lat: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+- Final submission readiness: [FAIL] application producer route reachable - https://proteinloop.dev-vb.lat/producer: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 
 ## Next Commands
 
@@ -35,10 +48,10 @@ Gemma evidence mode: `amd_notebook`
 PHX_HOST=your-demo-host SECRET_KEY_BASE=$(cd app && mix phx.gen.secret) make public-env-check
 DEMO_URL=https://your-public-demo-url make live-demo-check
 make set-demo-url DEMO_URL=https://your-public-demo-url
-AMD_NOTEBOOK_STATUS=active make credit-check
-make amd-notebook-gemma-evidence GEMMA_MODEL=google/gemma-4-E2B-it
+make local-gemma-check
+make local-gemma-submission-evidence
 make sagents-evidence
-SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize
+SUBMISSION_GEMMA_MODE=local make submission-finalize
 ```
 
 ## Output Snippets
@@ -47,9 +60,9 @@ SUBMISSION_GEMMA_MODE=amd_notebook make submission-finalize
 
 ```text
 python3 -m unittest discover -s tests
-............................................................................................................................................................................................................................
+..............................................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 220 tests in 0.198s
+Ran 222 tests in 0.185s
 
 OK
 ```
@@ -166,76 +179,55 @@ python3 scripts/validate_public_deploy.py
 public deploy profile OK
 ```
 
-### AMD notebook Gemma evidence
+### Local Gemma endpoint evidence
 
 ```text
-evidence: submission/amd-notebook-gemma-evidence.json
-[ok] google/gemma-4-E2B-it on ROCm 7.2.53211 / gfx1100
-```
-
-### AMD Gemma verifier-guided search
-
-```text
-evidence: submission/amd-gemma-policy-search.json
-[ok] 6 Gemma candidates; 3 safe; +71.0920 vs naive
-```
-
-### AMD Gemma five-emergency product audit
-
-```text
-evidence: submission/amd-gemma-product-evaluation.json
-[ok] 5 emergencies; 100% safe final plans; 103.1 kg protected
-```
-
-### AMD Gemma verifier-feedback repair audit
-
-```text
-evidence: submission/amd-gemma-repair-evaluation.json
-[ok] 20 emergencies; 18 repair rescues; 100% model-safe
+evidence: submission/local-gemma-evidence.json
+model: google/gemma-4-E2B-it
+endpoint scope: 127.0.0.1
+[ok] models endpoint
+[ok] requested model advertised
+[ok] chat action contract
+local Gemma endpoint evidence OK
 ```
 
 ### Public demo environment
 
 ```text
 python3 scripts/validate_public_env.py
-[ok] PHX_HOST - proteinloop.dev-vb.lat
-[ok] SECRET_KEY_BASE - 128 characters
-[ok] PUBLIC_PORT - 4011
+[FAIL] PHX_HOST - set PHX_HOST to the public hostname
+[FAIL] SECRET_KEY_BASE - set SECRET_KEY_BASE with mix phx.gen.secret or equivalent
+[ok] PUBLIC_PORT - default 80
 [ok] SIMULATOR_URL - http://simulator:8000
-public environment OK
+2 public environment check(s) failed
+make: *** [public-env-check] Error 1
 ```
 
 ### Public live demo
 
 ```text
-DEMO_URL="https://proteinloop.dev-vb.lat" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
-[ok] guided operator control route
-[ok] Gemma endpoint status - Gemma 4 endpoint configured
-[ok] producer English route
-[ok] bundled PBR fish model - bytes=12488144
-[ok] bundled realistic prawn visual - bytes=151238
-live demo OK
+DEMO_URL="" SIMULATOR_PUBLIC_URL="" python3 scripts/validate_live_demo.py
+DEMO_URL or --base-url is required
+make: *** [live-demo-check] Error 2
 ```
 
 ### Final submission readiness
 
 ```text
-SUBMISSION_GEMMA_MODE="amd_notebook" python3 scripts/validate_submission_readiness.py
+SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [ok] required local artifacts
 [ok] lablab form matches draft - submission/lablab-form.json
 [ok] submission bundle contents - submission/proteinloop-lablab-upload.zip
-[ok] AMD notebook Gemma evidence - google/gemma-4-E2B-it on ROCm 7.2.53211 / gfx1100
-[ok] AMD Gemma verifier-guided search - 6 Gemma candidates; 3 safe; +71.0920 vs naive
-[ok] AMD Gemma five-emergency product audit - 5 emergencies; 100% safe final plans; 103.1 kg protected
-[ok] AMD Gemma verifier-feedback repair audit - 20 emergencies; 18 repair rescues; 100% model-safe
+[ok] Local Gemma evidence - google/gemma-4-E2B-it via 127.0.0.1
 [ok] public GitHub repository URL - https://github.com/Anarpego/ProteinLoop
 [ok] application URL - https://proteinloop.dev-vb.lat
-[ok] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop
-[ok] application control reachable - https://proteinloop.dev-vb.lat
-[ok] application producer route reachable - https://proteinloop.dev-vb.lat/producer
+[FAIL] public GitHub repository reachable - https://github.com/Anarpego/ProteinLoop: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+[FAIL] application control reachable - https://proteinloop.dev-vb.lat: <urlopen error [Errno 8] nodename nor servname provided, or not known>
+[FAIL] application producer route reachable - https://proteinloop.dev-vb.lat/producer: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - 46f5340bc7ddeb9488358c2d5f6a706a910c97c2
+[ok] local git commit - 0160518b96b7d4017f3137f23488f43a2cc6e6cf
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
-submission readiness OK
+3 submission readiness check(s) failed
+make: *** [submission-ready-check] Error 1
 ```

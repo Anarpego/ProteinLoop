@@ -63,6 +63,24 @@ class OffGridNarrativeTests(unittest.TestCase):
         self.assertTrue((assets / "operator-overview.png").is_file())
         self.assertTrue((assets / "agent-recovery.png").is_file())
 
+    def test_deck_polish_contract_uses_editorial_proof_objects(self):
+        deck = (ROOT / "scripts/generate_submission_deck_v2.mjs").read_text(encoding="utf-8")
+
+        self.assertIn("task mode: create", deck)
+        self.assertIn('title: "Avenir Next"', deck)
+        self.assertIn('name: "kicker-marker"', deck)
+        self.assertIn('name: "kicker-label"', deck)
+        self.assertIn("LOCAL FARM BOUNDARY", deck)
+        self.assertIn("363 executable checks", deck)
+        self.assertIn("FIRST PASS", deck)
+        self.assertIn("MODEL SAFE", deck)
+        self.assertIn("$371B", deck)
+        self.assertIn("WHO PAYS", deck)
+        self.assertIn("HOW IT EARNS", deck)
+        self.assertIn("TANK  >  SITE  >  COOPERATIVE NETWORK", deck)
+        self.assertIn("sofia-2026", deck)
+        self.assertNotIn("nine slides used similar heading-plus-box compositions", deck)
+
 
 if __name__ == "__main__":
     unittest.main()

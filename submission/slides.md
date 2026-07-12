@@ -13,11 +13,11 @@ PRESENTATION_PREVIEW_DIR=outputs/manual-proteinloop/presentations/submission-dec
 
 ## 1. ProteinLoop
 
-Off-grid AI for living protein systems: Gemma 4, DECT NR+, and deterministic safety.
+Local AI for living protein systems: Gemma 4, DECT NR+, and deterministic safety keep the food-control loop recoverable when cloud access disappears.
 
 ## 2. One Loop, Shared Risk
 
-A chemistry failure does not stop at the vegetables. Fish, prawns, plants, feed reserve, and eggs depend on the same biological loop.
+One ammonia spike threatens every protein output. Fish, prawns, plants, feed reserve, and eggs depend on the same biological loop.
 
 ## 3. Product Proof
 
@@ -29,11 +29,11 @@ The operator watches observation, four specialist briefs, supervisor synthesis, 
 
 ## 5. Safety Boundary
 
-Gemma can recommend, but only `verify_ecosystem_safety` can admit simulator mutation. Every role has a separate title and detail region; unsafe proposals are rejected, recorded, and returned as verifier feedback before state changes.
+Gemma can recommend. It cannot mutate. Only `verify_ecosystem_safety` can admit simulator state change; unsafe proposals are rejected, recorded, and returned as verifier feedback first.
 
-## 6. Executable Evidence
+## 6. Business Case
 
-The simulator is also the policy evaluator and RLVR source of truth. The one-click judge path injects an emergency, rejects an unsafe proposal, admits recovery, and exposes measured chemistry.
+Aquaculture is a $371B farm-gate market producing 103 million tonnes of aquatic animals, according to FAO SOFIA 2026. ProteinLoop starts with hard-to-connect fish and prawn farms, cooperatives, and food-security programs. The proposed model combines edge commissioning with annual site software and support, then expands from tank to site to cooperative network.
 
 ## 7. Off-Grid Architecture
 
@@ -41,7 +41,7 @@ Two physical nRF9151 boards prove the private DECT NR+ field hop. After provisio
 
 ## 8. Producer Control
 
-Risky or irreversible actions stop for approve, apply-half, or reject. Edited actions are verified again before execution.
+The workflow pauses at the only irreversible boundary. The producer sees live chemistry and a verified plan before choosing approve, apply-half, or reject; edited actions are verified again.
 
 ## 9. Captured AMD Gemma Proof
 
@@ -49,4 +49,4 @@ Risky or irreversible actions stop for approve, apply-half, or reject. Edited ac
 
 ## 10. Ask
 
-Protect protein production where connectivity cannot be assumed. ProteinLoop combines a private field link, local intelligence, executable safety, and producer control for farms, cooperatives, and food-security programs.
+From one tank to the operating layer for resilient aquatic food. ProteinLoop lands with off-grid fish and prawn farms, earns through deployment plus recurring site software/support, and expands through farms, cooperatives, and food-security programs.
