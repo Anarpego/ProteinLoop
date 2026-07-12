@@ -33,7 +33,7 @@ Gemma can recommend. It cannot mutate. Only `verify_ecosystem_safety` can admit 
 
 ## 6. Business Case
 
-Aquaculture is a $371B farm-gate market producing 103 million tonnes of aquatic animals, according to FAO SOFIA 2026. ProteinLoop starts with hard-to-connect fish and prawn farms, cooperatives, and food-security programs. The proposed model combines edge commissioning with annual site software and support, then expands from tank to site to cooperative network.
+Aquaculture generated $371B in farm-gate production value and 103 million tonnes of aquatic animals, according to FAO SOFIA 2026. ProteinLoop starts with hard-to-connect fish and prawn farms, cooperatives, and food-security programs. The proposed model combines edge commissioning with annual site software and support, then expands from tank to site to cooperative network.
 
 ## 7. Off-Grid Architecture
 

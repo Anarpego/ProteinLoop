@@ -1,19 +1,12 @@
 # ProteinLoop Final Readiness Report
 
-Generated: 2026-07-12T19:24:34+00:00
-Commit: `0160518`
+Generated: 2026-07-12T19:31:30+00:00
+Commit: `64ffd38`
 Working tree (source): `M scripts/generate_submission_deck_v2.mjs
- M scripts/presentation_layout_allowlist.json
- M specs/018-rendered-slide-deck/plan.md
- M specs/018-rendered-slide-deck/spec.md
- M specs/018-rendered-slide-deck/tasks.md
  M submission/artifact-build-manifest.json
- M submission/lablab-form.json
- M submission/lablab-submission.md
  M submission/proteinloop-hackathon-deck.pdf
  M submission/proteinloop-hackathon-deck.pptx
- M submission/slides.md
- M tests/test_off_grid_narrative.py`
+ M submission/slides.md`
 Gemma evidence mode: `local`
 
 ## Command Evidence
@@ -62,7 +55,7 @@ SUBMISSION_GEMMA_MODE=local make submission-finalize
 python3 -m unittest discover -s tests
 ..............................................................................................................................................................................................................................
 ----------------------------------------------------------------------
-Ran 222 tests in 0.185s
+Ran 222 tests in 0.183s
 
 OK
 ```
@@ -225,7 +218,7 @@ SUBMISSION_GEMMA_MODE="local" python3 scripts/validate_submission_readiness.py
 [FAIL] application control reachable - https://proteinloop.dev-vb.lat: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [FAIL] application producer route reachable - https://proteinloop.dev-vb.lat/producer: <urlopen error [Errno 8] nodename nor servname provided, or not known>
 [ok] local git repository
-[ok] local git commit - 0160518b96b7d4017f3137f23488f43a2cc6e6cf
+[ok] local git commit - 64ffd38344cf090e03cf4453c3fd0c89524079d5
 [ok] origin remote configured - git@github.com:Anarpego/ProteinLoop.git
 [ok] origin matches lablab repository URL - origin=git@github.com:Anarpego/ProteinLoop.git lablab=https://github.com/Anarpego/ProteinLoop
 3 submission readiness check(s) failed

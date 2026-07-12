@@ -354,7 +354,7 @@ export default async function slide05(presentation, ctx) {
 export default async function slide06(presentation, ctx) {
   const s = base(presentation, ctx, "Business case", 6, true);
   kicker(ctx, s, "unicorn market wedge", 52, 78, C.teal2);
-  title(ctx, s, "Aquaculture is a $371B market. The wedge is resilience.", { x: 52, y: 102, w: 1050, h: 92, size: 39, color: C.white });
+  title(ctx, s, "A $371B aquaculture economy needs a resilience layer.", { x: 52, y: 102, w: 1050, h: 92, size: 39, color: C.white });
   body(ctx, s, "FAO reports 103M tonnes of farmed aquatic animals in 2024. ProteinLoop starts where cloud-first control is a poor fit.", 56, 200, 1010, 34, "#bcd0d7", 15);
 
   ctx.addText(s, { x: 52, y: 262, w: 292, h: 76, text: "$371B", fontSize: 62, bold: true, color: C.yellow, typeface: TYPE.title, valign: "mid" });
